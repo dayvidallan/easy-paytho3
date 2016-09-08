@@ -3,7 +3,7 @@
 import base64
 import json
 import re
-import cPickle
+import pickle
 from decimal import Decimal
 import zlib
 import sys
@@ -237,11 +237,11 @@ class ReCaptchaField(forms.CharField):
 
 
 def dumps_qs_query(query):
-    return base64.b64encode(zlib.compress(cPickle.dumps(query)))[::-1]
+    return base64.b64encode(zlib.compress(pickle.dumps(query)))[::-1]
 
 
 def loads_qs_query(query):
-    return cPickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
+    return pickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
 
 
 class ChainedSelectWidget(forms.Select):
