@@ -162,4 +162,4 @@ class Command(BaseCommand):
                     perm = get_perm(p)
                     group.permissions.add(perm)
                 except Permission.DoesNotExist:
-                    print p
+                    print u"permissão não existe."
