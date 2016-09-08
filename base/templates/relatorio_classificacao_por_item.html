@@ -1,0 +1,94 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4 landscape;
+            margin: 0.5cm;
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+
+{% block content %}
+
+<center>
+    {% for key, lances in resultado.items %}
+            {% if lances %}
+                {% block content_title %}
+                    <br>
+                  <h1 class="page-header">
+                    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+                  </h1>
+
+
+                {% endblock %}
+
+                <h2>Item: {{ key }}</h2>
+                <table border="1" width="95%" cellpadding="5" cellspacing="5">
+                    <thead>
+                        <tr>
+                            <th width="5%">Ordem</th>
+                            <th>Situação</th>
+                            <th>Marca</th>
+                            <th>Valor</th>
+                            <th>Empresa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%  for item in lances %}
+
+                            <tr>
+                                <td>{{ item.ordem }}</td>
+                                <td>{{ item.situacao }}</td>
+                                <td>{{ item.marca }}</td>
+                                <td>{{ item.valor|format_money }}</td>
+                                <td>{{ item.participante }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <pdf:nextpage />
+            {% endif %}
+    {% endfor %}
+</center>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+

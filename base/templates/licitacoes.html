@@ -1,0 +1,72 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+
+
+
+
+     <a href="/admin/base/comissaolicitacao/">
+        <div class="col-lg-2 col-md-4">
+
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-users fa-3x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{{ num_membros }}</div>
+                            <div><strong>Equipes de Licitação</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <a href="/ver_pregoes/">
+        <div class="col-lg-2 col-md-4">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-gavel fa-3x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{{ num_membros }}</div>
+                            <div><strong>Pregões</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+    <a href="/pedidos_e_controle/">
+        <div class="col-lg-2 col-md-4">
+
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-users fa-3x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{{ num_membros }}</div>
+                            <div><strong>Pedidos e Controle</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+
+
+
+{% endblock %}

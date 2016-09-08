@@ -1,0 +1,171 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+     <div class="pull-right">
+         {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
+            {% if solicitacao.situacao == solicitacao.CADASTRADO %}
+                {% if solicitacao.setor_origem == request.user.pessoafisica.setor %}
+                    <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
+                    <a class="btn btn-primary" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
+                    <a class="btn btn-success" href="/base/movimentar_solicitacao/{{ solicitacao.pk }}/1/">Enviar para Compra</a>
+                {% endif %}
+                {% if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all and solicitacao.dentro_prazo_resposta and not ja_registrou_preco and solicitacao.itemsolicitacaolicitacao_set.exists %}
+                    <a class="btn btn-success" href="/base/informar_quantidades/{{ solicitacao.pk }}/">Informar Quantidade de Itens</a>
+               {% endif %}
+            {% endif %}
+         {% endif %}
+         {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
+            <a class="btn btn-success" href="/base/movimentar_solicitacao/{{ solicitacao.pk }}/2/">Enviar</a>
+            <a class="btn btn-default" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Definir Prazo</a>
+            <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha</a>
+            <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher</a>
+
+         {% endif %}
+         {% if perms.base.pode_cadastrar_pregao and recebida_no_setor and solicitacao.eh_apta and solicitacao.minuta_aprovada %}
+            <a class="btn btn-success" href="/base/cadastrar_pregao/{{solicitacao.id}}/">Criar Pregão</a>
+            <a class="btn btn-danger" href="/rejeitar_solicitacao/{{ solicitacao.id }}/">Rejeitar</a>
+         {% endif %}
+         {% if perms.base.pode_cadastrar_pregao and recebida_no_setor and solicitacao.eh_apta and not solicitacao.arquivo_minuta %}
+            <a class="btn btn-success" href="/base/cadastrar_minuta/{{solicitacao.id}}/">Cadastrar Minuta</a>
+         {% endif %}
+         {% if perms.base.pode_cadastrar_pregao and recebida_no_setor and solicitacao.eh_apta %}
+            <a class="btn btn-success" href="/base/movimentar_solicitacao/{{ solicitacao.pk }}/2/">Enviar</a>
+         {% endif %}
+         {% if perms.base.pode_avaliar_minuta and recebida_no_setor and not solicitacao.data_avaliacao_minuta %}
+            <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Aprovar Minuta</a>
+            <a class="btn btn-danger" href="/base/avalia_minuta/{{ solicitacao.pk }}/2/">Reprovar Minuta</a>
+
+         {% endif %}
+         {% if perms.base.pode_avaliar_minuta and recebida_no_setor and solicitacao.data_avaliacao_minuta %}
+            <a class="btn btn-success" href="/base/movimentar_solicitacao/{{ solicitacao.pk }}/2/">Enviar</a>
+         {% endif %}
+         {% if solicitacao.setor_atual == setor_do_usuario and not solicitacao.recebida %}
+            <a class="btn btn-success" href="/base/receber_solicitacao/{{ solicitacao.pk }}/">Receber Solicitação</a>
+         {% endif %}
+        <a class="btn btn-info" href="/base/ver_movimentacao/{{ solicitacao.pk }}/">Ver Movimentação</a>
+        <br><br>
+    </div>
+
+    <h4>Dados da Solicitação</h4>
+    <table class="table table-bordered table-condensed table-striped" width="50%">
+        <thead>
+            <tr>
+                <th width="20%">Descrição do Objeto</th>
+                <th>Objetivo</th>
+                <th>Justificativa</th>
+                <th>Data de Cadastro</th>
+                <th>Setor Atual</th>
+                <th>Interessados</th>
+                <th>Situação</th>
+                {% if perms.base.pode_ver_minuta %}
+                    <th>Arquivo da Minuta</th>
+                    <th>Situação da Minuta</th>
+                    <th>Observação da Minuta</th>
+                {% endif %}
+            </tr>
+            <tr>
+                <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
+                <td>{{ solicitacao.objetivo|truncatechars:500 }}</td>
+                <td>{{ solicitacao.justificativa|truncatechars:500 }}</td>
+                <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</td>
+                <td>{{ solicitacao.setor_atual }}</td>
+                <td>{{ solicitacao.get_interessados }}</td>
+                <td>{{ solicitacao.situacao }}</td>
+                {% if perms.base.pode_ver_minuta %}
+                    <td>
+                        {% if solicitacao.arquivo_minuta %}
+                            <a href="/media/{{ solicitacao.arquivo_minuta}}">Ver arquivo</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if solicitacao.minuta_aprovada %}
+                            <font color="green">Aprovada</font> (<a href="/media/{{ solicitacao.arquivo_parecer_minuta}}" target="_blank">Parecer</a>)
+                        {% elif solicitacao.data_avaliacao_minuta %}
+                            <font color="red">Reprovada</font> (<a href="/media/{{ solicitacao.arquivo_parecer_minuta}}" target="_blank">Parecer</a>)
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ solicitacao.obs_avaliacao_minuta|default_if_none:'-' }}
+                    </td>
+                {% endif %}
+            </tr>
+        </thead>
+    </table>
+    {% if itens.exists %}
+         <h4>Itens da Solicitação</h4>
+         <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Código</th>
+                    <th>Especificação</th>
+                    <th>Unidade</th>
+                    <th>Quantidade</th>
+                    {% if perms.base.pode_cadastrar_pregao or perms.base.pode_cadastrar_pesquisa_mercadologica %}
+                        <th>Valor Médio</th>
+                        <th>Total</th>
+                    {% endif %}
+
+                    <th>Opções</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                    <tr>
+                        <td>{{ item.item }}</td>
+                        <td>{{ item.codigo }}</td>
+                        <td>{{ item.especificacao }}</td>
+                        <td>{{ item.unidade }}</td>
+                        <td>{{ item.quantidade }}</td>
+                        {% if perms.base.pode_cadastrar_pregao or  perms.base.pode_cadastrar_pesquisa_mercadologica %}
+                            <td>{{ item.valor_medio|format_money }}</td>
+                            <td>{{ item.total|format_money }}</td>
+                        {% endif %}
+
+                        <td>
+                            {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
+                                <a href="/admin/base/itemsolicitacaolicitacao/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
+                                {% if solicitacao.interessados %}
+                                    <a href="/base/ver_pedidos_secretaria/{{item.id}}/" class="btn btn-default btn-sm">Pedidos das Secretarias</a>
+                                {% endif %}
+
+                            {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
+                                <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
+                                <a href="/ver_pesquisa_mercadologica/{{item.id}}/" data-toggle="modal" data-target="#myModal" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
+                            {% else %}
+                                -
+                            {% endif %}
+
+
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        <p class="alert alert-warning">Nenhum item cadastrado.</p>
+    {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

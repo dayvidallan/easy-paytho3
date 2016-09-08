@@ -1,0 +1,95 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">Fornecedores<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrahead %}
+    {% if exibe_popup %}
+        <script>
+            $(document).ready(function() {
+
+                $("#botao").click();
+                $("#botao").hide();
+
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+{% block content %}
+
+        <div class="pull-right">
+            <a class="btn btn-success" href="/admin/base/fornecedor/add/">Cadastrar Fornecedor</a>
+            <a class="btn btn-primary" href="/">Voltar</a>
+            <br><br>
+        </div>
+
+        {% if fornecedores.exists %}
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>CNPJ</th>
+                        <th>Razão Social</th>
+                        <th>Ramo de Atividade</th>
+                        <th>Opções</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fornecedor in fornecedores %}
+                       <tr>
+
+                           <td>{{ fornecedor.cnpj }}</td>
+                           <td>{{ fornecedor.razao_social }}</td>
+                           <td>{{ fornecedor.ramo_atividade }}</td>
+                           <td>
+                               <a class="btn btn-info btn-sm" href="/ver_fornecedores/{{fornecedor.id}}/">Visualizar</a>
+                               <a class="btn btn-default btn-sm" href="/admin/base/fornecedor/{{fornecedor.id}}/">Editar</a>
+                           </td>
+                       </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">Nenhum fornecedor.</p>
+        {% endif %}
+    {% if exibe_popup %}
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                     <div class="modal-body">
+                         <h3>Dados do Fornecedor</h3>
+                         <table width="60%" class="table table-bordered table-condensed table-striped">
+                             <tr>
+                                 <th>Responsável</th>
+                                 <td>{{fornecedor.responsavel}}</td>
+                             </tr>
+                             <tr>
+                                 <th>CNPJ</th>
+                                 <td>{{fornecedor.cnpj}}</td>
+                             </tr>
+                             <tr>
+                                 <th>Razão Social</th>
+                                 <td>{{fornecedor.razao_social}}</td>
+                             </tr>
+                             <tr>
+                                 <th>Endereço</th>
+                                 <td>{{fornecedor.endereco}}</td>
+                             </tr>
+                         </table>
+                     </div>
+                     <div class="modal-footer">
+                         <a href="/ver_fornecedores/" class="btn btn-primary" role="button">Fechar</a>
+                     </div>
+              </div>
+            </div>
+        </div>
+
+        <button type="button" id="botao" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"></button>
+
+    {% endif %}
+{% endblock %}

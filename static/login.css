@@ -1,0 +1,40 @@
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:400,300,700');
+@import url('http://fonts.googleapis.com/css?family=PT+Sans:300,400,700');
+
+html, body {
+  background: #F2F2F2 !important;
+}
+body #barra-brasil {
+  border-bottom: 3px solid #4D4D4D !important;
+}
+body.login .panel {
+  background: #E6E6E6;
+}
+body.login .panel-heading {
+  background: url('/static/themes/smart/img/bg-header.png') no-repeat;
+  border-bottom: 1px solid #CCC;
+  width: 100%;
+  height: 133px;
+}
+body.login .panel .panel-heading .panel-title .titulo-painel {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 300;
+}
+body.login .panel .input-group .input-group-addon {
+  background: #85C127;
+  color: #fff;
+  font-size: 22px;
+}
+
+body.login .logomarca img {
+  margin-bottom: 10px;
+}
+body.login .logomarca {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 300;
+  font-size: 29px;
+  color: #4D4D4D;
+  text-align: center;
+  margin-bottom: 30px;
+}

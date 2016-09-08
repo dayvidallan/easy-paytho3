@@ -1,0 +1,9 @@
+
+1. Assistente Social cadastra os horários em que os alunos poderão solicitar refeição através do menu Atividades Estudantis-> Serviço Social -> Agendamentos de Refeição -> Horários de Solicitação.
+2. Aluno (com digital e email cadastrados) solicita refeição através da opção na página inicial (Notificações) de acordo com os horários definidos.
+3. Assistente Social avalia o pedido no menu 'Avaliar Solicitações'.
+4. Aluno pode cancelar solicitação de acordo com os prazos definidos e pode justificar falta futura (se for participante) de acordo com os prazos definidos na mesma tela em que solicita refeição.
+5. Três faltas sem justificativas no mês bloqueiam a participação.
+6. Assistente Social desbloqueia participação a qualquer tempo.
+7. Agendamentos avulsos podem ser feitos pelas Assistentes Sociais para participações suspensas.
+

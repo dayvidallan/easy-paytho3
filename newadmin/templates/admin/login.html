@@ -1,0 +1,78 @@
+{% extends "base_login.html" %}
+
+{% block content %}
+<center>
+<div class="container">
+	<div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+		<div class="panel">
+			<div class="panel-heading">
+				<div class="panel-title text-center">
+                    <h2>
+                        <br/>
+                        Sistema de Controle de Licitações
+                    </h2>
+                </div>
+			</div>
+
+			<div style="padding-top:30px" class="panel-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible fade in"{% endif %}>
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                          {{ message|safe }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+				{% if form.errors and not form.non_field_errors %}
+					<div class="alert alert-danger alert-dismissible fade in">
+                    	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+						Por favor corrija o(s) erro(s) abaixo:
+					</div>
+				{% endif %}
+				{% if form.non_field_errors %}
+					{% for error in form.non_field_errors %}
+						<div class="alert alert-danger alert-dismissible fade in">
+                        	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+							{{ error }}
+						</div>
+					{% endfor %}
+				{% endif %}
+				<form action="{{ app_path }}" method="post" id="loginform" class="form-horizontal" role="form">{% csrf_token %}
+					<div style="margin-bottom: 25px" {% if form.username.errors %} class="has-error" {% endif %}>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                            <input id="id_username" type="text" class="form-control input-lg" name="username" value="" placeholder="Usuário">
+                        </div>
+
+                        {% if form.username.errors %}
+                            <p class="help-block">{{ form.username.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div style="margin-bottom: 25px" {% if form.password.errors %} class="has-error" {% endif %}>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                            <input id="id_password" type="password" class="form-control input-lg" name="password" placeholder="Senha">
+                            <input type="hidden" name="next" value="{{ next }}" />
+                        </div>
+                        {% if form.password.errors %}
+                            <p class="help-block">{{ form.password.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                    <div style="margin-top:10px" class="form-group">
+						<div class="col-sm-12 controls">
+							<input type="submit" id="btn-login" class="btn btn-primary btn-lg btn-block" value="Acessar" />
+						</div>
+					</div>
+				</form>
+            <a href="/base/baixar_editais/">Licitações - Editais</a>
+			</div>
+		</div>
+	</div>
+</div>
+</center>
+<script type="text/javascript">
+	document.getElementById('id_username').focus()
+</script>
+{% endblock %}

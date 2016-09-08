@@ -1,0 +1,97 @@
+<script>
+    if(!window['options']){
+        options = {};
+    }
+    options["{{ id }}"] = {{ options|safe }};
+    options["{{ id }}"]["control"] = "{{ control }}";
+    options["{{ id }}"]["label"] = "{{ obj_label }}";
+    
+    $(document).ready(function() {
+        show{{ id }}();
+        var selected_value = $('#{{ id }}').val();
+        if(!selected_value){
+            {% if initial %}
+                selected_value = {{ initial }};
+            {% endif %}
+        }
+        if(options["{{ id }}"]["form_parameter_names"] != undefined){
+            vetor = options["{{ id }}"]["form_parameter_names"].split(",");
+            vetor_pks = [];
+            for ( i in vetor ){
+                var chained_field = $('#id_'+vetor[i].toString());
+                populate_chained_select_{{ id }}(chained_field, selected_value);
+                chained_field.on('change', function(){
+                    populate_chained_select_{{ id }}(this);
+                });
+            }
+            options["{{ id }}"]["filter_pks"] = vetor_pks.toString();
+        }
+    });
+
+    function set_options_values_{{ id }}(input, selected) {
+        if(options["{{ id }}"]["form_parameter_names"] != undefined){
+            vetor = options["{{ id }}"]["form_parameter_names"].split(",");
+            vetor_pks = [];
+            for ( i in vetor ){
+                if($("input[name$="+vetor[i].toString()+"]").size()==2){
+                    vetor_pks[i] = $("#hidden_"+vetor[i].toString()).val(); 
+                }
+                if($("input[name$="+vetor[i].toString()+"]").size()==1){
+                    vetor_pks[i] = $("input[name$="+vetor[i].toString()+"]").val().toString();
+                }
+                if($("select[name$="+vetor[i].toString()+"]").size()==1){
+                    vetor_pks[i] = $("select[name$="+vetor[i].toString()+"]").val().toString();
+                }
+            }
+            options["{{ id }}"]["filter_pks"] = vetor_pks.toString();
+        }
+    }
+
+    function show{{ id }}(){
+        $('#__{{ name }}').html('');
+        var t = $('#__{{ name }}').bootstrapTransfer(
+            {'target_id': '{{ name }}',
+             'height': '15em',
+             'hilite_selection': true});
+        return t;
+    }
+
+    function populate_chained_select_{{ id }}(chained_element, selected_value){
+        set_options_values_{{ id }}();
+        var id = $(chained_element).val();
+        if(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ url }}",
+                data: options["{{id}}"],
+                async: false,
+            }).done(function (data) {
+                if (data) {
+                    var items = [];
+                    var selected_items = [];
+                    $.each(data, function (key, value) {
+                        var selecionado = false;
+                        if(selected_value  instanceof Array){
+                            if(selected_value.indexOf(value.{{ obj_value }}) >= 0){
+                                selecionado = true;
+                            }
+                        } else {
+                            if(selected_value == value.{{ obj_value }}){
+                                selecionado = true;
+                            }
+                        }
+                        if (selecionado) {
+                            selected_items.push({value: value.{{ obj_value }}, content:value.{{ obj_label }}});
+                        } else {
+                            items.push({value: value.{{ obj_value }}, content:value.{{ obj_label }}});
+                        }
+                    });
+                    var t = show{{ id }}();
+
+                    t.populate(items);
+                    t.set_values(selected_items);
+                }
+            });
+        }
+    }
+</script>

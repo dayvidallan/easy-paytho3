@@ -1,0 +1,176 @@
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:400,300,700');
+@import url('http://fonts.googleapis.com/css?family=PT+Sans:300,400,700');
+
+body {
+  margin: 0;
+  padding: 0;
+  background: url('../img/pontilhado.png') repeat;
+}
+
+#banner-azul {
+  text-align: center;
+  color: #fff;
+  background: transparent;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+}
+
+#banner-azul .logo {
+  margin-top: 60px;
+  margin-bottom: 40px;
+  font-size: 30px;
+}
+
+#banner-azul .logo img {
+  margin-bottom: 10px;
+}
+
+#banner-azul p {
+  color: #fff;
+  width: 80%;
+  margin: 0 auto;
+  text-align: justify;
+  margin-bottom: 60px;
+  font-size: 18px;
+  line-height: 170%;
+}
+
+#banner-branco {
+  min-height: 300px;
+  text-align: center;
+}
+
+#banner-branco .icone-manutencao {
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
+#banner-branco p {
+  color: #000;
+  width: 80%;
+  margin: 0 auto;
+  text-align: justify;
+  margin-bottom: 60px;
+  font-size: 18px;
+  line-height: 170%;
+}
+
+#banner-verde {
+  text-align: center;
+  color: #fff;
+  min-height: 394px;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+}
+
+#banner-verde .icone-webconferencia {
+  margin-top: 60px;
+  margin-bottom: 20px; 
+}
+
+#banner-verde p {
+  color: #fff;
+  font-size: 30px;
+  line-height: 130%;
+  padding-bottom: 10px;
+}
+
+#rodape {
+  padding: 60px 0;
+  background: transparent;
+}
+
+#rodape ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#rodape ul li {
+  float: left;
+  margin-left: 0px;
+}
+
+#rodape ul li figure img {
+  width: 80%;
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (max-width : 1200px) {
+  #rodape ul li {
+    margin-left: 50px;
+  }
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width : 992px) {
+  #banner-azul .logo {
+    font-size: 18px;
+  }
+  #banner-azul .logo img {
+    width: 60%;
+  }
+  #banner-azul p {
+    font-size: 14px;
+  }
+  #banner-branco .icone-manutencao img, #banner-verde .icone-webconferencia {
+    width: 150px;
+  }
+  #banner-branco p {
+    font-size: 16px;
+  }
+  #banner-verde {
+    min-height: 300px;
+  }
+  #banner-verde .icone-webconferencia {
+    margin-top: 30px;
+  }
+  #banner-verde p {
+    font-size: 26px;
+  }
+  #rodape ul li {
+    width: 50%;
+    float: left;
+    margin-left: 0px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (max-width : 480px) {
+  #banner-azul .logo {
+    font-size: 13px;
+  }
+  #banner-azul .logo img {
+    width: 80%;
+  }
+  #banner-azul p {
+    font-size: 12px;
+  }
+  #banner-branco .icone-manutencao img, #banner-verde .icone-webconferencia {
+    width: 30%;
+  }
+  #banner-branco p {
+    font-size: 14px;
+  }
+  #banner-verde {
+    min-height: 280px;
+  }
+  #banner-verde .icone-webconferencia {
+    margin-top: 30px;
+  }
+  #banner-verde p {
+    font-size: 20px;
+  }
+  #rodape ul li {
+    float: none;
+    margin-left: 0;
+    margin-bottom: 40px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Custom, iPhone Retina */ 
+@media only screen and (max-width : 320px) {
+    
+}

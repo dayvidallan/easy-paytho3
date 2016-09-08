@@ -1,0 +1,30 @@
+{% load bootstrap newadmin %}
+
+<div class="panel panel-default">
+    {% if fieldset.name %}
+	<div class="panel-heading">
+        <h3 class="panel-title">{{ fieldset.name }}</h3>
+        {% if fieldset.description %}<p>{{ fieldset.description|safe }}</p>{% endif %}
+    </div>
+    {% endif %}
+    <div class="panel-body">
+        {% for line in fieldset %}
+            <div class="form-row{% if line.fields|length_is:'1' and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+                {% for field in line %}
+                    <div {% if not line.fields|length_is:'1' %} class="field-box{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}"{% elif field.is_checkbox %} class="checkbox-row"{% endif %}>
+                        {% if field.is_readonly %}
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ field.field.label.capitalize }}</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">{{ field.contents|format }}</p>
+                                </div>
+                            </div>
+                        {% else %}
+                            {{ field.field|bootstrap_horizontal }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>

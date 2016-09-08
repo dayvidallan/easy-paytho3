@@ -1,0 +1,211 @@
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:400,300,700');
+@import url('http://fonts.googleapis.com/css?family=PT+Sans:300,400,700');
+
+/* base */
+@media print {
+    @page {
+        size: auto;
+        margin: 0;
+    }
+}
+div.footer {
+    margin-top: 60px;
+}
+.modal-content .add-another {
+    display: none;
+}
+.btn-group.pull-right .btn {
+    margin: 10.5px 0px;
+}
+#div-actions {
+    padding: 0px 0px;
+}
+tbody th {
+    font-weight: normal;
+}
+#content-stage #content section h1 {
+    margin: 10.5px 0 20px 0 !important;
+}
+
+/* admin change form */
+@media (min-width: 768px) {
+    .tabular .form-inline .form-control {
+        width: 100%;
+    }
+}
+.form-group ul {
+    padding: 0;
+    margin: 0;
+}
+.form-group ul li {
+    list-style: none;
+    margin: 10px 0;
+}
+.form-group ul li:first-child {
+    margin: 4px 0px 10px 0;
+}
+.multiple-checkbox label, .col-sm-10.col-lg-10 label {
+    font-weight: normal;
+}
+div.checkbox label {
+    font-weight: bold;
+}
+/* dashboard */
+.circle-icon {
+    float: left;
+    margin-right: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    line-height: 50px;
+}
+.dashboard .panel.purple .circle-icon, .dashboard .panel.purple:hover {
+    background-color: #8e44ad;
+    color: #fff;
+}
+.dashboard .panel.blue .circle-icon, .dashboard .panel.blue:hover {
+    background-color: #2980b9;
+    color: #fff;
+}
+.dashboard .panel.green .circle-icon, .dashboard .panel.green:hover {
+    background-color: #27ae60;
+    color: #fff;
+}
+.dashboard .panel.orange .circle-icon, .panel.orange:hover {
+    background-color: #d35400;
+    color: #fff;
+}
+.dashboard h3 {
+    margin: 0;
+}
+a.dashboard, a.dashboard:hover {
+    text-decoration: none;
+    color: #333;
+}
+
+
+/* forms */
+
+div.tabular .form-group {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+label.required::after {
+    content: "*";
+    color: #cc0000;
+}
+
+.form-inline input[type=number] {
+    width: 100px;
+}
+
+#changelist-form {
+    margin: 10px 0;
+}
+
+/* ADMIN CHANGELIST */
+
+.navbar-changelist {
+	background: transparent;
+	margin-bottom: 0px;
+}
+
+.navbar-changelist .navbar-form {
+	padding: 0px;
+}
+
+.navbar-changelist .navbar-form .pagination {
+	margin: 8px 0px;
+}
+
+.navbar-changelist .navbar-toggle span { /* texto "Ver filtros" visível para telas pequenas */
+	color: #95a5a6;
+}
+
+.navbar-changelist .navbar-collapse, .navbar-default .navbar-form {
+	border-color: #bdc3c7;
+}
+
+.form-changelist .nav-tabs {
+	border-color: #bdc3c7;
+}
+
+.form-changelist .nav-tabs > li > a {
+	background-color: transparent;
+	border: none;
+	color: #bdc3c7;
+}
+
+.form-changelist .nav-tabs > li > a:hover {
+	color: #95a5a6;
+}
+
+.form-changelist .nav-tabs > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+	border-bottom: solid 1px white;
+	border-left: solid 1px #bdc3c7;
+	border-right: solid 1px #bdc3c7;
+	border-top: solid 1px #bdc3c7;
+	color: #333;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+thead th.sorted a.sortremove {
+    visibility: hidden;
+}
+
+table thead th.sorted:hover a.sortremove {
+    visibility: visible;
+}
+
+table thead th.sorted .sortoptions {
+    display: block;
+    padding: 4px 5px 0 5px;
+    float: right;
+    text-align: right;
+}
+
+table thead th.sorted .sortpriority {
+    font-size: .8em;
+    min-width: 12px;
+    text-align: center;
+    vertical-align: top;
+}
+
+table thead th.sorted .sortoptions a {
+    width: 14px;
+    height: 12px;
+    display: inline-block;
+}
+
+table thead th.sorted .sortoptions a.sortremove {
+    background: url(/static/admin/img/sorting-icons.gif) -4px -5px no-repeat;
+}
+
+table thead th.sorted .sortoptions a.sortremove:hover {
+    background: url(/static/admin/img/sorting-icons.gif) -4px -27px no-repeat;
+}
+
+table thead th.sorted .sortoptions a.ascending {
+    background: url(/static/admin/img/sorting-icons.gif) -5px -50px no-repeat;
+}
+
+table thead th.sorted .sortoptions a.ascending:hover {
+    background: url(/static/admin/img/sorting-icons.gif) -5px -72px no-repeat;
+}
+
+table thead th.sorted .sortoptions a.descending {
+    background: url(/static/admin/img/sorting-icons.gif) -5px -94px no-repeat;
+}
+
+table thead th.sorted .sortoptions a.descending:hover {
+    background: url(/static/admin/img/sorting-icons.gif) -5px -115px no-repeat;
+}
+
+#loginbox > div > div.panel-body > h4 {
+    margin-top: 0px;
+}

@@ -1,0 +1,179 @@
+.accordion { 
+    width: 100%;
+    height: 491px;
+    overflow: hidden; 
+    margin: 0px auto; 
+    color: #474747; 
+    /*background: url('../img/bg/bg-accordion.jpg') repeat-x; */
+    /*background-size: 861px 567px;*/
+}
+.accordion p.titulo {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 18px;
+    color: #004a8f;
+    margin-bottom: 5px;
+}
+.accordion p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #004a8f;
+}
+/*Set style of open slide*/
+/*.accordion section:target, */.accordion section.ativo { background:#FFF; padding:10px;}
+/*.accordion section:target:hover, */.accordion section.ativo:hover { background:#FFF; }
+/*.accordion section:target h2, */.accordion section.ativo h2 {width:auto; padding-left: 70px;}
+/*.accordion section:target h2 a, */.accordion section.ativo h2 a{ color:#fbfefd; padding:0;}
+/*.accordion section:target p, */.accordion section.ativo p  {display:block; padding-left: 77px;}
+.accordion section h2 a{ 
+    font-family: 'PT Sans', sans-serif;
+    font-weight: 300;
+    padding: 0px 0px 33px 10px;
+    display: block; 
+    font-size: 22px;
+    color: #fbfefd;
+    text-decoration: none;
+}
+
+/*set style of closed slide*/
+.accordion section{ float:left; overflow:hidden; color:#333; cursor:pointer; background: #333; margin:0px 0px 0px 1px; }
+.accordion section:first-child { margin-left: 0px; }
+.accordion section:hover {background:#444;}
+.accordion section p { display:none; }
+.accordion section:after{position:relative;font-size:24px;color:#000;font-weight:bold;}
+#colaboradores-online.modulo-2 {
+    background: url(../img/bg/modulo-2/bg-accordion-colaboradores-online.jpg) no-repeat;
+    position: relative;
+}
+#colaboradores-online.modulo-3 {
+    background: url(../img/bg/modulo-3/bg-accordion-colaboradores-online.jpg) no-repeat;
+    position: relative;
+}
+#colaboradores-online.modulo-4 {
+    background: url(../img/bg/modulo-4/bg-accordion-colaboradores-online.jpg) no-repeat;
+    position: relative;
+}
+#colaboradores-online.modulo-5 {
+    background: url(../img/bg/modulo-5/bg-accordion-colaboradores-online.jpg) no-repeat;
+    position: relative;
+}
+#colaboradores-online.modulo-5.ativo p { color: #fff; }
+
+#instrucoes.modulo-2 {
+    background: url(../img/bg/modulo-2/bg-accordion-instrucoes.png) no-repeat;
+    position: relative;
+}
+#instrucoes.modulo-3 {
+    background: url(../img/bg/modulo-3/bg-accordion-instrucoes.png) no-repeat;
+    position: relative;
+}
+#instrucoes.modulo-4 {
+    background: url(../img/bg/modulo-4/bg-accordion-instrucoes.png) no-repeat;
+    position: relative;
+}
+#instrucoes.modulo-5 {
+    background: url(../img/bg/modulo-5/bg-accordion-instrucoes.png) no-repeat;
+    position: relative;
+}
+#instrucoes .left {
+    margin: 0px 0px 0px 68px;
+    float: left;
+}
+#instrucoes .right {
+    padding: 142px 30px 0px 20px;
+}
+#instrucoes .right p {
+    color: #004a8f;
+}
+#instrucoes.modulo-5 .right p {
+    color: #fff;
+}
+#colaboradores-do-curso.modulo-2 {
+    background: url(../img/bg/modulo-2/bg-accordion-colaboradores-do-curso.png) no-repeat;
+    position: relative;
+}
+#colaboradores-do-curso.modulo-3 {
+    background: url(../img/bg/modulo-3/bg-accordion-colaboradores-do-curso.png) no-repeat;
+    position: relative;
+}
+#colaboradores-do-curso.modulo-4 {
+    background: url(../img/bg/modulo-4/bg-accordion-colaboradores-do-curso.png) no-repeat;
+    position: relative;
+}
+#colaboradores-do-curso.modulo-5 {
+    background: url(../img/bg/modulo-5/bg-accordion-colaboradores-do-curso.png) no-repeat;
+    position: relative;
+}
+#colaboradores-do-curso.modulo-5.ativo p { color: #fff; }
+/*
+#colegas {
+    background: url(../img/bg/bg-accordion-colegas.jpg) no-repeat;
+    position: relative;
+}
+#participantes {
+    background: url(../img/bg/bg-accordion-participantes.jpg) no-repeat;
+    position: relative;
+}
+#reuniao {
+    background: url(../img/bg/bg-accordion-sala-reuniao.png) no-repeat;
+    position: relative;
+}
+*/
+
+/*.accordion section:nth-child(1):after{content:'1';}
+.accordion section:nth-child(2):after{content:'2';}
+.accordion section:nth-child(3):after{content:'3';}
+.accordion section:nth-child(4):after{content:'4';}
+.accordion section:nth-child(5):after{content:'5';}*/
+
+/*Position the number of the slide*/
+.horizontal section{ 
+    /*width:70px;*/
+    width: 69px; 
+    height: 491px; 
+    -moz-transition: width 0.2s ease-out; 
+    -webkit-transition:width 0.2s ease-out;
+    -o-transition:width 0.2s ease-out;
+    transition:width 0.2s ease-out;
+}
+
+/*Position the number of the slide*/
+.horizontal section:after{
+    top:140px;
+    left:15px;
+}
+
+/*Header of closed slide*/
+.horizontal section h2 { 
+    -webkit-transform:rotate(90deg);
+    -moz-transform:rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    width: 240px;
+    position: relative;
+    left: -84px;
+    top: 85px;
+    height: 67px;
+} 
+
+/*On mouse over open slide*/
+.horizontal section.ativo{ /*width:557px;*/width:1058px;height:491px; }
+/*.horizontal :target{ width:557px;height:515px; }*/
+/*.horizontal :target h2, */.horizontal section.ativo h2{ 
+    position: absolute;
+    left: -46px;
+    top: 4px;
+}
+.horizontal :target #instrucoes h2 {
+    position: absolute;
+    left: -46px;
+    top: 4px;
+}
+.horizontal :target #reuniao h2 {
+    position: absolute;
+    left: -46px;
+    top: 4px;
+}
+.horizontal :target #instrucoes {
+    /*background: url(../img/redes/bg-accordion.jpg) no-repeat;*/
+}

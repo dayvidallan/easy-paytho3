@@ -1,0 +1,133 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n admin_urls admin_static admin_list %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {{ media.js }}
+    {% if cl.formset or action_form %}
+        <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+    {% endif %}
+    {% if action_form %}{% if actions_on_top or actions_on_bottom %}
+    <script type="text/javascript">
+    (function($) {
+        $(document).ready(function($) {
+            $("tr input.action-select").actions({counterContainer:"#div-actions select option:first", selectedClass: "active"});
+        });
+    })(django.jQuery);
+    </script>
+    {% endif %}{% endif %}
+{% endblock %}
+
+{% if not is_popup %}
+    {% block breadcrumbs %}
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %} <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">Administração <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ cl.opts.verbose_name_plural|capfirst }}</a>
+    {% endblock %}
+{% endif %}
+
+{% block content_title %}
+	<h1>{{ cl.opts.verbose_name_plural|capfirst }}</h1>
+{% endblock %}
+
+{% block object-tools %}
+
+    {% if options %}
+        {% if options|length == 1 %}
+            <a class="btn btn-primary" href="{{ options.0.url }}">{{ options.0.label|safe }}</a>
+        {% else %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    Opções <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    {% for i in options %}
+                        <li><a href="{{ i.url }}">{{ i.label|safe }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+{% if cl.full_result_count %}
+    <form class="form-inline form-changelist" role="search">
+        {% block tab-filters %}
+            {% if cl.has_filters %}
+                {% for spec in cl.filter_specs %}
+                    {% if spec.show_as_tabs %}
+                        {% admin_list_filter cl spec %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endblock %}
+    {% if cl.search_fields or cl.has_filters %}
+        <nav class="navbar navbar-default navbar-changelist" role="navigation">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+						<span class="link">Ver filtros</span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse navbar-form" id="bs-example-navbar-collapse-1">
+                    {% block search %}{% search_form cl %}{% endblock %}
+                    {% block filters %}
+                        {% if cl.has_filters %}
+                            {% for spec in cl.filter_specs %}
+                                {% if not spec.show_as_tabs %}
+                                    {% admin_list_filter cl spec %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endblock %}
+					{% block date_hierarchy %}{% date_hierarchy cl %}{% endblock %}
+                </div><!-- /.navbar-collapse -->
+
+            </div><!-- /.container-fluid -->
+        </nav>
+        {% endif %}
+    </form>
+{% else %}
+    <p>Nenhum(a) <strong>{{ cl.opts.verbose_name }}</strong> encontrado(a).<p>
+{% endif %}
+			
+{% if cl.formset.errors %}
+	<div class="alert alert-danger">
+		{% if cl.formset.total_error_count == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+	</div>
+	{{ cl.formset.non_form_errors }}
+{% endif %}
+
+{% if cl.full_result_count %}
+    <form id="changelist-form" action="" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+			{% if cl.formset %}
+				<div>{{ cl.formset.management_form }}</div>
+			{% endif %}
+			<div>
+			{% if cl.result_count %}
+				<div style="color: #95a5a6; margin: 10px 0;">Exibindo <strong>{{ cl.result_count }}</strong> {{ cl.opts.verbose_name_plural }} de um total de {{ cl.full_result_count }}</div>
+			{% else %}
+				<p>Nenhum(a) <strong>{{ cl.opts.verbose_name }}</strong> encontrado(a).<p>
+			{% endif %}
+			</div>
+			{% block result_list %}
+				{% result_list cl %}
+			{% endblock %}
+            <div class="form-inline" id="div-actions">
+                {% if action_form and cl.result_count %}{% admin_actions %}{% endif %}
+                {% if cl.formset and cl.result_count %}
+                    <input type="submit" name="_save" class="pull-right btn btn-success" value="Salvar alterações"/>
+                {% endif %}
+            </div>
+            {% block pagination %}{% pagination cl %}{% endblock %}
+    </form>
+<script type="text/javascript">$("input[name=q]").focus();</script>
+{% endif %}
+
+{% endblock %}

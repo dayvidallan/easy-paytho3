@@ -1,0 +1,54 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/licitacoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Pregões<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+        <h2>{{ titulo }}</h2>
+        <table  class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th width="10%"><b>Item</b></th>
+                <th width="10%"><b>Solicitação</b></th>
+                <th width="10%"><b>Especificação</b></th>
+            </tr>
+            <tr>
+                <td>{{ item.item }}</td>
+                <td>{{ item.solicitacao.num_memorando }}</td>
+                <td>{{ item.especificacao }}</td>
+            </tr>
+        </table>
+
+        <h3>Resultado</h3>
+        <table border="2" class="table table-bordered table-condensed table-striped">
+            <thead>
+                <th>Classificação</th>
+                <th>Fornecedor</th>
+                <th>Marca</th>
+                <th>Valor Máximo</th>
+                <th>Opções</th>
+            </thead>
+            <tbody>
+                {% for resultado in resultados %}
+                    <tr>
+                        <td>{{ resultado.ordem }}</td>
+                        <td>{{ resultado.participante }}</td>
+                        <td>{{ resultado.marca }}</td>
+                        <td>{{ resultado.valor }}</td>
+                        <td>
+                            {% if resultado.empate %}
+                                <a href="/base/definir_colocacao/{{ resultado.id }}/" class="btn btn-success btn-sm">Definir colocação</a></td>
+                            {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+{% endblock %}

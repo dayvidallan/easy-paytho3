@@ -1,0 +1,160 @@
+{% load bootstrap %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            @frame content_frame {
+				    {% block content_frame %}
+    				top: 20;
+    				left: 20;
+    				right: 20;
+    				bottom: 60;
+    				{% endblock %}
+    			}
+
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.5cm;
+                left: 0.5cm;
+                right: 0.5cm;
+                height: 1.8cm;
+            }
+     }
+
+     div.topo {
+
+       border-bottom-width:1px;
+        border-bottom-style:solid;
+        border-bottom-color:#BEBEBE;
+        height: 1px;
+      }
+
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    <table border="0" width="100%">
+      <tr>
+        <td  width="30%" cellspacing="10" cellpadding="10"><img src="{{imagem}}"  width="150" height="90"></td>
+        <td width="10%">&nbsp;</td>
+        <td>
+            <table>
+                <tr>
+                    <td></td>
+                </tr>
+
+            </table>
+        </td>
+        <td width="40%" align="right" ><img src="{{logo_telessaude}}"  width="115" height="40"></td>
+        <td width="20%" align="right" ><img src="{{logo_sus}}"  width="60" height="35"></td>
+      </tr>
+
+
+
+    </table>
+
+    <center><font size="4">Pesquisa Mercadológica - Proposta</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+{% endblock %}
+
+{% block content %}
+    {% block conteudo_laudo %}
+    <h3><b>Dados do Fornecedor</b></h3>
+    <table border="0" width="100%">
+      <tr>
+        <td width="70%">Razão Social: <b>{{ pesquisa.razao_social }} </b></td>
+        <td width="30%">CNPJ: {{ pesquisa.cnpj }}</td>
+      </tr>
+      <tr>
+        <td width="70%">Inscrição Estadual: {{ pesquisa.ie }}</td>
+        <td width="30%">Endereço: {{ pesquisa.endereco }}</td>
+
+      </tr>
+      <tr>
+
+        <td width="70%">Telefone: {{ pesquisa.telefone }}</td>
+        <td width="30%">Email: {{ pesquisa.email }}</td>
+
+      </tr>
+      <tr>
+        <td width="70%">Nome do Representante: <b>{{ pesquisa.nome_representante }}</b></td>
+        <td width="30%">CPF do Representante: {{ pesquisa.cpf_representante }}</td>
+
+      </tr>
+      <tr>
+        <td width="70%">Endereco do Representante: {{ pesquisa.endereco_representante }}</td>
+        <td width="30%">RG do Representante: {{ pesquisa.rg_representante }}</td>
+
+      </tr>
+    </table>
+
+    <h3><b>Itens da Proposta</b></h3>
+    <table border="1" cellpadding="10" cellspacing="10">
+        <thead>
+            <th>Item</th>
+            <th>Marca</th>
+            <th>Valor Máximo</th>
+        </thead>
+        <tbody>
+            {% for item in pesquisa.itempesquisamercadologica_set.all %}
+                <tr>
+                    <td>{{ item.item }} - {{ item.item.especificacao }}</td>
+                    <td>{{ item.marca }}</td>
+                    <td align="right">{{ item.valor_maximo }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br><br>
+    <h3> Validade da Proposta: {{ pesquisa.validade_proposta }} dias</h3>
+    <br>
+    <table border="90%" cellspacing="2" cellpadding="2">
+        <tr>
+            <td width="3%"><table  border="1"><tr><td>&nbsp;</td></tr></table></td>
+            <td width="3%">&nbsp;</td>
+            <td> DECLARO ser o representante legal da EMPRESA e responsável para a assinatura da proposta.</td>
+        </tr>
+        <tr>
+            <td width="3%"><table  border="1"><tr><td>&nbsp;</td></tr></table></td>
+            <td width="3%">&nbsp;</td>
+            <td>DECLARO para os devidos fins que nos preços propostos estão incluídos todos os encargos, tributos, impostos e demais despesas necessárias para o fornecimento dos produtos</td>
+        </tr>
+    </table>
+   <br><br>
+
+    <center>-------------------------------------------------------------------------------------<br>
+    Assinatura do Responsável</center>
+    {% endblock %}
+
+{% endblock %}
+
+
+

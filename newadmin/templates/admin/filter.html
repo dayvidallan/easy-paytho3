@@ -1,0 +1,24 @@
+{% if spec.show_as_tabs %}
+    <ul class="nav nav-tabs nav-gray">
+        {% for choice in choices %}
+            <li {% if choice.selected %}class="active"{% endif %}>
+                <a href="{{ choice.query_string|iriencode }}">{{ choice.display }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+<div class="form-group">
+    <select class="form-control filter-{{ title|slugify }}" style="max-width: 140px"
+            onchange="url=location.href; location.href = ((url.indexOf('?') != -1) ? $(this).val() : (url + $(this).val()))">
+        {% for choice in choices %}
+            {% if forloop.first %}
+                <option value="{{ choice.query_string|iriencode }}">{{ title.title }}</option>
+                <option value="{{ choice.query_string|iriencode }}">---</option>
+            {% else %}
+                <option value="{{ choice.query_string|iriencode }}" {{ choice.selected|yesno:' selected="selected",' }}>{% if choice.selected %}{{ title|capfirst }}: {% endif %}{{ choice.display }}</option>
+                {% if choice.selected %}<script>$("select.filter-{{ title|slugify }}").addClass("active")</script>{% endif %}
+             {% endif %}
+        {% endfor %}
+    </select>
+</div>
+{% endif %}

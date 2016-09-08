@@ -1,0 +1,110 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/licitacoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Pregões<i class="fa fa-angle-right"></i></a>
+    <a href="/base/pregao/{{pregao.id}}/">Pregão {{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?participante=" + escape( $('#'+campo.id).val());
+
+        }
+    </script>
+{% endblock %}
+{% block content %}
+    <p class="alert alert-info">Faça upload do arquivo com as propostas ou preencha os campos abaixo.</p>
+     <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form|bootstrap }}
+                    </div>
+                    <div class="form-group form-row">
+                        <div>
+                            <div class="controls">
+                                <button type="submit" class="btn btn-primary">Cadastrar</button>
+                            </div>
+                        </div>
+                    </div>
+		        </div>
+                {% if not edicao %}
+                    <h3>Preencher Proposta Manualmente</h3>
+                    <div>
+                        <table class="table table-bordered table-condensed table-striped">
+                            <thead>
+                                <th>Item</th>
+                                <th>Código</th>
+                                <th>Especificação</th>
+                                <th>Valor Máximo</th>
+                                <th>Marca</th>
+                                <th>Valor</th>
+                            </thead>
+                            <tbody>
+                            {% for item in itens %}
+                                <tr>
+                                    <td>{{ item.item }}</td>
+                                    <td>{{ item.codigo }}</td>
+                                    <td>{{ item.especificacao }}</td>
+                                    <td>{{ item.valor_medio|format_money }}</td>
+                                    <td><input name="marcas">{{ item.marca }}</td>
+                                    <td><input name="itens">{{ item.valor }}</td>
+                                </tr>
+
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                <div class="form-group form-row">
+                    <div>
+                        <div class="controls">
+                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                    <h3>Editar Proposta Manualmente</h3>
+                    <div>
+                        <table class="table table-bordered table-condensed table-striped">
+                            <thead>
+                                <th>Item</th>
+                                <th>Código</th>
+                                <th>Especificação</th>
+                                <th>Valor Máximo</th>
+                                <th>Marca</th>
+                                <th>Valor</th>
+                                <th>Opções</th>
+                            </thead>
+                            <tbody>
+                            {% for item in itens %}
+                                <tr>
+                                    <td>{{ item.item }}</td>
+                                    <td>{{ item.item.codigo }}</td>
+                                    <td>{{ item.item.especificacao }}</td>
+                                    <td>{{ item.item.valor_medio }}</td>
+                                    <td>{{ item.marca }}</td>
+                                    <td>{{ item.valor }}</td>
+                                    <td><a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                {% endif %}
+
+             </div>
+        </form>
+
+
+
+
+{% endblock %}

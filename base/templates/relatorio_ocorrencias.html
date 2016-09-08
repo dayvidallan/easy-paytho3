@@ -1,0 +1,81 @@
+{% load bootstrap %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4 landscape;
+            margin: 0.5cm;
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    <center><font size="4">Lista de Ocorrências - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+
+
+{% endblock %}
+
+{% block content %}
+<center>
+    <table border="1" width="95%" cellpadding="5" cellspacing="5">
+        <thead>
+            <tr>
+                <th width="25%">Data</th>
+                <th>Descrição</th>
+            </tr>
+            </tr>
+        </thead>
+        <tbody>
+            {%  for item in registros %}
+
+                <tr>
+                    <td>{{ item.data }}</td>
+                    <td>{{ item.obs }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        </center>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+

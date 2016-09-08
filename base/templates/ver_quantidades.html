@@ -1,0 +1,45 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">Pedidos<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+        <div class="pull-right">
+            <a class="btn btn-primary" href="javascript:history.go(-1)">Voltar</a>
+            <br><br>
+        </div>
+
+        {% if pedidos.exists %}
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Secretaria</th>
+                        <th>Quantidade</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                       <tr>
+
+                           <td>{{ pedido.secretaria }}</td>
+                           <td>{{ pedido.quantidade }}</td>
+                       </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>Total</td>
+                        <td>{{ total.total }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">Nenhum pedido cadastrado.</p>
+        {% endif %}
+
+{% endblock %}

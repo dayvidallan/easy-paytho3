@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+    <a href="/">{% trans 'Home' %} <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">Administração</a>
+{% endblock %}
+
+{% block content_title %}<h1 class="page-header">Início</h1>{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% if app_list %}
+        {% for app in app_list %}
+            <div class="col-md-2 col-sm-6">
+                <div class="list-group">
+                    <div class="list-group-item"><h3 class="panel-title">{{ app.name }}</h3></div>
+                    {% for model in app.models %}
+                        {% if model.admin_url %}
+                            <a href="{{ model.admin_url }}" class="list-group-item">{{ model.name }}</a>
+                        {% else %}
+                            <a class="list-group-item">{{ model.name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% comment %}
+    {% load log %}
+    {% get_admin_log 10 as admin_log for_user user %}
+    {% if admin_log %}
+        <div class="col-md-3">
+            <div class="list-group">
+                <li class="list-group-item"><h3 class="panel-title">Ações Recentes</h3></li>
+                {% for entry in admin_log %}
+                    <li class="list-group-item success">
+                        <p class="list-group-item-text">
+                            <span class="fa fa-{% if entry.is_addition %}plus{% endif %}{% if entry.is_change %}pencil{% endif %}{% if entry.is_deletion %}remove{% endif %}"></span> 
+                            {% if entry.content_type %}
+                                {% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}:
+                            {% endif %}
+                            {% if entry.is_deletion or not entry.get_admin_url %}
+                                {{ entry.object_repr }}
+                            {% else %}
+                                <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% endif %}
+                        </p>
+                    </li>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% endcomment %}
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/licitacoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Pregões<i class="fa fa-angle-right"></i></a>
+    <a href="/base/pregao/{{pregao.id}}/">Pregão {{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+
+        <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-6">
+                        {{ form|bootstrap }}
+
+                    </div>
+                    <div class="col-xs-6">
+                        <br>
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                    </div>
+
+                </div>
+             </div>
+        </form>
+        {% if form.is_bound %}
+            {% if grupos_usuario %}
+                <table class="table table-bordered table-condensed table-striped" width="50%">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grupo in grupos_usuario %}
+                            <tr>
+                                <td>{{ grupo.0 }}</td>
+                                <td>
+                                    {% if grupo.1 == 1 %}
+                                        <a class="btn btn-danger btn-sm" href="/base/gerenciar_grupo_usuario/{{ pessoa.user.id }}/{{ grupo.0.id }}/2/">Remover</a>
+                                    {% elif grupo.1 == 2 %}
+                                        <a class="btn btn-success btn-sm" href="/base/gerenciar_grupo_usuario/{{ pessoa.user.id }}/{{ grupo.0.id }}/1/">Adicionar</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            {% endif %}
+
+        {% endif %}
+
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}

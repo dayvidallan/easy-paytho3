@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | Sistema de Controle de Licitações{% endblock %}
+
+{% block branding %}
+    <strong><a class="navbar-brand" href="/">Defina o título do site</a></strong>
+{% endblock %}
+
+{% block nav-global %}
+    {% if user.is_staff %}
+        <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    {% endif %}
+{% endblock %}

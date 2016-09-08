@@ -1,0 +1,78 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/licitacoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Pregões<i class="fa fa-angle-right"></i></a>
+    <a href="/base/pregao/{{ item.get_licitacao.id }}/">Pregão {{ item.get_licitacao.id }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+        <h2>{{ titulo }}</h2>
+        <table  class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th width="10%"><b>Item</b></th>
+                <th><b>Solicitação</b></th>
+                <th><b>Especificação</b></th>
+                <th><b>Situação</b></th>
+                <th><b>Opções</b></th>
+            </tr>
+            <tr>
+                <td>{{ item.item }}</td>
+                <td>{{ item.solicitacao.num_memorando }}</td>
+                <td>{{ item.especificacao }}</td>
+                <td>{{ item.situacao }}</td>
+                <td>
+                    {% if item.sem_fornecedor_habilitado and not item.eh_fracassado %}
+                        <a href="/base/encerrar_itempregao/{{ item.id }}/2/" class="btn btn-danger btn-sm">Fracassado</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+        {% if lances.exists %}
+            <h3>Classificação dos Fornecedores</h3>
+            <table border="2" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <th>Classificação</th>
+                    <th>Fornecedor</th>
+                    <th>Marca</th>
+                    <th>Valor</th>
+                    <th>Observações</th>
+                    <th>Situação</th>
+                    <th>Opções</th>
+                </thead>
+                <tbody>
+                    {% for lance in lances %}
+                        <tr>
+                            <td>{{ lance.ordem }}</td>
+                            <td>{{ lance.participante }}</td>
+                            <td>{{ lance.marca }}</td>
+                            <td>{{ lance.valor }}</td>
+                            <td>{{ lance.observacoes|default_if_none:'-' }}</td>
+                            <td>{{ lance.situacao }}</td>
+                            <td>
+                                {% if lance.pode_alterar %}
+                                    <a href="/base/resultado_ajustar_preco/{{ lance.id }}/" class="btn btn-success btn-sm">Ajustar Preço</a>
+                                    <a href="/base/resultado_alterar/{{ lance.id }}/1/" class="btn btn-warning btn-sm">Inabilitar</a>
+                                    <a href="/base/resultado_alterar/{{ lance.id }}/2/" class="btn btn-danger btn-sm">Desclassificar</a>
+                                {% else %}
+                                    <a href="/base/resultado_alterar/{{ lance.id }}/3/" class="btn btn-success btn-sm">Reintegrar</a>
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">Nnehuma proposta cadastrada.</p>
+        {% endif %}
+
+
+
+{% endblock %}s

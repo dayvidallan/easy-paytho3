@@ -1,0 +1,15 @@
+{% load admin_list %}
+{% if pagination_required %}
+<div class="form-inline">
+    <ul class="pagination">
+		{% for i in page_range %}
+            {% if i == "." %}
+                 <li class="disabled"><span>...</span></li>
+            {% else %}
+                <li {% if i == cl.page_num %}class="active"{% endif %}>{% paginator_number cl i %}</li>
+            {% endif %}
+		{% endfor %}
+        <li>{% if show_all_url %}&nbsp;&nbsp;<a href="{{ show_all_url }}" class="showall">Mostrar tudo</a>{% endif %}</li>
+    </ul>
+</div>
+{% endif %}

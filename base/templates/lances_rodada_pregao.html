@@ -1,0 +1,42 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block content %}
+
+
+    <div class="pull-right">
+        <a class="btn btn-success" href="/base/cadastra_preco_item_rodada/{{ rodada.pk }}/">Novo Lance da Rodada</a>
+        <a class="btn btn-primary" href="/base/pregao/{{ rodada.pregao.pk }}/#tab2">Voltar</a>
+        <br><br>
+    </div>
+
+    {%  if lances_rodadas %}
+        <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+
+                    <th>Item</th>
+                    <th>Participante</th>
+                    <th>Valor</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {%  for item in lances_rodadas %}
+                    <tr>
+
+                        <td>{{ item.item }}</td>
+                        <td>{{ item.participante }}</td>
+                        <td>{{ item.valor}}</td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="alert alert-warning">Nenhum participante cadastrado.</p>
+    {% endif %}
+
+
+{% endblock %}

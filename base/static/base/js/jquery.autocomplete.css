@@ -1,0 +1,69 @@
+.ajaxmultiselect_field a {
+    background: url('/static/comum/img/icons/icon-search.png') right center no-repeat;
+    color: #222222;
+    display: block;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 3px;
+    text-decoration: none;
+    width: 500px;
+}
+.ajaxmultiselect_add {
+    display: none;
+    margin: 0 0 2px;
+}
+.ajaxmultiselect_add.active {
+    display: block;
+}
+.ac_results {
+	border: 1px solid #ccc;
+	background-color: white;
+	max-height: 300px;
+    overflow: auto !important;
+    margin: -1px 0 0;
+    padding: 2px 3px;
+    width: 500px !important;
+	z-index: 99999;
+}
+.ac_results ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.ac_results li {
+	margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	font-size: 12px;
+	line-height: 16px;
+	overflow: hidden;
+}
+.ac_odd {
+	background-color: #e0e0e0 !important;
+}
+.ac_over {
+	background-color: #DEFF8F !important;
+	color: black !important;
+}
+.ac_input {
+    width: 500px;
+    background: white !important;
+}
+.filled {
+	background-color: #DEFF8F !important;
+}
+.ac_input[readonly] {
+	background-color: #eee !important;	
+}
+.ac_loading {
+	background: white url('/static/djtools/jquery/ajax-loader.gif') right center no-repeat !important;
+	color: gray;
+}
+form .aligned p.help_marginless {
+	color:#999999;
+	padding-left:0;
+	margin-left:0;
+}

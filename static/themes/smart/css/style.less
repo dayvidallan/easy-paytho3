@@ -1,0 +1,341 @@
+//============================ Libraries
+
+@import "css3";
+/*@import "libs/noGrid";
+@import "libs/grid";*/
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:400,300,700');
+@import url('http://fonts.googleapis.com/css?family=PT+Sans:300,400,700');
+
+//============================ vars
+.fontsize( @size: 14px, @cor: #fff ) {
+    font-family: 'PT Sans', sans-serif;
+    font-weight: 400;
+    font-size: @size;
+    color: @cor;
+}
+.fontsize-bold( @size: 14px, @cor: #fff ) {
+    font-family: 'PT Sans', sans-serif;
+    font-weight: 700;
+    font-size: @size;
+    color: @cor;
+}
+.fontsize-open-light( @size: 13px, @cor: #fff ) {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: @size;
+    color: @cor;
+}
+.fontsize-open( @size: 13px, @cor: #fff ) {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: @size;
+    color: @cor;
+}
+.fontsize-open-bold( @size: 13px, @cor: #fff ) {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-size: @size;
+    color: @cor;
+}
+
+@color-menu: #fff;
+@color-menu-hover: #466415;
+@color-title: #ffffff;
+
+//============================ functions
+
+
+//============================ html
+html, body {
+    margin: 0;
+    padding: 0;
+}
+p {
+    .fontsize-open-light( 13px, #fff);
+    line-height: 20px;
+}
+
+header {
+    .topo-azul {
+        background: #00aced;
+        width: 100%;
+        height: 37px;
+    }
+    section#content-topo {
+        background: #ebebeb;
+        width: 100%;
+        height: 133px;
+
+        .logo {
+            float: left;
+
+            figure {
+                float: left;
+                margin: 28px 16px 0 26px;
+            }
+            p {
+                width: 460px;
+                margin: 36px 0 0;
+                .fontsize-open-light( 16px, #555555);
+                float: left;
+                line-height: 24px;
+            }
+        }
+        .links {
+            float: right;
+            margin: 18px 26px 0;
+
+            a {
+                .fontsize-open-light( 13px, #666666);
+                i {
+                    font-size: 16px;
+                    margin: 0 5px 0 10px;
+                }
+            }
+        }
+    }
+}
+
+#content-stage {
+
+    #menu-lateral {
+        background: #555555;
+        padding: 15px 0 150px 0;
+
+        .bemvindo {
+            margin: 0 26px 0 26px;
+            padding: 0 0 20px 0;
+            background: url('../img/linha-divisoria-bemvindo.gif') bottom center repeat-x;
+
+            p {
+                .fontsize-open-light( 13px, #fff);
+
+                a {
+                    color: #a6ce39;
+                }
+            }
+        }
+
+        .menu {
+            margin: 26px 0 0;
+
+            .panel {
+                box-shadow: none;
+                border-radius: 0;
+                background-color: none; 
+
+                &.panel-default {
+                    border: 0;
+                }
+                .panel-heading {
+                    background-color: #646464;
+                    border: 0;
+                    border-radius: 0;
+                    padding: 0; 
+
+                    .panel-title {
+
+                        a {
+                            .fontsize-open-light( 16px, #fff );
+                            display: block;
+                            text-decoration: none;
+                            line-height: 26px;
+                            padding: 5px 15px;
+                            .animate;
+
+                            i {
+                                font-size: 25px;
+                                margin: 0 7px 0 0;
+                                float: left;
+                                .animate;
+                            }
+
+                            &:hover, &.active {
+                                background: #00aeef;
+                                .animate;
+
+                                i {
+                                    margin-right: 10px;
+                                    .animate;
+                                }
+                            }
+                        }
+                    }
+                }
+                .panel-body {
+                    background-color: #555;
+                    border: 0;
+
+                    ul.submenu {
+                        margin: 0;
+                        padding: 0;
+
+                        li {
+                            margin: 7px 0 0 10px;
+                            padding: 3px 0 10px 0;
+                            background: url('../img/linha-divisoria-bemvindo.gif') bottom center repeat-x;
+
+                            &:first-child {
+                                margin-top: 0;
+                            }
+                            &:last-child {
+                                background: none;
+                            }
+
+                            a {
+                                .fontsize-open-light( 13px, #fff);
+                                text-decoration: none;
+                                .animate;
+
+                                &.active, &:hover {
+                                    color: #a6ce39;
+                                    .animate;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #content {
+        
+        .migalhas {
+            margin: 13px 0 0 5px;
+
+            a {
+                float: left;
+                .fontsize-open-light( 14px, #555555 );
+
+                i {
+                    .fontsize-open-bold( 14px, #a6ce39 );
+                    margin: 0 5px 0 5px;
+                }
+            }
+        }
+
+        section#capa {
+            display: none;
+
+            a {
+                &.menu-capa {
+                    background: #eaeaea;
+                    display: block;
+                    width: 248px;
+                    height: 200px;
+                    float: left;
+                    text-align: center;
+                    margin: 25px;
+                    padding: 10px;
+                    .corners( 5px );
+                    .fontsize-open( 18px, #555555);
+
+                    i {
+                        font-size: 116px;
+                        color: #4a4a4a;
+                        text-align: center;
+                        margin: 10px 20px 10px 20px;
+                        .animate;
+                    }
+
+                    &:hover {
+                        text-decoration: none;
+
+                        &:nth-child(1), &:nth-child(3) {
+                            i {
+                                .rotate( 360deg );
+                            }
+                        }
+                        &:nth-child(2), &:nth-child(4), &:nth-child(5) {
+                            i {
+                                .transform( rotateY(360deg) );
+                            }
+                        }
+                        i {
+                            color: #a6ce39;
+                            .animate;
+                        }
+                    }
+                }
+            }
+        }
+
+        section#indicadores {
+            margin: 50px 0 0;
+
+            ul.nav-tabs {
+
+                li {
+                    background: #555555;
+                    padding: 0;
+
+                    a {
+                        display: block;
+                        padding: 17px 27px 17px 27px;
+                        border: 1px solid #707070;
+                        border-left: 0;
+                        border-radius: 0;
+                        margin: 0;
+                        .fontsize-open-light( 16px, #fff );
+                    }
+
+                    &.active, &:hover {
+                        a {
+                            background-color:#d3d3d3;
+                            background-image: linear-gradient(to bottom, #f6f6f6, #e2e2e2, #d1d1d1, #f6f6f6);
+                            background-color: transparent;
+                            color: #555555;
+                            border-radius: 0;
+                            border: solid 1px #b7b7b7;
+                        }
+                    }
+                }
+            }
+            .tab-content {
+                background: #e7e7e7;
+                padding: 20px;
+            }
+        }
+    }
+}
+
+footer {
+    background: #00aeef;
+    width: 100%;
+    height: 116px;
+    clear: both;
+
+    .logo {
+            float: left;
+
+            figure {
+                float: left;
+                margin: 28px 16px 0 26px;
+            }
+            p {
+                width: 460px;
+                margin: 34px 0 0;
+                .fontsize-open-light( 16px, #fff);
+                float: left;
+                line-height: 24px;
+            }
+        }
+}
+
+
+.font-size-26 {
+    font-size: 26px !important;
+}
+.padding-right-none {
+    padding-right: 0 !important;
+}
+.padding-left-none {
+    padding-left: 0 !important;
+}
+.padding-none {
+    padding: 0 !important;
+}
+
+/* fixing firefox bug */
+div:after, ol:after, form:after, ul:after, dl:after, label:after {content:".";display:block;clear:both;visibility:hidden;height:0;overflow:hidden;}

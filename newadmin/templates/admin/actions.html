@@ -1,0 +1,11 @@
+{% load i18n bootstrap %}
+<script type="text/javascript">var _actions_icnt="{{ cl.result_list|length|default:"0" }}";</script>
+<script>
+	$("[name=action] option:first").html("Nenhum selecionado");
+</script>
+<div class="pull-left">
+    {{ action_form|bootstrap_inline }}
+    <button type="submit" class="btn btn-default" title="{% trans "Run the selected action" %}" name="index" value="{{ action_index|default:0 }}">
+        Ir
+    </button>
+</div>

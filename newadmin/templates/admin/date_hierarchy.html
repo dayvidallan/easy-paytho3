@@ -1,0 +1,12 @@
+{% if show %}
+<div>
+	<ul class="pagination pagination-sm">
+	    {% if back %}
+	        <li><a href="{{ back.link }}"><i class="fa fa-chevron-left"></i> {{ back.title }}</a></li>
+	    {% endif %}
+	    {% for choice in choices %}
+	        <li><a href="{{ choice.link|default:"#" }}">{{ choice.title }}</a></li>
+	    {% endfor %}
+	</ul>
+</div>
+{% endif %}

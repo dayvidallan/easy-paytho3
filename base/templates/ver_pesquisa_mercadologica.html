@@ -1,0 +1,65 @@
+{% extends super_template|default:"admin/base_modal.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block content %}
+        <h2>{{ titulo }}</h2>
+        <table  class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th width="10%"><b>Item</b></th>
+                <th width="10%"><b>Solicitação</b></th>
+                <th width="10%"><b>Especificação</b></th>
+            </tr>
+            <tr>
+                <td>{{ item.item }}</td>
+                <td>{{ item.solicitacao.num_memorando }}</td>
+                <td>{{ item.especificacao }}</td>
+            </tr>
+        </table>
+        {% if pesquisas.exists %}
+            <h3>Valores das Pesquisas</h3>
+            <table border="2" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <th>Origem</th>
+                    <th>Marca</th>
+                    <th>Valor Máximo</th>
+                    <th>Proposta</th>
+                </thead>
+                <tbody>
+                    {% for pesquisa in pesquisas %}
+                        <tr>
+                            <td>
+                                {{ pesquisa.pesquisa.origem }}:
+                                {% if pesquisa.pesquisa.origem == pesquisa.pesquisa.ATA_PRECO %}
+                                    <b>Número {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b>
+                                {% else %}
+                                    <b>{{ pesquisa.pesquisa.razao_social }}</b>
+                                {% endif %}
+                            </td>
+                            <td>{{ pesquisa.marca }}</td>
+                            <td>{{ pesquisa.valor_maximo }}</td>
+                            <td>
+                                {% if pesquisa.pesquisa.arquivo %}
+                                    <a href="/media/{{ pesquisa.pesquisa.arquivo }}" target="_blank">Ver</a></td>
+                                {% else %}
+                                    <font color="red">Não enviou arquivo</font>
+                                {% endif %}
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <th colspan="2"><b>Valor Médio - Informado</b></th>
+                        <td><font color="blue"><b>{{ item.get_valor_medio_pesquisa|default_if_none:'-' }}</b></font></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2"><b>Valor Médio - Envio de Proposta</b></th>
+                        <td><font color="blue"><b>{{ item.get_valor_medio_envio_pesquisa|default_if_none:'-' }}</b></font></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">Nenhuma proposta cadastrada.</p>
+        {% endif %}
+
+
+
+{% endblock %}

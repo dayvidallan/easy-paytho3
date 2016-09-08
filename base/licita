@@ -1,0 +1,42 @@
+
+- ver pregao por lote
+
+- botao pra enviar link da pesquisa por email pro fornecedor
+
+
+---------------------------------------------------------
+- ver valor medio da pesquisa mercadologica (soh contar qd a proposta for enviada) - OK
+- ajustar pesquisa mercadologica pra informar a origem da pesquisa (fornecedor, ata de registro de preço, o próprio servidor, etc) e ajustar os campos de acordo com o tipo na primeira parte - OK
+- buscar fornecedor pelo cnpj em cadastrar participante do pregao; - OK
+- status pendente ate que todas respondam - OK
+- noticar secretarias para informar as qtds q querem, ai soma na qtd da solicitacao total - OK
+- pedir prazo somente quando tem outras secretarias interessadas, senao aparece 'pedido para a secretaria' - OK
+- historico do que foi comprado pelo setor de compras - Ok
+- após finalizar lances do item, travar as opções e em vez de 'registrar/ver lances', mudar botão para 'ver lances' e ter a opção de retomar lances - OK
+-listar as solicitacoes para o perfil de compras tambem - Ok
+- criar usuários para uma secretaria de compras ou pra o setor de compras da mesma secretaria, controlar o acesso a cada solicitação a partir disto - OK
+- criar o MovimentacaoSolicitacao para saber pra onde a solicitacao deve ir e permitir indicar o setor;
+- gerar modelo do word termo referencia - OK (SÓ DEFINIR O TEXTO)
+- filtrar o resultado na tela do pregao por participante para permitir inabilitar ou desclassificar de vários itens ao mesmo tempo - OK
+- em solicitacao informar os interessados (propria secretaria ou outras), informar prazo de resposta - OK
+- na solicitacao ter prazo de inicio e termino para recebimento de pesquisa mercadologica - OK
+- pregao suspenso e retomado - OK
+- deserto e fracassado (pregao ou item) - NÃO VEIO NINGUEM PRA LICITACAO OU NENHUM FORNECEDOR DEU PROPOSTA PRO ITEM - OK
+- gerar resultado ao clicar em proximo item - OK
+- tirar dotacao orcamentaria da solicitacao - OK
+- carregar valores na tela de proposta - OK
+- permitir reclassificar um desclassificado - caso recorra na justica ou algo assim - OK
+- empate ficto soh diz quando for passar para a proxima rodada - OK
+- nao pode dar lance igual a um lance ja dado - OK
+- mudar de item direto na tela do lance - OK
+- imprimir pdf da proposta do fornecedor  - setor de compras - OK
+- Como informar sorteio quando as propostas sao iguais e nao tem lance - OK
+- tipos de filtro nos lances (até 10% acima da menor proposta), se tiver menos de 3 - OK
+- passar me/epp sair de fornecedor e ir pra participantepregao - OK
+- upload dos dados da propostas - OK
+- desistencia de item ( não dá lance) - OK
+- nunca um lance acima do valor maximo - OK
+- desclassificar empresa da licitacao - OK
+- desclassificar  empresa antes dos lances (colocar botao em 'ver propostas') com justificativa - OK
+- desistir empresa antes dos lances (colocar botao em 'ver propostas') com justificativa - OK
+

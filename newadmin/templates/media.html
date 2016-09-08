@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+
+{% load bootstrap %}
+
+{% block content %}
+
+    <style>
+        a.media {
+            display: table-row;
+        }
+        a.media:hover {
+            text-decoration: none;
+        }
+    </style>
+
+    <div class="well well-sm">
+        <form method="post" enctype="multipart/form-data" class="form-inline">{% csrf_token %}
+            {{ form|bootstrap_inline }}
+            <input class="btn btn-primary btn-sm" type="submit" value="Adicionar arquivo" />
+        </form>
+    </div>
+
+    {% for file in files %}
+        <a href="{{ file.url }}" class="media">
+            {% if file.is_file %}<i class="fa fa-file-o"></i>{% else %}<i class="fa fa-folder-o"></i>{% endif %}
+            {{ file.label }}
+        </a>
+    {% endfor %}
+
+{% endblock %}

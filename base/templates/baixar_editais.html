@@ -1,0 +1,59 @@
+{% extends super_template|default:"admin/base_publica.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block content %}
+
+    <br><br><h2>Editais - Pregão Presencial</h2><br><br>
+
+    {%  if pregoes.exists %}
+        {%  for pregao in pregoes %}
+            <table class="table table-bordered table-condensed table-striped">
+                <tr>
+                    <th><b>Nº Edital</b></th>
+                    <td>{{ pregao.num_processo }}</td>
+                </tr>
+                <tr>
+                    <th><b>Objeto</b></th>
+                    <td>{{ pregao.solicitacao.objeto }}</td>
+                </tr>
+                <tr>
+                    <th><b>Data de Retirada do Edital</b></th>
+                    <td>{{ pregao.data_inicio }} à {{ pregao.data_termino }}</td>
+                </tr>
+                <tr>
+                    <th><b>Data da Abertura</b></th>
+                    <td>{{ pregao.data_abertura }}</td>
+                </tr>
+                <tr>
+                    <th><b>Horário</b></th>
+                    <td>{{ pregao.hora_abertura }}</td>
+                </tr>
+                <tr>
+                    <th><b>Local</b></th>
+                    <td>{{ pregao.local }}</td>
+                </tr>
+                {% if pregao.anexopregao_set.all %}
+                    <tr>
+                        <th><b>Arquivos</b></th>
+                        <td>
+                            {% for arquivo in pregao.anexopregao_set.all %}
+                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+        {% endfor %}
+    {% else %}
+        <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
+    {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

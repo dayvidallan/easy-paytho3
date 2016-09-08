@@ -1,0 +1,535 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/licitacoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Pregões<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block extrastyle %}
+    <style>
+			/** Start: to style navigation tab **/
+			.nav {
+			  margin-bottom: 18px;
+			  margin-left: 0;
+			  list-style: none;
+			}
+
+			.nav > li > a {
+			  display: block;
+			}
+
+			.nav-tabs{
+			  *zoom: 1;
+			}
+
+			.nav-tabs:before,
+			.nav-tabs:after {
+			  display: table;
+			  content: "";
+			}
+
+			.nav-tabs:after {
+			  clear: both;
+			}
+
+			.nav-tabs > li {
+			  float: left;
+			}
+
+			.nav-tabs > li > a {
+			  padding-right: 12px;
+			  padding-left: 12px;
+			  margin-right: 2px;
+			  line-height: 14px;
+			}
+
+			.nav-tabs {
+			  border-bottom: 1px solid #ddd;
+			}
+
+			.nav-tabs > li {
+			  margin-bottom: -1px;
+			}
+
+			.nav-tabs > li > a {
+			  padding-top: 8px;
+			  padding-bottom: 8px;
+			  line-height: 18px;
+			  border: 1px solid transparent;
+			  -webkit-border-radius: 4px 4px 0 0;
+				 -moz-border-radius: 4px 4px 0 0;
+					  border-radius: 4px 4px 0 0;
+			}
+
+			.nav-tabs > li > a:hover {
+			  border-color: #eeeeee #eeeeee #dddddd;
+			}
+
+			.nav-tabs > .active > a,
+			.nav-tabs > .active > a:hover {
+			  color: #555555;
+			  cursor: default;
+			  background-color: #ffffff;
+			  border: 1px solid #ddd;
+			  border-bottom-color: transparent;
+			}
+
+			li {
+			  line-height: 18px;
+			}
+
+			.tab-content.active{
+				display: block;
+			}
+
+			.tab-content.hide{
+				display: none;
+			}
+
+
+			/** End: to style navigation tab **/
+
+
+		</style>
+{% endblock %}
+
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?participante=" + escape( $('#'+campo.id).val()) + "#classificacao";
+
+        }
+        $(function () {
+            var hash = window.location.hash;
+            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+        });
+
+        $(document).ready(function() {
+            $('.nav-tabs > li > a').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+
+                //get displaying tab content jQuery selector
+                var active_tab_selector = $('.nav-tabs > li.active > a').attr('href');
+
+                //find actived navigation and remove 'active' css
+                var actived_nav = $('.nav-tabs > li.active');
+                actived_nav.removeClass('active');
+
+                //add 'active' css into clicked navigation
+                $(this).parents('li').addClass('active');
+
+                //hide displaying tab content
+                $(active_tab_selector).removeClass('active');
+                $(active_tab_selector).addClass('hide');
+
+                //show target tab content
+                var target_tab_selector = $(this).attr('href');
+                $(target_tab_selector).removeClass('hide');
+                $(target_tab_selector).addClass('active');
+            });
+
+
+            $('#fornecedores > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#fornecedores').hasClass( "hideInfo")){
+                    $('#fornecedores').removeClass('hideInfo');
+                }
+                else {
+                    $('#fornecedores').addClass('hideInfo');
+                }
+            });
+
+            $('#propostas > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#propostas').hasClass( "hideInfo")){
+                    $('#propostas').removeClass('hideInfo');
+                }
+                else {
+                    $('#propostas').addClass('hideInfo');
+                }
+            });
+            $('#classificacao > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#classificacao').hasClass( "hideInfo")){
+                    $('#classificacao').removeClass('hideInfo');
+                }
+                else {
+                    $('#classificacao').addClass('hideInfo');
+                }
+            });
+
+
+        });
+
+
+	</script>
+{% endblock %}
+
+{% block content %}
+     <div class="pull-right">
+                {% if pregao.eh_ativo and not pregao.eh_suspenso %}
+                    <a class="btn btn-success" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender</a>
+                {% elif pregao.eh_ativo and pregao.eh_suspenso %}
+                    <a class="btn btn-success" href="/base/suspender_pregao/{{ pregao.pk }}/?retomar=True/">Retomar</a>
+                {% endif %}
+                <br><br>
+            </div>
+    <div>
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#fornecedores">Fornecedores</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#propostas">Propostas</a>
+            </li>
+            <li>
+                <a href="#classificacao">Classificação</a>
+            </li>
+            <li>
+                <a href="#anexos">Anexos</a>
+            </li>
+            <li>
+                <a href="#historico">Histórico</a>
+            </li>
+            <li>
+                <a href="#relatorios">Relatórios</a>
+            </li>
+
+
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div id="fornecedores" class="tab-pane in active">
+            <div class="pull-right">
+                {% if pregao.eh_ativo %}
+                    <a class="btn btn-primary" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
+                    <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
+                    <a class="btn btn-danger" href="/base/encerrar_pregao/{{ pregao.pk }}/2/">Fracassado</a>
+                {% endif %}
+                <br><br>
+            </div>
+            <h2>Lista de Presentes - Fornecedores Participantes</h2>
+
+
+                {%  if pregao.participantepregao_set.all %}
+                    <table class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>CNPJ</th>
+                                <th>Razão Social</th>
+                                <th>ME/EPP</th>
+                                <th>Nome do Representante</th>
+                                <th>Situação</th>
+                                <th>Observações</th>
+                                <th>Opções</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%  for item in pregao.participantepregao_set.all %}
+                                <tr>
+
+                                    <td>{{ item.fornecedor.cnpj }}</td>
+                                     <td>{{ item.fornecedor.razao_social }}</td>
+                                    <td>{{ item.me_epp|yesno }}</td>
+                                    <td>{{ item.nome_representante }}</td>
+                                    <td>
+                                        {% if item.desclassificado %}
+                                            <font color="red">Desclassificado</font></span>
+
+
+                                        {% else %}
+                                            <font color="true">Ativo</font></span>
+
+
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.motivo_desclassificacao|default_if_none:'-' }}</td>
+                                    <td>
+                                        {% if pregao.eh_ativo %}
+                                            <a href="/admin/base/participantepregao/{{ item.id }}/" class="btn btn-info btn-sm">Editar</a>
+                                            {% if item.pode_remover %}
+                                                <a href="/admin/base/participantepregao/{{ item.id }}/delete" class="btn btn-danger btn-sm">Remover</a>
+                                            {% endif %}
+                                            {% if not item.desclassificado %}
+                                                <a href="/base/desclassificar_do_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Desclassificar</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="alert alert-warning">Nenhum participante cadastrado.</p>
+                {% endif %}
+
+
+        </div>
+        <div id="propostas" class="tab-pane">
+            <div class="pull-right">
+                <!-- <a class="btn btn-primary" href="/admin/base/itempregao/add/">Adicionar Item ao Pregão</a> -->
+                {% if pregao.eh_ativo %}
+                    <a class="btn btn-primary" href="/base/cadastra_proposta_pregao/{{pregao.id}}/">Cadastrar Propostas</a>
+                {% endif %}
+                <a class="btn btn-success" href="/base/planilha_propostas/{{ pregao.solicitacao.id }}/">Baixar Planilha Modelo</a>
+                <br><br>
+            </div>
+            <h2>Itens do Pregão</h2>
+            {%  if pregao.solicitacao.itemsolicitacaolicitacao_set.exists %}
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th width="10%">Código</th>
+                                <th>Especificação</th>
+                                <th>Unidade</th>
+                                <th>Quantidade</th>
+                                <th>Valor Médio</th>
+                                <th>Total</th>
+
+                                <th width="25%">Opções</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            {%  for item in pregao.solicitacao.itemsolicitacaolicitacao_set.all %}
+
+                                <tr>
+                                    <td>{{ item.item }}</td>
+                                    <td>{{ item.codigo }}</td>
+                                    <td>{{ item.especificacao }}</td>
+                                    <td>{{ item.unidade }}</td>
+                                    <td>{{ item.quantidade }}</td>
+                                    <td>{{ item.valor_medio|format_money }}</td>
+                                    <td>{{ item.total|format_money }}</td>
+
+                                    <td>
+                                        <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
+                                        {% if pregao.eh_ativo and  item.ativo %}
+                                            <a class="btn btn-success btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
+                                        {% else %}
+                                            <a class="btn btn-default btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Ver Lances</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+
+            {% else %}
+                <p class="alert alert-warning">Nenhum item cadastrado.</p>
+            {% endif %}
+
+
+        </div>
+        <div id="classificacao" class="tab-pane">
+            <h2>Resultado do Pregão</h2>
+            {%  if pregao.solicitacao.itemsolicitacaolicitacao_set.exists %}
+                <form action="." method="post" class="form-horizontal">
+                    {% csrf_token %}
+                     <div class="miolo">
+                        <div class="row-fluid">
+                            <div class="col-xs-12">
+                                {{ form|bootstrap }}
+                            </div>
+                        </div>
+                     </div>
+                </form>
+                {% if itens_pregao.exists %}
+                    {% if buscou %}
+                        <div class="pull-right">
+                            <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
+                            <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/2/" class="btn btn-danger">Desclassificar</a>
+                            <br><br>
+                        </div>
+                    {% endif %}
+                    <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th width="10%">Código</th>
+                                <th>Especificação</th>
+                                <th>Marca</th>
+                                <th>Unidade</th>
+                                <th>Quantidade</th>
+                                <th>Valor Unit.</th>
+                                <th>Total</th>
+                                <th>Empresa Vencedora</th>
+                                <th>Opções</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%  for item in itens_pregao %}
+
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ item.codigo }}</td>
+                                    <td>{{ item.especificacao }}</td>
+                                    <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
+                                    <td>{{ item.unidade }}</td>
+                                    <td>{{ item.quantidade }}</td>
+                                    <td>
+                                        {% if item.get_vencedor %}
+                                            {{ item.get_vencedor.valor|format_money }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                        </td>
+                                    <td>{{ item.get_total_lance_ganhador|format_money }}</td>
+                                    <td>
+                                        {% if item.tem_empate %}
+                                            <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</font>
+                                        {% else %}
+                                            {{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if pregao.eh_ativo %}
+                                            {% if item.tem_resultado %}
+                                                <a class="btn btn-info btn-sm" href="/base/resultado_classificacao/{{ item.id }}/"  title="Classificação">Classificação Completa</a>
+                                            {% elif item.pode_gerar_resultado %}
+                                                <a href="/base/gerar_resultado/{{ item.id }}/" class="btn btn-success btn-sm">Gerar Resultados</a>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                            {% if item.tem_empate %}
+                                                <a href="/base/desempatar_item/{{ item.id }}/" class="btn btn-success btn-sm">Desempatar</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                        <p class="alert alert-info">Participante não venceu nenhum item.</p>
+                    {% endif %}
+            {% else %}
+                <p class="alert alert-warning">Nenhum item cadastrado.</p>
+            {% endif %}
+
+        </div>
+        <div id="anexos" class="tab-pane">
+
+            <div class="pull-right">
+                <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>
+                <br><br>
+            </div>
+            <h2>Anexos do Pregão</h2>
+            {%  if pregao.anexopregao_set.exists %}
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th width="10%">Data</th>
+                                <th>Arquivo</th>
+                                <th>Cadastrado Por</th>
+                                <th>Cadastrado Em</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%  for item in pregao.anexopregao_set.all %}
+
+                                <tr>
+                                    <td>{{ item.nome }}</td>
+                                    <td>{{ item.data }}</td>
+                                    <td><a href="/media/{{ item.arquivo }}">Ver arquivo</a></td>
+                                    <td>{{ item.cadastrado_por }}</td>
+                                    <td>{{ item.cadastrado_em }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum anexo cadastrado.</p>
+            {% endif %}
+
+        </div>
+        <div id="historico" class="tab-pane">
+
+
+            <h2>Histórico do Pregão</h2>
+            {%  if pregao.historicopregao_set.exists %}
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th width="20%">Data</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%  for item in pregao.historicopregao_set.all %}
+                                <tr>
+                                    <td>{{ item.data }}</td>
+                                    <td>{{ item.obs }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum registro cadastrado.</p>
+            {% endif %}
+
+        </div>
+        <div id="relatorios" class="tab-pane">
+
+
+            <h2>Relatórios do Pregão</h2>
+
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+
+                    <tbody>
+                        <tr>
+                            <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
+                        </tr>
+                        <tr>
+                            <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>
+                        </tr>
+                        {%  if pregao.tem_resultado %}
+                            <tr>
+                                <td><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="/base/relatorio_ata_registro_preco/{{ pregao.id }}/" target="_blank">Ata de Registro de Preço</a></td>
+                            </tr>
+
+                        {% endif %}
+                        <tr>
+                            <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante o Pregão</a></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+        </div>
+    </div>
+
+
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+
+
+
+        </div>
+    </div>
+
+{% endblock %}

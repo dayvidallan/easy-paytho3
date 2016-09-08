@@ -1,0 +1,132 @@
+{% load admin_static %}{% load firstof from future %}{% load i18n %}{% load newadmin %}{% load compress %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Licita{% endblock %}</title>
+  {% compress css %}
+
+    <link rel="stylesheet" type="text/css" href="{% static "base/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "base/css/bootstrap-theme.min.css" %}" />
+
+    <link rel="stylesheet" type="text/css" href="{% static "base/fontawesome/css/font-awesome.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "base/fontawesome/css/font-awesome.css" %}" />
+
+    <link rel="stylesheet" type="text/css" href="{% static "base/css/sistema.css" %}" />
+    <link href="/static/newadmin.css" rel="stylesheet"/>
+
+    {% block extrastyle %}{% endblock %}
+  {% endcompress %}
+  {% compress js %}
+        <script src="/static/jquery-2.1.1.min.js"></script>
+
+
+        <script src="/static/jquery.mask.min.js"></script>
+        <script src="/static/highcharts.js"></script>
+        <script src="/static/jquery.formset.js"></script>
+        <script src="/static/jquery.growl.js"></script>
+        <script src="{% static "base/js/jquery.form.js" %}"></script>
+        <script src="/static/themes/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+        <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
+
+        <script src="/static/newadmin.js"></script>
+        <script src="/static/bootstrap-transfer.js"></script>
+
+  {% block extrajs %}{% endblock %}
+  {% endcompress %}
+  {% block extrahead %}{% endblock %}
+  {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% if debug %}debug {% endif %}{% block bodyclass %}{% endblock %}">
+
+  {% block navbar %}
+
+      <header>
+        <section id="content-topo">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-lg-12 col-md-12">
+                <div class="logo">
+                  <a href="/">
+
+                    <p>Controle de Licitações</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </header>
+
+  {% endblock %}
+
+
+  <div id="content-stage">
+      <div class="container-fluid">
+
+      </div>
+
+
+  <section id="conteudo">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          {% block messages %}
+            {% if messages %}
+              {% for message in messages %}
+                <div {% if message.tags %}class="alert alert-{{ message.tags }}"{% endif %} contenteditable="">{{ message|safe }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endblock %}
+
+          {% block pretitle %}{% endblock %}
+
+          {% if not is_popup %}
+            <div class="row">
+              <div class="col-md-10 col-sm-8 col-xs-6">
+                {% block content_title %}{% if title %}<h1 class="page-header">{{ title|upper }}</h1>{% endif %}{% endblock %}
+              </div>
+              <div class="col-md-2 col-sm-4 col-xs-6">
+                <div class="btn-group pull-right">
+                  {% block object-tools %}{% endblock %}
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">{{ title }}</h4>
+            </div>
+          {% endif %}
+
+          {% if is_popup %}<div class="modal-body">{% endif %}
+          {% block content %}
+            {{ content }}
+          {% endblock %}
+          {% if is_popup %}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% block footer %}
+
+      <footer>
+          <center>
+              <section id="content-footer">
+                  <div class="container">
+                      <div class="row">
+                          <p>Sistema de Controle de Licitações - 2016</p>
+                      </div>
+                  </div>
+              </section>
+          </center>
+      </footer>
+
+  {% endblock %}
+
+
+  </body>
+</html>

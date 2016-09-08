@@ -1,0 +1,51 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block content %}
+
+     <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+             <div class="miolo">
+                    <table class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <th>Item</th>
+                            <th>Código</th>
+                            <th>Especificação</th>
+                            <th>Unidade</th>
+                            <th>Marca</th>
+                            <th>Valor</th>
+                        </thead>
+                        <tbody>
+                        {% for item in itens %}
+                            <tr>
+                                <td>{{ item.item }}</td>
+                                <td>{{ item.codigo }}</td>
+                                <td>{{ item.especificacao }}</td>
+                                <td>{{ item.unidade }}</td>
+                                <td><input name="marcas"></td>
+                                <td><input name="itens"></td>
+                            </tr>
+
+
+                        {% endfor %}
+                        <tr><td colspan="5"><br><br></b><b>Validade da Proposta (em dias): <input type="text" name="validade" id="validade"></b></td><td></td></tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="form-group form-row">
+                    <div>
+                        <div class="controls">
+                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        </form>
+
+
+
+
+{% endblock %}
