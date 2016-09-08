@@ -11,10 +11,10 @@ from django.conf import settings
 
 def print_and_call_command(command, *args, **kwargs):
     kwargs.setdefault('interactive', True)
-    # print termcolors.make_style(fg='cyan', opts=('bold',))('>>> %s %s%s' \
-    #     % (command,
-    #        ' '.join(args),
-    #        ' '.join(['%s=%s' % (k, v) for k, v in kwargs.items()])))
+    print termcolors.make_style(fg='cyan', opts=('bold',))('>>> %s %s%s' \
+        % (command,
+           ' '.join(args),
+           ' '.join(['%s=%s' % (k, v) for k, v in kwargs.items()])))
     call_command(command, *args, **kwargs)
 
 

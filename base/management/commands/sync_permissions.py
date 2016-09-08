@@ -161,5 +161,5 @@ class Command(BaseCommand):
                 try:
                     perm = get_perm(p)
                     group.permissions.add(perm)
-                except Permission.DoesNotExist:
-                    raise Permission.DoesNotExist(u'Permission "%s" does not exist.' % p)
+                except Permission.DoesNotExist, e:
+                    print e

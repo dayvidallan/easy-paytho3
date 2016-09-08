@@ -3,7 +3,7 @@
 import base64
 import json
 import re
-import pickle
+import cPickle
 from decimal import Decimal
 import zlib
 import sys
@@ -19,7 +19,7 @@ from django.forms.utils import flatatt
 from django.http import HttpResponse
 from django.template.defaultfilters import floatformat
 from django.template.loader import render_to_string
-from django.utils.encoding import force_text
+from django.utils.encoding import force_unicode
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from localflavor.br.forms import BRCPFField
@@ -32,7 +32,7 @@ phone_digits_re = re.compile(r'^(\d{2})[-\.]?(\d{4,5})[-\.]?(\d{4})$')
 
 def decimal_to_money(value, precision=2):
     value = floatformat(value, precision)
-    value, decimal = force_text (value).split('.')
+    value, decimal = force_unicode(value).split('.')
     value = intcomma(value)
     value = value.replace(',', '.') + ',' + decimal
     return value
@@ -237,11 +237,11 @@ class ReCaptchaField(forms.CharField):
 
 
 def dumps_qs_query(query):
-    return base64.b64encode(zlib.compress(pickle.dumps(query)))[::-1]
+    return base64.b64encode(zlib.compress(cPickle.dumps(query)))[::-1]
 
 
 def loads_qs_query(query):
-    return pickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
+    return cPickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
 
 
 class ChainedSelectWidget(forms.Select):
