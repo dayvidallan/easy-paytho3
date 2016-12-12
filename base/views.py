@@ -478,9 +478,9 @@ def ver_solicitacoes(request):
     solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao=SolicitacaoLicitacao.RECEBIDO)).order_by('-data_cadastro')
     #outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
 
-    form = BuscarSolicitacaoForm(request.POST or None)
-    if form.is_valid():
-        solicitacoes = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
+
+    if request.POST.get('info'):
+        solicitacoes = SolicitacaoLicitacao.objects.filter(Q(processo__numero=request.POST.get('info')) | Q(num_memorando=request.POST.get('info')))
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
