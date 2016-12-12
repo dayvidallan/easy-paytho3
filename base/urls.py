@@ -76,6 +76,8 @@ urlpatterns = patterns('base.views',
     url(r'^relatorio_ocorrencias/(?P<pregao_id>\d+)/$', views.relatorio_ocorrencias, name='relatorio_ocorrencias'),
     url(r'^relatorio_lances_item/(?P<pregao_id>\d+)/$', views.relatorio_lances_item, name='relatorio_lances_item'),
     url(r'^relatorio_ata_registro_preco/(?P<pregao_id>\d+)/$', views.relatorio_ata_registro_preco, name='relatorio_ata_registro_preco'),
+    url(r'^pedido_outro_interessado/(?P<pedido_id>\d+)/(?P<opcao>\d+)/$', views.pedido_outro_interessado, name='pedido_outro_interessado'),
+
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),
     url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),

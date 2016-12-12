@@ -144,6 +144,7 @@ class SolicitacaoLicitacao(models.Model):
     minuta_avaliada_por = models.ForeignKey(User, verbose_name=u'Minuta Aprovada Por', related_name=u'aprova_minuta', null=True, blank=True)
     obs_avaliacao_minuta = models.CharField(u'Observação - Minuta', max_length=1500, null=True, blank=True)
     arquivo_parecer_minuta = models.FileField(u'Arquivo com o Parecer', null=True, blank=True, upload_to=u'upload/minutas/')
+    prazo_aberto = models.BooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
 
     def __unicode__(self):
         return self.num_memorando
@@ -160,7 +161,7 @@ class SolicitacaoLicitacao(models.Model):
             return int(ultimo.item) + 1
 
     def pode_enviar_para_compra(self):
-        return self.situacao == SolicitacaoLicitacao.CADASTRADO
+        return self.situacao == SolicitacaoLicitacao.CADASTRADO and self.tem_item_cadastrado()
 
     def recebido_pelo_setor(self):
         if MovimentoSolicitacao.objects.filter(solicitacao=self).exists():
@@ -193,6 +194,15 @@ class SolicitacaoLicitacao(models.Model):
             if self.prazo_resposta_interessados >= hoje:
                 return True
         return False
+
+    def tem_movimentacao(self):
+        return MovimentoSolicitacao.objects.filter(solicitacao=self).exists()
+
+    def tem_item_cadastrado(self):
+        return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self).exists()
+
+    def tem_pedidos_outras_secretarias(self):
+        return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).exists()
 
 
 class ItemSolicitacaoLicitacao(models.Model):
@@ -934,4 +944,8 @@ class ItemQuantidadeSecretaria(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao)
     secretaria = models.ForeignKey(Secretaria)
     quantidade = models.IntegerField(u'Quantidade')
+    aprovado = models.BooleanField(u'Aprovado', default=False)
+    justificativa_reprovacao = models.CharField(u'Motivo da Negação do Pedido', null=True, blank=True, max_length=1000)
+    avaliado_em = models.DateTimeField(u'Avaliado Em', null=True, blank=True)
+    avaliado_por = models.ForeignKey(User, related_name=u'pedido_avaliado_por', null=True)
 

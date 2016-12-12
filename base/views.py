@@ -76,7 +76,7 @@ def index(request):
     tem_preencher_itens = False
     if SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False).exists():
         for item in SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False):
-            if not ItemQuantidadeSecretaria.objects.filter(solicitacao=item, secretaria=request.user.pessoafisica.setor.secretaria).exists():
+            if not ItemQuantidadeSecretaria.objects.filter(solicitacao=item, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True).exists():
                 tem_preencher_itens = item
                 continue
 
@@ -427,7 +427,20 @@ def itens_solicitacao(request, solicitacao_id):
             recebida_no_setor = True
     title=u'Solicitação - Memorando: %s' % solicitacao
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
-    ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria)
+    ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
+    pode_enviar_solicitacao = False
+
+    if request.user.has_perm('base.pode_cadastrar_solicitacao') and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor:
+        pode_enviar_solicitacao = True
+
+    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and recebida_no_setor:
+        pode_enviar_solicitacao = True
+
+    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_cadastrar_pregao') and recebida_no_setor and solicitacao.eh_apta():
+        pode_enviar_solicitacao = True
+
+    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_avaliar_minuta') and recebida_no_setor and solicitacao.data_avaliacao_minuta:
+        pode_enviar_solicitacao = True
     return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
 
 
@@ -459,7 +472,7 @@ def ver_solicitacoes(request):
 
     setor = request.user.pessoafisica.setor
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
-    solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem=setor).order_by('-data_cadastro')
+    solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO).order_by('-data_cadastro')
     outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
 
@@ -579,12 +592,8 @@ def planilha_pesquisa_mercadologica(request, solicitacao_id):
 
 def preencher_pesquisa_mercadologica(request, solicitacao_id):
     title = u'Preencher Pesquisa Mercadológica'
-    hoje = datetime.date.today()
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if not solicitacao.data_inicio_pesquisa:
-        messages.error(request, u'Prazo de envio não cadastrado.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
-    elif hoje > solicitacao.data_fim_pesquisa or hoje < solicitacao.data_inicio_pesquisa:
+    if not solicitacao.prazo_aberto:
         messages.error(request, u'Prazo de envio encerrado.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
 
@@ -909,15 +918,13 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
     else:
         form = SetorEnvioForm(request.POST or None, devolve=False)
     if form.is_valid():
-        if tipo == u'1':
-            solicitacao.situacao = SolicitacaoLicitacao.ENVIADO
-            solicitacao.setor_atual = form.cleaned_data.get('setor')
-        elif tipo ==u'2':
-            solicitacao.situacao = SolicitacaoLicitacao.ENVIADO
-            solicitacao.setor_atual = form.cleaned_data.get('setor')
-        elif tipo ==u'3':
+        if tipo ==u'3':
             solicitacao.situacao = SolicitacaoLicitacao.DEVOLVIDO
             solicitacao.setor_atual = solicitacao.setor_origem
+        else:
+            solicitacao.situacao = SolicitacaoLicitacao.ENVIADO
+            solicitacao.setor_atual = form.cleaned_data.get('setor')
+
 
         solicitacao.save()
         nova_movimentacao = MovimentoSolicitacao()
@@ -1120,11 +1127,16 @@ def suspender_pregao(request, pregao_id):
 def prazo_pesquisa_mercadologica(request, solicitacao_id):
     title=u'Prazo de recebimento de pesquisas'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    form = PrazoPesquisaForm(request.POST or None, instance=solicitacao)
-    if form.is_valid():
-        form.save()
-        messages.success(request, u'Período cadastrado com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
+    if solicitacao.prazo_aberto:
+        solicitacao.prazo_aberto = False
+        solicitacao.save()
+        messages.success(request, u'Período para recebimento de pesquisa fechado com sucesso.')
+    else:
+        solicitacao.prazo_aberto = True
+        solicitacao.save()
+        messages.success(request, u'Período para recebimento de pesquisa aberto com sucesso.')
+
+    return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
 
     return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
 
@@ -1205,7 +1217,7 @@ def retomar_lances(request, item_id):
 @login_required()
 def informar_quantidades(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    tile=u'Informar quantidade dos itens - %s' % solicitacao
+    title=u'Informar quantidade dos itens - %s' % solicitacao
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao)
     if request.POST:
         for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
@@ -1226,9 +1238,11 @@ def informar_quantidades(request, solicitacao_id):
 @login_required()
 def ver_pedidos_secretaria(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    solicitacao = item.solicitacao
     title = u'Pedidos das Secretarias - %s' % item
     pedidos = ItemQuantidadeSecretaria.objects.filter(item=item)
     total = pedidos.aggregate(total=Sum('quantidade'))
+    pode_avaliar = request.user.has_perm('base.pode_cadastrar_solicitacao') and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor
     return render_to_response('ver_quantidades.html', locals(), context_instance=RequestContext(request))
 
 
@@ -1665,3 +1679,39 @@ def gerenciar_grupo_usuario(request, usuario_id, grupo_id, acao):
         usuario.groups.remove(grupo)
         messages.success(request, u'Usuário removido com sucesso.')
     return HttpResponseRedirect(u'/base/gerenciar_grupos/')
+
+@login_required()
+def pedido_outro_interessado(request, pedido_id, opcao):
+    title=u'Rejeitar Pedido'
+    pedido = get_object_or_404(ItemQuantidadeSecretaria, pk=pedido_id)
+    if not pedido.avaliado_em:
+        if opcao == u'1':
+            pedido.aprovado = True
+            pedido.avaliado_em = datetime.datetime.now()
+            pedido.avaliado_por = request.user
+            pedido.save()
+            item = pedido.item
+            item.quantidade += pedido.quantidade
+            item.save()
+            messages.success(request, u'Pedido aprovado com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
+        else:
+            form = RemoverParticipanteForm(request.POST or None)
+            if form.is_valid():
+                pedido.aprovado = False
+                pedido.justificativa_reprovacao = form.cleaned_data.get('motivo')
+                pedido.avaliado_em = datetime.datetime.now()
+                pedido.avaliado_por = request.user
+                pedido.save()
+                messages.success(request, u'Pedido rejeitado com sucesso.')
+                return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
+
+    else:
+        return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
+
+
+
+    return render_to_response('pedido_outro_interessado.html', locals(), context_instance=RequestContext(request))
+
+
+

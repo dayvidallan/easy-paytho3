@@ -175,10 +175,10 @@
     <div>
         <ul class="nav nav-tabs">
             <li class="active">
-                <a data-toggle="tab" href="#propria_secretaria">Própria Secretaria</a>
+                <a data-toggle="tab" href="#propria_secretaria">Solicitações Cadastradas</a>
             </li>
             <li>
-                <a data-toggle="tab" href="#outras_secretarias">Outras Secretarias</a>
+                <a data-toggle="tab" href="#outras_secretarias">Outras Solicitações</a>
             </li>
 
         </ul>
@@ -190,17 +190,12 @@
                     <thead>
                         <tr>
                             <th>Memorando</th>
-                            <th>Setor de Origem</th>
-                            <th>Setor Atual</th>
                             <th>Objeto</th>
                             {% if perms.base.pode_cadastrar_solicitacao %}
                                 <th>Data de Cadastro</th>
                             {% else %}
                                 <th>Data de Recebimento</th>
                             {% endif %}
-                            <th>Interessados</th>
-                            <th>Situação</th>
-                            <th>Modelos</th>
                             <th>Opções</th>
 
                         </tr>
@@ -210,8 +205,6 @@
                            <tr>
 
                                <td>{{ solicitacao.num_memorando }}</td>
-                               <td>{{ solicitacao.setor_origem }}</td>
-                               <td>{{ solicitacao.setor_atual }}</td>
                                <td>{{ solicitacao.objeto }}</td>
                                <td>
                                    {% if perms.base.pode_cadastrar_solicitacao %}
@@ -220,21 +213,6 @@
                                         {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
                                    {% endif %}
                                </td>
-                               <td>
-                                   {% for sec in solicitacao.interessados.all %}
-                                      {{ sec }}{% if not forloop.last %},{% endif %}
-                                    {% endfor %}
-                               </td>
-                               <td>{{ solicitacao.situacao }}</td>
-                               <td>
-                                   {% if perms.base.pode_cadastrar_solicitacao %}
-                                       <a class="btn btn-default btn-sm" href="/base/modelo_memorando/{{ solicitacao.id }}/">Memorando</a>
-                                   {% endif %}
-                                   <a class="btn btn-default btn-sm" href="/base/termo_referencia/{{ solicitacao.id }}/">Termo de Referência</a>
-
-                               </td>
-
-
                                <td>
                                    <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
 
@@ -248,75 +226,7 @@
                 <p class="alert alert-info">Nenhuma solicitação.</p>
             {% endif %}
        </div>
-        <div id="outras_secretarias" class="tab-pane">
-            {% if outras.exists %}
-                <table class="table table-bordered table-condensed table-striped">
-                    <thead>
-                        <tr>
-                            <th>Memorando</th>
-                            <th>Setor de Origem</th>
-                            <th>Setor Atual</th>
-                            <th>Objeto</th>
-                            {% if perms.base.pode_cadastrar_solicitacao %}
-                                <th>Data de Cadastro</th>
-                            {% else %}
-                                <th>Data de Recebimento</th>
-                            {% endif %}
-                            <th>Interessados</th>
-                            <th>Situação</th>
-                            <th>Modelos</th>
-                            <th>Opções</th>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for solicitacao in outras %}
-
-                            <tr>
-                               <td>
-                                   {% if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all and solicitacao.dentro_prazo_resposta %}
-                                        <font color="red">{{ solicitacao.num_memorando }}</font>
-                                   {% else %}
-                                        {{ solicitacao.num_memorando }}
-                                   {% endif %}
-                               </td>
-                               <td>{{ solicitacao.setor_origem }}</td>
-                               <td>{{ solicitacao.setor_atual }}</td>
-                               <td>{{ solicitacao.objeto }}</td>
-                               <td>
-                                   {% if perms.base.pode_cadastrar_solicitacao %}
-                                       {{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}
-                                   {% else %}
-                                        {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
-                                   {% endif %}
-                               </td>
-                               <td>
-                                   {% for sec in solicitacao.interessados.all %}
-                                      {{ sec }}{% if not forloop.last %},{% endif %}
-                                    {% endfor %}
-                               </td>
-                               <td>{{ solicitacao.situacao }}</td>
-                               <td>
-                                   {% if perms.base.pode_cadastrar_solicitacao %}
-                                       <a class="btn btn-default btn-sm" href="/base/modelo_memorando/{{ solicitacao.id }}/">Memorando</a>
-                                   {% endif %}
-                                   <a class="btn btn-default btn-sm" href="/base/termo_referencia/{{ solicitacao.id }}/">Termo de Referência</a>
-
-                               </td>
-
-
-                               <td>
-                                   <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
-                               </td>
-                           </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <br><br>
-                <p class="alert alert-info">Nenhuma solicitação.</p>
-            {% endif %}
-        </div>
    </div>
 
 

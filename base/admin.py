@@ -164,9 +164,9 @@ admin.site.register(Secretaria, SecretariaAdmin)
 
 
 class SetorAdmin(NewModelAdmin):
-    list_display = ('nome',)
+    list_display = ('nome', 'secretaria')
     ordering = ('nome',)
-    list_filter = ('nome',)
+    list_filter = ('nome', 'secretaria')
 
 
 admin.site.register(Setor, SetorAdmin)

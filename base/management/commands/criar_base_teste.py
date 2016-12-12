@@ -13,6 +13,7 @@ class Command(BaseCommand):
         grupo_pregao = Group.objects.get_or_create(name=u'Licitação')[0]
         grupo_compras = Group.objects.get_or_create(name=u'Compras')[0]
         grupo_juridico = Group.objects.get_or_create(name=u'Jurídico')[0]
+        grupo_protocolo = Group.objects.get_or_create(name=u'Protocolo')[0]
 
         secretaria = Secretaria.objects.get_or_create(nome=u'Secretaria de Planejamento', sigla=u'SEMPLA')[0]
         secretaria2 = Secretaria.objects.get_or_create(nome=u'Secretaria de Tributação', sigla=u'SEMUT')[0]
@@ -26,6 +27,7 @@ class Command(BaseCommand):
         setor_compras = Setor.objects.get_or_create(nome=u'Setor de Compras', secretaria=secretaria)[0]
         setor_secretaria = Setor.objects.get_or_create(nome=u'Setor Administrativo', secretaria=secretaria)[0]
         setor_juridico = Setor.objects.get_or_create(nome=u'Setor Jurídico', secretaria=secretaria)[0]
+        setor_protoloco = Setor.objects.get_or_create(nome=u'Setor de Protocolo', secretaria=secretaria)[0]
 
         setor_licitacao2 = Setor.objects.get_or_create(nome=u'Setor de Licitação', secretaria=secretaria2)[0]
         setor_compras2 = Setor.objects.get_or_create(nome=u'Setor de Compras', secretaria=secretaria2)[0]
@@ -56,6 +58,10 @@ class Command(BaseCommand):
         pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico, user=user_juridico)[0]
         user_juridico.groups.add(grupo_juridico)
 
+        user_protocolo = User.objects.get_or_create(username=u'protocolo',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo 1', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo)[0]
+        user_protocolo.groups.add(grupo_protocolo)
+
 
         user_secretaria2 = User.objects.get_or_create(username=u'secretaria2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
         pessoa = PessoaFisica.objects.get_or_create(nome=u'Representante da Secretaria', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria2, user=user_secretaria2)[0]
@@ -72,6 +78,11 @@ class Command(BaseCommand):
         user_juridico2 = User.objects.get_or_create(username=u'juridico2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
         pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico2, user=user_juridico2)[0]
         user_juridico2.groups.add(grupo_juridico)
+
+
+        user_protocolo2 = User.objects.get_or_create(username=u'protocolo2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo 2', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo2)[0]
+        user_protocolo2.groups.add(grupo_protocolo)
 
 
         user_secretaria3 = User.objects.get_or_create(username=u'secretaria3',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
@@ -91,9 +102,9 @@ class Command(BaseCommand):
         user_juridico3.groups.add(grupo_juridico)
 
 
-
-
-
+        user_protocolo3 = User.objects.get_or_create(username=u'protocolo3',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo 3', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo3)[0]
+        user_protocolo3.groups.add(grupo_protocolo)
 
 
 
