@@ -479,7 +479,7 @@ def ver_solicitacoes(request):
     #outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
 
     form = BuscarSolicitacaoForm(request.POST or None)
-    import ipdb; ipdb.set_trace()
+    
     if form.is_valid():
         outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
