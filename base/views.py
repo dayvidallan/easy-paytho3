@@ -430,19 +430,19 @@ def itens_solicitacao(request, solicitacao_id):
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
     pode_enviar_solicitacao = False
 
-    if request.user.has_perm('base.pode_cadastrar_solicitacao') and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor:
+    if request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor:
         pode_enviar_solicitacao = True
 
-    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and recebida_no_setor:
+    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Compras').exists() and recebida_no_setor:
         pode_enviar_solicitacao = True
 
-    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_abrir_processo') and recebida_no_setor:
+    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Protocolo').exists() and recebida_no_setor:
         pode_enviar_solicitacao = True
 
-    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_cadastrar_pregao') and recebida_no_setor and solicitacao.eh_apta():
+    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Licitação').exists() and recebida_no_setor and solicitacao.eh_apta():
         pode_enviar_solicitacao = True
 
-    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_avaliar_minuta') and recebida_no_setor and solicitacao.data_avaliacao_minuta:
+    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Jurídico').exists() and recebida_no_setor and solicitacao.data_avaliacao_minuta:
         pode_enviar_solicitacao = True
     return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
 
@@ -479,6 +479,7 @@ def ver_solicitacoes(request):
     #outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
 
     form = BuscarSolicitacaoForm(request.POST or None)
+    import ipdb; ipdb.set_trace()
     if form.is_valid():
         outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
@@ -1249,7 +1250,7 @@ def ver_pedidos_secretaria(request, item_id):
     title = u'Pedidos das Secretarias - %s' % item
     pedidos = ItemQuantidadeSecretaria.objects.filter(item=item)
     total = pedidos.aggregate(total=Sum('quantidade'))
-    pode_avaliar = request.user.has_perm('base.pode_cadastrar_solicitacao') and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor
+    pode_avaliar = request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor
     return render_to_response('ver_quantidades.html', locals(), context_instance=RequestContext(request))
 
 

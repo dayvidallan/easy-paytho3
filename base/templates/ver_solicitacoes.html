@@ -190,11 +190,12 @@
         <div id="outras_secretarias" class="tab-pane  in active">
             <fieldset>
                 <legend>Buscar Solicitações</legend>
-                <form action="." method="post" class="form-horizontal">
+                <form action="." method="POST" class="form-horizontal">
                     {% csrf_token %}
                      <div class="miolo">
                         <div class="row-fluid">
                             <div class="col-xs-4">
+
                                 {{ form|bootstrap }}
                             </div>
 
