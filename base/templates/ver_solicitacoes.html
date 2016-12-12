@@ -172,62 +172,71 @@
             <br><br>
          </div>
     {% endif %}
-    <div>
-        <ul class="nav nav-tabs">
-            <li class="active">
-                <a data-toggle="tab" href="#propria_secretaria">Solicitações do Meu Setor</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#outras_secretarias">Outras Solicitações</a>
-            </li>
+            <fieldset>
+                <legend>Buscar Solicitações</legend>
+                <form action="." method="post" class="form-horizontal">
+                    {% csrf_token %}
+                     <div class="miolo">
+                        <div class="row-fluid">
+                            <div class="col-xs-4">
+                                {{ form|bootstrap }}
+                            </div>
 
-        </ul>
-    </div>
-    <div class="tab-content">
-        <div id="propria_secretaria" class="tab-pane in active">
+                            <div class="col-xs-6">
+                                <div class="controls">
+                                    <br><br>
+                                    <button type="submit" class="btn btn-primary">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </form>
+            </fieldset>
+
             {% if solicitacoes.exists %}
-                <table class="table table-bordered table-condensed table-striped">
-                    <thead>
-                        <tr>
-                            <th>Memorando</th>
-                            <th>Objeto</th>
-                            {% if perms.base.pode_cadastrar_solicitacao %}
-                                <th>Data de Cadastro</th>
-                            {% else %}
-                                <th>Data de Recebimento</th>
-                            {% endif %}
-                            <th>Opções</th>
+                <fieldset>
+                    <legend>Solicitações Encontradas</legend>
+                    <table class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Memorando</th>
+                                <th>Objeto</th>
+                                {% if perms.base.pode_cadastrar_solicitacao %}
+                                    <th>Data de Cadastro</th>
+                                {% else %}
+                                    <th>Data de Recebimento</th>
+                                {% endif %}
+                                <th>Opções</th>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for solicitacao in solicitacoes %}
-                           <tr>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for solicitacao in solicitacoes %}
+                               <tr>
 
-                               <td>{{ solicitacao.num_memorando }}</td>
-                               <td>{{ solicitacao.objeto }}</td>
-                               <td>
-                                   {% if perms.base.pode_cadastrar_solicitacao %}
-                                       {{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}
-                                   {% else %}
-                                        {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
-                                   {% endif %}
-                               </td>
-                               <td>
-                                   <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
+                                   <td>{{ solicitacao.num_memorando }}</td>
+                                   <td>{{ solicitacao.objeto }}</td>
+                                   <td>
+                                       {% if perms.base.pode_cadastrar_solicitacao %}
+                                           {{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}
+                                       {% else %}
+                                            {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
+                                       {% endif %}
+                                   </td>
+                                   <td>
+                                       <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
 
-                               </td>
-                           </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                   </td>
+                               </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </fieldset>
             {% else %}
                 <br><br>
                 <p class="alert alert-info">Nenhuma solicitação.</p>
             {% endif %}
-       </div>
 
-   </div>
 
 
 

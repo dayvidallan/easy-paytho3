@@ -352,3 +352,7 @@ class AbrirProcessoForm(forms.ModelForm):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(AbrirProcessoForm, self).__init__(*args, **kwargs)
         self.fields['objeto'].initial = self.solicitacao.objeto
+
+
+class BuscarSolicitacaoForm(forms.Form):
+    info = forms.CharField(label=u'Digite o número do processo ou do memorando', required=True)
