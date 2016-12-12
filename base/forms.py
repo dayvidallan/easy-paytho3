@@ -355,4 +355,4 @@ class AbrirProcessoForm(forms.ModelForm):
 
 
 class BuscarSolicitacaoForm(forms.Form):
-    info = forms.CharField(label=u'Digite o número do processo ou do memorando', required=True)
+    info = forms.CharField(label=u'Digite o número do processo ou do memorando', required=False)

@@ -520,6 +520,7 @@ def cadastrar_solicitacao(request):
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
+        o.prazo_aberto = False
         o.cadastrado_por = request.user
         if not form.cleaned_data['interessados']:
             o.prazo_resposta_interessados = None
