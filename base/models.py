@@ -191,7 +191,7 @@ class SolicitacaoLicitacao(models.Model):
     minuta_avaliada_por = models.ForeignKey(User, verbose_name=u'Minuta Aprovada Por', related_name=u'aprova_minuta', null=True, blank=True)
     obs_avaliacao_minuta = models.CharField(u'Observação - Minuta', max_length=1500, null=True, blank=True)
     arquivo_parecer_minuta = models.FileField(u'Arquivo com o Parecer', null=True, blank=True, upload_to=u'upload/minutas/')
-    prazo_aberto = models.BooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
+    prazo_aberto = models.NullBooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
     processo = models.ForeignKey(Processo, null=True)
 
     def __unicode__(self):
