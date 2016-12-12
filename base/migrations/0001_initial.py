@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import newadmin.utils
+import ckeditor.fields
 import django.contrib.auth.models
 import django.utils.timezone
 from django.conf import settings
@@ -35,7 +36,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'auth_user',
-                'permissions': (('pode_cadastrar_solicitacao', 'Pode Cadastrar Solicita\xe7\xe3o'), ('pode_cadastrar_pregao', 'Pode Cadastrar Preg\xe3o'), ('pode_cadastrar_pesquisa_mercadologica', 'Pode Cadastrar Pesquisa Mercadol\xf3gica'), ('pode_ver_minuta', 'Pode Ver Minuta')),
+                'permissions': (('pode_cadastrar_solicitacao', 'Pode Cadastrar Solicita\xe7\xe3o'), ('pode_cadastrar_pregao', 'Pode Cadastrar Preg\xe3o'), ('pode_cadastrar_pesquisa_mercadologica', 'Pode Cadastrar Pesquisa Mercadol\xf3gica'), ('pode_ver_minuta', 'Pode Ver Minuta'), ('pode_avaliar_minuta', 'Pode Avaliar Minuta'), ('pode_abrir_processo', 'Pode Abrir Processo')),
             },
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
@@ -173,6 +174,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantidade', models.IntegerField(verbose_name='Quantidade')),
+                ('aprovado', models.BooleanField(default=False, verbose_name='Aprovado')),
+                ('justificativa_reprovacao', models.CharField(max_length=1000, null=True, verbose_name='Motivo da Nega\xe7\xe3o do Pedido', blank=True)),
+                ('avaliado_em', models.DateTimeField(null=True, verbose_name='Avaliado Em', blank=True)),
+                ('avaliado_por', models.ForeignKey(related_name='pedido_avaliado_por', to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -358,12 +363,33 @@ class Migration(migrations.Migration):
                 ('responsavel', models.CharField(max_length=255, verbose_name='Respons\xe1vel')),
                 ('situacao', models.CharField(default='Cadastrado', max_length=50, verbose_name='Situa\xe7\xe3o', choices=[('Cadastrado', 'Cadastrado'), ('Deserto', 'Deserto'), ('Fracassado', 'Fracassado'), ('Suspenso', 'Suspenso'), ('Conclu\xeddo', 'Conclu\xeddo')])),
                 ('obs', models.CharField(max_length=3000, null=True, verbose_name='Observa\xe7\xe3o', blank=True)),
+                ('cabecalho_ata', ckeditor.fields.RichTextField(null=True, verbose_name='Cabe\xe7alho da Ata de Registro de Pre\xe7o', blank=True)),
                 ('criterio', models.ForeignKey(verbose_name='Crit\xe9rio de Julgamento', to='base.CriterioPregao')),
                 ('modalidade', models.ForeignKey(verbose_name='Modalidade', to='base.ModalidadePregao')),
             ],
             options={
                 'verbose_name': 'Preg\xe3o',
                 'verbose_name_plural': 'Preg\xf5es',
+            },
+        ),
+        migrations.CreateModel(
+            name='Processo',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('data_cadastro', models.DateTimeField(auto_now_add=True)),
+                ('numero', models.CharField(unique=True, max_length=25, verbose_name='N\xfamero do Processo')),
+                ('objeto', models.CharField(max_length=100)),
+                ('tipo', models.PositiveIntegerField(choices=[[1, 'Memorando'], [2, 'Of\xedcio'], [3, 'Requerimento']])),
+                ('status', models.PositiveIntegerField(default=1, verbose_name='Situa\xe7\xe3o', choices=[[1, 'Em tr\xe2mite'], [2, 'Finalizado'], [3, 'Arquivado']])),
+                ('palavras_chave', models.TextField(null=True, verbose_name='Palavras-chave')),
+                ('data_finalizacao', models.DateTimeField(null=True, editable=False)),
+                ('observacao_finalizacao', models.TextField(null=True, verbose_name='Despacho', blank=True)),
+                ('pessoa_cadastro', models.ForeignKey(related_name='pessoa_cadastro_set', to=settings.AUTH_USER_MODEL)),
+                ('pessoa_finalizacao', models.ForeignKey(related_name='pessoa_finalizacao_set', to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'verbose_name': 'Processo',
+                'verbose_name_plural': 'Processos',
             },
         ),
         migrations.CreateModel(
@@ -474,9 +500,11 @@ class Migration(migrations.Migration):
                 ('data_avaliacao_minuta', models.DateTimeField(null=True, verbose_name='Minuta Aprovada em', blank=True)),
                 ('obs_avaliacao_minuta', models.CharField(max_length=1500, null=True, verbose_name='Observa\xe7\xe3o - Minuta', blank=True)),
                 ('arquivo_parecer_minuta', models.FileField(upload_to='upload/minutas/', null=True, verbose_name='Arquivo com o Parecer', blank=True)),
+                ('prazo_aberto', models.BooleanField(default=False, verbose_name='Aberto para Recebimento de Pesquisa')),
                 ('cadastrado_por', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
                 ('interessados', models.ManyToManyField(to='base.Secretaria')),
                 ('minuta_avaliada_por', models.ForeignKey(related_name='aprova_minuta', verbose_name='Minuta Aprovada Por', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('processo', models.ForeignKey(to='base.Processo', null=True)),
                 ('setor_atual', models.ForeignKey(related_name='setor_atual', verbose_name='Setor Atual', blank=True, to='base.Setor', null=True)),
                 ('setor_origem', models.ForeignKey(related_name='setor_origem', verbose_name='Setor de Origem', blank=True, to='base.Setor', null=True)),
             ],
@@ -506,6 +534,11 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Tipo de Unidade',
                 'verbose_name_plural': 'Tipos de Unidade',
             },
+        ),
+        migrations.AddField(
+            model_name='processo',
+            name='setor_origem',
+            field=models.ForeignKey(verbose_name='Setor de Origem', to='base.Setor'),
         ),
         migrations.AddField(
             model_name='pregao',

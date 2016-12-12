@@ -478,9 +478,9 @@ def ver_solicitacoes(request):
     solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao=SolicitacaoLicitacao.RECEBIDO)).order_by('-data_cadastro')
     #outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
 
-
-    if request.POST.get('info'):
-        solicitacoes = SolicitacaoLicitacao.objects.filter(Q(processo__numero=request.POST.get('info')) | Q(num_memorando=request.POST.get('info')))
+    form = BuscarSolicitacaoForm(request.POST or None)
+    if form.is_valid():
+        solicitacoes = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
@@ -520,7 +520,6 @@ def cadastrar_solicitacao(request):
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
-        o.prazo_aberto = False
         o.cadastrado_por = request.user
         if not form.cleaned_data['interessados']:
             o.prazo_resposta_interessados = None
