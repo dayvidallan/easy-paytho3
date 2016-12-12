@@ -77,6 +77,9 @@ urlpatterns = patterns('base.views',
     url(r'^relatorio_lances_item/(?P<pregao_id>\d+)/$', views.relatorio_lances_item, name='relatorio_lances_item'),
     url(r'^relatorio_ata_registro_preco/(?P<pregao_id>\d+)/$', views.relatorio_ata_registro_preco, name='relatorio_ata_registro_preco'),
     url(r'^pedido_outro_interessado/(?P<pedido_id>\d+)/(?P<opcao>\d+)/$', views.pedido_outro_interessado, name='pedido_outro_interessado'),
+    url(r'^abrir_processo_para_solicitacao/(?P<solicitacao_id>\d+)/$', views.abrir_processo_para_solicitacao, name='abrir_processo_para_solicitacao'),
+    url(r'^ver_processo/(?P<processo_id>\d+)/$', views.ver_processo, name='ver_processo'),
+    url(r'^imprimir_capa_processo/(?P<processo_id>\d+)/$', views.imprimir_capa_processo, name='imprimir_capa_processo'),
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),

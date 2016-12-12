@@ -436,6 +436,9 @@ def itens_solicitacao(request, solicitacao_id):
     if not pode_enviar_solicitacao and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and recebida_no_setor:
         pode_enviar_solicitacao = True
 
+    if not pode_enviar_solicitacao and request.user.has_perm('base.pode_abrir_processo') and recebida_no_setor:
+        pode_enviar_solicitacao = True
+
     if not pode_enviar_solicitacao and request.user.has_perm('base.pode_cadastrar_pregao') and recebida_no_setor and solicitacao.eh_apta():
         pode_enviar_solicitacao = True
 
@@ -472,7 +475,7 @@ def ver_solicitacoes(request):
 
     setor = request.user.pessoafisica.setor
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
-    solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO).order_by('-data_cadastro')
+    solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao=SolicitacaoLicitacao.RECEBIDO)).order_by('-data_cadastro')
     outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
 
@@ -1714,4 +1717,51 @@ def pedido_outro_interessado(request, pedido_id, opcao):
     return render_to_response('pedido_outro_interessado.html', locals(), context_instance=RequestContext(request))
 
 
+@login_required()
+def abrir_processo_para_solicitacao(request, solicitacao_id):
+    title=u'Abrir Processo'
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    form = AbrirProcessoForm(request.POST or None, solicitacao=solicitacao)
+    if form.is_valid():
+        o = form.save(False)
+        o.setor_origem = request.user.pessoafisica.setor
+        o.pessoa_cadastro = request.user
+        o.save()
+        solicitacao.processo = o
+        solicitacao.save()
+        messages.success(request, u'Processo aberto com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+    return render_to_response('abrir_processo_para_solicitacao.html', locals(), context_instance=RequestContext(request))
 
+
+@login_required()
+def ver_processo(request, processo_id):
+    processo = get_object_or_404(Processo, pk=processo_id)
+    title=u'Processo %s' % processo.numero
+    return render_to_response('ver_processo.html', locals(), context_instance=RequestContext(request))
+
+
+@login_required()
+def imprimir_capa_processo(request, processo_id):
+    processo = get_object_or_404(Processo, pk=processo_id)
+    destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % processo_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'rascunhos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'rascunhos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+
+    data = {'processo': processo, 'data_emissao':data_emissao}
+
+    template = get_template('imprimir_capa_processo.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')

@@ -1,0 +1,138 @@
+{% load bootstrap %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            @frame content_frame {
+				    {% block content_frame %}
+    				top: 20;
+    				left: 20;
+    				right: 20;
+    				bottom: 60;
+    				{% endblock %}
+    			}
+
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.5cm;
+                left: 0.5cm;
+                right: 0.5cm;
+                height: 1.8cm;
+            }
+     }
+
+     div.topo {
+
+       border-bottom-width:1px;
+        border-bottom-style:solid;
+        border-bottom-color:#BEBEBE;
+        height: 1px;
+      }
+
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    <table border="0" width="100%">
+      <tr>
+        <td  width="30%" cellspacing="10" cellpadding="10"><img src="{{imagem}}"  width="150" height="90"></td>
+        <td width="10%">&nbsp;</td>
+        <td>
+            <table>
+                <tr>
+                    <td></td>
+                </tr>
+
+            </table>
+        </td>
+        <td width="40%" align="right" ><img src="{{logo_telessaude}}"  width="115" height="40"></td>
+        <td width="20%" align="right" ><img src="{{logo_sus}}"  width="60" height="35"></td>
+      </tr>
+
+
+
+    </table>
+
+    <center><font size="4">Capa do Processo</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+{% endblock %}
+
+{% block content %}
+    {% block conteudo_laudo %}
+    <table class="table table-bordered table-condensed table-striped">
+
+        <tr>
+            <th>Número</th>
+            <td>{{ processo.numero }}</td>
+        </tr>
+        <tr>
+            <th>Objeto</th>
+            <td>{{ processo.objeto }}</td>
+        </tr>
+        <tr>
+            <th>Tipo</th>
+            <td>{{ processo.get_tipo_display }}</td>
+        </tr>
+        <tr>
+            <th>Documento</th>
+            <td><a href="/base/itens_solicitacao/{{processo.get_memorando.id}}/">Memorando {{processo.get_memorando}}</a></td>
+        </tr>
+        <tr>
+            <th>Situação</th>
+            <td>{{ processo.status }}</td>
+        </tr>
+        <tr>
+            <th>Setor de Origem</th>
+            <td>{{ processo.setor_origem }}</td>
+        </tr>
+        <tr>
+            <th>Palavras-chave</th>
+            <td>{{ processo.palavras_chave }}</td>
+        </tr>
+        <tr>
+            <th>Cadastrado Em</th>
+            <td>{{ processo.data_cadastro }}</td>
+        </tr>
+        <tr>
+            <th>Cadastrado Por</th>
+            <td>{{ processo.pessoa_cadastro }}</td>
+        </tr>
+
+
+
+    </table>
+
+    {% endblock %}
+
+{% endblock %}
+
+
+

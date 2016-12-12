@@ -57,6 +57,10 @@
             <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Aprovar Minuta</a>
             <a class="btn btn-danger" href="/base/avalia_minuta/{{ solicitacao.pk }}/2/">Reprovar Minuta</a>
          {% endif %}
+         {% if perms.base.pode_abrir_processo and not solicitacao.processo %}
+            <a class="btn btn-success" href="/base/abrir_processo_para_solicitacao/{{ solicitacao.pk }}/">Abrir Processo</a>
+
+         {% endif %}
 
         <br><br>
     </div>
@@ -78,7 +82,11 @@
                 {% endif %}
             </tr>
             <tr>
-                <td>{{ solicitacao.num_memorando }}</td>
+                <td>{{ solicitacao.num_memorando }}
+                    {% if solicitacao.processo %}
+                        <a href="/base/ver_processo/{{solicitacao.processo.id}}/">(Processo: {{ solicitacao.processo }})</a>
+                    {% endif %}
+                </td>
                 <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
 
 

@@ -21,6 +21,7 @@ class User(AbstractUser):
             ('pode_cadastrar_pesquisa_mercadologica', u'Pode Cadastrar Pesquisa Mercadológica'),
             ('pode_ver_minuta', u'Pode Ver Minuta'),
             ('pode_avaliar_minuta', u'Pode Avaliar Minuta'),
+            ('pode_abrir_processo', u'Pode Abrir Processo'),
         )
 
 class Secretaria(models.Model):
@@ -104,6 +105,52 @@ class DotacaoOrcamentaria(models.Model):
         verbose_name_plural = u'Dotações Orçamentárias'
 
 
+class Processo(models.Model):
+    STATUS_EM_TRAMITE = 1
+    STATUS_FINALIZADO = 2
+    STATUS_ARQUIVADO = 3
+
+    PROCESSO_STATUS = [
+        [STATUS_EM_TRAMITE, u'Em trâmite'],
+        [STATUS_FINALIZADO, u'Finalizado'],
+        [STATUS_ARQUIVADO, u'Arquivado']
+    ]
+
+    TIPO_MEMORANDO = 1
+    TIPO_OFICIO = 2
+    TIPO_REQUERIMENTO = 3
+
+    PROCESSO_TIPO = [
+        [TIPO_MEMORANDO, u'Memorando'],
+        [TIPO_OFICIO, u'Ofício'],
+        [TIPO_REQUERIMENTO, u'Requerimento'],
+    ]
+
+    data_cadastro = models.DateTimeField(auto_now_add=True)
+    pessoa_cadastro = models.ForeignKey(User, related_name='pessoa_cadastro_set')
+    numero = models.CharField(u'Número do Processo', max_length=25, unique=True)
+    objeto = models.CharField(max_length=100)
+    tipo = models.PositiveIntegerField(choices=PROCESSO_TIPO)
+    status = models.PositiveIntegerField(u'Situação', choices=PROCESSO_STATUS, default=STATUS_EM_TRAMITE)
+    setor_origem = models.ForeignKey(Setor, verbose_name=u"Setor de Origem")
+    palavras_chave = models.TextField(u'Palavras-chave', null=True)
+    data_finalizacao = models.DateTimeField(editable=False, null=True)
+    pessoa_finalizacao = models.ForeignKey(User, related_name='pessoa_finalizacao_set', null=True)
+    observacao_finalizacao = models.TextField(u'Despacho', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.numero
+
+    class Meta:
+        verbose_name = u'Processo'
+        verbose_name_plural = u'Processos'
+
+
+    def get_memorando(self):
+        return SolicitacaoLicitacao.objects.filter(processo=self)[0]
+
+
+
 class SolicitacaoLicitacao(models.Model):
 
     CADASTRADO = u'Cadastrado'
@@ -145,6 +192,7 @@ class SolicitacaoLicitacao(models.Model):
     obs_avaliacao_minuta = models.CharField(u'Observação - Minuta', max_length=1500, null=True, blank=True)
     arquivo_parecer_minuta = models.FileField(u'Arquivo com o Parecer', null=True, blank=True, upload_to=u'upload/minutas/')
     prazo_aberto = models.BooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
+    processo = models.ForeignKey(Processo, null=True)
 
     def __unicode__(self):
         return self.num_memorando

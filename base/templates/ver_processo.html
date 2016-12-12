@@ -1,0 +1,63 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+
+     <div class="pull-right">
+        <a class="btn btn-success" href="/base/imprimir_capa_processo/{{processo.id}}/">Capa do Processo</a>
+        <br><br>
+     </div>
+
+    <table class="table table-bordered table-condensed table-striped">
+
+        <tr>
+            <th>Número</th>
+            <td>{{ processo.numero }}</td>
+        </tr>
+        <tr>
+            <th>Objeto</th>
+            <td>{{ processo.objeto }}</td>
+        </tr>
+        <tr>
+            <th>Tipo</th>
+            <td>{{ processo.get_tipo_display }}</td>
+        </tr>
+        <tr>
+            <th>Documento</th>
+            <td><a href="/base/itens_solicitacao/{{processo.get_memorando.id}}/">Memorando {{processo.get_memorando}}</a></td>
+        </tr>
+        <tr>
+            <th>Situação</th>
+            <td>{{ processo.status }}</td>
+        </tr>
+        <tr>
+            <th>Setor de Origem</th>
+            <td>{{ processo.setor_origem }}</td>
+        </tr>
+        <tr>
+            <th>Palavras-chave</th>
+            <td>{{ processo.palavras_chave }}</td>
+        </tr>
+        <tr>
+            <th>Cadastrado Em</th>
+            <td>{{ processo.data_cadastro }}</td>
+        </tr>
+        <tr>
+            <th>Cadastrado Por</th>
+            <td>{{ processo.pessoa_cadastro }}</td>
+        </tr>
+
+
+
+    </table>
+
+
+
+{% endblock %}

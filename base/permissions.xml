@@ -186,5 +186,14 @@
     </group>
     <group>
         <name>Protocolo</name>
+        <models>
+            <model>
+                <app>base</app>
+                <name>user</name>
+                <permissions>
+                    <permission>pode_abrir_processo</permission>
+                </permissions>
+            </model>
+        </models>
     </group>
 </groups>

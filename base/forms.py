@@ -341,3 +341,14 @@ class ImportarItensForm(forms.Form):
 
 class BuscaPessoaForm(forms.Form):
     pessoa = forms.ModelChoiceField(PessoaFisica.objects, label=u'Pessoa', required=True, widget=autocomplete.ModelSelect2(url='pessoafisica-autocomplete'))
+
+class AbrirProcessoForm(forms.ModelForm):
+    objeto = forms.CharField(label=u'Objeto', widget=forms.Textarea())
+    class Meta:
+        model = Processo
+        fields = ('numero', 'objeto', 'tipo', 'palavras_chave')
+
+    def __init__(self, *args, **kwargs):
+        self.solicitacao = kwargs.pop('solicitacao', None)
+        super(AbrirProcessoForm, self).__init__(*args, **kwargs)
+        self.fields['objeto'].initial = self.solicitacao.objeto
