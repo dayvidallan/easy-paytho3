@@ -7,7 +7,164 @@
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
+{% block extrastyle %}
+    <style>
+			/** Start: to style navigation tab **/
+			.nav {
+			  margin-bottom: 18px;
+			  margin-left: 0;
+			  list-style: none;
+			}
 
+			.nav > li > a {
+			  display: block;
+			}
+
+			.nav-tabs{
+			  *zoom: 1;
+			}
+
+			.nav-tabs:before,
+			.nav-tabs:after {
+			  display: table;
+			  content: "";
+			}
+
+			.nav-tabs:after {
+			  clear: both;
+			}
+
+			.nav-tabs > li {
+			  float: left;
+			}
+
+			.nav-tabs > li > a {
+			  padding-right: 12px;
+			  padding-left: 12px;
+			  margin-right: 2px;
+			  line-height: 14px;
+			}
+
+			.nav-tabs {
+			  border-bottom: 1px solid #ddd;
+			}
+
+			.nav-tabs > li {
+			  margin-bottom: -1px;
+			}
+
+			.nav-tabs > li > a {
+			  padding-top: 8px;
+			  padding-bottom: 8px;
+			  line-height: 18px;
+			  border: 1px solid transparent;
+			  -webkit-border-radius: 4px 4px 0 0;
+				 -moz-border-radius: 4px 4px 0 0;
+					  border-radius: 4px 4px 0 0;
+			}
+
+			.nav-tabs > li > a:hover {
+			  border-color: #eeeeee #eeeeee #dddddd;
+			}
+
+			.nav-tabs > .active > a,
+			.nav-tabs > .active > a:hover {
+			  color: #555555;
+			  cursor: default;
+			  background-color: #ffffff;
+			  border: 1px solid #ddd;
+			  border-bottom-color: transparent;
+			}
+
+			li {
+			  line-height: 18px;
+			}
+
+			.tab-content.active{
+				display: block;
+			}
+
+			.tab-content.hide{
+				display: none;
+			}
+
+
+			/** End: to style navigation tab **/
+
+
+		</style>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?participante=" + escape( $('#'+campo.id).val()) + "#classificacao";
+
+        }
+        $(function () {
+            var hash = window.location.hash;
+            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+        });
+
+        $(document).ready(function() {
+            $('.nav-tabs > li > a').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+
+                //get displaying tab content jQuery selector
+                var active_tab_selector = $('.nav-tabs > li.active > a').attr('href');
+
+                //find actived navigation and remove 'active' css
+                var actived_nav = $('.nav-tabs > li.active');
+                actived_nav.removeClass('active');
+
+                //add 'active' css into clicked navigation
+                $(this).parents('li').addClass('active');
+
+                //hide displaying tab content
+                $(active_tab_selector).removeClass('active');
+                $(active_tab_selector).addClass('hide');
+
+                //show target tab content
+                var target_tab_selector = $(this).attr('href');
+                $(target_tab_selector).removeClass('hide');
+                $(target_tab_selector).addClass('active');
+            });
+
+
+            $('#propria_secretaria > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#propria_secretaria').hasClass( "hideInfo")){
+                    $('#propria_secretaria').removeClass('hideInfo');
+                }
+                else {
+                    $('#propria_secretaria').addClass('hideInfo');
+                }
+            });
+
+            $('#outras_secretarias > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#outras_secretarias').hasClass( "hideInfo")){
+                    $('#outras_secretarias').removeClass('hideInfo');
+                }
+                else {
+                    $('#outras_secretarias').addClass('hideInfo');
+                }
+            });
+            $('#classificacao > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#classificacao').hasClass( "hideInfo")){
+                    $('#classificacao').removeClass('hideInfo');
+                }
+                else {
+                    $('#classificacao').addClass('hideInfo');
+                }
+            });
+
+
+        });
+
+
+	</script>
+{% endblock %}
 {% block content %}
 
     {% if perms.base.pode_cadastrar_solicitacao %}
@@ -16,6 +173,21 @@
             <br><br>
          </div>
     {% endif %}
+    <div>
+        <ul class="nav nav-tabs">
+             <li class="active">
+                <a data-toggle="tab" href="#outras_secretarias">Todas as Solicitações</a>
+            </li>
+            <li >
+                <a data-toggle="tab" href="#propria_secretaria">Solicitações do Meu Setor</a>
+            </li>
+
+
+        </ul>
+    </div>
+    <div class="tab-content">
+
+        <div id="outras_secretarias" class="tab-pane  in active">
             <fieldset>
                 <legend>Buscar Solicitações</legend>
                 <form action="." method="post" class="form-horizontal">
@@ -34,7 +206,53 @@
                         </div>
                      </div>
                 </form>
+
             </fieldset>
+            {% if outras.exists %}
+                <fieldset>
+                    <legend>Solicitações Encontradas</legend>
+                    <table class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Memorando</th>
+                                <th>Objeto</th>
+                                {% if perms.base.pode_cadastrar_solicitacao %}
+                                    <th>Data de Cadastro</th>
+                                {% else %}
+                                    <th>Data de Recebimento</th>
+                                {% endif %}
+                                <th>Opções</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for solicitacao in outras %}
+                               <tr>
+
+                                   <td>{{ solicitacao.num_memorando }}</td>
+                                   <td>{{ solicitacao.objeto }}</td>
+                                   <td>
+                                       {% if perms.base.pode_cadastrar_solicitacao %}
+                                           {{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}
+                                       {% else %}
+                                            {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
+                                       {% endif %}
+                                   </td>
+                                   <td>
+                                       <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
+
+                                   </td>
+                               </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </fieldset>
+            {% else %}
+                <p class="alert alert-info">Nenhuma solicitação.</p>
+            {% endif %}
+        </div>
+        <div id="propria_secretaria" class="tab-pane">
+
 
             {% if solicitacoes.exists %}
                 <fieldset>
@@ -79,8 +297,9 @@
                 <br><br>
                 <p class="alert alert-info">Nenhuma solicitação.</p>
             {% endif %}
+        </div>
 
-
+    </div>
 
 
 {% endblock %}

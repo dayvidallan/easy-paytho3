@@ -480,7 +480,7 @@ def ver_solicitacoes(request):
 
     form = BuscarSolicitacaoForm(request.POST or None)
     if form.is_valid():
-        solicitacoes = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
+        outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
