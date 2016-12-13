@@ -22,7 +22,7 @@
             <tr>
                 <td>{{ item.item }}</td>
                 <td>{{ item.solicitacao.num_memorando }}</td>
-                <td>{{ item.especificacao }}</td>
+                <td>{{ item.material.nome }}</td>
                 <td>{{ item.situacao }}</td>
                 <td>
                     {% if item.sem_fornecedor_habilitado and not item.eh_fracassado %}

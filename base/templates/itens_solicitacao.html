@@ -79,7 +79,7 @@
 
          {% endif %}
          {% if solicitacao.prazo_aberto %}
-            <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{request.get_full_path}}"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
+            <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{url}}base/preencher_itens_pesquisa_mercadologica/{{ solicitacao.id }}/"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
         {% endif %}
         <br><br>
     </div>
@@ -143,8 +143,7 @@
             <thead>
                 <tr>
                     <th>Item</th>
-                    <th>Código</th>
-                    <th>Especificação</th>
+                    <th>Material</th>
                     <th>Unidade</th>
                     <th>Quantidade</th>
                     {% if perms.base.pode_cadastrar_pregao or perms.base.pode_cadastrar_pesquisa_mercadologica %}
@@ -159,8 +158,7 @@
                 {% for item in itens %}
                     <tr>
                         <td>{{ item.item }}</td>
-                        <td>{{ item.codigo }}</td>
-                        <td>{{ item.especificacao }}</td>
+                        <td>{{ item.material }}</td>
                         <td>{{ item.unidade }}</td>
                         <td>{{ item.quantidade }}</td>
                         {% if perms.base.pode_cadastrar_pregao or  perms.base.pode_cadastrar_pesquisa_mercadologica %}

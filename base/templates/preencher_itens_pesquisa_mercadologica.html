@@ -10,8 +10,7 @@
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <th>Item</th>
-                            <th>Código</th>
-                            <th>Especificação</th>
+                            <th>Material</th>
                             <th>Unidade</th>
                             <th>Marca</th>
                             <th>Valor</th>
@@ -20,8 +19,7 @@
                         {% for item in itens %}
                             <tr>
                                 <td>{{ item.item }}</td>
-                                <td>{{ item.codigo }}</td>
-                                <td>{{ item.especificacao }}</td>
+                                <td>{{ item.material }}</td>
                                 <td>{{ item.unidade }}</td>
                                 <td><input name="marcas"></td>
                                 <td><input name="itens"></td>

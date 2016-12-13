@@ -72,7 +72,11 @@
             </div>
         </a>
     {% endif %}
-        <a href="/cadastros/">
+        {% if request.user.is_superuser %}
+            <a href="/admin/">
+        {% else %}
+            <a href="/cadastros/">
+        {% endif %}
             <div class="col-lg-2 col-md-4">
 
                 <div class="panel panel-info">

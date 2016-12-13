@@ -269,8 +269,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação')
     item = models.IntegerField(u'Item')
-    codigo = models.ForeignKey('base.MaterialConsumo')
-    especificacao = models.CharField(u'Especificação', max_length=5000)
+    material = models.ForeignKey('base.MaterialConsumo')
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade')
     quantidade = models.PositiveIntegerField(u'Quantidade')
     valor_medio = models.DecimalField(u'Valor Médio', max_digits=10, decimal_places=2, null=True, blank=True)
@@ -280,7 +279,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     ativo = models.BooleanField(u'Ativo', default=True)
 
     def __unicode__(self):
-        return 'Item: %s - Código: %s' % (self.item, self.codigo)
+        return 'Item: %s - Material: %s' % (self.item, self.material.nome)
 
     class Meta:
         ordering = ['item']
@@ -574,8 +573,7 @@ class Pregao(models.Model):
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
-    codigo = models.CharField(u'Código', max_length=255)
-    especificacao = models.CharField(u'Especificação', max_length=500)
+    material = models.ForeignKey('base.MaterialConsumo')
     unidade = models.CharField(u'Unidade de Medida', max_length=500)
     quantidade = models.PositiveIntegerField(u'Quantidade')
     valor_medio = models.DecimalField(u'Valor Médio', max_digits=12, decimal_places=2)
@@ -587,7 +585,7 @@ class ItemPregao(models.Model):
         ordering = ['pregao','id']
 
     def __unicode__(self):
-        return u'%s - %s' % (self.codigo, self.pregao)
+        return u'%s - %s' % (self.material, self.pregao)
 
 class RamoAtividade(models.Model):
     nome = models.CharField(u'Nome', max_length=200)

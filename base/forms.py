@@ -83,8 +83,7 @@ class PessoaFisicaForm(forms.ModelForm):
             self.fields['setor'].queryset = Setor.objects.filter(secretaria=self.request.user.pessoafisica.setor.secretaria)
 
 class CadastrarItemSolicitacaoForm(forms.ModelForm):
-    codigo = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
-    especificacao = forms.CharField(label=u'Especificação', required=True, widget=forms.Textarea())
+    material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
 
     class Meta:
         model = ItemSolicitacaoLicitacao
@@ -115,6 +114,8 @@ class PregaoForm(forms.ModelForm):
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_termino'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_abertura'].widget.attrs = {'class': 'vDateField'}
+        if self.solicitacao.processo:
+            self.fields['num_processo'].initial = self.solicitacao.processo.numero
 
      def clean(self):
         if Pregao.objects.filter(solicitacao=self.solicitacao).exists():

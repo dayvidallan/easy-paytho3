@@ -190,8 +190,8 @@ def cadastra_proposta_pregao(request, pregao_id):
             for row in range(0, sheet.nrows):
                 try:
                     item = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 5)).strip()
-                    valor = unicode(sheet.cell_value(row, 6)).strip()
+                    marca = unicode(sheet.cell_value(row, 4)).strip()
+                    valor = unicode(sheet.cell_value(row, 5)).strip()
                     if row == 0:
                         if item != u'Item' or marca != u'Marca' or valor != u'Valor':
                             raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Marca e Valor.')
@@ -429,6 +429,7 @@ def ver_pregoes(request):
 
 @login_required()
 def itens_solicitacao(request, solicitacao_id):
+    url = settings.URL
     recebida_no_setor = False
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'Solicitação - Memorando: %s' % solicitacao
@@ -571,8 +572,7 @@ def planilha_pesquisa_mercadologica(request, solicitacao_id):
 
     columns = [
         (u"Item"),
-        (u"Codigo"),
-        (u"Especificacao"),
+        (u"Material"),
         (u"Unidade"),
         (u"Marca"),
         (u"Valor Unitario"),
@@ -585,8 +585,7 @@ def planilha_pesquisa_mercadologica(request, solicitacao_id):
         row_num += 1
         row = [
             obj.item,
-            obj.codigo,
-            obj.especificacao,
+            obj.material.nome,
             obj.unidade.nome,
             '',
             '',
@@ -750,8 +749,7 @@ def planilha_propostas(request, solicitacao_id):
 
     columns = [
         (u"Item"),
-        (u"Código"),
-        (u"Especificação"),
+        (u"Material"),
         (u"Unidade"),
         (u"Quantidade"),
         (u"Marca"),
@@ -765,8 +763,7 @@ def planilha_propostas(request, solicitacao_id):
         row_num += 1
         row = [
             obj.item,
-            obj.codigo,
-            obj.especificacao,
+            obj.material.nome,
             obj.unidade.nome,
             obj.quantidade,
             '',
@@ -1290,8 +1287,15 @@ def importar_itens(request, solicitacao_id):
                             novo_item = ItemSolicitacaoLicitacao()
                             novo_item.solicitacao = solicitacao
                             novo_item.item = row
-                            novo_item.codigo = int(sheet.cell_value(row, 0))
-                            novo_item.especificacao = especificacao
+
+                            if MaterialConsumo.objects.filter(codigo=int(sheet.cell_value(row, 0))).exists():
+                                material = MaterialConsumo.objects.filter(codigo=int(sheet.cell_value(row, 0)))[0]
+                            else:
+                                material = MaterialConsumo()
+                                material.codigo = int(sheet.cell_value(row, 0))
+                                material.nome = especificacao
+                                material.save()
+                            novo_item.material = material
                             novo_item.unidade = un
                             novo_item.quantidade = int(sheet.cell_value(row, 3))
                             novo_item.save()
@@ -1326,16 +1330,15 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
 
             for row in range(0, sheet.nrows):
                 item = unicode(sheet.cell_value(row, 0)).strip()
-                codigo = unicode(sheet.cell_value(row, 1)).strip()
-                especificacao = unicode(sheet.cell_value(row, 2)).strip()
-                unidade = unicode(sheet.cell_value(row, 3)).strip()
-                marca = unicode(sheet.cell_value(row, 4)).strip()
-                valor = unicode(sheet.cell_value(row, 5)).strip()
+                especificacao = unicode(sheet.cell_value(row, 1)).strip()
+                unidade = unicode(sheet.cell_value(row, 2)).strip()
+                marca = unicode(sheet.cell_value(row, 3)).strip()
+                valor = unicode(sheet.cell_value(row, 4)).strip()
                 if row == 0:
-                    if item!= u'Item' or codigo != u'Codigo' or especificacao != u'Especificacao' or unidade != u'Unidade' or marca != u'Marca' or valor!=u'Valor Unitario':
-                        raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Código, Especificação, Unidade e Marca e Valor Unitario.')
+                    if item!= u'Item' or especificacao != u'Material' or unidade != u'Unidade' or marca != u'Marca' or valor!=u'Valor Unitario':
+                        raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Material, Unidade e Marca e Valor Unitario.')
                 else:
-                    if item and codigo and especificacao and unidade and marca and valor:
+                    if item and especificacao and unidade and marca and valor:
                         item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, item=int(sheet.cell_value(row, 0)))
                         novo_preco = ItemPesquisaMercadologica()
                         novo_preco.pesquisa = pesquisa
@@ -1543,7 +1546,7 @@ def relatorio_lances_item(request, pregao_id):
         rodadas = RodadaPregao.objects.filter(item=item)
         for rodada in rodadas:
             lista_rodadas[rodada.rodada] = dict(lances=list())
-        chave = u'%s - %s' % (item, item.especificacao)
+        chave = u'%s' % (item)
         tabela[chave] =  lista_rodadas
 
         for lance in LanceItemRodadaPregao.objects.filter(item=item):
@@ -1636,7 +1639,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
             for lance in lances['lance']:
                 total = lance.get_vencedor().valor * lance.quantidade
-                texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.especificacao, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
+                texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.material.nome, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
 
             texto = texto + u'</table>'
 

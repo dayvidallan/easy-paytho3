@@ -156,8 +156,6 @@ class Migration(migrations.Migration):
             name='ItemPregao',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('codigo', models.CharField(max_length=255, verbose_name='C\xf3digo')),
-                ('especificacao', models.CharField(max_length=500, verbose_name='Especifica\xe7\xe3o')),
                 ('unidade', models.CharField(max_length=500, verbose_name='Unidade de Medida')),
                 ('quantidade', models.PositiveIntegerField(verbose_name='Quantidade')),
                 ('valor_medio', models.DecimalField(verbose_name='Valor M\xe9dio', max_digits=12, decimal_places=2)),
@@ -185,7 +183,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('item', models.IntegerField(verbose_name='Item')),
-                ('especificacao', models.CharField(max_length=5000, verbose_name='Especifica\xe7\xe3o')),
                 ('quantidade', models.PositiveIntegerField(verbose_name='Quantidade')),
                 ('valor_medio', models.DecimalField(null=True, verbose_name='Valor M\xe9dio', max_digits=10, decimal_places=2, blank=True)),
                 ('total', models.DecimalField(null=True, verbose_name='Total', max_digits=10, decimal_places=2, blank=True)),
@@ -619,7 +616,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='itemsolicitacaolicitacao',
-            name='codigo',
+            name='material',
             field=models.ForeignKey(to='base.MaterialConsumo'),
         ),
         migrations.AddField(
@@ -646,6 +643,11 @@ class Migration(migrations.Migration):
             model_name='itemquantidadesecretaria',
             name='solicitacao',
             field=models.ForeignKey(verbose_name='Solicita\xe7\xe3o', to='base.SolicitacaoLicitacao'),
+        ),
+        migrations.AddField(
+            model_name='itempregao',
+            name='material',
+            field=models.ForeignKey(to='base.MaterialConsumo'),
         ),
         migrations.AddField(
             model_name='itempregao',

@@ -287,8 +287,7 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th width="10%">Código</th>
-                                <th>Especificação</th>
+                                <th>Material</th>
                                 <th>Unidade</th>
                                 <th>Quantidade</th>
                                 <th>Valor Médio</th>
@@ -303,8 +302,7 @@
 
                                 <tr>
                                     <td>{{ item.item }}</td>
-                                    <td>{{ item.codigo }}</td>
-                                    <td>{{ item.especificacao }}</td>
+                                    <td>{{ item.material }}</td>
                                     <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>
                                     <td>{{ item.valor_medio|format_money }}</td>
@@ -355,8 +353,7 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th width="10%">Código</th>
-                                <th>Especificação</th>
+                                <th>Material</th>
                                 <th>Marca</th>
                                 <th>Unidade</th>
                                 <th>Quantidade</th>
@@ -371,8 +368,7 @@
 
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ item.codigo }}</td>
-                                    <td>{{ item.especificacao }}</td>
+                                    <td>{{ item.material }}</td>
                                     <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                     <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>

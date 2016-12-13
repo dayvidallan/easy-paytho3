@@ -41,8 +41,7 @@
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <th>Item</th>
-                                <th>Código</th>
-                                <th>Especificação</th>
+                                <th>Material</th>
                                 <th>Valor Máximo</th>
                                 <th>Marca</th>
                                 <th>Valor</th>
@@ -51,8 +50,7 @@
                             {% for item in itens %}
                                 <tr>
                                     <td>{{ item.item }}</td>
-                                    <td>{{ item.codigo }}</td>
-                                    <td>{{ item.especificacao }}</td>
+                                    <td>{{ item.material }}</td>
                                     <td>{{ item.valor_medio|format_money }}</td>
                                     <td><input name="marcas">{{ item.marca }}</td>
                                     <td><input name="itens">{{ item.valor }}</td>
@@ -76,8 +74,7 @@
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <th>Item</th>
-                                <th>Código</th>
-                                <th>Especificação</th>
+                                <th>Material</th>
                                 <th>Valor Máximo</th>
                                 <th>Marca</th>
                                 <th>Valor</th>
@@ -87,9 +84,8 @@
                             {% for item in itens %}
                                 <tr>
                                     <td>{{ item.item }}</td>
-                                    <td>{{ item.item.codigo }}</td>
-                                    <td>{{ item.item.especificacao }}</td>
-                                    <td>{{ item.item.valor_medio }}</td>
+                                    <td>{{ item.item.material }}</td>
+                                     <td>{{ item.item.valor_medio }}</td>
                                     <td>{{ item.marca }}</td>
                                     <td>{{ item.valor }}</td>
                                     <td><a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a></td>

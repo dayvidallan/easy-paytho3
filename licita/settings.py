@@ -62,16 +62,16 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'licita',
-        'USER': 'walkyso',
-        'PASSWORD': 'licitaeasy',
-        'HOST': '127.0.0.1',
-        'PORT': '',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'licita',
+#         'USER': 'walkyso',
+#         'PASSWORD': 'licitaeasy',
+#         'HOST': '127.0.0.1',
+#         'PORT': '',
+#     }
+# }
 
 
 LANGUAGE_CODE = 'pt-br'
@@ -140,3 +140,5 @@ DEFAULT_FROM_EMAIL = 'pnt@lais.huol.ufrn.br'
 #
 # SELECT2_CACHE_BACKEND = 'select2'
 
+
+URL = u'http://159.203.181.26/'

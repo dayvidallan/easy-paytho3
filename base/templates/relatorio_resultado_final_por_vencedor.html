@@ -73,8 +73,8 @@ ul{
 
                             <tr>
                                 <td>{{ item.item }}</td>
-                                <td>{{ item.codigo }}</td>
-                                <td>{{ item.especificacao }}</td>
+                                <td>{{ item.material.codigo }}</td>
+                                <td>{{ item.material.nome }}</td>
                                 <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                 <td>{{ item.unidade }}</td>
                                 <td>{{ item.quantidade }}</td>

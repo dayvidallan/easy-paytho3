@@ -63,6 +63,15 @@
                     <permission>change_setor</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>materialconsumo</name>
+                <permissions>
+                    <permission>add_materialconsumo</permission>
+                    <permission>delete_materialconsumo</permission>
+                    <permission>change_materialconsumo</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
