@@ -96,10 +96,7 @@
 {% endblock %}
 {% block extrajs %}
     <script>
-        function submeter_form(campo) {
-            window.location = window.location.pathname + "?participante=" + escape( $('#'+campo.id).val()) + "#classificacao";
 
-        }
         $(function () {
             var hash = window.location.hash;
             hash && $('ul.nav a[href="' + hash + '"]').tab('show');
@@ -149,15 +146,7 @@
                     $('#outras_secretarias').addClass('hideInfo');
                 }
             });
-            $('#classificacao > h3').click(function(event){
-                event.preventDefault();//stop browser to take action for clicked anchor
-                if ($('#classificacao').hasClass( "hideInfo")){
-                    $('#classificacao').removeClass('hideInfo');
-                }
-                else {
-                    $('#classificacao').addClass('hideInfo');
-                }
-            });
+
 
 
         });
@@ -188,6 +177,7 @@
     <div class="tab-content">
 
         <div id="outras_secretarias" class="tab-pane  in active">
+            {% if form %}
             <fieldset>
                 <legend>Buscar Solicitações</legend>
                 <form action="." method="POST" class="form-horizontal">
@@ -209,6 +199,7 @@
                 </form>
 
             </fieldset>
+            {% endif %}
             {% if outras.exists %}
                 <fieldset>
                     <legend>Solicitações Encontradas</legend>
