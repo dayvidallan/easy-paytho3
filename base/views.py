@@ -430,20 +430,11 @@ def itens_solicitacao(request, solicitacao_id):
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
     pode_enviar_solicitacao = False
 
-    if request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor:
+    if (solicitacao.pode_enviar_para_compra() and solicitacao.setor_origem == request.user.pessoafisica.setor) or \
+            (recebida_no_setor and (solicitacao.eh_apta() or solicitacao.data_avaliacao_minuta)):
         pode_enviar_solicitacao = True
 
-    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Compras').exists() and recebida_no_setor:
-        pode_enviar_solicitacao = True
 
-    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Protocolo').exists() and recebida_no_setor:
-        pode_enviar_solicitacao = True
-
-    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Licitação').exists() and recebida_no_setor and solicitacao.eh_apta():
-        pode_enviar_solicitacao = True
-
-    if not pode_enviar_solicitacao and request.user.groups.filter(name=u'Jurídico').exists() and recebida_no_setor and solicitacao.data_avaliacao_minuta:
-        pode_enviar_solicitacao = True
     return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
 
 
