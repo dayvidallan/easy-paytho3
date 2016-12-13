@@ -55,12 +55,24 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'licita',
+        'USER': 'postgres',
+        'PASSWORD': '123',
+        'HOST': '127.0.0.1',
+        'PORT': '',
+    }
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'licita',
         'USER': 'walkyso',
         'PASSWORD': 'licitaeasy',
         'HOST': '127.0.0.1',
         'PORT': '',
     }
 }
+
 
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Recife'

@@ -9,7 +9,7 @@
 {% endblock %}
 {% block content %}
     <div class="pull-right">
-         {% if pode_enviar_solicitacao %}
+         {% if recebida_no_setor %}
             <a class="btn btn-success" href="/base/movimentar_solicitacao/{{ solicitacao.pk }}/1/">Enviar</a>
          {% endif %}
          {% if solicitacao.setor_atual == setor_do_usuario and not solicitacao.recebida and solicitacao.tem_movimentacao %}

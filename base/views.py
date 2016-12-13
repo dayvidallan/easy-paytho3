@@ -428,12 +428,6 @@ def itens_solicitacao(request, solicitacao_id):
     title=u'Solicitação - Memorando: %s' % solicitacao
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
-    pode_enviar_solicitacao = False
-
-    if (solicitacao.pode_enviar_para_compra() and solicitacao.setor_origem == request.user.pessoafisica.setor) or \
-            (recebida_no_setor and (solicitacao.eh_apta() or solicitacao.data_avaliacao_minuta)):
-        pode_enviar_solicitacao = True
-
 
     return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
 
@@ -468,7 +462,9 @@ def ver_solicitacoes(request):
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
     solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao=SolicitacaoLicitacao.RECEBIDO)).order_by('-data_cadastro')
     outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
+
     form = BuscarSolicitacaoForm(request.POST or None)
+
     if form.is_valid():
         outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
