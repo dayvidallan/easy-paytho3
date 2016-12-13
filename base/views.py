@@ -430,7 +430,6 @@ def itens_solicitacao(request, solicitacao_id):
     elif solicitacao.setor_atual == setor_do_usuario and itens.exists():
         recebida_no_setor = True
 
-    recebida_no_setor = True
     return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
 
 
