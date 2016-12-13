@@ -63,6 +63,19 @@ class PessoaFisicaAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
+class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+
+        # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated():
+            return MaterialConsumo.objects.none()
+
+        qs = MaterialConsumo.objects.all()
+
+        if self.q:
+            qs = qs.filter(Q(codigo__icontains=self.q) | Q(nome__icontains=self.q))
+
+        return qs
 
 @login_required()
 def index(request):

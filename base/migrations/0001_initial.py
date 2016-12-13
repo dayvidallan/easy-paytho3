@@ -185,7 +185,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('item', models.IntegerField(verbose_name='Item')),
-                ('codigo', models.CharField(max_length=15, verbose_name='C\xf3digo')),
                 ('especificacao', models.CharField(max_length=5000, verbose_name='Especifica\xe7\xe3o')),
                 ('quantidade', models.PositiveIntegerField(verbose_name='Quantidade')),
                 ('valor_medio', models.DecimalField(null=True, verbose_name='Valor M\xe9dio', max_digits=10, decimal_places=2, blank=True)),
@@ -231,6 +230,19 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Log de Download de Arquivo',
                 'verbose_name_plural': 'Logs de Download de Arquivo',
+            },
+        ),
+        migrations.CreateModel(
+            name='MaterialConsumo',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('nome', models.TextField(help_text='M\xe1ximo de 1024 caracteres.', unique=True, max_length=1024, verbose_name='Nome')),
+                ('observacao', models.CharField(max_length=500, null=True, verbose_name='Observa\xe7\xe3o', blank=True)),
+                ('codigo', models.CharField(max_length=6, verbose_name='C\xf3digo', blank=True)),
+            ],
+            options={
+                'verbose_name': 'Material de Consumo',
+                'verbose_name_plural': 'Materiais de Consumo',
             },
         ),
         migrations.CreateModel(
@@ -500,7 +512,7 @@ class Migration(migrations.Migration):
                 ('data_avaliacao_minuta', models.DateTimeField(null=True, verbose_name='Minuta Aprovada em', blank=True)),
                 ('obs_avaliacao_minuta', models.CharField(max_length=1500, null=True, verbose_name='Observa\xe7\xe3o - Minuta', blank=True)),
                 ('arquivo_parecer_minuta', models.FileField(upload_to='upload/minutas/', null=True, verbose_name='Arquivo com o Parecer', blank=True)),
-                ('prazo_aberto', models.BooleanField(default=False, verbose_name='Aberto para Recebimento de Pesquisa')),
+                ('prazo_aberto', models.NullBooleanField(default=False, verbose_name='Aberto para Recebimento de Pesquisa')),
                 ('cadastrado_por', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
                 ('interessados', models.ManyToManyField(to='base.Secretaria')),
                 ('minuta_avaliada_por', models.ForeignKey(related_name='aprova_minuta', verbose_name='Minuta Aprovada Por', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
@@ -604,6 +616,11 @@ class Migration(migrations.Migration):
             model_name='lanceitemrodadapregao',
             name='rodada',
             field=models.ForeignKey(verbose_name='Rodada', to='base.RodadaPregao'),
+        ),
+        migrations.AddField(
+            model_name='itemsolicitacaolicitacao',
+            name='codigo',
+            field=models.ForeignKey(to='base.MaterialConsumo'),
         ),
         migrations.AddField(
             model_name='itemsolicitacaolicitacao',

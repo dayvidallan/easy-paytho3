@@ -2,7 +2,7 @@
 
 from django.conf.urls import patterns, url
 from base import views
-from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete
+from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete
 
 urlpatterns = patterns('base.views',
     url(r'^$', views.index, name='index'),
@@ -89,6 +89,7 @@ urlpatterns = patterns('base.views',
     url(r'^secretaria-autocomplete/$', SecretariaAutocomplete.as_view(), name='secretaria-autocomplete'),
     url(r'^participantepregao-autocomplete/$', ParticipantePregaoAutocomplete.as_view(), name='participantepregao-autocomplete'),
     url(r'^pessoafisica-autocomplete/$', PessoaFisicaAutocomplete.as_view(), name='pessoafisica-autocomplete'),
+    url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
 
 )
 

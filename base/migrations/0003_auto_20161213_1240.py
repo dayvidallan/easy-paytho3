@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='solicitacaolicitacao',
-            name='prazo_aberto',
-            field=models.NullBooleanField(default=False, verbose_name='Aberto para Recebimento de Pesquisa'),
+            model_name='itemsolicitacaolicitacao',
+            name='codigo',
+            field=models.ForeignKey(to='base.MaterialConsumo'),
         ),
     ]

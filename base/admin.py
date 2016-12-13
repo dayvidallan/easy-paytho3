@@ -210,3 +210,11 @@ class TipoUnidadeAdmin(NewModelAdmin):
 
 
 admin.site.register(TipoUnidade, TipoUnidadeAdmin)
+
+class MaterialConsumoAdmin(NewModelAdmin):
+    list_display = ('codigo', 'nome',)
+    ordering = ('nome',)
+
+
+
+admin.site.register(MaterialConsumo, MaterialConsumoAdmin)

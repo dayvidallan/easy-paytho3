@@ -269,7 +269,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação')
     item = models.IntegerField(u'Item')
-    codigo = models.CharField(u'Código', max_length=15)
+    codigo = models.ForeignKey('base.MaterialConsumo')
     especificacao = models.CharField(u'Especificação', max_length=5000)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade')
     quantidade = models.PositiveIntegerField(u'Quantidade')
@@ -997,3 +997,16 @@ class ItemQuantidadeSecretaria(models.Model):
     avaliado_em = models.DateTimeField(u'Avaliado Em', null=True, blank=True)
     avaliado_por = models.ForeignKey(User, related_name=u'pedido_avaliado_por', null=True)
 
+
+class MaterialConsumo(models.Model):
+    nome = models.TextField(u'Nome', max_length=1024, unique=True, help_text=u"Máximo de 1024 caracteres.")
+    observacao = models.CharField(u'Observação', max_length=500, null=True, blank=True)
+    codigo = models.CharField(u"Código", max_length=6, blank=True)
+
+    class Meta:
+        verbose_name = u'Material de Consumo'
+        verbose_name_plural = u'Materiais de Consumo'
+
+
+    def __unicode__(self):
+        return self.nome

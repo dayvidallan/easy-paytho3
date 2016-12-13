@@ -83,6 +83,7 @@ class PessoaFisicaForm(forms.ModelForm):
             self.fields['setor'].queryset = Setor.objects.filter(secretaria=self.request.user.pessoafisica.setor.secretaria)
 
 class CadastrarItemSolicitacaoForm(forms.ModelForm):
+    codigo = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
     especificacao = forms.CharField(label=u'Especificação', required=True, widget=forms.Textarea())
 
     class Meta:

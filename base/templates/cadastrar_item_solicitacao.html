@@ -30,3 +30,8 @@
 
 
 {% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}
