@@ -421,15 +421,16 @@ def itens_solicitacao(request, solicitacao_id):
     recebida_no_setor = False
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     setor_do_usuario = request.user.pessoafisica.setor
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
+    ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
+
     if MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).exists():
         ultima_movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).latest('id')
         if ultima_movimentacao.setor_destino == setor_do_usuario and ultima_movimentacao.data_recebimento:
             recebida_no_setor = True
-    elif solicitacao.setor_atual == setor_do_usuario and solicitacao.tem_item_cadastrado():
+    elif solicitacao.setor_atual == setor_do_usuario and itens.exists():
         recebida_no_setor = True
     title=u'Solicitação - Memorando: %s' % solicitacao
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
-    ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
 
     return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
 
