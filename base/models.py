@@ -1009,4 +1009,4 @@ class MaterialConsumo(models.Model):
 
 
     def __unicode__(self):
-        return self.nome
+        return '%s - %s' % (self.codigo, self.nome)
