@@ -1295,6 +1295,7 @@ def importar_itens(request, solicitacao_id):
                             else:
                                 material = MaterialConsumo()
                                 material.codigo = int(sheet.cell_value(row, 0))
+                                material.id = int(sheet.cell_value(row, 0))
                                 material.nome = especificacao
                                 material.save()
                             novo_item.material = material
