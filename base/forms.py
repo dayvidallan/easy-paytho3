@@ -357,3 +357,8 @@ class AbrirProcessoForm(forms.ModelForm):
 
 class BuscarSolicitacaoForm(forms.Form):
     info = forms.CharField(label=u'Digite o número do processo ou do memorando', required=False)
+
+class MaterialConsumoForm(forms.ModelForm):
+    class Meta:
+        model = MaterialConsumo
+        fields = ('nome', 'observacao',)

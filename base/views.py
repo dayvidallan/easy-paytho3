@@ -450,6 +450,8 @@ def itens_solicitacao(request, solicitacao_id):
 @login_required()
 def cadastrar_item_solicitacao(request, solicitacao_id):
     title=u'Cadastrar Item'
+    id_user = '%s' % request.user.pessoafisica.id
+    request.session[id_user] = solicitacao_id
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     form = CadastrarItemSolicitacaoForm(request.POST or None, initial=dict(solicitacao=solicitacao))
     if form.is_valid():

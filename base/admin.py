@@ -214,6 +214,17 @@ admin.site.register(TipoUnidade, TipoUnidadeAdmin)
 class MaterialConsumoAdmin(NewModelAdmin):
     list_display = ('codigo', 'nome',)
     ordering = ('nome',)
+    form = MaterialConsumoForm
+
+    def save_model(self, request, obj, form, change):
+        id = MaterialConsumo.objects.latest('id')
+        obj.codigo = id.pk+1
+        obj.save()
+
+    def response_add(self, request, obj):
+        self.message_user(request, u'Material cadastrado com sucesso.')
+        tt = '%s' % request.user.pessoafisica.id
+        return HttpResponseRedirect('/base/cadastrar_item_solicitacao/%s/' % request.session.get(tt))
 
 
 
