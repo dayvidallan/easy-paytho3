@@ -425,7 +425,7 @@ def itens_solicitacao(request, solicitacao_id):
         ultima_movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).latest('id')
         if ultima_movimentacao.setor_destino == setor_do_usuario and ultima_movimentacao.data_recebimento:
             recebida_no_setor = True
-    elif solicitacao.setor_atual == setor_do_usuario:
+    elif solicitacao.setor_atual == setor_do_usuario and solicitacao.tem_item_cadastrado():
         recebida_no_setor = True
     title=u'Solicitação - Memorando: %s' % solicitacao
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')

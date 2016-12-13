@@ -311,7 +311,7 @@ class PrazoPesquisaForm(forms.ModelForm):
 
 class SetorEnvioForm(forms.Form):
     setor = forms.ModelChoiceField(Setor.objects, label=u'Setor de Destino', required=True)
-    obs = forms.CharField(label=u'Observações', widget=forms.Textarea)
+    obs = forms.CharField(label=u'Observações', widget=forms.Textarea, required=False)
     def __init__(self, *args, **kwargs):
         self.devolve = kwargs.pop('devolve', None)
         super(SetorEnvioForm, self).__init__(*args, **kwargs)
