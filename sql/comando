@@ -1,0 +1,1 @@
+psql -Upostgres -hlocalhost -d licita < dump_material.sql
