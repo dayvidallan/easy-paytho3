@@ -267,7 +267,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         (CONCLUIDO, CONCLUIDO),
     )
 
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
+    solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação')
     item = models.IntegerField(u'Item')
     codigo = models.CharField(u'Código', max_length=15)
     especificacao = models.CharField(u'Especificação', max_length=5000)
