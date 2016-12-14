@@ -201,12 +201,22 @@ class SolicitacaoLicitacao(models.Model):
         verbose_name = u'Solicitação de Licitação'
         verbose_name_plural = u'Solicitações de Licitação'
 
-    def get_proximo_item(self):
+    def get_proximo_item(self, eh_lote=False):
         if not self.itemsolicitacaolicitacao_set.exists():
             return u'1'
         else:
-            ultimo = self.itemsolicitacaolicitacao_set.all().order_by('-item')[0]
-            return int(ultimo.item) + 1
+            if eh_lote:
+                if self.itemsolicitacaolicitacao_set.filter(eh_lote=True).exists():
+                    ultimo = self.itemsolicitacaolicitacao_set.filter(eh_lote=True).order_by('-item')[0]
+                    return int(ultimo.item) + 1
+                return u'1'
+            else:
+                if self.itemsolicitacaolicitacao_set.filter(eh_lote=False).exists():
+                    ultimo = self.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('-item')[0]
+                    return int(ultimo.item) + 1
+                return u'1'
+
+
 
     def pode_enviar_para_compra(self):
         return self.situacao == SolicitacaoLicitacao.CADASTRADO and self.tem_item_cadastrado()
@@ -269,14 +279,15 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação')
     item = models.IntegerField(u'Item')
-    material = models.ForeignKey('base.MaterialConsumo')
-    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade')
+    material = models.ForeignKey('base.MaterialConsumo', null=True)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     quantidade = models.PositiveIntegerField(u'Quantidade')
     valor_medio = models.DecimalField(u'Valor Médio', max_digits=10, decimal_places=2, null=True, blank=True)
     total = models.DecimalField(u'Total', decimal_places=2, max_digits=10, null=True, blank=True)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
     obs = models.CharField(u'Observação', max_length=3000, null=True, blank=True)
     ativo = models.BooleanField(u'Ativo', default=True)
+    eh_lote = models.BooleanField(u'Lote', default=False)
 
     def __unicode__(self):
         return 'Item: %s - Material: %s' % (self.item, self.material.nome)
@@ -521,6 +532,24 @@ class ItemSolicitacaoLicitacao(models.Model):
     def tem_resultado(self):
         return ResultadoItemPregao.objects.filter(item=self).exists()
 
+    def get_itens_do_lote(self):
+        itens = ItemLote.objects.filter(lote=self)
+        return ItemSolicitacaoLicitacao.objects.filter(id__in=itens.values_list('item', flat=True))
+
+
+
+
+class ItemLote(models.Model):
+    lote = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'lote')
+    item = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'item_do_lote')
+
+    class Meta:
+        verbose_name = u'Item do Lote'
+        verbose_name_plural = u'Itens dos Lotes'
+
+
+
+
 class Pregao(models.Model):
     CADASTRADO = u'Cadastrado'
     DESERTO = u'Deserto'
@@ -552,7 +581,7 @@ class Pregao(models.Model):
     responsavel = models.CharField(u'Responsável', max_length=255)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
     obs = models.CharField(u'Observação', max_length=3000, null=True, blank=True)
-    cabecalho_ata = RichTextField(u'Cabeçalho da Ata de Registro de Preço', null=True, blank=True)
+    #cabecalho_ata = RichTextField(u'Cabeçalho da Ata de Registro de Preço', null=True, blank=True)
 
     class Meta:
         verbose_name = u'Pregão'
@@ -650,7 +679,7 @@ class PropostaItemPregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
     participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
     valor = models.DecimalField(u'Valor', max_digits=12, decimal_places=2)
-    marca = models.CharField(u'Marca', max_length=200)
+    marca = models.CharField(u'Marca', max_length=200, null=True)
     desclassificado = models.BooleanField(u'Desclassificado', default=False)
     motivo_desclassificacao = models.CharField(u'Motivo da Desclassificação', max_length=2000, null=True, blank=True)
     desistencia = models.BooleanField(u'Desistência', default=False)
@@ -905,7 +934,7 @@ class ResultadoItemPregao(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação')
     participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
     valor = models.DecimalField(u'Valor', max_digits=12, decimal_places=2)
-    marca = models.CharField(u'Marca', max_length=200)
+    marca = models.CharField(u'Marca', max_length=200, null=True)
     ordem = models.IntegerField(u'Classificação')
     situacao = models.CharField(u'Situação', max_length=100, choices=RESULTADO_CHOICES)
     observacoes = models.CharField(u'Observação', max_length=5000, null=True, blank=True)

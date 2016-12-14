@@ -87,7 +87,7 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
 
     class Meta:
         model = ItemSolicitacaoLicitacao
-        exclude = ['item', 'solicitacao', 'total', 'valor_medio', 'data_inicio_pesquisa', 'data_fim_pesquisa', 'setor_origem', 'setor_atual', 'situacao', 'obs', 'ativo']
+        exclude = ['item', 'solicitacao', 'total', 'valor_medio', 'data_inicio_pesquisa', 'data_fim_pesquisa', 'setor_origem', 'setor_atual', 'situacao', 'obs', 'ativo', 'eh_lote']
 
 
 class CadastraPrecoParticipantePregaoForm(forms.Form):
@@ -312,7 +312,16 @@ class PrazoPesquisaForm(forms.ModelForm):
 
 
 class SetorEnvioForm(forms.Form):
-    setor = forms.ModelChoiceField(Setor.objects, label=u'Setor de Destino', required=True)
+    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+
+    setor = utils.ChainedModelChoiceField(Setor.objects,
+      label                = u'Setor de Destino',
+      empty_label          = u'Selecione a Secretaria',
+      obj_label            = 'nome',
+      form_filters         = [('secretaria', 'secretaria_id')],
+      required=False
+    )
+
     obs = forms.CharField(label=u'Observações', widget=forms.Textarea, required=False)
     def __init__(self, *args, **kwargs):
         self.devolve = kwargs.pop('devolve', None)
@@ -362,3 +371,13 @@ class MaterialConsumoForm(forms.ModelForm):
     class Meta:
         model = MaterialConsumo
         fields = ('nome', 'observacao',)
+
+
+class CriarLoteForm(forms.Form):
+    solicitacoes = forms.ModelMultipleChoiceField(queryset=ItemSolicitacaoLicitacao.objects, label=u'Selecione os Itens')
+
+    def __init__(self, *args, **kwargs):
+        self.pregao = kwargs.pop('pregao', None)
+        super(CriarLoteForm, self).__init__(*args, **kwargs)
+        itens_em_lotes = ItemLote.objects.filter(item__solicitacao=self.pregao.solicitacao)
+        self.fields['solicitacoes'].queryset = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.pregao.solicitacao, eh_lote=False).exclude(id__in=itens_em_lotes.values_list('item', flat=True))

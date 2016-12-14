@@ -11,10 +11,10 @@
                     {% if item.tem_rodada_aberta and item.eh_ativo and item.ativo %}
                         <a href="/base/cancelar_rodada/{{ item.id }}/" class="btn btn-danger" align="right">Cancelar Rodada</a>
                     {% endif %}
-                    {% if item.tem_item_anterior %}
+                    {% if item.tem_item_anterior and not item.eh_lote %}
                         <a href="/base/lances_item/{{ item.tem_item_anterior }}/" class="btn btn-info">Item Anterior</a>
                     {% endif %}
-                    {% if item.tem_proximo_item %}
+                    {% if item.tem_proximo_item and not item.eh_lote %}
                         <a href="/base/avancar_proximo_item/{{ item.id }}/" class="btn btn-warning">Próximo Item</a>
                         <a href="/base/pregao/{{ item.get_licitacao.id }}/#classificacao" class="btn btn-default">Voltar para o Pregão</a>
                     {% elif item.ativo %}
@@ -48,7 +48,36 @@
         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
             <thead>
                 <tr>
-                    <th colspan="3"><font size="4">Item {{ item.item }} - Pregão: {{ item.get_licitacao }}</font> - Situação: {{ item.situacao }}<br>Especificação: {{ item.material.nome|truncatechars:170 }}</th>
+                    {% if not item.eh_lote %}
+                        <th colspan="3"><font size="4">Item {{ item.item }} - Pregão: {{ item.get_licitacao }}</font> - Situação: {{ item.situacao }}<br>Especificação: {{ item.material.nome|truncatechars:170 }}</th>
+                    {% else %}
+                        <th colspan="3"><font size="4">Lote {{ item.item }} - Pregão: {{ item.get_licitacao }}</font> - Situação: {{ item.situacao }}<br>
+                            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">Ver Itens do Lote</button>
+
+                            <div id="demo" class="collapse">
+                                <br>
+                                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Quantidade</th>
+                                            <th>Valor Médio</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in itens_do_lote %}
+                                            <tr>
+                                                <td>{{ item.material }}</td>
+                                                <td>{{ item.quantidade }}</td>
+                                                <td>{{ item.valor_medio }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                               </table>
+                        </div>
+                        </th>
+                    {% endif %}
                 </tr>
                 <tr>
 

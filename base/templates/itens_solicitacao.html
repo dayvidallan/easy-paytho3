@@ -70,15 +70,15 @@
             <a class="btn btn-success" href="/base/cadastrar_minuta/{{solicitacao.id}}/">Cadastrar Minuta</a>
          {% endif %}
 
-         {% if perms.base.pode_avaliar_minuta and recebida_no_setor and not solicitacao.data_avaliacao_minuta %}
+         {% if perms.base.pode_avaliar_minuta and recebida_no_setor and not solicitacao.data_avaliacao_minuta and solicitacao.arquivo_minuta %}
             <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Aprovar Minuta</a>
             <a class="btn btn-danger" href="/base/avalia_minuta/{{ solicitacao.pk }}/2/">Reprovar Minuta</a>
          {% endif %}
-         {% if perms.base.pode_abrir_processo and not solicitacao.processo %}
+         {% if perms.base.pode_abrir_processo and not solicitacao.processo and recebida_no_setor %}
             <a class="btn btn-success" href="/base/abrir_processo_para_solicitacao/{{ solicitacao.pk }}/">Abrir Processo</a>
 
          {% endif %}
-         {% if solicitacao.prazo_aberto %}
+         {% if solicitacao.prazo_aberto and perms.base.pode_cadastrar_pesquisa_mercadologica %}
             <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{url}}base/preencher_itens_pesquisa_mercadologica/{{ solicitacao.id }}/"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
         {% endif %}
         <br><br>

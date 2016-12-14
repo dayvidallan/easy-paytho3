@@ -116,10 +116,10 @@ class Command(BaseCommand):
 
         tipo1 = TipoPregao.objects.get_or_create(nome=u'Por Item')[0]
         tipo2 = TipoPregao.objects.get_or_create(nome=u'Por Lote')[0]
-        tipo3 = TipoPregao.objects.get_or_create(nome=u'Por Grupo de Itens')[0]
+        #tipo3 = TipoPregao.objects.get_or_create(nome=u'Por Grupo de Itens')[0]
 
         criterio1 = CriterioPregao.objects.get_or_create(nome=u'Menor Preço')[0]
-        criterio2 = CriterioPregao.objects.get_or_create(nome=u'Menor Percentual')[0]
+        #criterio2 = CriterioPregao.objects.get_or_create(nome=u'Menor Percentual')[0]
         criterio3 = CriterioPregao.objects.get_or_create(nome=u'Maior Desconto')[0]
 
         ramo1 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 1')[0]

@@ -80,6 +80,8 @@ urlpatterns = patterns('base.views',
     url(r'^abrir_processo_para_solicitacao/(?P<solicitacao_id>\d+)/$', views.abrir_processo_para_solicitacao, name='abrir_processo_para_solicitacao'),
     url(r'^ver_processo/(?P<processo_id>\d+)/$', views.ver_processo, name='ver_processo'),
     url(r'^imprimir_capa_processo/(?P<processo_id>\d+)/$', views.imprimir_capa_processo, name='imprimir_capa_processo'),
+    url(r'^criar_lote/(?P<pregao_id>\d+)/$', views.criar_lote, name='criar_lote'),
+
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),

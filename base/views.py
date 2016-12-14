@@ -19,6 +19,7 @@ from django.db.models import Q
 from dal import autocomplete
 from django.contrib.auth.models import Group
 from templatetags.app_filters import format_money
+from django.db.transaction import atomic
 
 class SecretariaAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
@@ -136,8 +137,14 @@ def fornecedor(request, fornecedor_id):
 def pregao(request, pregao_id):
 
     pregao = get_object_or_404(Pregao, pk= pregao_id)
+    eh_lote = pregao.tipo == TipoPregao.objects.get(id=2)
+    if eh_lote:
+        lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
     title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
-    itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
+    itens_pregao_unidades = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
     participantes = ParticipantePregao.objects.filter(pregao=pregao,desclassificado=False)
     resultados = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id',flat=True))
     buscou = False
@@ -161,7 +168,7 @@ def pregao(request, pregao_id):
 def cadastra_proposta_pregao(request, pregao_id):
     title=u'Cadastrar Proposta'
     pregao = get_object_or_404(Pregao, pk= pregao_id)
-    itens = pregao.solicitacao.itemsolicitacaolicitacao_set.all().order_by('item')
+    itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
     edicao=False
     participante = None
     selecionou = False
@@ -172,7 +179,7 @@ def cadastra_proposta_pregao(request, pregao_id):
         if itens.exists():
             edicao=True
         else:
-            itens = pregao.solicitacao.itemsolicitacaolicitacao_set.all().order_by('item')
+            itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
     if edicao or selecionou:
         form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao, initial=dict(fornecedor=participante))
     else:
@@ -198,7 +205,7 @@ def cadastra_proposta_pregao(request, pregao_id):
                     else:
                         if item and valor and marca:
                             fornecedor = form.cleaned_data.get('fornecedor')
-                            item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
+                            item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
                             if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
                                 PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
                             else:
@@ -229,6 +236,25 @@ def cadastra_proposta_pregao(request, pregao_id):
                     novo_preco.valor = item.replace('.','').replace(',','.')
                     novo_preco.marca = request.POST.getlist('marcas')[idx-1]
                     novo_preco.save()
+
+
+        lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
+        if lotes.exists():
+            for lote in lotes:
+                itens = ItemLote.objects.filter(lote=lote)
+                if itens.exists():
+                    propostas = PropostaItemPregao.objects.filter(item__in=itens.values_list('item', flat=True), participante=fornecedor, pregao=pregao)
+                    if propostas.exists():
+                        total_propostas = propostas.aggregate(total=Sum('valor'))['total']
+                        if PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).exists():
+                            PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).update(valor=total_propostas)
+                        else:
+                            nova_proposta_para_lote = PropostaItemPregao()
+                            nova_proposta_para_lote.pregao = pregao
+                            nova_proposta_para_lote.item = lote
+                            nova_proposta_para_lote.participante = fornecedor
+                            nova_proposta_para_lote.valor = total_propostas
+                            nova_proposta_para_lote.save()
 
         messages.success(request, u'Proposta cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % pregao.id)
@@ -270,7 +296,7 @@ def cadastra_participante_pregao(request, pregao_id):
         o.save()
 
         messages.success(request, u'Participante cadastrado com sucesso')
-        return HttpResponseRedirect(u'/base/pregao/%s/#tab1' % pregao.id)
+        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
     return render_to_response('cadastra_participante_pregao.html', locals(), RequestContext(request))
 
@@ -335,6 +361,10 @@ def lances_item(request, item_id):
         messages.error(request, u'Este item não possui nenhuma proposta cadastrada.')
         return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % item.get_licitacao().id)
     rodadas = RodadaPregao.objects.filter(item=item)
+    itens_do_lote = False
+    if item.eh_lote:
+        itens_do_lote = ItemSolicitacaoLicitacao.objects.filter(id__in=ItemLote.objects.filter(lote=item).values_list('item', flat=True))
+
 
     if request.GET and request.GET.get('filtrar') == u'1':
         if item.ja_recebeu_lance():
@@ -391,7 +421,11 @@ def lances_item(request, item_id):
         novo_lance.valor = form.cleaned_data.get('lance')
         novo_lance.save()
         messages.success(request, u'Novo lance cadastrado com sucesso.')
-    title=u'Lances - Item: %s' % item
+
+    if item.eh_lote:
+        title=u'Lances - Lote: %s' % item.item
+    else:
+        title=u'Lances - Item: %s' % item
     tabela = {}
     resultado = {}
     lances = LanceItemRodadaPregao.objects.filter(item=item)
@@ -740,7 +774,7 @@ def desclassificar_do_pregao(request, participante_id):
 def planilha_propostas(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = get_object_or_404(Pregao, solicitacao=solicitacao)
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
 
     import xlwt
     response = HttpResponse(content_type='application/ms-excel')
@@ -1775,3 +1809,41 @@ def imprimir_capa_processo(request, processo_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+@atomic
+@login_required()
+def criar_lote(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    title= u'Pregão %s - Cadastrar Novo Lote' % pregao
+    form = CriarLoteForm(request.POST or None, pregao=pregao)
+    if form.is_valid():
+        ids = list()
+        valor_medio = Decimal(0.00)
+        quantidade = 1
+        for item in form.cleaned_data.get('solicitacoes'):
+            ids.append(item.id)
+            valor_medio += item.valor_medio
+
+
+        novo_lote = ItemSolicitacaoLicitacao()
+        novo_lote.solicitacao = pregao.solicitacao
+        novo_lote.item = pregao.solicitacao.get_proximo_item(eh_lote=True)
+        novo_lote.quantidade = quantidade
+        novo_lote.valor_medio = valor_medio
+        novo_lote.total = valor_medio
+        novo_lote.eh_lote = True
+        novo_lote.save()
+
+
+        for item in ids:
+            solicitacao = get_object_or_404(ItemSolicitacaoLicitacao, pk=item)
+            novo_item_lote = ItemLote()
+            novo_item_lote.lote = novo_lote
+            novo_item_lote.item = solicitacao
+            novo_item_lote.save()
+
+        messages.success(request, u'Lote criado com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
+
+
+    return render_to_response('criar_lote.html', locals(), context_instance=RequestContext(request))
