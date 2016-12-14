@@ -1,3 +1,5 @@
 psql -Upostgres -hlocalhost -d licita < dump_material.sql
 
 https://walkyso@bitbucket.org/walkyso/easy_licitacao.git
+
+chown www-data:www-data -R media

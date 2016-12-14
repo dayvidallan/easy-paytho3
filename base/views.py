@@ -468,7 +468,7 @@ def itens_solicitacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'Solicitação - Memorando: %s' % solicitacao
     setor_do_usuario = request.user.pessoafisica.setor
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
     movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao)
     if movimentacao.exists():
