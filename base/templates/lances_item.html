@@ -83,7 +83,11 @@
 
 
                     <th>Valor Máximo</th>
-                    <th>Menor Lance</th>
+                    {% if eh_modalidade_desconto %}
+                        <th>Maior Desconto</th>
+                    {% else %}
+                        <th>Menor Lance</th>
+                    {% endif %}
                     <th>Opções</th>
                 </tr>
             </thead>
@@ -92,7 +96,11 @@
 
 
                     <td><font color="red"><b>{{ item.valor_medio|format_money }}</b></font></td>
-                    <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor|format_money  }}</b></font></td>
+                    {% if eh_modalidade_desconto %}
+                        <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor }}%</b></font></td>
+                    {% else %}
+                        <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor|format_money }}</b></font></td>
+                    {% endif %}
                     <td>
                         {% if item.eh_ativo and item.ativo %}
                             <a href="/base/encerrar_itempregao/{{ item.id }}/1/" class="btn btn-warning btn-sm">Deserto</a>
@@ -132,7 +140,11 @@
                 </tr>
                 <tr>
                     <th>Fornecedor</th>
-                    <th>Valor</th>
+                    {% if eh_modalidade_desconto %}
+                        <th>Desconto</th>
+                    {% else %}
+                        <th>Valor</th>
+                    {% endif %}
                     <th>ME/EPP</th>
                     <th>Opções</th>
                 </tr>
@@ -152,7 +164,11 @@
                                 {{ preco.participante }}
                             {% endif %}
                         </td>
-                        <td width="15%">{{ preco.valor|format_money }}</td>
+                        {% if eh_modalidade_desconto %}
+                            <td width="15%">{{ preco.valor }}%</td>
+                        {% else %}
+                            <td width="15%">{{ preco.valor|format_money }}</td>
+                        {% endif %}
                         <td>{% if preco.participante.me_epp %}
                                 <font color="green">sim</font>
                             {% else %}
@@ -260,7 +276,11 @@
                         <tr>
                             <th>Rodada</th>
                             <th width="5%">Lance</th>
-                            <th width="20%">Valor</th>
+                            {% if eh_modalidade_desconto %}
+                                <th width="20%">Desconto</th>
+                            {% else %}
+                                <th width="20%">Valor</th>
+                            {% endif %}
                             <th width="40%">Fornecedor</th>
                         </tr>
                     </thead>
@@ -273,10 +293,14 @@
                                    <td>{% if lance.declinio %}
                                             <font color="red">Declinado</font>
                                        {% else %}
-                                        {{ lance.valor|format_money }}
-                                        {% if lance.rodada.eh_rodada_atual and item.ativo %}
-                                            <a href="/base/alterar_valor_lance/{{ lance.id }}/"> alterar</a>
-                                        {% endif %}
+                                            {% if eh_modalidade_desconto %}
+                                                {{ lance.valor }}%
+                                            {% else %}
+                                                {{ lance.valor|format_money }}
+                                            {% endif %}
+                                            {% if lance.rodada.eh_rodada_atual and item.ativo %}
+                                                <a href="/base/alterar_valor_lance/{{ lance.id }}/"> alterar</a>
+                                            {% endif %}
                                        {% endif %}
                                    </td>
                                    <td>{{ lance.participante }}</td>

@@ -272,6 +272,8 @@ def propostas_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
     itens = PropostaItemPregao.objects.filter(item=item)
     titulo = u'Valores - Item %s - Pregão: %s' % (item.item, item.solicitacao.pregao_set.all()[0])
+    eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
+
     return render_to_response('propostas_item.html', locals(), RequestContext(request))
 
 @login_required()
@@ -354,6 +356,8 @@ def lances_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
     desempatar = False
     botao_incluir = False
+    eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
+
     fornecedores_lance = PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
     if request.GET.get('empate'):
         desempatar = True
@@ -392,26 +396,50 @@ def lances_item(request, item_id):
         else:
             participante = item.get_proximo_lance() or item.get_participante_desempate()
         rodada_anterior = int(rodada_atual.rodada) - 1
-        if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
-            messages.error(request, u'Você não pode dar uma lance maior do que sua proposta.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+        if not eh_modalidade_desconto:
+            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
+                messages.error(request, u'Você não pode dar uma lance maior do que sua proposta.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-        if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
-            messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+            if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
+                messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-        if form.cleaned_data.get('lance') >= item.valor_medio:
-            messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+            if form.cleaned_data.get('lance') >= item.valor_medio:
+                messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-        if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
-            messages.error(request, u'Este lance já foi dado.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+            if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
+                messages.error(request, u'Este lance já foi dado.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-        if desempatar and item.tem_empate_beneficio():
-            if LanceItemRodadaPregao.objects.filter(item=item, valor__lt=form.cleaned_data.get('lance')).exists():
-                messages.error(request, u'Você não pode dar um lance maior que o menor lance atual.')
-                return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+            if desempatar and item.tem_empate_beneficio():
+                if LanceItemRodadaPregao.objects.filter(item=item, valor__lt=form.cleaned_data.get('lance')).exists():
+                    messages.error(request, u'Você não pode dar um lance maior que o menor lance atual.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+
+        else:
+            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') <= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
+                messages.error(request, u'Você não pode dar uma lance menor do que sua proposta.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+            if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') <= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
+                messages.error(request, u'Você não pode dar uma lance menor do que o lance da rodada anterior.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+            # if form.cleaned_data.get('lance') >= item.valor_medio:
+            #     messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
+            #     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+            if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
+                messages.error(request, u'Este lance já foi dado.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+            if desempatar and item.tem_empate_beneficio():
+                if LanceItemRodadaPregao.objects.filter(item=item, valor__gt=form.cleaned_data.get('lance')).exists():
+                    messages.error(request, u'Você não pode dar um lance menor que o maior lance atual.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+
 
 
         novo_lance = LanceItemRodadaPregao()
@@ -430,6 +458,7 @@ def lances_item(request, item_id):
     resultado = {}
     lances = LanceItemRodadaPregao.objects.filter(item=item)
 
+
     num_rodadas =  rodadas.values('rodada').order_by('rodada').distinct('rodada')
     for num in num_rodadas:
         chave = '%s' % num['rodada']
@@ -439,7 +468,10 @@ def lances_item(request, item_id):
         tabela[chave].append(lance)
 
     import collections
-    resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True))
+    if eh_modalidade_desconto:
+        resultado = collections.OrderedDict(sorted(tabela.items()))
+    else:
+        resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True))
     return render_to_response('lances_item.html', locals(), RequestContext(request))
 
 @login_required()

@@ -20,7 +20,11 @@
                 <thead>
                     <th>Fornecedor</th>
                     <th>Marca</th>
-                    <th>Valor</th>
+                    {% if eh_modalidade_desconto %}
+                        <th>Desconto</th>
+                    {% else %}
+                        <th>Valor</th>
+                    {% endif %}
                     <th>Situação</th>
                 </thead>
                 <tbody>
@@ -28,7 +32,11 @@
                         <tr>
                             <td>{{ item.participante }}</td>
                             <td>{{ item.marca }}</td>
-                            <td>{{ item.valor|format_money }}</td>
+                            {% if eh_modalidade_desconto %}
+                                <td>{{ item.valor }}%</td>
+                            {% else %}
+                                <td>{{ item.valor|format_money }}</td>
+                            {% endif %}
                             <td>{{ item.get_situacao_valor|safe }}</td>
                         </tr>
                     {% endfor %}
