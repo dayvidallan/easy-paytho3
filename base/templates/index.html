@@ -9,50 +9,7 @@
         <a href="/base/itens_solicitacao/{{ tem_preencher_itens.id }}/"><p class="alert alert-info">Existem solicitações aguardando sua secretaria informar as quantidades dos itens.</p></a>
     {% endif %}
 
-    <a href="/base/ver_solicitacoes/">
-        <div class="col-lg-2 col-md-4">
-
-            <div class="panel panel-warning">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-users fa-3x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ num_membros }}</div>
-                            <div><strong>Solicitações de Compra</strong></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </a>
-
-    {% if perms.base.pode_cadastrar_pregao %}
-
-
-        <a href="/licitacoes/">
-            <div class="col-lg-2 col-md-4">
-
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-users fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ num_membros }}</div>
-                                <div><strong>Licitações</strong></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
-
-
-    {% endif %}
-    {% if request.is_superuser %}
+    {% if request.user.is_superuser %}
         <a href="/administracao/">
             <div class="col-lg-2 col-md-4">
 
@@ -71,7 +28,54 @@
                 </div>
             </div>
         </a>
+    {% else %}
+
+        {% if perms.base.pode_cadastrar_pregao %}
+
+
+            <a href="/base/ver_pregoes/">
+                <div class="col-lg-2 col-md-4">
+
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-users fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Licitações</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        {% else %}
+            <a href="/base/ver_solicitacoes/">
+                <div class="col-lg-2 col-md-4">
+
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-users fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Solicitações de Compra</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endif %}
+
     {% endif %}
+
+
         {% if request.user.is_superuser %}
             <a href="/admin/">
         {% else %}

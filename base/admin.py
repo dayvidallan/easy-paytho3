@@ -208,7 +208,6 @@ class TipoUnidadeAdmin(NewModelAdmin):
     ordering = ('nome',)
     list_filter = ('nome',)
 
-
 admin.site.register(TipoUnidade, TipoUnidadeAdmin)
 
 class MaterialConsumoAdmin(NewModelAdmin):
@@ -236,3 +235,11 @@ class MaterialConsumoAdmin(NewModelAdmin):
         return super(MaterialConsumoAdmin, self).response_add(request, obj)
 
 admin.site.register(MaterialConsumo, MaterialConsumoAdmin)
+
+class ConfiguracaoAdmin(NewModelAdmin):
+    form = ConfiguracaoForm
+    list_display = ('nome', 'endereco', 'logo')
+    ordering = ('nome',)
+    list_filter = ('nome',)
+
+admin.site.register(Configuracao, ConfiguracaoAdmin)

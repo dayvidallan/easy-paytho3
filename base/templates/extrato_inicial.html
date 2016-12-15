@@ -1,0 +1,128 @@
+{% load bootstrap %}
+
+{% block extrastyle %}
+ <style>
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            @frame content_frame {
+				    {% block content_frame %}
+    				top: 20;
+    				left: 20;
+    				right: 20;
+    				bottom: 60;
+    				{% endblock %}
+    			}
+
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.5cm;
+                left: 0.5cm;
+                right: 0.5cm;
+                height: 1.8cm;
+            }
+     }
+
+     div.topo {
+
+       border-bottom-width:1px;
+        border-bottom-style:solid;
+        border-bottom-color:#BEBEBE;
+        height: 1px;
+      }
+
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    <table border="0" width="100%">
+      <tr>
+        <td  width="50%" cellspacing="10" cellpadding="10"><img src="{{imagem}}"  width="150" height="90"></td>
+        <td width="10%">&nbsp;</td>
+        <td>
+            <table>
+                <tr>
+                    <td style="font-size:14px;">{{configuracao.nome}}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px;">Endereço: {{configuracao.endereco}}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px;">Telefone: {{configuracao.telefones|default_if_none:""}}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px;">Email: {{configuracao.email|default_if_none:""}}</td>
+                </tr>
+            </table>
+        </td>
+        <td width="40%" align="right" ><img src="{{logo_telessaude}}"  width="115" height="40"></td>
+        <td width="20%" align="right" ><img src="{{logo_sus}}"  width="60" height="35"></td>
+      </tr>
+
+
+
+    </table>
+    <br><br>
+    <center>
+        <font size="4">AVISO DE LICITAÇÃO - PREGÃO PRESENCIAL No {{ pregao.num_processo }}</font><br><br>
+
+    </center>
+  </h1>
+
+{% endblock %}
+
+{% block content %}
+  <p align="justify">
+
+
+
+        O Pregoeiro Oficial da <b>{{configuracao.nome}}</b>, objetivando o grau de competitividade preconizado pela administração pública, torna público que estará realizando a(s) licitação(ões) abaixo descrita(s), a saber:
+
+        <br><br>- PREGÃO PRESENCIAL No <b>{{ pregao.num_pregao }}</b> - Processo Administrativo nº <b>{{ pregao.num_processo }}</b>
+        <br><br> Originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b>, que objetiva a <b>{{pregao.solicitacao.objeto}}</b>, conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital, cuja sessão inicial está marcada para o DIA <b>{{ pregao.data_abertura }}</b>, às <b>{{ pregao.hora_abertura}}</b> (Horário local).
+
+    A(s) referida(s) sessão(ões) será(ão) realizada(s) em: {{ pregao.local}}.
+        O(s) Edital(is) e seus anexos, com as condições e especificações, encontra(m)-se à disposição dos interessados no Setor de Licitações, no endereço acima indicado, das 07:00h às 13:00h, de segunda a sexta-feira, em dias de expediente. O(s) Edital(is) poderão ser requeridos por meio do email <b>{{configuracao.email}}</b>, através de solicitação contendo o timbrado da requerente e assinado por representante habilitado.
+        Quaisquer esclarecimentos poderão ser prestados no endereço indicado ou através dos telefones: <b>{{ configuracao.telefones }}</b>.
+
+    <center>
+        <br><br>
+        {{configuracao.municipio}}, {{ pregao.data_inicio }}
+
+
+        <br><br>
+        <b>{{ pregao.responsavel }}</b><br>
+        Pregoeiro
+    </center>
+
+    </p>
+
+
+    <div id="footerContent">
+
+    </div>
+
+{% endblock %}

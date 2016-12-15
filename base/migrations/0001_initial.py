@@ -69,6 +69,21 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Configuracao',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('nome', models.CharField(max_length=200, null=True, verbose_name='Nome')),
+                ('endereco', models.CharField(max_length=2000, null=True, verbose_name='Endere\xe7o')),
+                ('email', models.CharField(max_length=200, null=True, verbose_name='Email')),
+                ('telefones', models.CharField(help_text='Separar os telefones usando /', max_length=1000, null=True, verbose_name='Telefones')),
+                ('logo', models.ImageField(upload_to='upload/logo/', null=True, verbose_name='Logo', blank=True)),
+            ],
+            options={
+                'verbose_name': 'Vari\xe1vel de Configura\xe7\xe3o',
+                'verbose_name_plural': 'Vari\xe1veis de Configura\xe7\xe3o',
+            },
+        ),
+        migrations.CreateModel(
             name='CriterioPregao',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -692,6 +707,11 @@ class Migration(migrations.Migration):
             model_name='fornecedor',
             name='ramo_atividade',
             field=models.ForeignKey(verbose_name='Ramo de Atividade', to='base.RamoAtividade'),
+        ),
+        migrations.AddField(
+            model_name='configuracao',
+            name='municipio',
+            field=models.ForeignKey(to='base.Municipio', null=True),
         ),
         migrations.AddField(
             model_name='comissaolicitacao',

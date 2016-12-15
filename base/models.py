@@ -1092,3 +1092,17 @@ class MaterialConsumo(models.Model):
 
     def __unicode__(self):
         return '%s (Cód: %s)' % (self.nome[:100], self.codigo)
+
+
+class Configuracao(models.Model):
+    nome = models.CharField(u'Nome', max_length=200, null=True)
+    endereco = models.CharField(u'Endereço', max_length=2000, null=True)
+    municipio = models.ForeignKey('base.Municipio', null=True)
+    email = models.CharField(u'Email', max_length=200, null=True)
+    telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
+    logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
+
+
+    class Meta:
+        verbose_name = u'Variável de Configuração'
+        verbose_name_plural = u'Variáveis de Configuração'

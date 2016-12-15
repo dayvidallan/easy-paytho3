@@ -1,5 +1,39 @@
-psql -Upostgres -hlocalhost -d licita < dump_material.sql
 
-https://walkyso@bitbucket.org/walkyso/easy_licitacao.git
+ssh root@159.203.181.26
 
-chown www-data:www-data -R media
+cd /home/workspace/
+
+rm -rf licita
+
+git clone https://walkyso@bitbucket.org/walkyso/easy_licitacao.git
+
+mv easy_licitacao/ licita
+
+chown www-data:www-data -R licita
+
+cd licita
+
+sudo su postgres
+
+psql
+
+drop database licita;
+
+create database licita;
+
+CNTRL + D
+
+su root
+
+./manage.py sync
+
+./manage.py criar_base_teste
+
+cd sql
+
+psql -Uwalkyso -hlocalhost -d licita < dump_material.sql
+
+cd /etc/supervisor
+
+sudo supervisorctl restart all
+

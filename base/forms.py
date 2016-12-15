@@ -381,3 +381,17 @@ class CriarLoteForm(forms.Form):
         super(CriarLoteForm, self).__init__(*args, **kwargs)
         itens_em_lotes = ItemLote.objects.filter(item__solicitacao=self.pregao.solicitacao)
         self.fields['solicitacoes'].queryset = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.pregao.solicitacao, eh_lote=False).exclude(id__in=itens_em_lotes.values_list('item', flat=True))
+
+class ConfiguracaoForm(forms.ModelForm):
+    estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
+    municipio = utils.ChainedModelChoiceField(Municipio.objects,
+      label                = u'Município',
+      empty_label          = u'Selecione o Estado',
+      obj_label            = 'nome',
+      form_filters         = [('estado', 'estado_id')],
+      required=False
+    )
+
+    class Meta:
+        model = Configuracao
+        fields = ('nome', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo')
