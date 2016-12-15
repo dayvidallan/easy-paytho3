@@ -94,16 +94,6 @@ class TipoUnidade(models.Model):
         verbose_name = u'Tipo de Unidade'
         verbose_name_plural = u'Tipos de Unidade'
 
-class DotacaoOrcamentaria(models.Model):
-    nome = models.CharField(u'Nome', max_length=100)
-
-    def __unicode__(self):
-        return self.nome
-
-    class Meta:
-        verbose_name = u'Dotação Orçamentária'
-        verbose_name_plural = u'Dotações Orçamentárias'
-
 
 class Processo(models.Model):
     STATUS_EM_TRAMITE = 1
@@ -267,7 +257,7 @@ class SolicitacaoLicitacao(models.Model):
         return Pregao.objects.filter(solicitacao=self)[0]
 
     def eh_maior_desconto(self):
-        return self.get_pregao().criterio == CriterioPregao.objects.get(id=2)
+        return self.get_pregao().tipo == TipoPregao.objects.get(id=2)
 
 
 class ItemSolicitacaoLicitacao(models.Model):
@@ -285,7 +275,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     )
 
     solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação')
-    item = models.IntegerField(u'Item')
+    item = models.CharField(u'Item', max_length=50)
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     quantidade = models.PositiveIntegerField(u'Quantidade')
@@ -297,7 +287,12 @@ class ItemSolicitacaoLicitacao(models.Model):
     eh_lote = models.BooleanField(u'Lote', default=False)
 
     def __unicode__(self):
-        return 'Item: %s - Material: %s' % (self.item, self.material.nome)
+
+        if ItemLote.objects.filter(item=self).exists():
+            id_lote = ItemLote.objects.filter(item=self)[0].lote.item
+            num_item = ItemLote.objects.filter(item=self)[0].numero_item
+            return 'Item: %s.%s - %s' % (id_lote, num_item, self.material)
+        return 'Item: %s - %s' % (self.item, self.material)
 
     class Meta:
         ordering = ['item']
@@ -602,6 +597,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 class ItemLote(models.Model):
     lote = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'lote')
     item = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'item_do_lote')
+    numero_item = models.IntegerField(u'Número do Item')
 
     class Meta:
         verbose_name = u'Item do Lote'
@@ -750,7 +746,6 @@ class PropostaItemPregao(models.Model):
     class Meta:
         verbose_name = u'Valor do Item do Pregão'
         verbose_name_plural = u'Valores do Item do Pregão'
-        unique_together = ('item','participante')
 
     def __unicode__(self):
         return u'%s - %s' % (self.item, self.participante)
@@ -1096,4 +1091,4 @@ class MaterialConsumo(models.Model):
 
 
     def __unicode__(self):
-        return '%s - %s' % (self.codigo, self.nome)
+        return '%s (Cód: %s)' % (self.nome[:100], self.codigo)

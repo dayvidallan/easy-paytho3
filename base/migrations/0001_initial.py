@@ -80,17 +80,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='DotacaoOrcamentaria',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('nome', models.CharField(max_length=100, verbose_name='Nome')),
-            ],
-            options={
-                'verbose_name': 'Dota\xe7\xe3o Or\xe7ament\xe1ria',
-                'verbose_name_plural': 'Dota\xe7\xf5es Or\xe7ament\xe1rias',
-            },
-        ),
-        migrations.CreateModel(
             name='Estado',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -147,6 +136,7 @@ class Migration(migrations.Migration):
             name='ItemLote',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('numero_item', models.IntegerField(verbose_name='N\xfamero do Item')),
             ],
             options={
                 'verbose_name': 'Item do Lote',
@@ -191,7 +181,7 @@ class Migration(migrations.Migration):
             name='ItemSolicitacaoLicitacao',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('item', models.IntegerField(verbose_name='Item')),
+                ('item', models.CharField(max_length=50, verbose_name='Item')),
                 ('quantidade', models.PositiveIntegerField(verbose_name='Quantidade')),
                 ('valor_medio', models.DecimalField(null=True, verbose_name='Valor M\xe9dio', max_digits=10, decimal_places=2, blank=True)),
                 ('total', models.DecimalField(null=True, verbose_name='Total', max_digits=10, decimal_places=2, blank=True)),
@@ -712,9 +702,5 @@ class Migration(migrations.Migration):
             model_name='anexopregao',
             name='pregao',
             field=models.ForeignKey(to='base.Pregao'),
-        ),
-        migrations.AlterUniqueTogether(
-            name='propostaitempregao',
-            unique_together=set([('item', 'participante')]),
         ),
     ]

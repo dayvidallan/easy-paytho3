@@ -137,7 +137,7 @@ def fornecedor(request, fornecedor_id):
 def pregao(request, pregao_id):
 
     pregao = get_object_or_404(Pregao, pk= pregao_id)
-    eh_lote = pregao.tipo == TipoPregao.objects.get(id=2)
+    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
     if eh_lote:
         lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
@@ -186,6 +186,7 @@ def cadastra_proposta_pregao(request, pregao_id):
         form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao)
     if form.is_valid():
         arquivo_up = form.cleaned_data.get('arquivo')
+        fornecedor = form.cleaned_data.get('fornecedor')
         if arquivo_up:
             sheet = None
             try:
@@ -204,7 +205,6 @@ def cadastra_proposta_pregao(request, pregao_id):
                             raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Marca e Valor.')
                     else:
                         if item and valor and marca:
-                            fornecedor = form.cleaned_data.get('fornecedor')
                             item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
                             if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
                                 PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
@@ -228,11 +228,11 @@ def cadastra_proposta_pregao(request, pregao_id):
         if not edicao and not arquivo_up:
             for idx, item in enumerate(request.POST.getlist('itens'), 1):
                 if item:
-                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pregao.solicitacao,item=idx)
+                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=idx)
                     novo_preco = PropostaItemPregao()
                     novo_preco.item = item_do_pregao
                     novo_preco.pregao = pregao
-                    novo_preco.participante = form.cleaned_data.get('fornecedor')
+                    novo_preco.participante = fornecedor
                     novo_preco.valor = item.replace('.','').replace(',','.')
                     novo_preco.marca = request.POST.getlist('marcas')[idx-1]
                     novo_preco.save()
@@ -1866,13 +1866,15 @@ def criar_lote(request, pregao_id):
         novo_lote.eh_lote = True
         novo_lote.save()
 
-
+        controle = 1
         for item in ids:
             solicitacao = get_object_or_404(ItemSolicitacaoLicitacao, pk=item)
             novo_item_lote = ItemLote()
             novo_item_lote.lote = novo_lote
             novo_item_lote.item = solicitacao
+            novo_item_lote.numero_item = controle
             novo_item_lote.save()
+            controle +=1
 
         messages.success(request, u'Lote criado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)

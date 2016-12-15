@@ -403,12 +403,10 @@
                                     <td>
                                         <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
 
-                                        {% if not eh_lote %}
-                                            {% if pregao.eh_ativo and  item.ativo %}
-                                                <a class="btn btn-success btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
-                                            {% else %}
-                                                <a class="btn btn-default btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Ver Lances</a>
-                                            {% endif %}
+                                        {% if pregao.eh_ativo and  item.ativo %}
+                                            <a class="btn btn-success btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
+                                        {% else %}
+                                            <a class="btn btn-default btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Ver Lances</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -482,7 +480,7 @@
                                                 <tbody>
                                                     {% for item in item.get_itens_do_lote %}
                                                         <tr>
-                                                            <td>{{ item.material }}</td>
+                                                            <td>{{ item }}</td>
                                                             <td>{{ item.quantidade }}</td>
                                                             <td>{{ item.valor_medio }}</td>
                                                         </tr>

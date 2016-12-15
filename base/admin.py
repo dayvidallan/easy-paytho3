@@ -179,13 +179,13 @@ class ModalidadePregaoAdmin(NewModelAdmin):
 
 admin.site.register(ModalidadePregao, ModalidadePregaoAdmin)
 
-class TipoPregaoAdmin(NewModelAdmin):
-    list_display = ('nome',)
-    ordering = ('nome',)
-    list_filter = ('nome',)
-
-
-admin.site.register(TipoPregao, TipoPregaoAdmin)
+# class TipoPregaoAdmin(NewModelAdmin):
+#     list_display = ('nome',)
+#     ordering = ('nome',)
+#     list_filter = ('nome',)
+#
+#
+# admin.site.register(TipoPregao, TipoPregaoAdmin)
 
 class ParticipantePregaoAdmin(NewModelAdmin):
     form = CadastraParticipantePregaoForm
@@ -217,9 +217,15 @@ class MaterialConsumoAdmin(NewModelAdmin):
     form = MaterialConsumoForm
 
     def save_model(self, request, obj, form, change):
-        id = MaterialConsumo.objects.latest('id')
-        obj.id = id.pk+1
-        obj.codigo = id.pk+1
+        if not change:
+            if MaterialConsumo.objects.exists():
+                id = MaterialConsumo.objects.latest('id')
+                obj.id = id.pk+1
+                obj.codigo = id.pk+1
+            else:
+                obj.id = 1
+                obj.codigo = 1
+
         obj.save()
 
     def response_add(self, request, obj):
@@ -227,6 +233,6 @@ class MaterialConsumoAdmin(NewModelAdmin):
         tt = '%s' % request.user.pessoafisica.id
         if request.session.get(tt):
             return HttpResponseRedirect('/base/cadastrar_item_solicitacao/%s/' % request.session.get(tt))
-
+        return super(MaterialConsumoAdmin, self).response_add(request, obj)
 
 admin.site.register(MaterialConsumo, MaterialConsumoAdmin)
