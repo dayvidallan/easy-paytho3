@@ -170,7 +170,29 @@
 	</script>
 {% endblock %}
 
+
 {% block content %}
+    <h3>Informações do Pregão</h3>
+    <div style="width:50%; float:left; position:absolute;">
+
+        <table class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th><b>Pregão N°</b></th><td>{{ pregao.num_pregao }}</td>
+                <th><b>Situação</b></th><td>{{ pregao.situacao }}</td>
+                <th><b>Critério</b></th><td>{{ pregao.criterio }}</td>
+            </tr>
+            <tr>
+                <th><b>Processo N°</b></th><td>{{ pregao.num_processo }}</td>
+                <th><b>Tipo de Pregão</b></th><td>{{ pregao.tipo }}</td>
+                <th><b>Sessão Inicial</b></th><td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura}}</td>
+            </tr>
+            <tr>
+
+
+            </tr>
+        </table>
+    </div>
+    <br><br><br><br>
      <div class="pull-right">
                 <a class="btn btn-info" href="/base/extrato_inicial/{{ pregao.pk }}/">Extrato Inicial</a>
                 {% if pregao.eh_ativo and not pregao.eh_suspenso %}

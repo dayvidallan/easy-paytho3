@@ -40,53 +40,89 @@ ul{
 
 
 {% block content %}
-
 <center>
     {% for key, lances in resultado.items %}
             {% if lances %}
-                {% block content_title %}
-                    <br>
-                  <h1 class="page-header">
-                    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
-                  </h1>
 
 
-                {% endblock %}
+                    {% block content_title %}
+                        <br>
+                      <h1 class="page-header">
+                        {% include "cabecalho.html" %}
+                        <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+                      </h1>
+
+                 {% endblock %}
 
                 <h2>Fornecedor: {{ key }}</h2>
-                <table border="1" width="100%" cellpadding="5" cellspacing="5">
-                    <thead>
-                        <tr>
-                            <th width="7%">Item</th>
-                            <th width="15%">Código</th>
-                            <th>Especificação</th>
-                            <th>Marca</th>
-                            <th>Unidade</th>
-                            <th width="15%">Quantidade</th>
-                            <th width="20%">Valor Unit.</th>
-                            <th width="20%">Total</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {%  for item in lances.lance %}
-
+                {% if eh_lote %}
+                    <table border="1" width="100%" cellpadding="5" cellspacing="5">
+                        <thead>
                             <tr>
-                                <td>{{ item.item }}</td>
-                                <td>{{ item.material.codigo }}</td>
-                                <td>{{ item.material.nome }}</td>
-                                <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
-                                <td>{{ item.unidade }}</td>
-                                <td>{{ item.quantidade }}</td>
-                                <td>R$ {{ item.get_vencedor.valor|format_money  }}</td>
-                                <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
-
+                                <th>Lote</th>
+                                <th>Itens do Lote</th>
+                                <th>Total</th>
 
                             </tr>
-                        {% endfor %}
-                        <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {%  for item in lances.lance %}
+
+                                <tr>
+                                    <td>{{ item.item }}</td>
+                                    <td>
+                                        {% for item in item.get_itens_do_lote %}
+                                            {{ item }}<br>
+                                        {% endfor %}
+                                    </td>
+                                    <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+
+
+                                </tr>
+                            {% endfor %}
+                            {% if eh_lote %}
+                                <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                            {% else %}
+                                <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                {% else %}
+                    <table border="1" width="100%" cellpadding="5" cellspacing="5">
+                        <thead>
+                            <tr>
+                                <th width="7%">Item</th>
+                                <th width="15%">Código</th>
+                                <th>Especificação</th>
+                                <th>Marca</th>
+                                <th>Unidade</th>
+                                <th width="15%">Quantidade</th>
+                                <th width="20%">Valor Unit.</th>
+                                <th width="20%">Total</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%  for item in lances.lance %}
+
+                                <tr>
+                                    <td>{{ item.item }}</td>
+                                    <td>{{ item.material.codigo }}</td>
+                                    <td>{{ item.material.nome }}</td>
+                                    <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
+                                    <td>{{ item.unidade }}</td>
+                                    <td>{{ item.quantidade }}</td>
+                                    <td>R$ {{ item.get_vencedor.valor|format_money  }}</td>
+                                    <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+
+
+                                </tr>
+                            {% endfor %}
+                            <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                        </tbody>
+                    </table>
+                {% endif %}
                 <pdf:nextpage />
             {% endif %}
     {% endfor %}

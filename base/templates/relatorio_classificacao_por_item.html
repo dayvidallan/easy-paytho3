@@ -38,28 +38,45 @@ ul{
  </style>
 {% endblock %}
 
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
 
+
+
+{% endblock %}
 {% block content %}
 
 <center>
     {% for key, lances in resultado.items %}
             {% if lances %}
-                {% block content_title %}
-                    <br>
-                  <h1 class="page-header">
-                    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
-                  </h1>
+                {% if eh_lote %}
+                    <h2>Lote: {{ key }}</h2>
+                    {% for num, item in itens.items %}
+                            <table border="0" align="center" width="55%" cellpadding="5" cellspacing="5">
+                                <font size="2">
+                                <tr><td>Composição do Lote</td></tr>
+                                {% for it in item %}
+                                    <tr><td>{{ it }}</td></tr>
+                                {% endfor %}
+                                    </font>
+                            </table>
 
-
-                {% endblock %}
-
-                <h2>Item: {{ key }}</h2>
+                    {% endfor %}
+                {% else %}
+                    <h2>Item: {{ key }}</h2>
+                {% endif %}
                 <table border="1" width="95%" cellpadding="5" cellspacing="5">
                     <thead>
                         <tr>
                             <th width="5%">Ordem</th>
                             <th>Situação</th>
-                            <th>Marca</th>
+                            {% if not eh_lote %}
+                                <th>Marca</th>
+                            {% endif %}
                             <th>Valor</th>
                             <th>Empresa</th>
                         </tr>
@@ -70,7 +87,9 @@ ul{
                             <tr>
                                 <td>{{ item.ordem }}</td>
                                 <td>{{ item.situacao }}</td>
-                                <td>{{ item.marca }}</td>
+                                {% if not eh_lote %}
+                                    <td>{{ item.marca }}</td>
+                                {% endif %}
                                 <td>{{ item.valor|format_money }}</td>
                                 <td>{{ item.participante }}</td>
                             </tr>

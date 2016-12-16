@@ -82,6 +82,11 @@ class PessoaFisicaForm(forms.ModelForm):
         if not self.request.user.is_superuser:
             self.fields['setor'].queryset = Setor.objects.filter(secretaria=self.request.user.pessoafisica.setor.secretaria)
 
+    def clean(self):
+        if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf')).exists():
+            self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
+
+
 class CadastrarItemSolicitacaoForm(forms.ModelForm):
     material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
 

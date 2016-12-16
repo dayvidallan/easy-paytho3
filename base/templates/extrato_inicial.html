@@ -21,6 +21,7 @@ ul{
 
      .page-header {
         font-size: 14px;
+        width: 100%;
 
      }
 
@@ -58,34 +59,7 @@ ul{
 {% block content_title %}
     <br>
   <h1 class="page-header">
-    <table border="0" width="100%">
-      <tr>
-        <td  width="50%" cellspacing="10" cellpadding="10"><img src="{{imagem}}"  width="150" height="90"></td>
-        <td width="10%">&nbsp;</td>
-        <td>
-            <table>
-                <tr>
-                    <td style="font-size:14px;">{{configuracao.nome}}</td>
-                </tr>
-                <tr>
-                    <td style="font-size:10px;">Endereço: {{configuracao.endereco}}</td>
-                </tr>
-                <tr>
-                    <td style="font-size:10px;">Telefone: {{configuracao.telefones|default_if_none:""}}</td>
-                </tr>
-                <tr>
-                    <td style="font-size:10px;">Email: {{configuracao.email|default_if_none:""}}</td>
-                </tr>
-            </table>
-        </td>
-        <td width="40%" align="right" ><img src="{{logo_telessaude}}"  width="115" height="40"></td>
-        <td width="20%" align="right" ><img src="{{logo_sus}}"  width="60" height="35"></td>
-      </tr>
-
-
-
-    </table>
-    <br><br>
+    {% include "cabecalho.html" %}
     <center>
         <font size="4">AVISO DE LICITAÇÃO - PREGÃO PRESENCIAL No {{ pregao.num_processo }}</font><br><br>
 

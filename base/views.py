@@ -149,7 +149,7 @@ def pregao(request, pregao_id):
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
     else:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
-    title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
+    #title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
     itens_pregao_unidades = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
     participantes = ParticipantePregao.objects.filter(pregao=pregao,desclassificado=False)
     resultados = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id',flat=True))
@@ -1431,20 +1431,27 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
 @login_required()
 def relatorio_resultado_final(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-
+    configuracao = Configuracao.objects.latest('id')
+    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+
+
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
     total = 0
     for item in itens_pregao:
         if item.get_total_lance_ganhador():
             total = total + item.get_total_lance_ganhador()
 
 
-    data = {'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
+    data = {'eh_lote':eh_lote, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
 
     template = get_template('relatorio_resultado_final.html')
 
@@ -1462,6 +1469,9 @@ def relatorio_resultado_final(request, pregao_id):
 @login_required()
 def relatorio_resultado_final_por_vencedor(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+    configuracao = Configuracao.objects.latest('id')
+    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
 
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
@@ -1471,7 +1481,11 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
 
     tabela = {}
     total = {}
-    itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao)
     chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
     for num in chaves:
@@ -1491,7 +1505,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
     import collections
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'eh_lote':eh_lote, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_resultado_final_por_vencedor.html')
 
@@ -1536,7 +1550,9 @@ def relatorio_lista_participantes(request, pregao_id):
 @login_required()
 def relatorio_classificacao_por_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-
+    configuracao = Configuracao.objects.latest('id')
+    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
@@ -1544,22 +1560,24 @@ def relatorio_classificacao_por_item(request, pregao_id):
     data_emissao = datetime.date.today()
 
     tabela = {}
-
+    itens = {}
     resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     chaves =  resultado.values('item__item').order_by('item')
     for num in chaves:
         chave = '%s' % num['item__item']
         tabela[chave] = []
+        itens[chave] =  []
 
     for item in resultado.order_by('item','ordem'):
         chave = '%s' % str(item.item.item)
         tabela[chave].append(item)
+        itens[chave] = item.item.get_itens_do_lote()
 
 
     import collections
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'itens':itens, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_classificacao_por_item.html')
 
@@ -1607,7 +1625,9 @@ def relatorio_ocorrencias(request, pregao_id):
 @login_required()
 def relatorio_lances_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-
+    configuracao = Configuracao.objects.latest('id')
+    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
@@ -1615,6 +1635,7 @@ def relatorio_lances_item(request, pregao_id):
     data_emissao = datetime.date.today()
 
     tabela = {}
+    itens = {}
 
     for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao = pregao.solicitacao, lanceitemrodadapregao__isnull=False).order_by('item'):
         lista_rodadas = dict()
@@ -1623,6 +1644,7 @@ def relatorio_lances_item(request, pregao_id):
             lista_rodadas[rodada.rodada] = dict(lances=list())
         chave = u'%s' % (item)
         tabela[chave] =  lista_rodadas
+        itens[chave] =  item.get_itens_do_lote()
 
         for lance in LanceItemRodadaPregao.objects.filter(item=item):
             lista_rodadas[lance.rodada.rodada]['lances'].append(lance)
@@ -1635,11 +1657,14 @@ def relatorio_lances_item(request, pregao_id):
         #     chave = '%s' % str(lance.rodada.rodada)
         #     tabela[chave].append(lance)
 
-
     import collections
     resultado = collections.OrderedDict(sorted(tabela.items()))
+    itens = collections.OrderedDict(sorted(itens.items()))
+    print resultado
 
-    data = {'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+
+    data = {'eh_lote':eh_lote, 'itens':itens, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado, 'configuracao': configuracao, 'logo': logo}
+
 
     template = get_template('relatorio_lances_item.html')
 
@@ -1657,10 +1682,14 @@ def relatorio_lances_item(request, pregao_id):
 @login_required()
 def relatorio_ata_registro_preco(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-
+    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
     tabela = {}
     total = {}
-    itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao)
     chaves =  resultado.values('participante').order_by('participante')
     for num in chaves:
@@ -1680,7 +1709,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     import collections
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    texto = u'%s' % pregao.cabecalho_ata
+    texto = u''
 
     for key, lances in resultado.items():
 
@@ -1710,11 +1739,21 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
             texto =  texto + unicode(dados)
 
-            texto = texto + u'''<table><tr><td>Item</td><td>Descrição</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Unit.</td><td>Valor Total</td></tr>'''
+            if eh_lote:
+                texto = texto + u'''<table><tr><td>Lote</td><td>Itens do Lote<td>Valor Total</td></tr>'''
+            else:
+                texto = texto + u'''<table><tr><td>Item</td><td>Descrição</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Unit.</td><td>Valor Total</td></tr>'''
 
             for lance in lances['lance']:
                 total = lance.get_vencedor().valor * lance.quantidade
-                texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.material.nome, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
+                if eh_lote:
+                    conteudo = u''
+                    for componente in lance.get_itens_do_lote():
+                        conteudo += '%s<br>' % componente.material.nome
+
+                    texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, conteudo, format_money(total))
+                else:
+                    texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.material.nome, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
 
             texto = texto + u'</table>'
 
@@ -1956,7 +1995,7 @@ def criar_lote(request, pregao_id):
 def extrato_inicial(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     configuracao = Configuracao.objects.latest('id')
-
+    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
 
     destino_arquivo = u'upload/extratos/%s.pdf' % pregao.num_processo
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
@@ -1964,14 +2003,7 @@ def extrato_inicial(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
 
 
-    #codigo_verificador = hashlib.sha1('%s%s%s'%(request.user.pk, data_emissao, settings.SECRET_KEY)).hexdigest()
-    #podemos usar o codigo verificador como nome do arquivo
-
-    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
-
-
-
-    data = {'pregao': pregao, 'configuracao': configuracao, 'imagem': logo}
+    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo}
 
     template = get_template('extrato_inicial.html')
 

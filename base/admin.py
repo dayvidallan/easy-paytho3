@@ -107,6 +107,13 @@ class PessoaFisicaAdmin(NewModelAdmin):
         obj.save()
         user_novo.groups.add(form.cleaned_data.get('grupo'))
 
+    def get_queryset(self, request):
+        qs = super(PessoaFisicaAdmin, self).get_queryset(request)
+        if not request.user.is_superuser:
+            qs = qs.filter(setor__secretaria=request.user.pessoafisica.setor.secretaria)
+
+        return qs
+
 admin.site.register(PessoaFisica, PessoaFisicaAdmin)
 
 class SolicitacaoLicitacaoAdmin(NewModelAdmin):

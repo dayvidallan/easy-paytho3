@@ -38,22 +38,37 @@ ul{
  </style>
 {% endblock %}
 
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center>
+        <font size="4">Lista de Lances por Item - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font>
+    </center>
+  </h1>
+
+{% endblock %}
 
 {% block content %}
 
 <center>
-    {% for key, lances in resultado.items %}
+    {% for key, lances, itens in resultado.items %}
             {% if lances %}
-                {% block content_title %}
-                    <br>
-                  <h1 class="page-header">
-                    <center><font size="4">Lista de Lances por Item - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
-                  </h1>
-
-
-                {% endblock %}
-
                 <h2>{{ key }}</h2>
+                {% if eh_lote %}
+                    {% for num, item in itens.items %}
+                            <table border="0" align="center" width="55%" cellpadding="5" cellspacing="5">
+                                <font size="2">
+                                <tr><td>Composição do Lote</td></tr>
+                                {% for it in item %}
+                                    <tr><td>{{ it }}</td></tr>
+                                {% endfor %}
+                                    </font>
+                            </table>
+
+                    {% endfor %}
+
+                {% endif %}
                 {%  for num_rodada, lances_item in lances.items  %}
                     <h2>Rodada: {{ num_rodada }}</h2>
 

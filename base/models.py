@@ -288,11 +288,21 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def __unicode__(self):
 
-        if ItemLote.objects.filter(item=self).exists():
+        if ItemLote.objects.filter(item=self).exists() and not self.eh_lote:
             id_lote = ItemLote.objects.filter(item=self)[0].lote.item
             num_item = ItemLote.objects.filter(item=self)[0].numero_item
-            return 'Item: %s.%s - %s' % (id_lote, num_item, self.material)
-        return 'Item: %s - %s' % (self.item, self.material)
+            return u'Item: %s.%s - %s' % (id_lote, num_item, self.material)
+        elif not self.eh_lote:
+            return u'Item: %s - %s' % (self.item, self.material)
+        else:
+            return u'Lote: %s' % self.item
+
+    def get_itens_do_lote(self):
+        itens = list()
+        for item in ItemLote.objects.filter(lote=self):
+            itens.append(item)
+        return item
+
 
     class Meta:
         ordering = ['item']

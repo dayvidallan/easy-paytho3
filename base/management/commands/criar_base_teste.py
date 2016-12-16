@@ -43,67 +43,67 @@ class Command(BaseCommand):
         pessoa = PessoaFisica.objects.get_or_create(nome=u'Administrador', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao, user=root)[0]
 
         user_secretaria = User.objects.get_or_create(username=u'secretaria',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Representante da Secretaria', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria, user=user_secretaria)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Secretário do Planejamento', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria, user=user_secretaria)[0]
         user_secretaria.groups.add(grupo_secretaria)
 
         user_licitacao = User.objects.get_or_create(username=u'pregoeiro',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Pregoeiro', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao, user=user_licitacao)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Pregoeiro do Planejamento', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao, user=user_licitacao)[0]
         user_licitacao.groups.add(grupo_pregao)
 
         user_compras = User.objects.get_or_create(username=u'compras',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Compras', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_compras, user=user_compras)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Comprador do Planejamento', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_compras, user=user_compras)[0]
         user_compras.groups.add(grupo_compras)
 
         user_juridico = User.objects.get_or_create(username=u'juridico',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico, user=user_juridico)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico do Planejamento', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico, user=user_juridico)[0]
         user_juridico.groups.add(grupo_juridico)
 
         user_protocolo = User.objects.get_or_create(username=u'protocolo',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo 1', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo do Planejamento', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo)[0]
         user_protocolo.groups.add(grupo_protocolo)
 
 
         user_secretaria2 = User.objects.get_or_create(username=u'secretaria2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Representante da Secretaria', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria2, user=user_secretaria2)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Secretário da Tributação', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria2, user=user_secretaria2)[0]
         user_secretaria2.groups.add(grupo_secretaria)
 
         user_licitacao2 = User.objects.get_or_create(username=u'pregoeiro2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Pregoeiro', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao2, user=user_licitacao2)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Pregoeiro da Tributação', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao2, user=user_licitacao2)[0]
         user_licitacao2.groups.add(grupo_pregao)
 
         user_compras2 = User.objects.get_or_create(username=u'compras2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Compras', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_compras2, user=user_compras2)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Comprador da Tributação', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_compras2, user=user_compras2)[0]
         user_compras2.groups.add(grupo_compras)
 
         user_juridico2 = User.objects.get_or_create(username=u'juridico2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico2, user=user_juridico2)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico da Tributação', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico2, user=user_juridico2)[0]
         user_juridico2.groups.add(grupo_juridico)
 
 
         user_protocolo2 = User.objects.get_or_create(username=u'protocolo2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo 2', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo2)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo da Tributação', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo2)[0]
         user_protocolo2.groups.add(grupo_protocolo)
 
 
         user_secretaria3 = User.objects.get_or_create(username=u'secretaria3',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Representante da Secretaria', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria3, user=user_secretaria3)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Secretário da Saúde', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria3, user=user_secretaria3)[0]
         user_secretaria3.groups.add(grupo_secretaria)
 
         user_licitacao3 = User.objects.get_or_create(username=u'pregoeiro3',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Pregoeiro', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao3, user=user_licitacao3)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Pregoeiro da Saúde', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao3, user=user_licitacao3)[0]
         user_licitacao3.groups.add(grupo_pregao)
 
         user_compras3 = User.objects.get_or_create(username=u'compras3',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Compras', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_compras3, user=user_compras3)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Compras da Saúde', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_compras3, user=user_compras3)[0]
         user_compras3.groups.add(grupo_compras)
 
         user_juridico3 = User.objects.get_or_create(username=u'juridico3',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico3, user=user_juridico3)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Jurídico da Saúde', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_juridico3, user=user_juridico3)[0]
         user_juridico3.groups.add(grupo_juridico)
 
 
         user_protocolo3 = User.objects.get_or_create(username=u'protocolo3',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo 3', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo3)[0]
+        pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo da Saúde', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo3)[0]
         user_protocolo3.groups.add(grupo_protocolo)
 
 
