@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 from django.contrib.auth.models import Group
-from base.models import ModalidadePregao, CriterioPregao, TipoPregao
+from base.models import ModalidadePregao, CriterioPregao, TipoPregao, User, PessoaFisica, Setor, Secretaria
 
 
 def preenche_base(apps, schema_editor):
@@ -21,6 +21,12 @@ def preenche_base(apps, schema_editor):
 
     tipo1 = TipoPregao.objects.get_or_create(nome=u'Menor Preço')[0]
     tipo2 = TipoPregao.objects.get_or_create(nome=u'Maior Desconto')[0]
+
+    secretaria = Secretaria.objects.get_or_create(nome=u'Secretaria de Planejamento', sigla=u'SEMPLA')[0]
+    setor_licitacao = Setor.objects.get_or_create(nome=u'Setor de Licitação', secretaria=secretaria)[0]
+    root = User.objects.get_or_create(username=u'admin',is_active=True,is_superuser=True, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
+    pessoa = PessoaFisica.objects.get_or_create(nome=u'Administrador', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao, user=root)[0]
+
 
 class Migration(migrations.Migration):
 

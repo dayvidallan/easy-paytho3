@@ -39,8 +39,6 @@ class Command(BaseCommand):
         setor_secretaria3 = Setor.objects.get_or_create(nome=u'Setor Administrativo', secretaria=secretaria3)[0]
         setor_juridico3 = Setor.objects.get_or_create(nome=u'Setor Jurídico', secretaria=secretaria3)[0]
 
-        root = User.objects.get_or_create(username=u'admin',is_active=True,is_superuser=True, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
-        pessoa = PessoaFisica.objects.get_or_create(nome=u'Administrador', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao, user=root)[0]
 
         user_secretaria = User.objects.get_or_create(username=u'secretaria',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
         pessoa = PessoaFisica.objects.get_or_create(nome=u'Secretário do Planejamento', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria, user=user_secretaria)[0]
