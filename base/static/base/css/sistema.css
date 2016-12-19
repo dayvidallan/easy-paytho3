@@ -55,10 +55,10 @@ p {
   background: #686868;
 }
 header section#content-topo {
-  background: #4A708B;
+  background: #FFFFFF;
   width: 100%;
   height: 70px;
-  border-top: solid 3px #85C127;
+
 }
 header section#content-topo .logo {
   float: left;
@@ -76,14 +76,14 @@ header section#content-topo .logo p {
   font-family: 'Open Sans', sans-serif;
   font-weight: 300;
   font-size: 29px;
-  color: yellow;
+  color: black;
   float: left;
   line-height: 35px;
 }
 header section#content-topo .links {
   float: right;
   margin: 0 -15px 0 0;
-  background-color: #4F94CD;
+  background-color: #4A708B;
   border-bottom-left-radius: 5px;
   padding: 2px 13px 5px 6px;
 }
@@ -1298,13 +1298,13 @@ td .progress {
   background: #43ac6a;
 }
 #content-stage section#migalhas.administracao {
-  background: #686868;
+  background: #4A708B;
 }
 
 
 footer section#content-footer p {
   background: #4A708B;
-  color: yellow;
+  color: white;
   align: center;
 }
 

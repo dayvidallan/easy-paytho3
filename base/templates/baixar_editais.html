@@ -4,10 +4,11 @@
 
 {% block content %}
 
-    <br><br><h2>Editais - Pregão Presencial</h2><br><br>
+    <br><h3>Editais - Pregão Presencial</h3><br>
 
     {%  if pregoes.exists %}
         {%  for pregao in pregoes %}
+            ----------------------------------------------------------------<br><br>
             <table class="table table-bordered table-condensed table-striped">
                 <tr>
                     <th><b>Nº Edital</b></th>
@@ -44,6 +45,7 @@
                     </tr>
                 {% endif %}
             </table>
+
         {% endfor %}
     {% else %}
         <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
