@@ -169,7 +169,9 @@
 
                         <td>
                             {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
-                                <a href="/admin/base/itemsolicitacaolicitacao/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
+                                {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
+                                    <a href="/admin/base/itemsolicitacaolicitacao/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
+                                {% endif %}
                                 {% if solicitacao.interessados and solicitacao.tem_pedidos_outras_secretarias %}
                                     <a href="/base/ver_pedidos_secretaria/{{item.id}}/" class="btn btn-default btn-sm">Pedidos das Secretarias</a>
                                 {% endif %}

@@ -132,6 +132,7 @@ class PregaoForm(forms.ModelForm):
         self.fields['data_abertura'].widget.attrs = {'class': 'vDateField'}
         if self.solicitacao.processo:
             self.fields['num_processo'].initial = self.solicitacao.processo.numero
+        self.fields['num_pregao'].initial = self.solicitacao.get_proximo_pregao()
 
      def clean(self):
         if Pregao.objects.filter(solicitacao=self.solicitacao).exists():
@@ -156,6 +157,10 @@ class SolicitacaoForm(forms.ModelForm):
         super(SolicitacaoForm, self).__init__(*args, **kwargs)
         self.fields['prazo_resposta_interessados'].widget.attrs = {'class': 'vDateField'}
         self.fields['interessados'].queryset = Secretaria.objects.exclude(id=self.request.user.pessoafisica.setor.secretaria.id)
+
+    def clean(self):
+        if self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando')).exists():
+            self.add_error('num_memorando', u'Já existe uma solicitação para este memorando.')
 
 class ItemSolicitacaoLicitacaoForm(forms.ModelForm):
     class Meta:
@@ -416,3 +421,8 @@ class ConfiguracaoForm(forms.ModelForm):
     class Meta:
         model = Configuracao
         fields = ('nome', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo')
+
+class EditarPedidoForm(forms.ModelForm):
+    class Meta:
+        model = ItemQuantidadeSecretaria
+        fields = ('quantidade', )

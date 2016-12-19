@@ -1297,8 +1297,10 @@ def retomar_lances(request, item_id):
 def informar_quantidades(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'Informar quantidade dos itens - %s' % solicitacao
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao)
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
+
     if request.POST:
+        ItemQuantidadeSecretaria.objects.filter(secretaria = request.user.pessoafisica.setor.secretaria, solicitacao = solicitacao).delete()
         for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
             if item:
                 item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=solicitacao, item=idx)
@@ -1846,7 +1848,7 @@ def abrir_processo_para_solicitacao(request, solicitacao_id):
     form = AbrirProcessoForm(request.POST or None, solicitacao=solicitacao)
     if form.is_valid():
         o = form.save(False)
-        o.setor_origem = request.user.pessoafisica.setor
+        o.setor_origem = solicitacao.setor_origem
         o.pessoa_cadastro = request.user
         o.save()
         solicitacao.processo = o
@@ -2230,3 +2232,15 @@ def editar_meu_perfil(request, pessoa_id):
 
     return render_to_response('editar_meu_perfil.html', locals(), context_instance=RequestContext(request))
 
+def editar_pedido(request, pedido_id):
+    title=u'Editar Pedido'
+    pedido = get_object_or_404(ItemQuantidadeSecretaria, pk=pedido_id)
+    solicitacao = pedido.solicitacao
+    form = EditarPedidoForm(request.POST or None, instance=pedido)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Perfil editado com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
+
+
+    return render_to_response('editar_pedido.html', locals(), context_instance=RequestContext(request))

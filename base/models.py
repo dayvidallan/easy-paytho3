@@ -262,6 +262,12 @@ class SolicitacaoLicitacao(models.Model):
     def tem_pregao_cadastrado(self):
         return Pregao.objects.filter(solicitacao=self).exists()
 
+    def get_proximo_pregao(self):
+        if Pregao.objects.exists():
+            pregao = Pregao.objects.order_by('-id')[0]
+            return int(pregao.num_pregao)+1
+        return u'1'
+
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'

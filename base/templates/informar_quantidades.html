@@ -5,6 +5,7 @@
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
     <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">Solicitação {{solicitacao}} <i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
@@ -16,8 +17,7 @@
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <th>Item</th>
-                            <th>Código</th>
-                            <th>Especificação</th>
+                            <th>Material</th>
                             <th>Unidade</th>
                             <th>Quantidade</th>
                         </thead>
@@ -25,8 +25,7 @@
                         {% for item in itens %}
                             <tr>
                                 <td>{{ item.item }}</td>
-                                <td>{{ item.codigo }}</td>
-                                <td>{{ item.especificacao }}</td>
+                                <td>{{ item.material }}</td>
                                 <td>{{ item.unidade }}</td>
                                 <td><input name="quantidade"></td>
                             </tr>
@@ -38,14 +37,10 @@
                     </table>
 
                 </div>
-
-                <div class="form-group form-row">
-                    <div>
-                        <div class="controls">
-                            <button type="submit" class="btn btn-primary">Cadastrar</button>
-                        </div>
-                    </div>
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </div>
+
              </div>
         </form>
 
