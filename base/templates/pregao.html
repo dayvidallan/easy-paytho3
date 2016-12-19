@@ -299,7 +299,6 @@
                                 <th>ME/EPP</th>
                                 <th>Nome do Representante</th>
                                 <th>Situação</th>
-                                <th>Observações</th>
                                 <th>Opções</th>
                             </tr>
                         </thead>
@@ -322,7 +321,6 @@
 
                                         {% endif %}
                                     </td>
-                                    <td>{{ item.motivo_desclassificacao|default_if_none:'-' }}</td>
                                     <td>
                                         {% if pregao.eh_ativo %}
                                             <a href="/admin/base/participantepregao/{{ item.id }}/" class="btn btn-info btn-sm">Editar</a>
