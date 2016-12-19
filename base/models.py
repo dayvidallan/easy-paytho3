@@ -679,6 +679,9 @@ class Pregao(models.Model):
         itens_em_lotes = ItemLote.objects.filter(item__solicitacao=self.solicitacao)
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False).exclude(id__in=itens_em_lotes.values_list('item', flat=True))
 
+    def tem_lance_registrado(self):
+        return LanceItemRodadaPregao.objects.filter(rodada__pregao=self).exists()
+
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
