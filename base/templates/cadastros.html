@@ -9,24 +9,26 @@
 {% block content %}
 
 
-        <a href="/admin/base/pessoafisica/">
-            <div class="col-lg-2 col-md-4">
+        {% if perms.base.add_pessoafisica %}
+            <a href="/admin/base/pessoafisica/">
+                <div class="col-lg-2 col-md-4">
 
-                <div class="panel panel-warning">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-users fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ num_membros }}</div>
-                                <div><strong>Pessoas</strong></div>
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-users fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Pessoas</strong></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </a>
+            </a>
+        {% endif %}
 
         <a href="/base/ver_fornecedores/">
             <div class="col-lg-2 col-md-4">

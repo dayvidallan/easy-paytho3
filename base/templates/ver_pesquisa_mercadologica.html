@@ -4,16 +4,14 @@
 
 {% block content %}
         <h2>{{ titulo }}</h2>
-        <table  class="table table-bordered table-condensed table-striped">
+        <table  width=100% class="table table-bordered table-condensed table-striped">
             <tr>
                 <th width="10%"><b>Item</b></th>
-                <th width="10%"><b>Solicitação</b></th>
-                <th width="10%"><b>Especificação</b></th>
+                <th width="10%"><b>Material</b></th>
             </tr>
             <tr>
                 <td>{{ item.item }}</td>
-                <td>{{ item.solicitacao.num_memorando }}</td>
-                <td>{{ item.material.nome }}</td>
+                <td>{{ item.material }}</td>
             </tr>
         </table>
         {% if pesquisas.exists %}
@@ -31,7 +29,7 @@
                             <td>
                                 {{ pesquisa.pesquisa.origem }}:
                                 {% if pesquisa.pesquisa.origem == pesquisa.pesquisa.ATA_PRECO %}
-                                    <b>Número {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b>
+                                    <b>N° {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b>
                                 {% else %}
                                     <b>{{ pesquisa.pesquisa.razao_social }}</b>
                                 {% endif %}

@@ -1,5 +1,19 @@
 <groups>
     <group>
+        <name>Gerente</name>
+        <models>
+                <model>
+                <app>base</app>
+                <name>pessoafisica</name>
+                <permissions>
+                    <permission>add_pessoafisica</permission>
+                    <permission>delete_pessoafisica</permission>
+                    <permission>change_pessoafisica</permission>
+                </permissions>
+            </model>
+        </models>
+    </group>
+    <group>
         <name>Secretaria</name>
         <models>
             <model>
@@ -7,15 +21,6 @@
                 <name>user</name>
                 <permissions>
                     <permission>pode_cadastrar_solicitacao</permission>
-                </permissions>
-            </model>
-            <model>
-                <app>base</app>
-                <name>pessoafisica</name>
-                <permissions>
-                    <permission>add_pessoafisica</permission>
-                    <permission>delete_pessoafisica</permission>
-                    <permission>change_pessoafisica</permission>
                 </permissions>
             </model>
             <model>
@@ -105,15 +110,6 @@
             </model>
             <model>
                 <app>base</app>
-                <name>pessoafisica</name>
-                <permissions>
-                    <permission>add_pessoafisica</permission>
-                    <permission>delete_pessoafisica</permission>
-                    <permission>change_pessoafisica</permission>
-                </permissions>
-            </model>
-            <model>
-                <app>base</app>
                 <name>fornecedor</name>
                 <permissions>
                     <permission>add_fornecedor</permission>
@@ -144,15 +140,6 @@
             </model>
             <model>
                 <app>base</app>
-                <name>pessoafisica</name>
-                <permissions>
-                    <permission>add_pessoafisica</permission>
-                    <permission>delete_pessoafisica</permission>
-                    <permission>change_pessoafisica</permission>
-                </permissions>
-            </model>
-            <model>
-                <app>base</app>
                 <name>fornecedor</name>
                 <permissions>
                     <permission>add_fornecedor</permission>
@@ -171,15 +158,6 @@
                 <permissions>
                     <permission>pode_ver_minuta</permission>
                     <permission>pode_avaliar_minuta</permission>
-                </permissions>
-            </model>
-            <model>
-                <app>base</app>
-                <name>pessoafisica</name>
-                <permissions>
-                    <permission>add_pessoafisica</permission>
-                    <permission>delete_pessoafisica</permission>
-                    <permission>change_pessoafisica</permission>
                 </permissions>
             </model>
             <model>

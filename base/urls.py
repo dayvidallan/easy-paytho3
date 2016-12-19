@@ -82,6 +82,8 @@ urlpatterns = patterns('base.views',
     url(r'^imprimir_capa_processo/(?P<processo_id>\d+)/$', views.imprimir_capa_processo, name='imprimir_capa_processo'),
     url(r'^criar_lote/(?P<pregao_id>\d+)/$', views.criar_lote, name='criar_lote'),
     url(r'^extrato_inicial/(?P<pregao_id>\d+)/$', views.extrato_inicial, name='extrato_inicial'),
+    url(r'^editar_meu_perfil/(?P<pessoa_id>\d+)/$', views.editar_meu_perfil, name='editar_meu_perfil'),
+
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),

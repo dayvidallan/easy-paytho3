@@ -1,0 +1,105 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/licitacoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Pregões<i class="fa fa-angle-right"></i></a>
+    <a href="/base/pregao/{{pregao.id}}/">Pregão {{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+
+<script>
+$(function() {
+    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
+});
+</script>
+{% endblock %}
+{% block content %}
+
+        <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form|bootstrap }}
+                    </div>
+		        </div>
+                 <div>
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    </div>
+                </div>
+             </div>
+        </form>
+
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+    <script type="text/javascript">
+		$(document).ready(function(){
+				$("#id_cpf").mask("999.999.999-99");
+				$("#id_telefones").mask("(99) 9999-9999");
+				$("#id_celulares").mask("(99) 99999-9999");
+				$("#id_data_nascimento").mask("99/99/9999");
+				$("#id_cep").mask("99999-999");
+
+
+
+				function limpa_formulário_cep() {
+					// Limpa valores do formulário de cep.
+					$("#id_logradouro").val("");
+					$("#id_bairro").val("");
+					$("#id_estado").val("");
+					$("#uf").val("");
+					$("#ibge").val("");
+				}
+
+				$("#id_cep").blur(function() {
+					//Nova variável "cep" somente com dígitos.
+					var cep = $(this).val().replace(/\D/g, '');
+
+					//Verifica se campo cep possui valor informado.
+					if (cep != "") {
+							//Expressão regular para validar o CEP.
+							var validacep = /^[0-9]{8}$/;
+
+							//Valida o formato do CEP.
+							if(validacep.test(cep)) {
+									//Preenche os campos com "..." enquanto consulta webservice.
+									$("#id_logradouro").val("...")
+									$("#id_bairro").val("...")
+
+									//Consulta o webservice viacep.com.br/
+									$.getJSON("//viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+											if (!("erro" in dados)) {
+													//Atualiza os campos com os valores da consulta.
+													$("#id_logradouro").val(dados.logradouro);
+													$("#id_bairro").val(dados.bairro);
+
+											} else {
+													//CEP pesquisado não foi encontrado.
+													limpa_formulário_cep();
+													alert("CEP não encontrado.");
+											}
+									});
+							} else {
+									//cep é inválido.
+									limpa_formulário_cep();
+									alert("Formato de CEP inválido.");
+							}
+					} else {
+							//cep sem valor, limpa formulário.
+							limpa_formulário_cep();
+					}
+			});
+		});
+	</script>
+
+    {{ block.super }}
+{% endblock %}

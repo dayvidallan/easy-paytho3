@@ -1,33 +1,29 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
-{% load bootstrap %}
+{% load bootstrap static %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
-    <a href="/base/pregao/{{pregao.id}}/">Pregão {{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">Solicitação N° {{ solicitacao }} <i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 {% block content %}
 
-        <form action="." method="post" class="form-horizontal">
+        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">
 				<div class="row-fluid">
                     <div class="col-xs-12">
                         {{ form|bootstrap }}
                     </div>
-		        </div>
-                <div class="form-group form-row">
-                    <div>
-                        <div class="controls">
-                            <button type="submit" class="btn btn-primary">Cadastrar</button>
-                        </div>
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">Cadastrar</button>
                     </div>
-                </div>
+		        </div>
              </div>
         </form>
-
+    </div>
 
 
 {% endblock %}

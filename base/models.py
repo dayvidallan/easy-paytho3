@@ -259,6 +259,9 @@ class SolicitacaoLicitacao(models.Model):
     def eh_maior_desconto(self):
         return self.get_pregao().tipo == TipoPregao.objects.get(id=2)
 
+    def tem_pregao_cadastrado(self):
+        return Pregao.objects.filter(solicitacao=self).exists()
+
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -601,7 +604,8 @@ class ItemSolicitacaoLicitacao(models.Model):
         itens = ItemLote.objects.filter(lote=self)
         return ItemSolicitacaoLicitacao.objects.filter(id__in=itens.values_list('item', flat=True))
 
-
+    def tem_pesquisa_registrada(self):
+        return ItemPesquisaMercadologica.objects.filter(item=self).exists()
 
 
 class ItemLote(models.Model):
@@ -664,6 +668,10 @@ class Pregao(models.Model):
 
     def tem_resultado(self):
         return ResultadoItemPregao.objects.filter(item__solicitacao=self.solicitacao).exists()
+
+    def tem_item_sem_lote(self):
+        itens_em_lotes = ItemLote.objects.filter(item__solicitacao=self.solicitacao)
+        return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False).exclude(id__in=itens_em_lotes.values_list('item', flat=True))
 
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
@@ -828,18 +836,19 @@ class PessoaFisica(models.Model):
 
     user = models.OneToOneField(User, null=True, blank=True)
     nome = models.CharField(max_length=80)
-    cpf = models.CharField(u'CPF',max_length=15, help_text=u'Digite o CPF sem pontos ou traços.')
+    cpf = models.CharField(u'CPF',max_length=15, help_text=u'Digite o CPF com pontos e traços.')
     sexo = models.CharField(u'Sexo', max_length=1, choices=SEXO_CHOICES)
     data_nascimento = models.DateField(u'Data de Nascimento', null=True)
-    telefones = models.CharField(u'Telefones', max_length=60, null=True, blank=True)
-    celulares = models.CharField(u'Celulares', max_length=60, null=True, blank=True)
+    telefones = models.CharField(u'Telefone', max_length=60, null=True, blank=True)
+    celulares = models.CharField(u'Celular', max_length=60, null=True, blank=True)
     email = models.CharField(u'Email', max_length=80, null=True, blank=True)
+    cep = CepModelField(u'CEP', null=True, blank=True)
     logradouro = models.CharField(u'Logradouro', max_length=80, null=True, blank=True)
     numero = models.CharField(u'Número', max_length=10, null=True, blank=True)
     complemento = models.CharField(u'Complemento', max_length=80, null=True, blank=True)
     bairro = models.CharField(u'Bairro', max_length=80, null=True, blank=True)
     municipio = models.ForeignKey('base.Municipio', null=True, blank=True)
-    cep = CepModelField(u'CEP', null=True, blank=True)
+
     setor = models.ForeignKey(Setor,verbose_name=u'Setor')
 
     class Meta:
@@ -870,6 +879,17 @@ class PessoaFisica(models.Model):
             texto = texto + self.municipio.get_sigla_estado()
 
         return texto
+
+    def save(self):
+        cpf = self.cpf
+        self.cpf = cpf.replace('-','').replace('.','')
+        if self.pk:
+            self.user.username = self.cpf
+            self.user.save()
+        super(PessoaFisica, self).save()
+
+
+
 
 class Estado(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
@@ -1018,7 +1038,7 @@ class AnexoPregao(models.Model):
     pregao = models.ForeignKey(Pregao)
     nome = models.CharField(u'Nome', max_length=500)
     data = models.DateField(u'Data')
-    arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/', null=True,blank=True)
+    arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
     cadastrado_por = models.ForeignKey(User)
     cadastrado_em = models.DateTimeField(u'Cadastrado em')
 

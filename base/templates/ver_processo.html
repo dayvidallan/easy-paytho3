@@ -4,6 +4,8 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">Solicitação N° {{ solicitacao }} <i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
@@ -11,7 +13,8 @@
 
 
      <div class="pull-right">
-        <a class="btn btn-success" href="/base/imprimir_capa_processo/{{processo.id}}/">Capa do Processo</a>
+        <a class="btn btn-success" href="/base/imprimir_capa_processo/{{processo.id}}/">Imprimir Capa</a>
+        <a class="btn btn-default" href="/base/itens_solicitacao/{{solicitacao.id}}/">Voltar</a>
         <br><br>
      </div>
 
@@ -30,8 +33,8 @@
             <td>{{ processo.get_tipo_display }}</td>
         </tr>
         <tr>
-            <th>Documento</th>
-            <td><a href="/base/itens_solicitacao/{{processo.get_memorando.id}}/">Memorando {{processo.get_memorando}}</a></td>
+            <th>N° da Solicitação</th>
+            <td>{{processo.get_memorando}} <a href="/base/itens_solicitacao/{{processo.get_memorando.id}}/">(ver solicitação)</a></td>
         </tr>
         <tr>
             <th>Situação</th>

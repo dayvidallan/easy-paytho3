@@ -5,8 +5,7 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/licitacoes/">Licitações<i class="fa fa-angle-right"></i></a>
-    <a href="/base/ver_pregoes/">Pregões<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
@@ -172,12 +171,12 @@
 
 
 {% block content %}
-    <h3>Informações do Pregão</h3>
+    <h4>Informações do Pregão</h4>
     <div style="width:50%; float:left; position:absolute;">
 
         <table class="table table-bordered table-condensed table-striped">
             <tr>
-                <th><b>Pregão N°</b></th><td>{{ pregao.num_pregao }}</td>
+                <th><b>Memorando N°</b></th><td>{{ pregao.solicitacao.num_memorando }}</td>
                 <th><b>Situação</b></th><td>{{ pregao.situacao }}</td>
                 <th><b>Critério</b></th><td>{{ pregao.criterio }}</td>
             </tr>
@@ -240,7 +239,7 @@
         {% if eh_lote %}
             <div id="lotes" class="tab-pane in active">
                 <div class="pull-right">
-                {% if pregao.eh_ativo %}
+                {% if pregao.eh_ativo and pregao.tem_item_sem_lote %}
                     <a class="btn btn-success" href="/base/criar_lote/{{ pregao.pk }}/">Criar Lote</a>
                 {% endif %}
                 <br><br>
@@ -248,7 +247,7 @@
                 {% if lotes.exists %}
 
                     {% for lote in lotes %}
-                        <h2>Lote {{ lote.item }}</h2>
+                        <h3>Lote {{ lote.item }}</h3>
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <tr>
@@ -287,7 +286,7 @@
                 {% endif %}
                 <br><br>
             </div>
-            <h2>Lista de Presentes - Fornecedores Participantes</h2>
+            <h3>Lista de Presentes - Fornecedores Participantes</h3>
 
 
                 {%  if pregao.participantepregao_set.all %}
@@ -355,20 +354,20 @@
                 <a class="btn btn-success" href="/base/planilha_propostas/{{ pregao.solicitacao.id }}/">Baixar Planilha Modelo</a>
                 <br><br>
             </div>
-            <h2>Itens do Pregão</h2>
+            <h3>Itens do Pregão</h3>
             {%  if pregao.solicitacao.itemsolicitacaolicitacao_set.exists %}
 
                 {% if eh_lote %}
                     {% if lotes.exists %}
 
                         {% for lote in lotes %}
-                            <h2>Lote {{ lote.item }}
+                            <h4>Lote {{ lote.item }}
                             {% if pregao.eh_ativo and  lote.ativo %}
                                 <a class="btn btn-success btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
                             {% else %}
                                 <a class="btn btn-default btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Ver Lances</a>
                             {% endif %}
-                            </h2>
+                            </h4>
 
                             <table class="table table-bordered table-condensed table-striped">
                                 <thead>

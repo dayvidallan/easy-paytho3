@@ -36,11 +36,11 @@
                       document.body.removeChild(aux);
                     }
     </script>
-    <br><br><br>
+
      <div class="pull-right">
          {% if perms.base.pode_cadastrar_solicitacao %}
             {% if solicitacao.situacao == solicitacao.CADASTRADO %}
-                {% if solicitacao.setor_origem == request.user.pessoafisica.setor %}
+                {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
                     <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
                     <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
 
@@ -51,20 +51,21 @@
             {% endif %}
          {% endif %}
          {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-            <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a>
             {% if solicitacao.prazo_aberto %}
+                <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a>
+                <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
                 <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
             {% else %}
                 <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
             {% endif %}
-            {% if solicitacao.prazo_aberto %}
-                <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
-            {% endif %}
 
          {% endif %}
          {% if perms.base.pode_cadastrar_pregao and recebida_no_setor and solicitacao.eh_apta and solicitacao.minuta_aprovada %}
-            <a class="btn btn-success" href="/base/cadastrar_pregao/{{solicitacao.id}}/">Criar Pregão</a>
-            <a class="btn btn-danger" href="/rejeitar_solicitacao/{{ solicitacao.id }}/">Rejeitar</a>
+
+            {% if not solicitacao.tem_pregao_cadastrado %}
+                <a class="btn btn-success" href="/base/cadastrar_pregao/{{solicitacao.id}}/">Criar Pregão</a>
+                <a class="btn btn-danger" href="/rejeitar_solicitacao/{{ solicitacao.id }}/">Rejeitar</a>
+            {% endif %}
          {% endif %}
          {% if perms.base.pode_cadastrar_pregao and recebida_no_setor and solicitacao.eh_apta and not solicitacao.arquivo_minuta %}
             <a class="btn btn-success" href="/base/cadastrar_minuta/{{solicitacao.id}}/">Cadastrar Minuta</a>
@@ -81,11 +82,10 @@
          {% if solicitacao.prazo_aberto and perms.base.pode_cadastrar_pesquisa_mercadologica %}
             <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{url}}base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
         {% endif %}
-        <br><br>
+
     </div>
+    <br><br><br>
 
-
-    <h4>Dados da Solicitação</h4>
     <table class="table table-bordered table-condensed table-striped" width="50%">
         <thead>
             <tr>
@@ -138,6 +138,7 @@
         </thead>
     </table>
     {% if itens.exists %}
+        <br>
          <h4>Itens da Solicitação</h4>
          <table class="table table-bordered table-condensed table-striped">
             <thead>
@@ -175,7 +176,9 @@
 
                             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
                                 <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
-                                <a href="/ver_pesquisa_mercadologica/{{item.id}}/" data-toggle="modal" data-target="#myModal" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
+                                {% if item.tem_pesquisa_registrada %}
+                                    <a href="/ver_pesquisa_mercadologica/{{item.id}}/" data-toggle="modal" data-target="#myModal" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
+                                {% endif %}
                             {% else %}
                                 -
                             {% endif %}

@@ -141,9 +141,9 @@ def fornecedor(request, fornecedor_id):
 
 @login_required()
 def pregao(request, pregao_id):
-
     pregao = get_object_or_404(Pregao, pk= pregao_id)
     eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    title = u'Pregão N° %s' % pregao
     if eh_lote:
         lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
@@ -494,7 +494,7 @@ def ver_fornecedores(request, fornecedor_id=None):
 
 @login_required()
 def ver_pregoes(request):
-    title=u'Pregões'
+    title=u'Licitações'
     pregoes = Pregao.objects.all()
 
     return render_to_response('ver_pregoes.html', locals(), RequestContext(request))
@@ -504,7 +504,7 @@ def itens_solicitacao(request, solicitacao_id):
     url = settings.URL
     recebida_no_setor = False
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Solicitação - Memorando: %s' % solicitacao
+    title=u'Solicitação de Compra Nº: %s' % solicitacao
     setor_do_usuario = request.user.pessoafisica.setor
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
@@ -545,7 +545,7 @@ def baixar_editais(request):
 
 @login_required()
 def ver_solicitacoes(request):
-    title=u'Lista de Solicitações'
+    title=u'Lista de Solicitações de Compras'
 
     setor = request.user.pessoafisica.setor
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
@@ -792,6 +792,7 @@ def resultado_classificacao(request, item_id):
 def desclassificar_do_pregao(request, participante_id):
     title=u'Desclassificar Participante'
     participante = get_object_or_404(ParticipantePregao, pk=participante_id)
+    pregao = participante.pregao
     form = DesclassificaParticipantePregao(request.POST or None, instance = participante)
     if form.is_valid():
         o = form.save(False)
@@ -1020,8 +1021,8 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
 
 @login_required()
 def cadastrar_anexo_pregao(request, pregao_id):
-    title=u'Cadastrar Pregão'
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+    title=u'Cadastrar Anexo - Pregão N° %s' % pregao
     form = AnexoPregaoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         o = form.save(False)
@@ -1173,7 +1174,7 @@ def encerrar_itempregao(request, item_id, motivo):
 @login_required()
 def suspender_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title=u'Suspender %s' % pregao
+    title=u'Suspender Pregão N° %s' % pregao
     if 'retomar' in request.GET:
         pregao.situacao = Pregao.CADASTRADO
         pregao.save()
@@ -1248,7 +1249,7 @@ def receber_solicitacao(request, solicitacao_id):
 @login_required()
 def ver_movimentacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Movimentação da Solicitação %s' % solicitacao
+    title=u'Movimentação da Solicitação N°: %s' % solicitacao
     movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).order_by('-data_envio')
     return render_to_response('ver_movimentacao.html', locals(), RequestContext(request))
 
@@ -1261,7 +1262,7 @@ def cadastrar_minuta(request, solicitacao_id):
         form.save()
         messages.success(request, u'Minuta cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
-    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render_to_response('cadastrar_minuta.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -1332,7 +1333,7 @@ def importar_itens(request, solicitacao_id):
         texto = texto + item.nome +', '
     texto = texto[:-2]
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Importar Itens - %s' % solicitacao
+    title=u'Importar Itens para a Solicitação N°: %s' % solicitacao
     form = ImportarItensForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         arquivo_up = form.cleaned_data.get('arquivo')
@@ -1840,8 +1841,8 @@ def pedido_outro_interessado(request, pedido_id, opcao):
 
 @login_required()
 def abrir_processo_para_solicitacao(request, solicitacao_id):
-    title=u'Abrir Processo'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    title=u'Abrir Processo - Solicitação N°: %s' % solicitacao.num_memorando
     form = AbrirProcessoForm(request.POST or None, solicitacao=solicitacao)
     if form.is_valid():
         o = form.save(False)
@@ -1858,7 +1859,10 @@ def abrir_processo_para_solicitacao(request, solicitacao_id):
 @login_required()
 def ver_processo(request, processo_id):
     processo = get_object_or_404(Processo, pk=processo_id)
-    title=u'Processo %s' % processo.numero
+    solicitacao = SolicitacaoLicitacao.objects.filter(processo=processo)
+    if solicitacao.exists():
+        solicitacao = solicitacao[0]
+    title=u'Processo N°: %s' % processo.numero
     return render_to_response('ver_processo.html', locals(), context_instance=RequestContext(request))
 
 
@@ -2210,3 +2214,19 @@ def extrato_inicial(request, pregao_id):
     c.showPage()
     c.save()
     return response
+
+
+@login_required()
+def editar_meu_perfil(request, pessoa_id):
+    pessoa = get_object_or_404(PessoaFisica, pk=pessoa_id)
+    if pessoa.id == request.user.pessoafisica.id:
+        title=u'Editar Meu Perfil'
+        form = PessoaFisicaForm(request.POST or None, request=request, instance=pessoa, edicao=True)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Perfil editado com sucesso.')
+            return HttpResponseRedirect(u'/')
+
+
+    return render_to_response('editar_meu_perfil.html', locals(), context_instance=RequestContext(request))
+

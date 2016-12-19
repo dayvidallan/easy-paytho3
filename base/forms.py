@@ -71,19 +71,30 @@ class PessoaFisicaForm(forms.ModelForm):
     )
 
     grupo = forms.ModelChoiceField(Group.objects, label=u'Grupo de Acesso', required=True)
+    email = forms.EmailField(label=u'Email', required=True)
+    cpf = utils.CpfFormField(label=u'CPF', required=False)
 
     class Meta:
         model = PessoaFisica
-        fields = ['nome', 'cpf', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'logradouro', 'numero', 'complemento', 'bairro', 'cep', 'estado', 'municipio', 'setor', 'grupo']
+        fields = ['nome', 'cpf', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'estado', 'municipio', 'setor', 'grupo']
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
+        self.edicao = kwargs.pop('edicao', None)
         super(PessoaFisicaForm, self).__init__(*args, **kwargs)
         if not self.request.user.is_superuser:
             self.fields['setor'].queryset = Setor.objects.filter(secretaria=self.request.user.pessoafisica.setor.secretaria)
 
+        if self.edicao:
+            del self.fields['grupo']
+            del self.fields['setor']
+
+        if self.edicao:
+            if self.instance.municipio:
+                self.fields['estado'].initial = self.instance.municipio.estado
+
     def clean(self):
-        if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf')).exists():
+        if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf')).exists() and not self.edicao:
             self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
 
 
@@ -259,6 +270,10 @@ class AnexoPregaoForm(forms.ModelForm):
         model = AnexoPregao
         fields = ['nome', 'data', 'arquivo']
 
+    def __init__(self, *args, **kwargs):
+        super(AnexoPregaoForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}
+
 class LogDownloadArquivoForm(forms.ModelForm):
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
@@ -360,6 +375,7 @@ class BuscaPessoaForm(forms.Form):
 
 class AbrirProcessoForm(forms.ModelForm):
     objeto = forms.CharField(label=u'Objeto', widget=forms.Textarea())
+    palavras_chave = forms.CharField(label=u'Palavras-chave', help_text=u'Separe com ;', required=False)
     class Meta:
         model = Processo
         fields = ('numero', 'objeto', 'tipo', 'palavras_chave')

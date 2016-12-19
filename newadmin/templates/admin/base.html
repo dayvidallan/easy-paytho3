@@ -56,7 +56,7 @@
                   </a>
                 </div>
                 <div class="links">
-                  <a href=""><i class="fa fa-user"></i>Editar Perfil</a>
+                  <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
                   <a href="{% url 'admin:password_change' %}"><i class="fa fa-lock"></i>Alterar Senha</a>
                   <a href='/admin/logout/?next=/'><i class="fa fa-times"></i>Encerrar Sessão</a><br>
                   <font color="white"><b>Bem Vindo, {{ user.pessoafisica.nome }} ({{ user.pessoafisica.setor }})</b></font>
