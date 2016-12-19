@@ -193,15 +193,16 @@
     </div>
     <br><br><br><br>
      <div class="pull-right">
-                <a class="btn btn-info" href="/base/extrato_inicial/{{ pregao.pk }}/">Extrato Inicial</a>
-                {% if pregao.eh_ativo and not pregao.eh_suspenso %}
-                    <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
-                {% elif pregao.eh_ativo and pregao.eh_suspenso %}
-                    <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/?retomar=True/">Retomar Pregão</a>
-                {% endif %}
-                <br><br>
-            </div>
+        {% if pregao.eh_ativo and not pregao.eh_suspenso %}
+            <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
+        {% elif pregao.eh_ativo and pregao.eh_suspenso %}
+            <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/?retomar=True/">Retomar Pregão</a>
+        {% endif %}
+        <br><br>
+    </div>
+    <br><br>
     <div>
+
         <ul class="nav nav-tabs">
             {% if eh_lote %}
                 <li class="active">
@@ -653,6 +654,9 @@
                 <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
 
                     <tbody>
+                        <tr>
+                            <td><a href="/base/extrato_inicial/{{ pregao.pk }}/" target="_blank">Extrato Inicial</a></td>
+                        </tr>
                         <tr>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
                         </tr>

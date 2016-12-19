@@ -130,9 +130,12 @@ class PregaoForm(forms.ModelForm):
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_termino'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_abertura'].widget.attrs = {'class': 'vDateField'}
-        if self.solicitacao.processo:
-            self.fields['num_processo'].initial = self.solicitacao.processo.numero
-        self.fields['num_pregao'].initial = self.solicitacao.get_proximo_pregao()
+
+        if not self.instance.pk:
+            self.fields['num_pregao'].initial = self.solicitacao.get_proximo_pregao()
+            if self.solicitacao.processo:
+                self.fields['num_processo'].initial = self.solicitacao.processo.numero
+
 
      def clean(self):
         if Pregao.objects.filter(solicitacao=self.solicitacao).exists():

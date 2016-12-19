@@ -1,0 +1,20 @@
+<br><br>
+              <table>
+                <tr>
+                    <td colspan=2>Empresa 2</td>
+                </tr>
+                <tr>
+                    <td colspan=2>Endereço: Endereco da empresa 2</td>
+                </tr>
+                <tr>
+                    <td colspan=2>CPF/CNPJ: 02.222.253/0001-90</td>
+                </tr>
+
+                <tr>
+                    <td>Representante Legal: asd</td>
+                    <td>CPF: asd</td>
+                </tr>
+
+            </table>
+            <br><br>
+            <table><tr><td>Lote</td><td>Itens do Lote<td>Valor Total</td></tr><tr><td>1</td><td>material 1, material 2, </td><td>17,20</td></tr></table>
