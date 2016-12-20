@@ -8,6 +8,7 @@ from newadmin.admin import NewModelAdmin
 from django.http import HttpResponseRedirect
 import datetime
 from django.contrib.auth.models import Group
+from django.contrib import messages
 
 admin.site.register(PropostaItemPregao)
 
@@ -35,6 +36,15 @@ class FornecedorAdmin(NewModelAdmin):
     get_opcoes.short_description = u'Opções'
     get_opcoes.allow_tags = True
 
+    def response_change(self, request, obj):
+        self.message_user(request, u'Fornecedor alterado com sucesso.')
+        return HttpResponseRedirect('/base/ver_fornecedores/')
+
+    def response_add(self, request, obj):
+        self.message_user(request, u'Fornecedor cadastrado com sucesso.', level=messages.SUCCESS)
+        return HttpResponseRedirect('/base/ver_fornecedores/')
+
+
 
 admin.site.register(Fornecedor, FornecedorAdmin)
 
@@ -49,7 +59,7 @@ class PregaoAdmin(NewModelAdmin):
         return HttpResponseRedirect('/pregao/%s/' % str(obj.pk))
 
     def response_add(self, request, obj):
-        self.message_user(request, u'Pregão cadastrado com sucesso.')
+        self.message_user(request, u'Pregão cadastrado com sucesso.', level=messages.SUCCESS)
         return HttpResponseRedirect('/pregao/%s/' % str(obj.pk))
 
     def get_opcoes(self, obj):
@@ -133,7 +143,7 @@ class SolicitacaoLicitacaoAdmin(NewModelAdmin):
         return HttpResponseRedirect('/itens_solicitacao/%s/' % str(obj.pk))
 
     def response_add(self, request, obj):
-        self.message_user(request, u'Solicitação cadastrada com sucesso.')
+        self.message_user(request, u'Solicitação cadastrada com sucesso.', level=messages.SUCCESS)
         return HttpResponseRedirect('/itens_solicitacao/%s/' % str(obj.pk))
 
 
@@ -205,7 +215,7 @@ class ParticipantePregaoAdmin(NewModelAdmin):
         return HttpResponseRedirect('/base/pregao/%s/' % str(obj.pregao.pk))
 
     def response_add(self, request, obj):
-        self.message_user(request, u'Participante cadastrado com sucesso.')
+        self.message_user(request, u'Participante cadastrado com sucesso.', level=messages.SUCCESS)
         return HttpResponseRedirect('/base/pregao/%s/' % str(obj.pregao.pk))
 
 admin.site.register(ParticipantePregao, ParticipantePregaoAdmin)
@@ -235,7 +245,7 @@ class MaterialConsumoAdmin(NewModelAdmin):
         obj.save()
 
     def response_add(self, request, obj):
-        self.message_user(request, u'Material %s cadastrado com sucesso.' % obj)
+        self.message_user(request, u'Material %s cadastrado com sucesso.' % obj, level=messages.SUCCESS)
         tt = '%s' % request.user.pessoafisica.id
         if request.session.get(tt):
             return HttpResponseRedirect('/base/cadastrar_item_solicitacao/%s/' % request.session.get(tt))
