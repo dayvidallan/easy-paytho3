@@ -253,6 +253,7 @@
                             <thead>
                                 <tr>
                                     <th>Item</th>
+                                    <th>Material</th>
                                     <th>Valor</th>
                                 </tr>
                             </thead>
@@ -260,7 +261,8 @@
                                 {%  for item in lote.lote.all %}
                                     <tr>
 
-                                        <td>{{ item.item }}</td>
+                                        <td>{{ item.lote.item }}.{{item.numero_item}}</td>
+                                        <td>{{ item.item.material}}</td>
                                          <td>{{ item.item.valor_medio }}</td>
                                     </tr>
                                 {% endfor %}

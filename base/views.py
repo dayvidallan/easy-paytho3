@@ -1687,7 +1687,7 @@ def relatorio_lances_item(request, pregao_id):
     import collections
     resultado = collections.OrderedDict(sorted(tabela.items()))
     itens = collections.OrderedDict(sorted(itens.items()))
-   
+
 
 
     data = {'eh_lote':eh_lote, 'itens':itens, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado, 'configuracao': configuracao, 'logo': logo}

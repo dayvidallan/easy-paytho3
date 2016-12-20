@@ -1,6 +1,6 @@
-@import url('http://fonts.googleapis.com/css?family=Open+Sans:400,300,700');
+/*@import url('http://fonts.googleapis.com/css?family=Open+Sans:400,300,700');
 @import url('http://fonts.googleapis.com/css?family=PT+Sans:300,400,700');
-
+*/
 /* ==============================
 CSS3 Library for MoreLess System
 version 1.0
@@ -413,12 +413,12 @@ header section#content-topo .links a i {
   font-family: 'Open Sans', sans-serif;
   font-weight: 300 bold;
   font-size: 16px;
-  color: #ffffff;
+  color: #4A708B;
   float: left;
 }
 #content-stage section#migalhas a i {
   font-size: 20px;
-  color: #a6ce39;
+  color: #bebebe;
   font-weight: 700;
   margin: 14px 5px 0 5px;
   float: right;
@@ -1300,7 +1300,7 @@ td .progress {
   background: #43ac6a;
 }
 #content-stage section#migalhas.administracao {
-  background: #D3D3D3;
+  background: #d9edf7;
 }
 
 
