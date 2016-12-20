@@ -98,13 +98,7 @@ header section#content-topo .links a i {
   margin: 0 5px 0 10px;
 }
 
-header section#content-topo .user {
-  float: right;
-  margin: 0 -290px 0 0;
-  background-color: #4A708B;
-  border-bottom-left-radius: 5px;
-  padding: 2px 13px 5px 6px;
-}
+
 #content-stage section#menu {
   padding: 15px 0 15px 0;
 }
