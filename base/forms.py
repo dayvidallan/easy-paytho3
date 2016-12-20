@@ -11,6 +11,8 @@ class CadastraParticipantePregaoForm(forms.ModelForm):
     sem_representante = forms.BooleanField(label=u'Representante Ausente', initial=False, required=False)
     obs_ausencia_participante = forms.CharField(label=u'Motivo da Ausência do Representante', widget=forms.Textarea, required=False)
     fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
+    cpf_representante = utils.CpfFormField(label=u'CPF', required=True)
+
     class Meta:
         model = ParticipantePregao
         fields = ['fornecedor','nome_representante','cpf_representante', 'sem_representante', 'obs_ausencia_participante', 'me_epp']
@@ -104,7 +106,13 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
     class Meta:
         model = ItemSolicitacaoLicitacao
         exclude = ['item', 'solicitacao', 'total', 'valor_medio', 'data_inicio_pesquisa', 'data_fim_pesquisa', 'setor_origem', 'setor_atual', 'situacao', 'obs', 'ativo', 'eh_lote']
+    def __init__(self, *args, **kwargs):
+        self.solicitacao = kwargs.pop('solicitacao',None)
+        super(CadastrarItemSolicitacaoForm, self).__init__(*args, **kwargs)
 
+    def clean(self):
+        if self.cleaned_data.get('material') and ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, material=self.cleaned_data.get('material')).exists():
+            self.add_error('material', u'Este material já foi cadastrado.')
 
 class CadastraPrecoParticipantePregaoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(ParticipantePregao.objects, label=u'Fornecedor', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
@@ -115,6 +123,7 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
         ja_cadastrou = PropostaItemPregao.objects.filter(pregao=self.pregao).values_list('participante', flat=True)
         #self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(pregao = self.pregao, desclassificado=False).exclude(id__in=ja_cadastrou).order_by('id')
         self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(pregao = self.pregao, desclassificado=False).order_by('id')
+
 
 class PregaoForm(forms.ModelForm):
 
@@ -140,6 +149,19 @@ class PregaoForm(forms.ModelForm):
      def clean(self):
         if Pregao.objects.filter(solicitacao=self.solicitacao).exists():
             self.add_error('solicitacao', u'Já existe um pregão para esta solicitação.')
+
+        if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_termino') < self.cleaned_data.get('data_inicio'):
+            self.add_error('data_termino', u'A data de término não pode ser menor do que a data de início.')
+
+
+        if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino'):
+            teste = self.cleaned_data.get('data_termino')- self.cleaned_data.get('data_inicio')
+            if teste.days < 10:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 8 dias úteis de acordo com a legislação atual.')
+
+        if self.cleaned_data.get('data_abertura') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_abertura') < self.cleaned_data.get('data_termino'):
+            self.add_error('data_abertura', u'A data de abertura deve ser maior do que a data de término.')
+
 
 class SolicitacaoForm(forms.ModelForm):
     objeto = forms.CharField(label=u'Descrição do Objeto', widget=forms.Textarea(), required=True)
@@ -403,7 +425,7 @@ class MaterialConsumoForm(forms.ModelForm):
 
 
 class CriarLoteForm(forms.Form):
-    solicitacoes = forms.ModelMultipleChoiceField(queryset=ItemSolicitacaoLicitacao.objects, label=u'Selecione os Itens')
+    solicitacoes = forms.ModelMultipleChoiceField(queryset=ItemSolicitacaoLicitacao.objects, label=u'Selecione os Itens', widget=forms.CheckboxSelectMultiple())
 
     def __init__(self, *args, **kwargs):
         self.pregao = kwargs.pop('pregao', None)

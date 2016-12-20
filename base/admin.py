@@ -235,7 +235,7 @@ class MaterialConsumoAdmin(NewModelAdmin):
         obj.save()
 
     def response_add(self, request, obj):
-        self.message_user(request, u'Material cadastrado com sucesso.')
+        self.message_user(request, u'Material %s cadastrado com sucesso.' % obj)
         tt = '%s' % request.user.pessoafisica.id
         if request.session.get(tt):
             return HttpResponseRedirect('/base/cadastrar_item_solicitacao/%s/' % request.session.get(tt))

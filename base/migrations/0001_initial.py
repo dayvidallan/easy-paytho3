@@ -196,7 +196,7 @@ class Migration(migrations.Migration):
             name='ItemSolicitacaoLicitacao',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('item', models.CharField(max_length=50, verbose_name='Item')),
+                ('item', models.IntegerField(verbose_name='Item')),
                 ('quantidade', models.PositiveIntegerField(verbose_name='Quantidade')),
                 ('valor_medio', models.DecimalField(null=True, verbose_name='Valor M\xe9dio', max_digits=10, decimal_places=2, blank=True)),
                 ('total', models.DecimalField(null=True, verbose_name='Total', max_digits=10, decimal_places=2, blank=True)),
@@ -453,7 +453,7 @@ class Migration(migrations.Migration):
                 ('valor', models.DecimalField(verbose_name='Valor', max_digits=12, decimal_places=2)),
                 ('marca', models.CharField(max_length=200, null=True, verbose_name='Marca')),
                 ('ordem', models.IntegerField(verbose_name='Classifica\xe7\xe3o')),
-                ('situacao', models.CharField(max_length=100, verbose_name='Situa\xe7\xe3o', choices=[('Classificado', 'Classificado'), ('Inabilitado', 'Inabilitado'), ('Desclassificado', 'Desclassificado')])),
+                ('situacao', models.CharField(max_length=100, verbose_name='Situa\xe7\xe3o', choices=[('Habilitado', 'Habilitado'), ('Inabilitado', 'Inabilitado'), ('Desclassificado', 'Desclassificado')])),
                 ('observacoes', models.CharField(max_length=5000, null=True, verbose_name='Observa\xe7\xe3o', blank=True)),
                 ('empate', models.BooleanField(default=False, verbose_name='Empate')),
                 ('item', models.ForeignKey(verbose_name='Solicita\xe7\xe3o', to='base.ItemSolicitacaoLicitacao')),

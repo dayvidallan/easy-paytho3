@@ -176,7 +176,7 @@
 
         <table class="table table-bordered table-condensed table-striped">
             <tr>
-                <th><b>Memorando N°</b></th><td>{{ pregao.solicitacao.num_memorando }}</td>
+                <th><b>Memorando N°</b></th><td><a href="/base/itens_solicitacao/{{pregao.solicitacao.id}}/">{{ pregao.solicitacao.num_memorando }}</a></td>
                 <th><b>Situação</b></th><td>{{ pregao.situacao }}</td>
                 <th><b>Critério</b></th><td>{{ pregao.criterio }}</td>
             </tr>
@@ -363,7 +363,7 @@
                             <h4>Lote {{ lote.item }}
                             {% if pregao.eh_ativo and  lote.ativo %}
                                 <a class="btn btn-success btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
-                            {% else %}
+                            {% elif pregao.eh_ativo %}
                                 <a class="btn btn-default btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Ver Lances</a>
                             {% endif %}
                             </h4>
@@ -467,7 +467,7 @@
                     {% endif %}
 
                     {% if eh_lote %}
-                        {% for item in lotes %}
+                        {% for item in itens_pregao %}
                             <h2>Lote {{item.item}}</h2>
                             <table class="table table-bordered table-condensed table-striped">
                                 <thead>
@@ -583,11 +583,12 @@
 
         </div>
         <div id="anexos" class="tab-pane">
-
-            <div class="pull-right">
-                <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>
-                <br><br>
-            </div>
+            {% if pregao.eh_ativo %}
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>
+                    <br><br>
+                </div>
+            {% endif %}
             <h2>Anexos do Pregão</h2>
             {%  if pregao.anexopregao_set.exists %}
                 <table border="2" width="90%" class="table table-bordered table-condensed table-striped">

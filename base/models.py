@@ -284,7 +284,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     )
 
     solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação')
-    item = models.CharField(u'Item', max_length=50)
+    item = models.IntegerField(u'Item')
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     quantidade = models.PositiveIntegerField(u'Quantidade')
@@ -305,12 +305,6 @@ class ItemSolicitacaoLicitacao(models.Model):
             return u'Item: %s - %s' % (self.item, self.material)
         else:
             return u'Lote: %s' % self.item
-
-    def get_itens_do_lote(self):
-        itens = list()
-        for item in ItemLote.objects.filter(lote=self):
-            itens.append(item)
-        return item
 
 
     class Meta:
@@ -521,15 +515,29 @@ class ItemSolicitacaoLicitacao(models.Model):
     def tem_item_anterior(self):
         if self.item > 1:
             anterior = self.item - 1
-            if ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao).exists():
-                return ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao)[0].id
+            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+
+            if eh_lote:
+                if ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao, eh_lote=True).exists():
+                    return ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao, eh_lote=True)[0].id
+
+            else:
+                if ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao, eh_lote=False).exists():
+                    return ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao, eh_lote=False)[0].id
         return False
 
 
     def tem_proximo_item(self):
         proximo = self.item + 1
-        if ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao).exists():
-            return ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao)[0].id
+        eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+
+        if eh_lote:
+            if ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=True).exists():
+                return ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=True)[0].id
+
+        else:
+            if ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=False).exists():
+                return ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=False)[0].id
         return False
 
     def gerar_resultado(self):
@@ -667,7 +675,7 @@ class Pregao(models.Model):
         return self.num_pregao
 
     def eh_ativo(self):
-        return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO]
+        return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO]
 
     def eh_suspenso(self):
         return self.situacao in [Pregao.SUSPENSO]

@@ -11,10 +11,10 @@
                     {% if item.tem_rodada_aberta and item.eh_ativo and item.ativo %}
                         <a href="/base/cancelar_rodada/{{ item.id }}/" class="btn btn-danger" align="right">Cancelar Rodada</a>
                     {% endif %}
-                    {% if item.tem_item_anterior and not item.eh_lote %}
+                    {% if item.tem_item_anterior %}
                         <a href="/base/lances_item/{{ item.tem_item_anterior }}/" class="btn btn-info">Item Anterior</a>
                     {% endif %}
-                    {% if item.tem_proximo_item and not item.eh_lote %}
+                    {% if item.tem_proximo_item %}
                         <a href="/base/avancar_proximo_item/{{ item.id }}/" class="btn btn-warning">Próximo Item</a>
                         <a href="/base/pregao/{{ item.get_licitacao.id }}/#classificacao" class="btn btn-default">Voltar para o Pregão</a>
                     {% elif item.ativo %}

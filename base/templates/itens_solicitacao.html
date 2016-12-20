@@ -36,8 +36,8 @@
                       document.body.removeChild(aux);
                     }
     </script>
-
-     <div class="pull-right">
+    <br><br>
+     <div class="pull-left">
          {% if perms.base.pode_cadastrar_solicitacao %}
             {% if solicitacao.situacao == solicitacao.CADASTRADO %}
                 {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
