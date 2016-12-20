@@ -1,0 +1,118 @@
+{% load bootstrap %}
+
+{% block extrastyle %}
+ <style>
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+        width: 100%;
+
+     }
+
+     @page {
+            @frame content_frame {
+				    {% block content_frame %}
+    				top: 20;
+    				left: 20;
+    				right: 20;
+    				bottom: 60;
+    				{% endblock %}
+    			}
+
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.5cm;
+                left: 0.5cm;
+                right: 0.5cm;
+                height: 1.8cm;
+            }
+     }
+
+     div.topo {
+
+       border-bottom-width:1px;
+        border-bottom-style:solid;
+        border-bottom-color:#BEBEBE;
+        height: 1px;
+      }
+
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center>
+        <font size="4">TERMO DE ADJUDICAÇÃO – PREGÃO PRESENCIAL N° {{ pregao.num_processo }}</font><br><br>
+
+    </center>
+  </h1>
+
+{% endblock %}
+
+{% block content %}
+  <p align="justify">
+
+
+
+        O Pregoeiro Oficial da <b>{{configuracao.nome}} comunica</b>, aos interessados e participantes do <b>PREGÃO PRESENCIAL N° {{ pregao.num_pregao }}, Processo N° {{ pregao.num_processo }}</b>
+        originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.solicitacao.objeto}}</b>,
+
+        conforme quantidades e especificações constantes no Anexo I – Termo de Referência do Edital,
+        que ADJUDICA às empresas
+
+        {% for empresa, itens, total in resultado.items %}
+            <b>{{ empresa }}</b>,
+            quanto aos ITENS <b>{{itens.itens}}</b>, no valor total
+            de <b>R$ {{itens.total}}</b>,
+        {% endfor %}
+
+        totalizando o valor global, para fins de contratação,
+        de <b>R$ {{ total_geral }}</b>,
+
+
+        respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de <b>{{pregao.tipo}} {{pregao.criterio}}</b>.
+
+        {% if fracassados %}
+            Registre-se que os ITENS <b>{{ fracassados }}</b>, foram considerados <b>FRACASSADOS</b>,
+            uma vez que não há Propostas de Preços válidas para estes, em razão do julgamento proferido.
+        {% endif %}
+        Comunicamos, ainda, que o processo se encontra com vistas aberta, à disposição dos interessados,
+        dos interessados no Setor de Licitações.
+
+    <center>
+        <br><br>
+        {{configuracao.municipio}}, {{ pregao.data_inicio }}
+
+
+        <br><br>
+        <b>{{ pregao.responsavel }}</b><br>
+        Pregoeiro
+    </center>
+
+    </p>
+
+
+    <div id="footerContent">
+
+    </div>
+
+{% endblock %}

@@ -29,6 +29,8 @@ su root
 
 ./manage.py criar_base_teste
 
+./manage.py collectstatic --noinput --clear
+
 cd sql
 
 psql -Uwalkyso -hlocalhost -d licita < dump_material.sql

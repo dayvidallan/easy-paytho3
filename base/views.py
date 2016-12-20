@@ -1687,8 +1687,7 @@ def relatorio_lances_item(request, pregao_id):
     import collections
     resultado = collections.OrderedDict(sorted(tabela.items()))
     itens = collections.OrderedDict(sorted(itens.items()))
-    print resultado
-    print itens
+   
 
 
     data = {'eh_lote':eh_lote, 'itens':itens, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado, 'configuracao': configuracao, 'logo': logo}
@@ -2055,195 +2054,69 @@ def extrato_inicial(request, pregao_id):
     return HttpResponse(pdf, 'application/pdf')
 
 
-    response = HttpResponse(content_type = 'application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=capa_processo.pdf'
+@login_required()
+def termo_adjudicacao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    configuracao = None
+    logo = None
+    if Configuracao.objects.exists():
+        configuracao = Configuracao.objects.latest('id')
+        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
 
-    import time
-    from reportlab.lib.enums import TA_JUSTIFY
-    from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.lib import colors
-
-    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'extratos')):
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'extratos'))
-
-    diretorio = os.path.join(settings.MEDIA_ROOT, 'extratos/%s.pdf' % pregao.num_pregao)
-    doc = SimpleDocTemplate(diretorio,pagesize=letter,
-                            rightMargin=72,leftMargin=72,
-                            topMargin=32,bottomMargin=18)
-    Story=[]
-    logo = os.path.join(settings.MEDIA_ROOT, Configuracao.objects.latest('id').logo.name)
-    municipio = Configuracao.objects.latest('id').nome
-    magName = "Pythonista"
-    issueNum = 12
-    subPrice = "99.00"
-    limitedDate = "03/05/2010"
-    freeGift = "tin foil hat"
-
-    formatted_time = time.ctime()
-    full_name = "Mike Driscoll"
-    address_parts = ["411 State St.", "Marshalltown, IA 50158"]
+    destino_arquivo = u'upload/extratos/%s.pdf' % pregao.num_processo
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
 
 
+    tabela = {}
 
-    styles=getSampleStyleSheet()
+    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    resultado = ResultadoItemPregao.objects.filter(ordem=1, item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO)
+    chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
+    for num in chaves:
+        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        chave = u'%s' % fornecedor
+        tabela[chave] = dict(itens = list(), total = 0)
+    total_geral = 0
+    for item in itens_pregao.order_by('item'):
+        if item.get_vencedor():
+            chave = u'%s' % item.get_vencedor().participante.fornecedor
+            tabela[chave]['itens'].append(item.item)
+            valor = tabela[chave]['total']
+            valor = valor + item.get_total_lance_ganhador()
+            tabela[chave]['total'] = valor
+            total_geral += valor
 
-
-    styles.add(ParagraphStyle(name='Justify', alignment=TA_JUSTIFY))
-
-    im = Image(logo, 1*inch, 1*inch)
-    im.hAlign = 'LEFT'
-
-
-
-    table_data = []
-    table_data2 = []
-
-    table_data.append([im, 'aaaaa'])
-    table_data.append(['adasdsadsdsad'])
-
-
-    # Create the table
-    user_table = Table(table_data, colWidths=[doc.width/3.0]*3, hAlign='LEFT')
-
-
-    pad=0
-        #make the table take up less space.
-    user_table.setStyle(TableStyle([("BOTTOMPADDING",(0,0),(-1,-1),pad),
-                               ("TOPPADDING", (0,0),(-1,-1),pad),
-                               ("RIGHTPADDING", (0,0),(-1,-1),pad),
-                               ("LEFTPADDING", (0,0),(-1,-1),pad)]))
-
-    Story.append(user_table)
-
-    table_data2.append(['ssss'])
-    table_data2.append(['sasdasdadssss'])
-
-    user_table2 = Table(table_data2, colWidths=[doc.width/3.0]*3, hAlign='CENTER')
+    fracassados = list()
+    for item in itens_pregao.filter(situacao=ItemSolicitacaoLicitacao.FRACASSADO):
+        fracassados.append(item.item)
+    import collections
+    resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    pad=0
-        #make the table take up less space.
-    user_table2.setStyle(TableStyle([("BOTTOMPADDING",(0,0),(-1,-1),pad),
-                               ("TOPPADDING", (0,0),(-1,-1),pad),
-                               ("RIGHTPADDING", (0,0),(-1,-1),pad),
-                               ("LEFTPADDING", (0,0),(-1,-1),pad)]))
 
-    Story.append(user_table2)
+    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
 
-    Story.append(Spacer(1, 12))
+    template = get_template('termo_adjudicacao.html')
 
-    # Create return address
-    ptext = '<center><font size=16><b>%s</b></font></center>' % municipio
-    Story.append(Paragraph(ptext, styles["Justify"]))
+    html  = template.render(Context(data))
 
-    tabela = '<table><tr><td>dsfsd</td><td>Celula 2</td></tr></table>'
-    Story.append(Paragraph(tabela, styles["Justify"]))
-    Story.append(Spacer(1, 12))
-
-    ptext = u'''
-    <font size=12>O Pregoeiro Oficial do Município de %s, objetivando o grau de competitividade preconizado pela administração pública, torna público que estará realizando a(s) licitação(ões) abaixo descrita(s), a saber:
-
-        - PREGÃO PRESENCIAL No %s - Processo Administrativo nº %s, originado pelo Memorando nº %s – %s, que objetiva a %s, conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital, cuja sessão inicial está marcada para o DIA 25 DE OUTUBRO DE 2016, PELAS 10H00MIN (DEZ HORAS) (Horário local).
-
-        A(s) referida(s) sessão(ões) será(ão) realizada(s) no Setor de Licitações, localizado no térreo do prédio sede da Prefeitura Municipal de Guamaré/RN, situado na Rua Luiz de Souza Miranda, 116, Centro, Guamaré/RN.
-            O(s) Edital(is) e seus anexos, com as condições e especificações, encontra(m)-se à disposição dos interessados no Setor de Licitações, no endereço acima indicado, das 07:00h às 13:00h, de segunda a sexta-feira, em dias de expediente. O(s) Edital(is) poderão ser requeridos por meio do email cpl.guamare@gmail.com, através de solicitação contendo o timbrado da requerente e assinado por representante habilitado.
-            Quaisquer esclarecimentos poderão ser prestados no endereço indicado ou através dos telefones: (84) 3525-2966 / 3525-2960 / 3525-2166.
-        </font>
-        ''' % (municipio, pregao.num_pregao, pregao.num_processo, pregao.solicitacao.num_memorando, pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria, pregao.solicitacao.objeto)
-    Story.append(Paragraph(ptext, styles["Justify"]))
-    Story.append(Spacer(1, 12))
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
 
 
-    ptext = '<font size=12>Thank you very much and we look forward to serving you.</font>'
-    Story.append(Paragraph(ptext, styles["Justify"]))
-    Story.append(Spacer(1, 12))
-    ptext = '<font size=12>Sincerely,</font>'
-    Story.append(Paragraph(ptext, styles["Normal"]))
-    Story.append(Spacer(1, 48))
-    ptext = '<font size=12>Ima Sucker</font>'
-    Story.append(Paragraph(ptext, styles["Normal"]))
-    Story.append(Spacer(1, 12))
-    doc.build(Story)
-
-
-    file = open(diretorio, "r")
+    file = open(caminho_arquivo, "r")
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
-    c = canvas.Canvas(response, pagesize = (LARGURA, ALTURA))
-
-
-    if Configuracao.objects.exists():
-        imagem_logo = os.path.join(settings.MEDIA_ROOT, Configuracao.objects.latest('id').logo.name)
-        # if imagem_logo:
-        #     c.drawInlineImage(imagem_logo, 30*mm, ALTURA - 50*mm)
-        c.setFont('Helvetica-Bold', 20)
-        c.drawString(50*mm, ALTURA - 42*mm, u'%s' % Configuracao.objects.latest('id').nome)
-
-    c.setLineWidth(0.2*mm)
-
-    # Nº DO PROTOCOLO E CÓDIGO DE BARRAS
-
-    c.setFont('Helvetica-Bold', 14)
-
-    c.drawString(50*mm, ALTURA - 62*mm, u'Aviso de Licitação - Pregão %s Nº %s' % (pregao.modalidade, pregao.num_pregao))
-    c.setFont('Helvetica-Bold', 12)
-    c.setLineWidth(0.2*mm)
-
-    texto ='''
-
-    O Pregoeiro Oficial do Município de Guamaré/RN, objetivando o grau de competitividade preconizado pela administração pública, torna público que estará realizando a(s) licitação(ões) abaixo descrita(s), a saber:
-
-    - PREGÃO PRESENCIAL No 069/2016 - Processo Administrativo nº 6.073/2016, originado pelo Memorando nº 137/2016 – Secretaria Municipal de Segurança, Defesa Social e Patrimonial, que objetiva a CONTRATAÇÃO DE EMPRESA ESPECIALIZADA OBJETIVANDO A AQUISIÇÃO DE EXTINTORES DE INCÊNDIO, PARA APARELHAMENTO DA COORDENADORIA MUNICIPAL DE PROTEÇÃO E DEFESA CIVIL E DEMAIS SECRETARIAS MUNICIPAIS DE GUAMARÉ/RN, conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital, cuja sessão inicial está marcada para o DIA 25 DE OUTUBRO DE 2016, PELAS 10H00MIN (DEZ HORAS) (Horário local).
-
-    A(s) referida(s) sessão(ões) será(ão) realizada(s) no Setor de Licitações, localizado no térreo do prédio sede da Prefeitura Municipal de Guamaré/RN, situado na Rua Luiz de Souza Miranda, 116, Centro, Guamaré/RN.
-	O(s) Edital(is) e seus anexos, com as condições e especificações, encontra(m)-se à disposição dos interessados no Setor de Licitações, no endereço acima indicado, das 07:00h às 13:00h, de segunda a sexta-feira, em dias de expediente. O(s) Edital(is) poderão ser requeridos por meio do email cpl.guamare@gmail.com, através de solicitação contendo o timbrado da requerente e assinado por representante habilitado.
-	Quaisquer esclarecimentos poderão ser prestados no endereço indicado ou através dos telefones: (84) 3525-2966 / 3525-2960 / 3525-2166.
-
-	'''
-    c.drawString(50*mm, ALTURA - 72*mm, texto)
-
-
-    # INFORMAÇÕES SOBRE O DOCUMENTO
-    # c.rect(30*mm, ALTURA - 129*mm, 160*mm, 47*mm)
-    # c.setFont('Helvetica', 12)
-    # c.drawString(32*mm, ALTURA - 88*mm, u'Data: %s' % processo.data_cadastro.strftime('%d/%m/%Y'))
-    # #c.drawString(110*mm, ALTURA - 88*mm, u'Campus: %s' % processo.uo.setor.sigla)
-    # #c.drawString(32*mm, ALTURA - 95*mm, u'Interessado: %s' % processo.pessoa_interessada.nome[:55] + (processo.pessoa_interessada.nome[55:] and '...'))
-    # c.drawString(32*mm, ALTURA - 102*mm, u'Origem: %s' % (processo.setor_origem and processo.setor_origem.sigla or u'-'))
-    # #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
-    # L = simpleSplit('Objeto: %s' % processo.objeto,'Helvetica',12,150 * mm)
-    # y = ALTURA - 116*mm
-    # for t in L:
-    #     c.drawString(32*mm,y,t)
-    #     y -= 5*mm
-    #
-    # # TRAMITAÇÃO
-    #
-    # c.setFont('Helvetica-Bold', 16)
-    # c.drawCentredString(110*mm, 158*mm, u'TRAMITAÇÃO')
-    #
-    # # Linhas verticais
-    # for h in range(30, 201, 80):
-    #     c.line(h*mm, 20*mm, h*mm, 152*mm)
-    #
-    # # Linhas horizontais
-    # for v in range(20, 153, 12):
-    #     c.line(30*mm, v*mm, 190*mm, v*mm)
-    #
-    # # Escrevendo "Data e Destino"
-    # c.setFont('Helvetica', 11)
-    # for h in range(30, 130, 80): # horizontal
-    #     for v in range(20, 150, 12): # vertical
-    #         c.drawString(h*mm + 2*mm, v*mm + 4*mm, u'Data: ___/___/______    Destino:')
-
-    c.showPage()
-    c.save()
-    return response
 
 
 @login_required()
