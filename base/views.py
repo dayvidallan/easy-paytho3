@@ -2162,3 +2162,35 @@ def aprovar_todos_pedidos(request, item_id):
     ItemQuantidadeSecretaria.objects.filter(item=item, avaliado_em__isnull=True).update(aprovado=True, avaliado_por=request.user, avaliado_em=datetime.datetime.now())
     messages.success(request, u'Pedidos aprovados com sucesso.')
     return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % item.id)
+
+@login_required()
+def gestao_pedidos(request):
+    setor = request.user.pessoafisica.setor
+    title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
+    pregoes = Pregao.objects.filter(solicitacao__setor_origem=setor)
+    solicitacoes = SolicitacaoLicitacao.objects.filter(id__in=pregoes.values_list('solicitacao', flat=True))
+
+    if request.POST:
+        id_solicitacao = request.POST.get('solicitacao_escolhida')
+        solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=id_solicitacao)
+        resultados = solicitacao.get_resultado()
+
+        for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+            valor_pedido = int(valor)
+            if valor_pedido > 0:
+                if valor_pedido > resultados[idx].item.get_quantidade_disponivel():
+                    messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                    return HttpResponseRedirect(u'/base/gestao_pedidos/#atas')
+
+                novo_pedido = PedidoItem()
+                novo_pedido.item = resultados[idx].item
+                novo_pedido.resultado = resultados[idx]
+                novo_pedido.quantidade = valor_pedido
+                novo_pedido.setor = setor
+                novo_pedido.pedido_por = request.user
+                novo_pedido.pedido_em = datetime.datetime.now()
+                novo_pedido.save()
+
+                messages.success(request, u'Pedido cadastrado com sucesso.')
+                return HttpResponseRedirect(u'/base/gestao_pedidos/#atas')
+    return render_to_response('gestao_pedidos.html', locals(), RequestContext(request))

@@ -53,24 +53,45 @@
             </a>
 
         {% endif %}
-            <a href="/base/ver_solicitacoes/">
+        <a href="/base/ver_solicitacoes/">
+            <div class="col-lg-2 col-md-4">
+
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-file-o fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ num_membros }}</div>
+                                <div><strong>Solicitações</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% if perms.base.pode_cadastrar_solicitacao %}
+            <a href="/base/gestao_pedidos/">
                 <div class="col-lg-2 col-md-4">
 
-                    <div class="panel panel-warning">
+                    <div class="panel panel-primary">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-3">
-                                    <i class="fa fa-file-o fa-3x"></i>
+                                    <i class="fa fa-users fa-3x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
                                     <div class="huge">{{ num_membros }}</div>
-                                    <div><strong>Solicitações</strong></div>
+                                    <div><strong>Gestão de Pedidos</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </a>
+
+        {% endif %}
 
 
     {% endif %}

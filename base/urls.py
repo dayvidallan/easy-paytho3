@@ -86,6 +86,7 @@ urlpatterns = patterns('base.views',
     url(r'^editar_meu_perfil/(?P<pessoa_id>\d+)/$', views.editar_meu_perfil, name='editar_meu_perfil'),
     url(r'^editar_pedido/(?P<pedido_id>\d+)/$', views.editar_pedido, name='editar_pedido'),
     url(r'^aprovar_todos_pedidos/(?P<item_id>\d+)/$', views.aprovar_todos_pedidos, name='aprovar_todos_pedidos'),
+    url(r'^gestao_pedidos/$', views.gestao_pedidos, name='gestao_pedidos'),
 
 
 

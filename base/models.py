@@ -268,6 +268,14 @@ class SolicitacaoLicitacao(models.Model):
             return int(pregao.num_pregao)+1
         return u'1'
 
+    def get_resultado(self):
+        id_item = list()
+        vencedores = list()
+        for resultado in ResultadoItemPregao.objects.filter(item__solicitacao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('item', 'ordem'):
+            if resultado.item.id not in id_item:
+                id_item.append(resultado.item.id)
+                vencedores.append(resultado)
+        return vencedores
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -620,6 +628,14 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def tem_pesquisa_registrada(self):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
+
+    def get_quantidade_disponivel(self):
+        pedidos = PedidoItem.objects.filter(item=self)
+        if pedidos.exists():
+            return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+        else:
+            return self.quantidade
+
 
 
 class ItemLote(models.Model):
@@ -1153,3 +1169,16 @@ class Configuracao(models.Model):
     class Meta:
         verbose_name = u'Variável de Configuração'
         verbose_name_plural = u'Variáveis de Configuração'
+
+
+class PedidoItem(models.Model):
+    item = models.ForeignKey(ItemSolicitacaoLicitacao)
+    resultado = models.ForeignKey(ResultadoItemPregao)
+    quantidade = models.IntegerField(u'Quantidade')
+    setor = models.ForeignKey(Setor)
+    pedido_por = models.ForeignKey(User)
+    pedido_em = models.DateTimeField(u'Pedido em')
+
+    class Meta:
+        verbose_name = u'Pedido do Item'
+        verbose_name_plural = u'Pedidos do Item'
