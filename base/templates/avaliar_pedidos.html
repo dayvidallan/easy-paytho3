@@ -1,0 +1,77 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">Solicitação {{solicitacao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+     <div class="pull-right">
+         <a class="btn btn-primary" href="/base/itens_solicitacao/{{ solicitacao.pk }}/">Voltar</a>
+    </div>
+
+        {% for key, pedidos in resultado.items %}
+
+
+            <h3>{{ pedidos.nome }}{% if pode_avaliar and pedidos.pendente %} <a href="/base/aprovar_todos_pedidos_secretaria/{{solicitacao.id}}/{{key}}/" class="btn btn-success btn-sm">Aprovar Todos</a>{% endif %}</h3>
+
+
+            <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantidade</th>
+                    <th>Aceito</th>
+                    <th>Avaliado Em</th>
+                    <th>Avaliado Por</th>
+                    <th>Opções</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in  pedidos.pedido %}
+                   <tr>
+
+                       <td>{{ pedido.item }}</td>
+                       <td>{{ pedido.quantidade }}</td>
+                       <td>
+                           {% if pedido.avaliado_em %}
+                               {% if pedido.aprovado %}
+                                   <font color="green">Sim</font>
+                               {% else %}
+                                   <font color="red">Não</font> ({{ pedido.justificativa_reprovacao }})
+                               {% endif %}
+                           {% else %}
+                            -
+                           {% endif %}
+                        </td>
+                       <td>{{ pedido.avaliado_em|default_if_none:'-' }}</td>
+                       <td>{{ pedido.avaliado_por|default_if_none:'-' }}</td>
+                       <td>{% if not pedido.avaliado_em and pode_avaliar %}
+                               <a class="btn btn-success btn-sm" href="/base/pedido_outro_interessado/{{ pedido.pk }}/1/">Aprovar Pedido</a>
+                               <a class="btn btn-danger btn-sm" href="/base/pedido_outro_interessado/{{ pedido.pk }}/2/">Rejeitar Pedido</a>
+                           {% endif %}
+                           {% if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all and request.user.pessoafisica.setor.secretaria == pedido.secretaria and solicitacao.dentro_prazo_resposta %}
+                                <a class="btn btn-default btn-sm" href="/base/editar_pedido/{{ pedido.pk }}/">Editar Pedido</a>
+                           {% endif %}
+
+                       </td>
+                   </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+
+    {% endfor %}
+
+
+
+
+
+
+{% endblock %}

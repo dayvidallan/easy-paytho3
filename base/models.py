@@ -252,6 +252,9 @@ class SolicitacaoLicitacao(models.Model):
     def tem_pedidos_outras_secretarias(self):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).exists()
 
+    def tem_pedidos_pendentes(self):
+        return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()
+
 
     def get_pregao(self):
         return Pregao.objects.filter(solicitacao=self)[0]

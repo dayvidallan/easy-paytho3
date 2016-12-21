@@ -11,7 +11,7 @@ class CadastraParticipantePregaoForm(forms.ModelForm):
     sem_representante = forms.BooleanField(label=u'Representante Ausente', initial=False, required=False)
     obs_ausencia_participante = forms.CharField(label=u'Motivo da Ausência do Representante', widget=forms.Textarea, required=False)
     fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
-    cpf_representante = utils.CpfFormField(label=u'CPF', required=True)
+    cpf_representante = utils.CpfFormField(label=u'CPF', required=False)
 
     class Meta:
         model = ParticipantePregao
@@ -29,6 +29,10 @@ class CadastraParticipantePregaoForm(forms.ModelForm):
         if self.cleaned_data.get('fornecedor'):
             if ParticipantePregao.objects.filter(pregao=self.pregao, fornecedor=self.cleaned_data.get('fornecedor')).exists():
                 raise forms.ValidationError(u'Este fornecedor já é participante do pregão.')
+
+        if not self.cleaned_data.get('sem_representante') and not self.cleaned_data.get('cpf_representante'):
+            self.add_error('cpf_representante', u'Informe o CPF.')
+
 
 
 

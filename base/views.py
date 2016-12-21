@@ -24,6 +24,7 @@ from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
 from reportlab.graphics.barcode.common import I2of5
 from reportlab.lib.utils import simpleSplit
+import collections
 LARGURA = 210*mm
 ALTURA = 297*mm
 
@@ -483,7 +484,7 @@ def lances_item(request, item_id):
         chave = '%s' % str(lance.rodada.rodada)
         tabela[chave].append(lance)
 
-    import collections
+
     if eh_modalidade_desconto:
         resultado = collections.OrderedDict(sorted(tabela.items()))
     else:
@@ -1523,7 +1524,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
             tabela[chave]['total'] = valor
 
 
-    import collections
+
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     data = {'eh_lote':eh_lote, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
@@ -1598,7 +1599,7 @@ def relatorio_classificacao_por_item(request, pregao_id):
         itens[chave] = item.item.get_itens_do_lote()
 
 
-    import collections
+
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     data = {'itens':itens, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
@@ -1684,7 +1685,7 @@ def relatorio_lances_item(request, pregao_id):
         #     chave = '%s' % str(lance.rodada.rodada)
         #     tabela[chave].append(lance)
 
-    import collections
+
     resultado = collections.OrderedDict(sorted(tabela.items()))
     itens = collections.OrderedDict(sorted(itens.items()))
 
@@ -1733,7 +1734,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
             tabela[chave]['total'] = valor
 
 
-    import collections
+
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     texto = u''
@@ -1845,7 +1846,7 @@ def pedido_outro_interessado(request, pedido_id, opcao):
             item.quantidade += pedido.quantidade
             item.save()
             messages.success(request, u'Pedido aprovado com sucesso.')
-            return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
+            return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % pedido.item.solicitacao.id)
         else:
             form = RemoverParticipanteForm(request.POST or None)
             if form.is_valid():
@@ -1855,10 +1856,10 @@ def pedido_outro_interessado(request, pedido_id, opcao):
                 pedido.avaliado_por = request.user
                 pedido.save()
                 messages.success(request, u'Pedido rejeitado com sucesso.')
-                return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
+                return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % pedido.item.solicitacao.id)
 
     else:
-        return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
+        return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % pedido.item.solicitacao.id)
 
 
 
@@ -2095,7 +2096,7 @@ def termo_adjudicacao(request, pregao_id):
     fracassados = list()
     for item in itens_pregao.filter(situacao=ItemSolicitacaoLicitacao.FRACASSADO):
         fracassados.append(item.item)
-    import collections
+
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
@@ -2194,3 +2195,37 @@ def gestao_pedidos(request):
                 messages.success(request, u'Pedido cadastrado com sucesso.')
                 return HttpResponseRedirect(u'/base/gestao_pedidos/#atas')
     return render_to_response('gestao_pedidos.html', locals(), RequestContext(request))
+
+@login_required()
+def avaliar_pedidos(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    title=u'Avaliar Pedidos - %s' % solicitacao
+    tabela = {}
+    pode_avaliar = request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor
+    pedidos = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao)
+    chaves =  pedidos.values('secretaria').order_by('secretaria').distinct('secretaria')
+    for num in chaves:
+        secretaria = get_object_or_404(Secretaria, pk=num['secretaria'])
+        chave = u'%s' % secretaria.id
+        pendente = pedidos.filter(secretaria=secretaria, avaliado_em__isnull=True).exists()
+        tabela[chave] = dict(pedido = list(), nome=secretaria, pendente=pendente)
+
+    for item in pedidos.order_by('item'):
+
+        chave = u'%s' % item.secretaria.id
+        tabela[chave]['pedido'].append(item)
+
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+    return render_to_response('avaliar_pedidos.html', locals(), RequestContext(request))
+
+
+@login_required()
+def aprovar_todos_pedidos_secretaria(request, solicitacao_id, secretaria_id):
+    if ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id, avaliado_em__isnull=True).exists():
+        for pedido in ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id, avaliado_em__isnull=True):
+            pedido.item.quantidade += pedido.quantidade
+            pedido.item.save()
+        ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id, avaliado_em__isnull=True).update(aprovado=True, avaliado_por=request.user, avaliado_em=datetime.datetime.now())
+        messages.success(request, u'Pedidos aprovados com sucesso.')
+    return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % solicitacao_id)
+
