@@ -2208,6 +2208,10 @@ def avaliar_pedidos(request, solicitacao_id):
     tabela = {}
     pode_avaliar = request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor
     pedidos = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao)
+
+    form = FiltrarSecretariaForm(request.POST or None, pedidos=pedidos)
+    if request.GET.get('secretaria'):
+        pedidos = pedidos.filter(secretaria=request.GET.get('secretaria'))
     chaves =  pedidos.values('secretaria').order_by('secretaria').distinct('secretaria')
     for num in chaves:
         secretaria = get_object_or_404(Secretaria, pk=num['secretaria'])

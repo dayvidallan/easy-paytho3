@@ -460,3 +460,10 @@ class NovoPedidoCompraForm(forms.ModelForm):
     class Meta:
         model = SolicitacaoLicitacao
         fields = ('num_memorando', 'objeto', 'objetivo')
+
+class FiltrarSecretariaForm(forms.Form):
+    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
+    def __init__(self, *args, **kwargs):
+        self.pedidos = kwargs.pop('pedidos', None)
+        super(FiltrarSecretariaForm, self).__init__(*args, **kwargs)
+        self.fields['secretaria'].queryset = Secretaria.objects.filter(id__in=self.pedidos.values_list('secretaria', flat=True))
