@@ -614,7 +614,7 @@
                                     <td>{{ item.cadastrado_por }}</td>
                                     <td>{{ item.cadastrado_em }}</td>
                                     <td>
-                                        {% if item.cadastro_por == request.user %}
+                                        {% if item.cadastrado_por == request.user %}
                                             <a href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-danger">Apagar</a>
                                         {% endif %}
                                     </td>
