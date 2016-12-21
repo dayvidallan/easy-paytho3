@@ -455,3 +455,8 @@ class EditarPedidoForm(forms.ModelForm):
     class Meta:
         model = ItemQuantidadeSecretaria
         fields = ('quantidade', )
+
+class NovoPedidoCompraForm(forms.ModelForm):
+    class Meta:
+        model = SolicitacaoLicitacao
+        fields = ('num_memorando', 'objeto', 'objetivo')

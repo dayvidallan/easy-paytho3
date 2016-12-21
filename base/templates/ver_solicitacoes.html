@@ -213,6 +213,7 @@
                                 {% else %}
                                     <th>Data de Recebimento</th>
                                 {% endif %}
+                                <th>Tipo</th>
                                 <th>Opções</th>
 
                             </tr>
@@ -230,6 +231,7 @@
                                             {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
                                        {% endif %}
                                    </td>
+                                   <td>{{ solicitacao.tipo }}</td>
                                    <td>
                                        <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
 

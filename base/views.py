@@ -513,19 +513,24 @@ def ver_pregoes(request):
 @login_required()
 def itens_solicitacao(request, solicitacao_id):
     url = settings.URL
-    recebida_no_setor = False
+
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Solicitação Nº: %s' % solicitacao
+    title=u'Solicitação Nº: %s - Tipo: %s' % (solicitacao, solicitacao.tipo)
     setor_do_usuario = request.user.pessoafisica.setor
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
+    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao)
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
+    recebida_no_setor = False
     movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao)
     if movimentacao.exists():
         ultima_movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).latest('id')
         if ultima_movimentacao.setor_destino == setor_do_usuario and ultima_movimentacao.data_recebimento:
             recebida_no_setor = True
-    elif solicitacao.setor_atual == setor_do_usuario and itens.exists():
-        recebida_no_setor = True
+    elif solicitacao.setor_atual == setor_do_usuario:
+        if itens.exists() and solicitacao.tipo == SolicitacaoLicitacao.LICITACAO:
+            recebida_no_setor = True
+        elif solicitacao.tipo == SolicitacaoLicitacao.COMPRA:
+            recebida_no_setor = True
 
     return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
 
@@ -2228,4 +2233,55 @@ def aprovar_todos_pedidos_secretaria(request, solicitacao_id, secretaria_id):
         ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id, avaliado_em__isnull=True).update(aprovado=True, avaliado_por=request.user, avaliado_em=datetime.datetime.now())
         messages.success(request, u'Pedidos aprovados com sucesso.')
     return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % solicitacao_id)
+
+
+@login_required()
+def novo_pedido_compra(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    pregao = solicitacao.get_pregao()
+    title=u'Novo Pedido de Compra - %s' % pregao.num_pregao
+    form = NovoPedidoCompraForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.tipo = SolicitacaoLicitacao.COMPRA
+        o.setor_origem = request.user.pessoafisica.setor
+        o.setor_atual = request.user.pessoafisica.setor
+        o.data_cadastro = datetime.datetime.now()
+        o.cadastrado_por = request.user
+        o.save()
+        messages.success(request, u'Pedidos aprovados com sucesso.')
+        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))
+    return render_to_response('novo_pedido_compra.html', locals(), RequestContext(request))
+
+
+def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitacao):
+    setor = request.user.pessoafisica.setor
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_original)
+    nova_solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=nova_solicitacao)
+    title=u'Pedido de Compra - %s' % nova_solicitacao
+
+    if request.POST:
+        resultados = solicitacao.get_resultado()
+
+        for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+            valor_pedido = int(valor)
+            if valor_pedido > 0:
+                if valor_pedido > resultados[idx].item.get_quantidade_disponivel():
+                    messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                    return HttpResponseRedirect(u'/base/gestao_pedidos/#atas')
+
+                novo_pedido = PedidoItem()
+                novo_pedido.item = resultados[idx].item
+                novo_pedido.solicitacao = nova_solicitacao
+                novo_pedido.resultado = resultados[idx]
+                novo_pedido.quantidade = valor_pedido
+                novo_pedido.setor = setor
+                novo_pedido.pedido_por = request.user
+                novo_pedido.pedido_em = datetime.datetime.now()
+                novo_pedido.save()
+
+        messages.success(request, u'Pedido cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
+    return render_to_response('informar_quantidades_do_pedido.html', locals(), RequestContext(request))
+
 

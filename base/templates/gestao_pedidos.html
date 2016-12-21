@@ -190,71 +190,34 @@
     </div>
     <div class="tab-content">
             <div id="contratos" class="tab-pane in active">
-                <div class="pull-right">
-                {% if pregao.eh_ativo and pregao.tem_item_sem_lote %}
-                    <a class="btn btn-success" href="/base/criar_lote/{{ pregao.pk }}/">Criar Lote</a>
-                {% endif %}
-                <br><br>
-            </div>
-                {% if lotes.exists %}
-
-                    {% for lote in lotes %}
-                        <h3>Lote {{ lote.item }}</h3>
-                        <table class="table table-bordered table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Material</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {%  for item in lote.lote.all %}
-                                    <tr>
-
-                                        <td>{{ item.lote.item }}.{{item.numero_item}}</td>
-                                        <td>{{ item.item.material}}</td>
-                                         <td>{{ item.item.valor_medio }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endfor %}
-
-                {% else %}
-                    <br><br>
-                    <p class="alert alert-warning">Nenhum contrato cadastrado.</p>
-                {% endif %}
+                <p class="alert alert-warning">Nenhum contrato cadastrado.</p>
             </div>
 
        <div id="atas" class="tab-pane">
 
 
-            <div class="pull-right">
-                {% if pregao.eh_ativo %}
-                    <a class="btn btn-primary" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
-                    <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
-                    <a class="btn btn-danger" href="/base/encerrar_pregao/{{ pregao.pk }}/2/">Fracassado</a>
-                {% endif %}
-                <br><br>
-            </div>
-
                 {%  if solicitacoes.exists %}
+                    {%  for solicitacao in solicitacoes %}
+
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
-                                <th>Atas de Registro de Preços</th>
+                                <th><a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">ARP - {{ solicitacao.get_pregao.num_pregao }}</a></th>
 
                             </tr>
                         </thead>
                         <tbody>
-                            {%  for solicitacao in solicitacoes %}
+
                                 <tr>
 
                                     <td>
-                                        <a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">ARP - {{ solicitacao.get_pregao.num_pregao }}</a>
+
 
                                         <div id="demo{{solicitacao.id}}" class="collapse">
+                                            <div class="pull-right">
+                                               <a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a>
+                                            </div>
+                                            <br>
                                             <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
                                                 {% csrf_token %}
                                                 <input type="hidden" id='solicitacao_escolhida' name="solicitacao_escolhida" value="{{solicitacao.id}}">
@@ -267,7 +230,7 @@
                                                             <th>Empresa</th>
                                                             <th>Valor</th>
                                                             <th>Quantidade Disponível</th>
-                                                            <th>Quantidade Solicitada</th>
+
 
                                                         </tr>
                                                     </thead>
@@ -275,19 +238,16 @@
                                                         {% for resultado in solicitacao.get_resultado %}
                                                             <tr>
                                                                 <td>{{ resultado.item }}</td>
-                                                                <td>{{ resultado.marca }}</td>
+                                                                <td>{{ resultado.marca|default_if_none:"-" }}</td>
                                                                 <td>{{ resultado.participante }}</td>
                                                                 <td>{{ resultado.valor }}</td>
                                                                 <td>{{ resultado.item.get_quantidade_disponivel }}</td>
-                                                                <td><input name="quantidades" value="0"></td>
+
 
                                                             </tr>
 
                                                         {% endfor %}
-                                                        <tr>
-                                                           <td  colspan="5">&nbsp;</td>
-                                                           <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
-                                                        </tr>
+
                                                     </tbody>
                                                </table>
 

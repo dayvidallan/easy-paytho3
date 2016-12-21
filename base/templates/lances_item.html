@@ -19,8 +19,8 @@
                         <a href="/base/pregao/{{ item.get_licitacao.id }}/#classificacao" class="btn btn-default">Voltar para o Pregão</a>
                     {% elif item.ativo %}
                         <a href="/base/avancar_proximo_item/{{ item.id }}/?ultimo=True/" class="btn btn-warning">Finalizar Lances</a>
-                    {% else %}
                         <a href="/base/retomar_lances/{{ item.id }}/" class="btn btn-success">Retomar Lances</a>
+                    {% else %}
                         <a href="/base/avancar_proximo_item/{{ item.id }}/?ultimo=True/" class="btn btn-default">Voltar para o Pregão</a>
                     {% endif %}
 

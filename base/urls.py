@@ -89,7 +89,8 @@ urlpatterns = patterns('base.views',
     url(r'^gestao_pedidos/$', views.gestao_pedidos, name='gestao_pedidos'),
     url(r'^avaliar_pedidos/(?P<solicitacao_id>\d+)/$', views.avaliar_pedidos, name='avaliar_pedidos'),
     url(r'^aprovar_todos_pedidos_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.aprovar_todos_pedidos_secretaria, name='aprovar_todos_pedidos_secretaria'),
-
+    url(r'^novo_pedido_compra/(?P<solicitacao_id>\d+)/$', views.novo_pedido_compra, name='novo_pedido_compra'),
+    url(r'^informar_quantidades_do_pedido/(?P<solicitacao_original>\d+)/(?P<nova_solicitacao>\d+)/$', views.informar_quantidades_do_pedido, name='informar_quantidades_do_pedido'),
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),

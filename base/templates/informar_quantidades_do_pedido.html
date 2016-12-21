@@ -1,0 +1,51 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+
+{% block content %}
+
+        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Marca</th>
+                        <th>Empresa</th>
+                        <th>Valor</th>
+                        <th>Quantidade Disponível</th>
+                        <th>Quantidade Solicitada</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resultado in solicitacao.get_resultado %}
+                        <tr>
+                            <td>{{ resultado.item }}</td>
+                            <td>{{ resultado.marca }}</td>
+                            <td>{{ resultado.participante }}</td>
+                            <td>{{ resultado.valor }}</td>
+                            <td>{{ resultado.item.get_quantidade_disponivel }}</td>
+                            <td><input name="quantidades" value="0"></td>
+
+                        </tr>
+                    {% endfor %}
+
+                    <tr>
+                       <td  colspan="5">&nbsp;</td>
+                       <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
+                    </tr>
+                </tbody>
+           </table>
+       </form>
+
+
+{% endblock %}

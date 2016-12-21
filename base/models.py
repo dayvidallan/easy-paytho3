@@ -161,11 +161,21 @@ class SolicitacaoLicitacao(models.Model):
         (EM_LICITACAO, EM_LICITACAO),
         (NEGADA, NEGADA),
     )
+
+    COMPRA = u'Compra'
+    LICITACAO = u'Licitação'
+
+    TIPO_CHOICES = (
+        (COMPRA, COMPRA),
+        (LICITACAO, LICITACAO),
+
+    )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.CharField(u'Descrição do Objeto', max_length=1500)
     objetivo = models.CharField(u'Objetivo', max_length=1500)
     justificativa = models.CharField(u'Justificativa', max_length=1500)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
+    tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=LICITACAO)
     data_cadastro = models.DateTimeField(u'Cadastrada em')
     cadastrado_por = models.ForeignKey(User, null=True, blank=True)
     obs_negacao = models.CharField(u'Justificativa da Negação', max_length=1500, null=True, blank=True)
@@ -1176,6 +1186,7 @@ class Configuracao(models.Model):
 
 class PedidoItem(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
     resultado = models.ForeignKey(ResultadoItemPregao)
     quantidade = models.IntegerField(u'Quantidade')
     setor = models.ForeignKey(Setor)
