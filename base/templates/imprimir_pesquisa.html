@@ -124,7 +124,7 @@ ul{
             <th>Valor Máximo</th>
         </thead>
         <tbody>
-            {% for item in pesquisa.itempesquisamercadologica_set.all %}
+            {% for item in pesquisa.get_itens %}
                 <tr>
                     <td>{{ item.item }} - {{ item.item.especificacao }}</td>
                     <td>{{ item.marca }}</td>

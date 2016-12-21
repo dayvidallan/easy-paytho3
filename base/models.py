@@ -1032,6 +1032,9 @@ class PesquisaMercadologica(models.Model):
     orgao_gerenciador_ata = models.CharField(u'Órgão Gerenciador da Ata', max_length=255, null=True, blank=True)
     origem = models.CharField(u'Origem', max_length=100, choices=ORIGEM_CHOICES, null=True, blank=True)
 
+    def get_itens(self):
+        return ItemPesquisaMercadologica.objects.filter(pesquisa=self).order_by('item__item')
+
 
 class ItemPesquisaMercadologica(models.Model):
     pesquisa = models.ForeignKey(PesquisaMercadologica, verbose_name=u'Pesquisa')
