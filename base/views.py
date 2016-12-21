@@ -1368,32 +1368,37 @@ def importar_itens(request, solicitacao_id):
 
             for row in range(0, sheet.nrows):
 
-                codigo = unicode(sheet.cell_value(row, 0)).strip()
-                especificacao = unicode(sheet.cell_value(row, 1)).strip()
-                unidade = unicode(sheet.cell_value(row, 2)).strip()
-                qtd = unicode(sheet.cell_value(row, 3)).strip()
+                #codigo = unicode(sheet.cell_value(row, 0)).strip()
+                especificacao = unicode(sheet.cell_value(row, 0)).strip()
+                unidade = unicode(sheet.cell_value(row, 1)).strip()
+                qtd = unicode(sheet.cell_value(row, 2)).strip()
                 if row == 0:
-                    if codigo != u'Codigo' or especificacao != u'Especificacao' or unidade != u'Unidade' or qtd != u'Quantidade':
-                        raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Código, Especificação, Unidade e Quantidade.')
+                    if especificacao != u'Especificacao' or unidade != u'Unidade' or qtd != u'Quantidade':
+                        raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
                 else:
-                    if codigo and especificacao and unidade and qtd:
+                    if especificacao and unidade and qtd:
                         if TipoUnidade.objects.filter(nome__icontains=unidade).exists():
                             un = TipoUnidade.objects.filter(nome__icontains=unidade)[0]
                             novo_item = ItemSolicitacaoLicitacao()
                             novo_item.solicitacao = solicitacao
                             novo_item.item = row
 
-                            if MaterialConsumo.objects.filter(codigo=int(sheet.cell_value(row, 0))).exists():
-                                material = MaterialConsumo.objects.filter(codigo=int(sheet.cell_value(row, 0)))[0]
+                            if MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0)).exists():
+                                material = MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0))[0]
                             else:
                                 material = MaterialConsumo()
-                                material.codigo = int(sheet.cell_value(row, 0))
-                                material.id = int(sheet.cell_value(row, 0))
+                                if MaterialConsumo.objects.exists():
+                                    id = MaterialConsumo.objects.latest('id')
+                                    material.id = id.pk+1
+                                    material.codigo = id.pk+1
+                                else:
+                                    material.id = 1
+                                    material.codigo = 1
                                 material.nome = especificacao
                                 material.save()
                             novo_item.material = material
                             novo_item.unidade = un
-                            novo_item.quantidade = int(sheet.cell_value(row, 3))
+                            novo_item.quantidade = int(sheet.cell_value(row, 2))
                             novo_item.save()
                         else:
                             raise Exception(u'Unidade Inválida.')
