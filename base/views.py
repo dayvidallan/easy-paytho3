@@ -2262,7 +2262,7 @@ def novo_pedido_compra(request, solicitacao_id):
         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))
     return render_to_response('novo_pedido_compra.html', locals(), RequestContext(request))
 
-
+@login_required()
 def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitacao):
     setor = request.user.pessoafisica.setor
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_original)
@@ -2293,4 +2293,10 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
     return render_to_response('informar_quantidades_do_pedido.html', locals(), RequestContext(request))
 
-
+@login_required()
+def apagar_anexo_pregao(request, item_id):
+    anexo = get_object_or_404(AnexoPregao, pk=item_id)
+    pregao = anexo.pregao
+    anexo.delete()
+    messages.success(request, u'Anexo removido com sucesso.')
+    return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
