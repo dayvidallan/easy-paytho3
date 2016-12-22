@@ -72,7 +72,11 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    <td>{{ pedido.item }}</td>
+                                    {% if not eh_lote %}
+                                        <td>{{ pedido.item.item }}</td>
+                                    {% else % }
+                                        <td>{{ pedido.item }}</td>
+                                    {% endif %}
                                     <td>
                                         {% if eh_lote %}
                                            {% for item in pedido.item.get_itens_do_lote %}
