@@ -217,6 +217,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('valor', models.DecimalField(null=True, verbose_name='Valor', max_digits=12, decimal_places=2, blank=True)),
                 ('declinio', models.BooleanField(default=False, verbose_name='Decl\xednio')),
+                ('ordem_lance', models.IntegerField(verbose_name='Ordem')),
                 ('item', models.ForeignKey(verbose_name='Item da Solicita\xe7\xe3o', to='base.ItemSolicitacaoLicitacao')),
             ],
             options={
