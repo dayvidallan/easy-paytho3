@@ -2277,7 +2277,7 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
 
     if form.is_valid():
         buscou = True
-        resultados = solicitacao.get_resultado(request.GET.get('vencedor'))
+        resultados = solicitacao.get_resultado(form.cleaned_data.get('vencedor'))
 
         if 'quantidades' in request.POST:
 
