@@ -565,14 +565,19 @@ class ItemSolicitacaoLicitacao(models.Model):
         if not ResultadoItemPregao.objects.filter(item=self).exists():
             ids_participantes = []
             finalistas = []
+            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
             if PropostaItemPregao.objects.filter(item=self, concorre=True).exists():
 
                 if self.solicitacao.eh_maior_desconto():
-                    for lance in PropostaItemPregao.objects.filter(item=self, concorre=True).order_by('-valor'):
+                    if eh_lote:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=True).order_by('-valor')
+                    else:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=False).order_by('-valor')
+                    for lance in propostas:
                         if lance.participante.id not in ids_participantes:
                             valor_registrado = lance.valor
                             if LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).exists():
-                                melhor_lance_participante = LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante).order_by('-valor')[0].valor
+                                melhor_lance_participante = LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).order_by('-valor')[0].valor
                                 if melhor_lance_participante > valor_registrado:
                                     valor_registrado = melhor_lance_participante
                             ids_participantes.append(lance.participante.id)
@@ -594,7 +599,11 @@ class ItemSolicitacaoLicitacao(models.Model):
 
 
                 else:
-                    for lance in PropostaItemPregao.objects.filter(item=self, concorre=True).order_by('valor'):
+                    if eh_lote:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=True).order_by('valor')
+                    else:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=False).order_by('valor')
+                    for lance in propostas:
                         if lance.participante.id not in ids_participantes:
                             valor_registrado = lance.valor
                             if LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).exists():
@@ -844,6 +853,13 @@ class RodadaPregao(models.Model):
             return RodadaPregao.objects.filter(item=self.item, rodada=num)[0]
         return None
 
+    def get_ordem_lance(self):
+        if LanceItemRodadaPregao.objects.filter(rodada=self).exists():
+           atual = LanceItemRodadaPregao.objects.filter(rodada=self).order_by('-ordem_lance')[0].ordem_lance
+           return atual+1
+        return 1
+
+
 class AtivosManager(models.Manager):
     def get_queryset(self):
         qs = super(AtivosManager, self).get_queryset()
@@ -855,6 +871,7 @@ class LanceItemRodadaPregao(models.Model):
     rodada = models.ForeignKey(RodadaPregao,verbose_name=u'Rodada')
     valor = models.DecimalField(u'Valor', max_digits=12, decimal_places=2, null=True, blank=True)
     declinio = models.BooleanField(u'Declínio', default=False)
+    ordem_lance = models.IntegerField(u'Ordem')
 
 
     objects = models.Manager()

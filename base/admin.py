@@ -41,10 +41,12 @@ class FornecedorAdmin(NewModelAdmin):
         return HttpResponseRedirect('/base/ver_fornecedores/')
 
     def response_add(self, request, obj):
-        self.message_user(request, u'Fornecedor cadastrado com sucesso.', level=messages.SUCCESS)
-        return HttpResponseRedirect('/base/ver_fornecedores/')
+        id_sessao = "%s_fornecedor" % (request.user.pessoafisica.id)
 
-
+        if request.session.get(id_sessao):
+            self.message_user(request, u'Fornecedor %s cadastrado com sucesso.' % obj, level=messages.SUCCESS)
+            return HttpResponseRedirect('/base/cadastra_participante_pregao/%s/' % request.session.get(id_sessao))
+        return super(FornecedorAdmin, self).response_add(request, obj)
 
 admin.site.register(Fornecedor, FornecedorAdmin)
 

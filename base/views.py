@@ -153,6 +153,7 @@ def pregao(request, pregao_id):
         pregao.save()
 
     eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    eh_maior_desconto = pregao.tipo == TipoPregao.objects.get(id=2)
     title = u'Pregão N° %s' % pregao
     if eh_lote:
         lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
@@ -192,7 +193,7 @@ def cadastra_proposta_pregao(request, pregao_id):
     if request.GET.get('participante'):
         selecionou = True
         participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
-        itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante)
+        itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante, item__eh_lote=False)
         if itens.exists():
             edicao=True
         else:
@@ -297,6 +298,8 @@ def propostas_item(request, item_id):
 def cadastra_participante_pregao(request, pregao_id):
     title=u'Cadastrar Participante do Pregão'
     pregao = get_object_or_404(Pregao, pk= pregao_id)
+    id_sessao = "%s_fornecedor" % (request.user.pessoafisica.id)
+    request.session[id_sessao] = pregao.id
     form = CadastraParticipantePregaoForm(request.POST or None, pregao=pregao)
     if form.is_valid():
         if ParticipantePregao.objects.filter(pregao=pregao,fornecedor=form.cleaned_data['fornecedor']).exists():
@@ -362,6 +365,7 @@ def declinar_lance(request, rodada_id, item_id, participante_id):
     novo_lance.rodada = rodada
     novo_lance.participante = participante
     novo_lance.declinio = True
+    novo_lance.ordem_lance = rodada.get_ordem_lance()
     novo_lance.save()
 
     messages.success(request, u'Lance declinado com sucesso.')
@@ -464,6 +468,7 @@ def lances_item(request, item_id):
         novo_lance.rodada = rodada_atual
         novo_lance.participante = participante
         novo_lance.valor = form.cleaned_data.get('lance')
+        novo_lance.ordem_lance = rodada_atual.get_ordem_lance()
         novo_lance.save()
         messages.success(request, u'Novo lance cadastrado com sucesso.')
 
@@ -485,10 +490,7 @@ def lances_item(request, item_id):
         tabela[chave].append(lance)
 
 
-    if eh_modalidade_desconto:
-        resultado = collections.OrderedDict(sorted(tabela.items()))
-    else:
-        resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True))
+    resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True))
     return render_to_response('lances_item.html', locals(), RequestContext(request))
 
 @login_required()
@@ -1675,6 +1677,7 @@ def relatorio_lances_item(request, pregao_id):
     tabela = {}
     itens = {}
 
+
     for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao = pregao.solicitacao, lanceitemrodadapregao__isnull=False).order_by('item'):
         lista_rodadas = dict()
         rodadas = RodadaPregao.objects.filter(item=item)
@@ -1684,7 +1687,7 @@ def relatorio_lances_item(request, pregao_id):
         tabela[chave] =  lista_rodadas
         itens[chave] =  item.get_itens_do_lote()
 
-        for lance in LanceItemRodadaPregao.objects.filter(item=item):
+        for lance in LanceItemRodadaPregao.objects.filter(item=item).order_by('ordem_lance'):
             lista_rodadas[lance.rodada.rodada]['lances'].append(lance)
 
         # num_rodadas =  rodadas.values('rodada').order_by('rodada').distinct('rodada')

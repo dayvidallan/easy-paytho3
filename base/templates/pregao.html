@@ -475,7 +475,11 @@
                                 <thead>
                                     <tr>
                                         <th>Empresa Vencedora</th>
-                                        <th>Valor Total</th>
+                                        {% if eh_maior_desconto %}
+                                            <th>Desconto</th>
+                                        {% else %}
+                                            <th>Valor</th>
+                                        {% endif %}
                                         <th>Itens do Lote</th>
                                     </tr>
                                 </thead>
@@ -488,7 +492,12 @@
                                                 {{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
                                         </td>
-                                        <td>{{ item.get_total_lance_ganhador|format_money }}</td>
+                                        {% if eh_maior_desconto %}
+                                            <td>{{ item.get_total_lance_ganhador }}%</td>
+
+                                        {% else %}
+                                            <td>{{ item.get_total_lance_ganhador|format_money }}</td>
+                                        {% endif %}
 
                                         <td>
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
