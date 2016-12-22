@@ -5,7 +5,7 @@
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
     <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
-    <a href="javascript:void(0);">{{ title }}</a>
+    <a href="javascript:void(0);">Solicitação {{ solicitacao }}</a>
 {% endblock %}
 {% block content %}
     <div class="pull-right">
@@ -212,6 +212,12 @@
             </div>
         </div>
     {% else %}
+        <div class="pull-left">
+            {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
+                <td><a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a></td>
+            {% endif %}
+        </div>
+        <br><br>
         <table class="table table-bordered table-condensed table-striped" width="50%">
             <thead>
                 <tr>
@@ -240,6 +246,8 @@
         </table>
 
         {% if pedidos.exists %}
+            <br>
+            <h3>Itens do Pedido</h3>
             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -248,10 +256,6 @@
                         <th>Empresa</th>
                         <th>Valor</th>
                         <th>Quantidade Solicitada</th>
-                        {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                            <th>Opções</th>
-                        {% endif %}
-
                     </tr>
                 </thead>
                 <tbody>
@@ -262,9 +266,7 @@
                             <td>{{ pedido.resultado.participante }}</td>
                             <td>{{ pedido.resultado.valor }}</td>
                             <td>{{ pedido.quantidade }}</td>
-                            {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                                <td><a href="" class="btn btn-success btn-sm">Gerar Documento (à definir)</a></td>
-                            {% endif %}
+
 
 
                         </tr>

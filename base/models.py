@@ -533,6 +533,14 @@ class ItemSolicitacaoLicitacao(models.Model):
         return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, empate=True)
 
 
+    def get_marca_item_lote(self):
+        tt = ItemLote.objects.filter(item=self)
+        if ResultadoItemPregao.objects.filter(item=tt[0].lote, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
+            resultado = ResultadoItemPregao.objects.filter(item=tt[0].lote, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+            return PropostaItemPregao.objects.filter(item=self, participante=resultado.participante)[0].marca
+        return None
+
+
     def tem_item_anterior(self):
         if self.item > 1:
             anterior = self.item - 1
@@ -1216,3 +1224,7 @@ class PedidoItem(models.Model):
     class Meta:
         verbose_name = u'Pedido do Item'
         verbose_name_plural = u'Pedidos do Item'
+
+
+    def get_total(self):
+        return self.quantidade * self.resultado.valor

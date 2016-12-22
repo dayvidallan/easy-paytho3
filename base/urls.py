@@ -91,7 +91,10 @@ urlpatterns = patterns('base.views',
     url(r'^aprovar_todos_pedidos_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.aprovar_todos_pedidos_secretaria, name='aprovar_todos_pedidos_secretaria'),
     url(r'^novo_pedido_compra/(?P<solicitacao_id>\d+)/$', views.novo_pedido_compra, name='novo_pedido_compra'),
     url(r'^informar_quantidades_do_pedido/(?P<solicitacao_original>\d+)/(?P<nova_solicitacao>\d+)/$', views.informar_quantidades_do_pedido, name='informar_quantidades_do_pedido'),
-     url(r'^apagar_anexo_pregao/(?P<item_id>\d+)/$', views.apagar_anexo_pregao, name='apagar_anexo_pregao'),
+    url(r'^apagar_anexo_pregao/(?P<item_id>\d+)/$', views.apagar_anexo_pregao, name='apagar_anexo_pregao'),
+    url(r'^gerar_pedido_fornecedores/(?P<solicitacao_id>\d+)/$', views.gerar_pedido_fornecedores, name='gerar_pedido_fornecedores'),
+
+
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),
     url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),

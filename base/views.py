@@ -2181,8 +2181,8 @@ def aprovar_todos_pedidos(request, item_id):
 def gestao_pedidos(request):
     setor = request.user.pessoafisica.setor
     title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
-    pregoes = Pregao.objects.filter(solicitacao__setor_origem=setor)
-    solicitacoes = SolicitacaoLicitacao.objects.filter(id__in=pregoes.values_list('solicitacao', flat=True))
+    pregoes = ResultadoItemPregao.objects.filter(item__solicitacao__setor_origem=setor)
+    solicitacoes = SolicitacaoLicitacao.objects.filter(id__in=pregoes.values_list('item__solicitacao', flat=True))
 
     if request.POST:
         id_solicitacao = request.POST.get('solicitacao_escolhida')
@@ -2280,7 +2280,7 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
             if valor_pedido > 0:
                 if valor_pedido > resultados[idx].item.get_quantidade_disponivel():
                     messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
-                    return HttpResponseRedirect(u'/base/gestao_pedidos/#atas')
+                    return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
 
                 novo_pedido = PedidoItem()
                 novo_pedido.item = resultados[idx].item
@@ -2303,3 +2303,47 @@ def apagar_anexo_pregao(request, item_id):
     anexo.delete()
     messages.success(request, u'Anexo removido com sucesso.')
     return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
+
+@login_required()
+def gerar_pedido_fornecedores(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+    destino_arquivo = u'upload/pedidos/%s.pdf' % solicitacao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pedidos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/pedidos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao)
+    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+
+    tabela = {}
+
+    for pedido in pedidos:
+        chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+        tabela[chave] = dict(pedidos = list(), total = 0)
+
+    for pedido in pedidos:
+        chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+        tabela[chave]['pedidos'].append(pedido)
+        valor = tabela[chave]['total']
+        valor = valor + pedido.resultado.valor
+        tabela[chave]['total'] = valor
+
+
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+
+    data = {'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
+    print resultado
+    template = get_template('gerar_pedido_fornecedores.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
