@@ -2044,7 +2044,7 @@ def extrato_inicial(request, pregao_id):
         configuracao = Configuracao.objects.latest('id')
         logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
 
-    destino_arquivo = u'upload/extratos/%s.pdf' % pregao.num_processo
+    destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
@@ -2077,7 +2077,7 @@ def termo_adjudicacao(request, pregao_id):
         configuracao = Configuracao.objects.latest('id')
         logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
 
-    destino_arquivo = u'upload/extratos/%s.pdf' % pregao.num_processo
+    destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
