@@ -2353,3 +2353,10 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+@login_required()
+def apagar_lote(request, item_id, pregao_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    ItemLote.objects.filter(lote=item).delete()
+    item.delete()
+    return HttpResponseRedirect(u'/base/pregao/%s/' % pregao_id)
