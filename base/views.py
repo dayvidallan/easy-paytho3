@@ -2271,29 +2271,35 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_original)
     nova_solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=nova_solicitacao)
     title=u'Pedido de Compra - %s' % nova_solicitacao
+    participantes = solicitacao.get_resultado()
+    form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
+    buscou = False
 
-    if request.POST:
-        resultados = solicitacao.get_resultado()
+    if form.is_valid():
+        buscou = True
+        resultados = solicitacao.get_resultado(request.GET.get('vencedor'))
 
-        for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-            valor_pedido = int(valor)
-            if valor_pedido > 0:
-                if valor_pedido > resultados[idx].item.get_quantidade_disponivel():
-                    messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
-                    return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
+        if 'quantidades' in request.POST:
 
-                novo_pedido = PedidoItem()
-                novo_pedido.item = resultados[idx].item
-                novo_pedido.solicitacao = nova_solicitacao
-                novo_pedido.resultado = resultados[idx]
-                novo_pedido.quantidade = valor_pedido
-                novo_pedido.setor = setor
-                novo_pedido.pedido_por = request.user
-                novo_pedido.pedido_em = datetime.datetime.now()
-                novo_pedido.save()
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                valor_pedido = int(valor)
+                if valor_pedido > 0:
+                    if valor_pedido > resultados[idx].item.get_quantidade_disponivel():
+                        messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/?vencedor=%s' % (solicitacao.id, nova_solicitacao.id, request.GET.get('vencedor')))
 
-        messages.success(request, u'Pedido cadastrado com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
+                    novo_pedido = PedidoItem()
+                    novo_pedido.item = resultados[idx].item
+                    novo_pedido.solicitacao = nova_solicitacao
+                    novo_pedido.resultado = resultados[idx]
+                    novo_pedido.quantidade = valor_pedido
+                    novo_pedido.setor = setor
+                    novo_pedido.pedido_por = request.user
+                    novo_pedido.pedido_em = datetime.datetime.now()
+                    novo_pedido.save()
+
+            messages.success(request, u'Pedido cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
     return render_to_response('informar_quantidades_do_pedido.html', locals(), RequestContext(request))
 
 @login_required()
@@ -2334,7 +2340,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     data = {'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
-    print resultado
+
     template = get_template('gerar_pedido_fornecedores.html')
 
     html  = template.render(Context(data))

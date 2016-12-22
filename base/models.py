@@ -281,10 +281,14 @@ class SolicitacaoLicitacao(models.Model):
             return int(pregao.num_pregao)+1
         return u'1'
 
-    def get_resultado(self):
+    def get_resultado(self, id_vencedor=None):
         id_item = list()
         vencedores = list()
-        for resultado in ResultadoItemPregao.objects.filter(item__solicitacao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('item', 'ordem'):
+        resultados = ResultadoItemPregao.objects.filter(item__solicitacao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('item', 'ordem')
+        if id_vencedor:
+            resultados = resultados.filter(participante=id_vencedor)
+
+        for resultado in resultados:
             if resultado.item.id not in id_item:
                 id_item.append(resultado.item.id)
                 vencedores.append(resultado)
