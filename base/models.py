@@ -265,6 +265,8 @@ class SolicitacaoLicitacao(models.Model):
     def tem_pedidos_pendentes(self):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()
 
+    def tem_pedidos_compra(self):
+        return PedidoItem.objects.filter(solicitacao=self).exists()
 
     def get_pregao(self):
         return Pregao.objects.filter(solicitacao=self)[0]
@@ -302,6 +304,9 @@ class SolicitacaoLicitacao(models.Model):
     def get_lotes(self):
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True)
 
+    def tem_ordem_compra(self):
+        return OrdemCompra.objects.filter(solicitacao=self).exists()
+
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
     DESERTO = u'Deserto'
@@ -333,7 +338,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         if ItemLote.objects.filter(item=self).exists() and not self.eh_lote:
             id_lote = ItemLote.objects.filter(item=self)[0].lote.item
             num_item = ItemLote.objects.filter(item=self)[0].numero_item
-            return u'Item: %s.%s - %s' % (id_lote, num_item, self.material)
+            return u'Item: %s.%s' % (id_lote, num_item)
         elif not self.eh_lote:
             return u'Item: %s - %s' % (self.item, self.material)
         else:
@@ -1263,3 +1268,29 @@ class PedidoItem(models.Model):
         else:
             return self.quantidade * self.item.get_valor_item_lote()
 
+class DotacaoOrcamentaria(models.Model):
+    projeto_atividade_num = models.TextField(u'Número do Projeto de Atividade')
+    projeto_atividade_descricao = models.TextField(u'Descrição do Projeto de Atividade')
+    programa_num = models.TextField(u'Número do Programa')
+    programa_descricao = models.TextField(u'Descrição do Programa')
+    fonte_num = models.TextField(u'Número da Fonte')
+    fonte_descricao = models.TextField(u'Descrição da Fonte')
+    elemento_despesa_num = models.TextField(u'Número do Elemento de Despesa')
+    elemento_despesa_descricao = models.TextField(u'Descrição do Elemento de Despesa')
+
+    class Meta:
+        verbose_name = u'Dotação Orçamentária'
+        verbose_name_plural = u'Dotações Orçamentárias'
+
+    def __unicode__(self):
+        return 'Dotação: Programa %s - Elemento de Despesa: %s' % (self.programa_num, self.elemento_despesa_num)
+
+class OrdemCompra(models.Model):
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    numero = models.IntegerField(u'Número da Ordem')
+    data = models.DateField(u'Data')
+    dotacao_orcamentaria = models.ForeignKey(u'base.DotacaoOrcamentaria', null=True)
+
+    class Meta:
+        verbose_name = u'Ordem de Compra'
+        verbose_name_plural = u'Ordens de Compra'

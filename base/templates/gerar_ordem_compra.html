@@ -1,0 +1,45 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/pregao/{{pregao.id}}/">Pregão {{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+
+<script>
+$(function() {
+    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
+});
+</script>
+{% endblock %}
+{% block content %}
+        <div class="pull-right">
+          <a class="btn btn-success" href="/admin/base/dotacaoorcamentaria/add/">Cadastrar Dotação</a>
+        </div>
+        <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form|bootstrap }}
+                    </div>
+		        </div>
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+
+             </div>
+        </form>
+
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}

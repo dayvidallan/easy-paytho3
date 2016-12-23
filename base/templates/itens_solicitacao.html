@@ -213,8 +213,12 @@
         </div>
     {% else %}
         <div class="pull-left">
-            {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor %}
-                <td><a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a></td>
+            {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra %}
+                <a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a>
+            {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_pedidos_compra and not solicitacao.tem_ordem_compra %}
+                <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-success">Gerar Ordem de Compra/Serviço</a>
+            {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
+                <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
             {% endif %}
         </div>
         <br><br>

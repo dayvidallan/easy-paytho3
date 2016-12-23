@@ -262,3 +262,17 @@ class ConfiguracaoAdmin(NewModelAdmin):
     list_filter = ('nome',)
 
 admin.site.register(Configuracao, ConfiguracaoAdmin)
+
+class DotacaoOrcamentariaAdmin(NewModelAdmin):
+    form = DotacaoOrcamentariaForm
+    list_display = ('projeto_atividade_num',)
+
+    def response_add(self, request, obj):
+        self.message_user(request, u'Dotação %s cadastrado com sucesso.' % obj, level=messages.SUCCESS)
+        tt = "%s_solicitacao" % (request.user.pessoafisica.id)
+        if request.session.get(tt):
+            return HttpResponseRedirect('/base/gerar_ordem_compra/%s/' % request.session.get(tt))
+        return super(DotacaoOrcamentariaAdmin, self).response_add(request, obj)
+
+
+admin.site.register(DotacaoOrcamentaria, DotacaoOrcamentariaAdmin)

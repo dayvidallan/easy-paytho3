@@ -147,6 +147,15 @@
                     <permission>change_fornecedor</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>dotacaoorcamentaria</name>
+                <permissions>
+                    <permission>add_dotacaoorcamentaria</permission>
+                    <permission>delete_dotacaoorcamentaria</permission>
+                    <permission>change_dotacaoorcamentaria</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>

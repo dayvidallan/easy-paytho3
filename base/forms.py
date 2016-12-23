@@ -451,6 +451,18 @@ class ConfiguracaoForm(forms.ModelForm):
         model = Configuracao
         fields = ('nome', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo')
 
+class DotacaoOrcamentariaForm(forms.ModelForm):
+    projeto_atividade_num = forms.IntegerField(label=u'Número do Projeto de Atividade')
+    programa_num = forms.IntegerField(label=u'Número do Programa')
+    fonte_num = forms.IntegerField(label=u'Número da Fonte')
+    elemento_despesa_num = forms.IntegerField(label=u'Número do Elemento de Despesa')
+
+    class Meta:
+        model = DotacaoOrcamentaria
+        exclude = ()
+
+
+
 class EditarPedidoForm(forms.ModelForm):
     class Meta:
         model = ItemQuantidadeSecretaria
@@ -482,3 +494,20 @@ class FiltraVencedorPedidoForm(forms.Form):
 
 class ValorFinalItemLoteForm(forms.Form):
     valor = forms.DecimalField(label=u'Valor')
+
+class CriarOrdemForm(forms.ModelForm):
+    dotacao_orcamentaria = forms.ModelChoiceField(DotacaoOrcamentaria.objects, label=u'Dotação Orçamentária', required=False)
+    class Meta:
+        model = OrdemCompra
+        fields = ('numero', 'data', 'dotacao_orcamentaria')
+
+    def __init__(self, *args, **kwargs):
+        super(CriarOrdemForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}
+        if OrdemCompra.objects.all().exists():
+            tt = OrdemCompra.objects.latest('id')
+            self.fields['numero'].initial = tt.id + 1
+        else:
+            self.fields['numero'].initial = 1
+
+

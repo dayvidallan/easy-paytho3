@@ -40,17 +40,40 @@ ul{
 
 
 {% block content %}
+        {% block content_title %}
+
+        <h1 class="page-header">
+            {% include "cabecalho.html" %}
+        </h1>
+        <center><h2>Ordem de Compra/Serviço</h2></center>
+        <table border="0" width="100%" cellpadding="5" cellspacing="5">
+            <thead>
+                <tr>
+                    <th>N° da Ordem</th><td>{{ ordem.numero }}</td>
+                    <th>Data</th><td>{{ ordem.data }}</td>
+                </tr>
+                <tr>
+                    <th>Fornecedor</th><td>{{ fornecedor.razao_social }}</td>
+                    <th>CPF/CNPJ</th><td>{{ fornecedor.cnpj }}</td>
+                </tr>
+                <tr>
+                    <th>Endereço</th><td colspan="3">{{ fornecedor.endereco }}</td>
+
+                </tr>
+                <tr>
+                    <th>Dados Bancários</th><td colspan="3">Não Informado</td>
+
+                </tr>
+            </thead>
+        </table>
+
+        {% endblock %}
 <center>
+
     {% for key, pedidos in resultado.items %}
-                {% block content_title %}
-                    <br>
-                  <h1 class="page-header">
-                    {% include "cabecalho.html" %}
-                  </h1>
 
-                {% endblock %}
 
-                <h2>Fornecedor: {{ key }}</h2>
+                <h2>Solicitamos a V.S.ª o fornecimento/realização dos itens abaixo especificados: </h2>
 
                     <table border="1" width="100%" cellpadding="5" cellspacing="5">
                         <thead>
@@ -99,9 +122,31 @@ ul{
                         </tbody>
                     </table>
 
-                <pdf:nextpage />
+
 
     {% endfor %}
+    <br>
+    <table border="0" width="100%" cellpadding="5" cellspacing="5" align="left">
+            <thead>
+                <tr>
+                    <th>Processo N°</th><td>{{ solicitacao.num_processo }}</td>
+                    <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
+                </tr>
+                <tr>
+                    <th>Projeto/Atividade</th><td>{{ ordem.dotacao_orcamentaria.projeto_atividade_num }} - {{ ordem.dotacao_orcamentaria.projeto_atividade_descricao }}</td><td colspan="2">&nbsp;</td>
+
+                </tr>
+                <tr>
+                   <th>Elemento de Despesa</th><td>{{ ordem.dotacao_orcamentaria.programa_num }} - {{ ordem.dotacao_orcamentaria.programa_descricao }}</td><td colspan="2">&nbsp;</td>
+
+                </tr>
+                <tr>
+                    <th>Fonte</th><td>{{ ordem.dotacao_orcamentaria.elemento_despesa_num }} - {{ ordem.dotacao_orcamentaria.elemento_despesa_descricao }}</td><td colspan="2">&nbsp;</td>
+
+                </tr>
+            </thead>
+        </table>
+
 </center>
 
 

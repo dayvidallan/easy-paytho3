@@ -95,6 +95,8 @@ urlpatterns = patterns('base.views',
     url(r'^gerar_pedido_fornecedores/(?P<solicitacao_id>\d+)/$', views.gerar_pedido_fornecedores, name='gerar_pedido_fornecedores'),
     url(r'^apagar_lote/(?P<item_id>\d+)/(?P<pregao_id>\d+)/$', views.apagar_lote, name='apagar_lote'),
     url(r'^informar_valor_final_item_lote/(?P<item_id>\d+)/(?P<pregao_id>\d+)/$', views.informar_valor_final_item_lote, name='informar_valor_final_item_lote'),
+    url(r'^gerar_ordem_compra/(?P<solicitacao_id>\d+)/$', views.gerar_ordem_compra, name='gerar_ordem_compra'),
+    url(r'^ver_ordem_compra/(?P<solicitacao_id>\d+)/$', views.ver_ordem_compra, name='ver_ordem_compra'),
 
 
 

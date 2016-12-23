@@ -520,7 +520,7 @@ def itens_solicitacao(request, solicitacao_id):
     title=u'Solicitação Nº: %s - Tipo: %s' % (solicitacao, solicitacao.tipo)
     setor_do_usuario = request.user.pessoafisica.setor
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
-    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao)
+    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
     eh_lote = pedidos.filter(proposta__isnull=False).exists()
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
     recebida_no_setor = False
@@ -2263,7 +2263,7 @@ def novo_pedido_compra(request, solicitacao_id):
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
         o.save()
-        messages.success(request, u'Pedidos aprovados com sucesso.')
+
         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))
     return render_to_response('novo_pedido_compra.html', locals(), RequestContext(request))
 
@@ -2433,3 +2433,81 @@ def informar_valor_final_item_lote(request, item_id, pregao_id):
         messages.success(request, u'Valor cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
     return render_to_response('informar_valor_final_item_lote.html', locals(), RequestContext(request))
+
+
+@login_required()
+def gerar_ordem_compra(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    id_sessao = "%s_solicitacao" % (request.user.pessoafisica.id)
+    request.session[id_sessao] = solicitacao.id
+    title = u'Gerar Ordem de Compra/Serviço - %s' % solicitacao
+    form = CriarOrdemForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.solicitacao = solicitacao
+        o.save()
+        messages.success(request, u'Ordem de Compra/Serviço gerada com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
+    return render_to_response('gerar_ordem_compra.html', locals(), RequestContext(request))
+
+
+@login_required()
+def ver_ordem_compra(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+
+    destino_arquivo = u'upload/ordens_compra/%s.pdf' % solicitacao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+    ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
+    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
+    pregao = pedidos[0].item.solicitacao.get_pregao()
+    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+
+    tabela = {}
+
+    if eh_lote:
+        fornecedor = pedidos[0].item.get_empresa_item_lote().fornecedor
+        for pedido in pedidos:
+            chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
+            tabela[chave] = dict(pedidos = list(), total = 0)
+
+        for pedido in pedidos:
+            chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
+            tabela[chave]['pedidos'].append(pedido)
+            valor = tabela[chave]['total']
+            valor = valor + (pedido.item.get_valor_item_lote()*pedido.quantidade)
+            tabela[chave]['total'] = valor
+
+    else:
+        fornecedor = pedidos[0].item.get_vencedor().participante.fornecedor
+        for pedido in pedidos:
+            chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+            tabela[chave] = dict(pedidos = list(), total = 0)
+
+        for pedido in pedidos:
+            chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+            tabela[chave]['pedidos'].append(pedido)
+            valor = tabela[chave]['total']
+            valor = valor + (pedido.resultado.valor*pedido.quantidade)
+            tabela[chave]['total'] = valor
+
+
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+
+    data = {'pregao': pregao, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+
+    template = get_template('ver_ordem_compra.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
