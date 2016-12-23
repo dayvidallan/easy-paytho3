@@ -2298,9 +2298,8 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
             fornecedor = request.POST.get('fornecedor')
             participante = ParticipantePregao.objects.get(id=fornecedor)
 
-
             if eh_lote and '0' in request.POST.getlist('quantidades'):
-                messages.error(request, u'Informe a quantidade solicita para cada item do lote')
+                messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
                 return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
 
 
