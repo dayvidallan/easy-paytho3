@@ -593,8 +593,9 @@ class ItemSolicitacaoLicitacao(models.Model):
         return False
 
     def get_valor_item_lote(self):
-        lote = ItemLote.objects.filter(item=self)[0].lote
-        return PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora())[0].valor_item_lote
+        if ItemLote.objects.filter(item=self).exists():
+            lote = ItemLote.objects.filter(item=self)[0].lote
+            return PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora())[0].valor_item_lote
 
     def get_proposta_item_lote(self):
         lote = ItemLote.objects.filter(item=self)[0].lote
