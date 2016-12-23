@@ -218,7 +218,7 @@
                                         </div>
                                         <br>
 
-                                        {% if solicitacao.eh_lote %}
+                                        {% if solicitacao.eh_lote and solicitacao.tem_itens_lote_com_valores %}
                                             {% for lote in solicitacao.get_lotes %}
 
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">

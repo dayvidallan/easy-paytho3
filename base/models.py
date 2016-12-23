@@ -307,6 +307,9 @@ class SolicitacaoLicitacao(models.Model):
     def tem_ordem_compra(self):
         return OrdemCompra.objects.filter(solicitacao=self).exists()
 
+    def tem_itens_lote_com_valores(self):
+        PropostaItemPregao.objects.filter(item__solicitacao=self, valor_item_lote__isnull=False).exists()
+
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
     DESERTO = u'Deserto'
