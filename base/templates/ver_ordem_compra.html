@@ -132,18 +132,20 @@ ul{
                     <th>Processo N°</th><td>{{ solicitacao.num_processo }}</td>
                     <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
                 </tr>
-                <tr>
-                    <th>Projeto/Atividade</th><td>{{ ordem.dotacao_orcamentaria.projeto_atividade_num }} - {{ ordem.dotacao_orcamentaria.projeto_atividade_descricao }}</td><td colspan="2">&nbsp;</td>
+                {% if ordem.dotacao_orcamentaria %}
+                    <tr>
+                        <th>Projeto/Atividade</th><td>{{ ordem.dotacao_orcamentaria.projeto_atividade_num }} - {{ ordem.dotacao_orcamentaria.projeto_atividade_descricao }}</td><td colspan="2">&nbsp;</td>
 
-                </tr>
-                <tr>
-                   <th>Elemento de Despesa</th><td>{{ ordem.dotacao_orcamentaria.programa_num }} - {{ ordem.dotacao_orcamentaria.programa_descricao }}</td><td colspan="2">&nbsp;</td>
+                    </tr>
+                    <tr>
+                       <th>Elemento de Despesa</th><td>{{ ordem.dotacao_orcamentaria.programa_num }} - {{ ordem.dotacao_orcamentaria.programa_descricao }}</td><td colspan="2">&nbsp;</td>
 
-                </tr>
-                <tr>
-                    <th>Fonte</th><td>{{ ordem.dotacao_orcamentaria.elemento_despesa_num }} - {{ ordem.dotacao_orcamentaria.elemento_despesa_descricao }}</td><td colspan="2">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th>Fonte</th><td>{{ ordem.dotacao_orcamentaria.elemento_despesa_num }} - {{ ordem.dotacao_orcamentaria.elemento_despesa_descricao }}</td><td colspan="2">&nbsp;</td>
 
-                </tr>
+                    </tr>
+                {% endif %}
             </thead>
         </table>
 
