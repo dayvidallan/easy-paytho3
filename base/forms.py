@@ -478,3 +478,7 @@ class FiltraVencedorPedidoForm(forms.Form):
         for item in self.participantes:
             id.append(item.participante.id)
         self.fields['vencedor'].queryset = ParticipantePregao.objects.filter(id__in=id)
+
+
+class ValorFinalItemLoteForm(forms.Form):
+    valor = forms.DecimalField(label=u'Valor')

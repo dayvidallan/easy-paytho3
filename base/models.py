@@ -272,6 +272,9 @@ class SolicitacaoLicitacao(models.Model):
     def eh_maior_desconto(self):
         return self.get_pregao().tipo == TipoPregao.objects.get(id=2)
 
+    def eh_lote(self):
+        return self.get_pregao().criterio == CriterioPregao.objects.get(id=2)
+
     def tem_pregao_cadastrado(self):
         return Pregao.objects.filter(solicitacao=self).exists()
 
@@ -281,18 +284,23 @@ class SolicitacaoLicitacao(models.Model):
             return int(pregao.num_pregao)+1
         return u'1'
 
-    def get_resultado(self, id_vencedor=None):
+    def get_resultado(self, vencedor=None):
         id_item = list()
         vencedores = list()
         resultados = ResultadoItemPregao.objects.filter(item__solicitacao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('item', 'ordem')
-        if id_vencedor:
-            resultados = resultados.filter(participante=id_vencedor)
 
         for resultado in resultados:
             if resultado.item.id not in id_item:
                 id_item.append(resultado.item.id)
-                vencedores.append(resultado)
+                if vencedor:
+                    if vencedor == resultado.participante:
+                        vencedores.append(resultado)
+                else:
+                    vencedores.append(resultado)
         return vencedores
+
+    def get_lotes(self):
+        return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True)
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -398,6 +406,7 @@ class ItemSolicitacaoLicitacao(models.Model):
                 return preco[0].marca
         return None
 
+
     def get_reducao_total(self):
         if self.get_lance_minimo_valor():
             reducao = self.get_lance_minimo_valor() / self.valor_medio
@@ -421,6 +430,8 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_participante_desempate(self):
         if self.tem_empate_beneficio():
             return ParticipantePregao.objects.get(id=self.tem_empate_beneficio().id)
+
+
     def get_proximo_lance(self):
         # if self.tem_empate_beneficio():
         #     return ParticipantePregao.objects.get(id=self.tem_empate_beneficio().id)
@@ -486,6 +497,9 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_podem_dar_lance(self):
         return PropostaItemPregao.objects.filter(item=self, concorre=True).values_list('participante', flat=True)
+
+    def tem_lance(self):
+        return PropostaItemPregao.objects.filter(item=self, concorre=True).exists()
 
     def get_participantes_do_item(self):
         return ParticipanteItemPregao.objects.filter(item=self).order_by('concorre','desclassificado','desistencia').values_list('participante', flat=True)
@@ -572,6 +586,14 @@ class ItemSolicitacaoLicitacao(models.Model):
             if ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=False).exists():
                 return ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=False)[0].id
         return False
+
+    def get_valor_item_lote(self):
+        lote = ItemLote.objects.filter(item=self)[0].lote
+        return PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora())[0].valor_item_lote
+
+    def get_proposta_item_lote(self):
+        lote = ItemLote.objects.filter(item=self)[0].lote
+        return PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora())[0]
 
     def gerar_resultado(self):
         if not ResultadoItemPregao.objects.filter(item=self).exists():
@@ -671,6 +693,9 @@ class ItemSolicitacaoLicitacao(models.Model):
             return self.quantidade
 
 
+    def get_empresa_item_lote(self):
+        lote = ItemLote.objects.filter(item=self)[0].lote
+        return lote.get_empresa_vencedora()
 
 class ItemLote(models.Model):
     lote = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'lote')
@@ -826,6 +851,7 @@ class PropostaItemPregao(models.Model):
     desistencia = models.BooleanField(u'Desistência', default=False)
     motivo_desistencia= models.CharField(u'Motivo da Desistência', max_length=2000, null=True, blank=True)
     concorre = models.BooleanField(u'Concorre', default=True)
+    valor_item_lote = models.DecimalField(u'Valor do Item do Lote', max_digits=12, decimal_places=2, null=True, blank=True)
 
 
     class Meta:
@@ -1219,7 +1245,8 @@ class Configuracao(models.Model):
 class PedidoItem(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao)
     solicitacao = models.ForeignKey(SolicitacaoLicitacao)
-    resultado = models.ForeignKey(ResultadoItemPregao)
+    resultado = models.ForeignKey(ResultadoItemPregao, null=True)
+    proposta = models.ForeignKey(PropostaItemPregao, null=True)
     quantidade = models.IntegerField(u'Quantidade')
     setor = models.ForeignKey(Setor)
     pedido_por = models.ForeignKey(User)
@@ -1231,4 +1258,8 @@ class PedidoItem(models.Model):
 
 
     def get_total(self):
-        return self.quantidade * self.resultado.valor
+        if self.resultado:
+            return self.quantidade * self.resultado.valor
+        else:
+            return self.quantidade * self.item.get_valor_item_lote()
+

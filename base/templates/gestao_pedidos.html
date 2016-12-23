@@ -5,7 +5,6 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
@@ -196,34 +195,37 @@
        <div id="atas" class="tab-pane">
 
 
-                {%  if solicitacoes.exists %}
-                    {%  for solicitacao in solicitacoes %}
+            {%  if solicitacoes.exists %}
+                {%  for solicitacao in solicitacoes %}
 
-                    <table class="table table-bordered table-condensed table-striped">
-                        <thead>
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th><a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">ARP - Pregão: {{ solicitacao.get_pregao.num_pregao }} - Processo: {{solicitacao.get_pregao.num_processo}}</a></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
                             <tr>
-                                <th><a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">ARP - {{ solicitacao.get_pregao.num_pregao }}</a></th>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                                <tr>
-
-                                    <td>
+                                <td>
 
 
-                                        <div id="demo{{solicitacao.id}}" class="collapse">
-                                            <div class="pull-right">
-                                               <a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a>
-                                            </div>
-                                            <br>
-                                            <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
-                                                {% csrf_token %}
-                                                <input type="hidden" id='solicitacao_escolhida' name="solicitacao_escolhida" value="{{solicitacao.id}}">
-                                                <br>
+                                    <div id="demo{{solicitacao.id}}" class="collapse in">
+                                        <div class="pull-right">
+                                           <a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a>
+                                        </div>
+                                        <br>
+
+                                        {% if solicitacao.eh_lote %}
+                                            {% for lote in solicitacao.get_lotes %}
+
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                     <thead>
+                                                        <tr>
+                                                            <th colspan="5">{{lote}}</th>
+                                                        </tr>
                                                         <tr>
                                                             <th>Item</th>
                                                             <th>Marca</th>
@@ -235,34 +237,65 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for resultado in solicitacao.get_resultado %}
+                                                        {% for item in lote.get_itens_do_lote %}
                                                             <tr>
-                                                                <td>{{ resultado.item }}</td>
-                                                                <td>{{ resultado.marca|default_if_none:"-" }}</td>
-                                                                <td>{{ resultado.participante }}</td>
-                                                                <td>{{ resultado.valor }}</td>
-                                                                <td>{{ resultado.item.get_quantidade_disponivel }}</td>
+                                                                <td>{{ item }}</td>
+                                                                <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
+                                                                <td>{{ lote.get_empresa_vencedora }}</td>
+                                                                <td>{{ item.get_valor_item_lote }}</td>
+                                                                <td>{{ item.get_quantidade_disponivel }}</td>
 
 
                                                             </tr>
-
-                                                        {% endfor %}
-
+                                                        {% endfor%}
                                                     </tbody>
-                                               </table>
+                                                </table>
+                                            {% endfor %}
+                                        {% else %}
+                                            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Marca</th>
+                                                        <th>Empresa</th>
+                                                        <th>Valor</th>
+                                                        <th>Quantidade Disponível</th>
 
-                                            </form>
-                                        </div>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for resultado in solicitacao.get_resultado %}
+                                                        <tr>
+                                                            <td>{{ resultado.item }}</td>
+                                                            <td>{{ resultado.marca|default_if_none:"-" }}</td>
+                                                            <td>{{ resultado.participante }}</td>
+                                                            <td>{{ resultado.valor }}</td>
+                                                            <td>{{ resultado.item.get_quantidade_disponivel }}</td>
 
 
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p class="alert alert-warning">Nenhuma ata cadastrada.</p>
-                {% endif %}
+                                                        </tr>
+                                                    {% endfor%}
+                                                </tbody>
+                                            </table>
+
+
+                                        {% endif %}
+
+
+
+
+                                    </div>
+
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhuma ata cadastrada.</p>
+            {% endif %}
 
 
         </div>

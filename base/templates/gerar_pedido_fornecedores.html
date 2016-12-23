@@ -55,7 +55,7 @@ ul{
                     <table border="1" width="100%" cellpadding="5" cellspacing="5">
                         <thead>
                             <tr>
-                                <th>Item/lote</th>
+                                <th>Item</th>
                                 <th width="60%">Especificação</th>
                                 {% if not eh_lote %}
                                     <th>Marca</th>
@@ -72,39 +72,20 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    {% if not eh_lote %}
-                                        <td>{{ pedido.item.item }}</td>
-                                    {% else %}
-                                        <td>{{ pedido.item }}</td>
-                                    {% endif %}
-                                    <td>
-                                        {% if eh_lote %}
-                                           {% for item in pedido.item.get_itens_do_lote %}
-                                                <li><b>Material:</b> {{item.material.nome}} - <b>Marca:</b> {{item.get_marca_item_lote}}
-
-                                                    {% if eh_lote %}
-                                                        - <b>Unidade:</b> {{item.unidade}}
-                                                    {% endif %}
-                                                </li>
-                                           {% endfor %}
-                                        {% else %}
-                                            {{ pedido.item.material }}
-                                        {% endif %}
-                                    </td>
+                                    <td>{{ pedido.item }}</td>
+                                    <td>{{ pedido.item.material }}</td>
                                     {% if not eh_lote %}
                                         <td>{{ pedido.resultado.marca}}</td>
                                         <td>{{ pedido.item.unidade}}</td>
                                     {% endif %}
 
-                                    <td>{% if eh_lote %}
-                                            1
-                                        {% else %}
-                                            {{ pedido.quantidade }}
-                                        {% endif %}
-                                    </td>
+                                    <td>{{ pedido.quantidade }}</td>
 
-
-                                    <td>R$ {{ pedido.resultado.valor|format_money  }}</td>
+                                    {% if not eh_lote %}
+                                        <td>R$ {{ pedido.resultado.valor|format_money  }}</td>
+                                    {% else %}
+                                        <td>R$ {{ pedido.item.get_valor_item_lote|format_money  }}</td>
+                                    {% endif %}
                                     <td>R$ {{ pedido.get_total|format_money  }}</td>
 
 

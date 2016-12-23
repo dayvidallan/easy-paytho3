@@ -248,7 +248,12 @@
                 {% if lotes.exists %}
 
                     {% for lote in lotes %}
-                        <h3>Lote {{ lote.item }}</h3>
+                        <h3>Lote {{ lote.item }}
+                            {% if pregao.eh_ativo %}
+                            <a class="btn btn-danger btn-sm" href="/base/apagar_lote/{{ lote.pk }}/{{pregao.id}}/">Apagar Lote</a>
+                        {% endif %}
+                        </h3>
+
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <tr>
@@ -266,9 +271,7 @@
                                         <td>{{ item.item.material}}</td>
                                          <td>{{ item.item.valor_medio }}</td>
                                         <td>
-                                            {% if pregao.eh_ativo %}
-                                                <a class="btn btn-danger btn-sm" href="/base/apagar_lote/{{ item.lote.pk }}/{{pregao.id}}/">Apagar Lote</a>
-                                            {% endif %}
+
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -369,9 +372,9 @@
 
                         {% for lote in lotes %}
                             <h4>Lote {{ lote.item }}
-                            {% if pregao.eh_ativo and  lote.ativo %}
+                            {% if pregao.eh_ativo and  lote.ativo and lote.tem_lance %}
                                 <a class="btn btn-success btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
-                            {% elif pregao.eh_ativo %}
+                            {% elif pregao.eh_ativo and lote.tem_lance  %}
                                 <a class="btn btn-default btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Ver Lances</a>
                             {% endif %}
                             </h4>
@@ -512,6 +515,8 @@
                                                         <th>Item</th>
                                                         <th>Quantidade</th>
                                                         <th>Valor Médio</th>
+                                                        <th>Valor Final</th>
+                                                        <th>Opções</th>
 
                                                     </tr>
                                                 </thead>
@@ -521,6 +526,12 @@
                                                             <td>{{ item }}</td>
                                                             <td>{{ item.quantidade }}</td>
                                                             <td>{{ item.valor_medio }}</td>
+                                                            <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }}</td>
+                                                            <td>
+                                                                {% if not item.get_valor_item_lote %}
+                                                                    <a href="/base/informar_valor_final_item_lote/{{item.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
+                                                                {% endif %}
+                                                            </td>
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
