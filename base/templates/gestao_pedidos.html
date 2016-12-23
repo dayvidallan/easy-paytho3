@@ -235,7 +235,7 @@
                                                             <tr>
                                                                 <td>{{ item }}</td>
                                                                 <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
-                                                                <td>{{lote}}{{ lote.get_empresa_vencedora }}</td>
+                                                                <td>{{ lote.get_vencedor }}</td>
                                                                 <td>{{ item.get_valor_item_lote }}</td>
                                                                 <td>{{ item.get_quantidade_disponivel }}</td>
 
