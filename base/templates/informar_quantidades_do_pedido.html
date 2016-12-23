@@ -74,7 +74,7 @@
                                     <tr>
                                         <td>{{ resultado }}</td>
                                         <td>{{ resultado.get_marca_item_lote|default_if_none:"-" }}</td>
-                                        <td>{{ resultado.get_vencedor.participante.fornecedor }}</td>
+                                        <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
                                         <td>{{ resultado.get_valor_item_lote }}</td>
                                         <td>{{ resultado.get_quantidade_disponivel }}</td>
                                         {% if buscou %}
