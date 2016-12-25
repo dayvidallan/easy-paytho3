@@ -30,7 +30,7 @@
         </a>
     {% else %}
 
-        {% if perms.base.pode_cadastrar_pregao %}
+        {% if perms.base.pode_cadastrar_pregao or eh_ordenador_despesa %}
 
 
             <a href="/base/ver_pregoes/">
@@ -53,6 +53,7 @@
             </a>
 
         {% endif %}
+
         <a href="/base/ver_solicitacoes/">
             <div class="col-lg-2 col-md-4">
 
@@ -71,6 +72,8 @@
                 </div>
             </div>
         </a>
+
+
         {% if perms.base.pode_cadastrar_solicitacao %}
             <a href="/base/gestao_pedidos/">
                 <div class="col-lg-2 col-md-4">

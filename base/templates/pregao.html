@@ -227,8 +227,11 @@
                 <a href="#anexos">Anexos</a>
             </li>
             <li>
-                <a href="#historico">Histórico</a>
+                <a href="#homologacao">Adjudicação e Homologação</a>
             </li>
+            <!--<li>
+                <a href="#historico">Histórico</a>
+            </li>-->
             <li>
                 <a href="#relatorios">Relatórios</a>
             </li>
@@ -603,10 +606,21 @@
                         </table>
                     {% endif %}
                 {% else %}
-                    <p class="alert alert-info">Participante não venceu nenhum item.</p>
+                    <p class="alert alert-info">nenhum resultado.</p>
                 {% endif %}
             {% else %}
                 <p class="alert alert-warning">Nenhum item cadastrado.</p>
+            {% endif %}
+
+        </div>
+        <div id="homologacao" class="tab-pane">
+            {% if not pregao.data_adjudicacao %}
+                <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
+            {% else %}
+                <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info">Ver Termo de Adjudicação</a>
+            {% endif %}
+            {% if pregao.data_homologacao %}
+                <a href="/base/termo_homologacao/{{ pregao.pk }}/" class="btn btn-default">Ver Termo de Homologação</a>
             {% endif %}
 
         </div>
@@ -690,9 +704,7 @@
                         <tr>
                             <td><a href="/base/extrato_inicial/{{ pregao.pk }}/" target="_blank">Extrato Inicial</a></td>
                         </tr>
-                        <tr>
-                            <td><a href="/base/termo_adjudicacao/{{ pregao.pk }}/" target="_blank">Termo de Adjudicação</a></td>
-                        </tr>
+
                         <tr>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
                         </tr>

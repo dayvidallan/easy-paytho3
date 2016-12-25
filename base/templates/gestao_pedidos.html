@@ -197,7 +197,7 @@
 
         {%  if solicitacoes.exists %}
             {%  for solicitacao in solicitacoes %}
-                {% if solicitacao.eh_lote and solicitacao.tem_itens_lote_com_valores %}
+                {% if solicitacao.eh_lote and solicitacao.get_pregao.data_homologacao %}
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
@@ -267,7 +267,7 @@
 
                             <tr>
                                 <td>
-                                    <div id="demo{{solicitacao.id}}" class="collapse in">
+                                    <div id="demo{{solicitacao.id}}" class="collapse">
                                         <div class="pull-right">
                                            <a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a>
                                         </div>

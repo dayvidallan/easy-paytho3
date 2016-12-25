@@ -237,6 +237,19 @@ class Command(BaseCommand):
         user_protocolo3.groups.add(grupo_protocolo)
 
 
+        user_ordenador = User.objects.get_or_create(username=u'ordenador',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
+        #pessoa = PessoaFisica.objects.get_or_create(nome=u'Protocolo da Saúde', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_protoloco, user=user_protocolo3)[0]
+
+        ordenador = PessoaFisica()
+        ordenador.nome = u'Ordenador de Despesa'
+        ordenador.cpf = u'12345678900'
+        ordenador.sexo = PessoaFisica.SEXO_MASCULINO
+        ordenador.setor = setor_secretaria
+        ordenador.user = user_ordenador
+        ordenador.save()
+        user_ordenador.groups.add(grupo_secretaria)
+
+
         ramo1 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 1')[0]
         ramo2 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 2')[0]
 
@@ -257,3 +270,4 @@ class Command(BaseCommand):
         # solicitacao2= SolicitacaoLicitacao.objects.get_or_create(num_memorando=u'987/DI_RN', objeto=u'Objeto da licitacao 2', objetivo=u'Objetivo da licit. 2', justificativa=u'Justificativa da licitacao 2', data_cadastro=datetime.datetime.now())[0]
 
 
+        Configuracao.objects.get_or_create(nome=u'PREFEITURA MUNICIPAL DE GUAMARÉ', endereco=u'RUA LUIZ DE SOUZA MIRANDA', email=u'cpl.guamare@gmail.com', telefones=u'8435252966', ordenador_despesa=ordenador)

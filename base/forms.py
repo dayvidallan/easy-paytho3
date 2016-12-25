@@ -133,7 +133,7 @@ class PregaoForm(forms.ModelForm):
 
      class Meta:
         model = Pregao
-        exclude = ['situacao', 'obs']
+        exclude = ['situacao', 'obs', 'ordenador_despesa', 'data_adjudicacao' 'data_homologacao']
 
      def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
@@ -449,7 +449,7 @@ class ConfiguracaoForm(forms.ModelForm):
 
     class Meta:
         model = Configuracao
-        fields = ('nome', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo')
+        fields = ('nome', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo', 'ordenador_despesa')
 
 class DotacaoOrcamentariaForm(forms.ModelForm):
     projeto_atividade_num = forms.IntegerField(label=u'Número do Projeto de Atividade')
@@ -511,3 +511,20 @@ class CriarOrdemForm(forms.ModelForm):
             self.fields['numero'].initial = 1
 
 
+class RegistrarAdjudicacaoForm(forms.ModelForm):
+    class Meta:
+        model = Pregao
+        fields = ('data_adjudicacao',)
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrarAdjudicacaoForm, self).__init__(*args, **kwargs)
+        self.fields['data_adjudicacao'].widget.attrs = {'class': 'vDateField'}
+
+class RegistrarHomologacaoForm(forms.ModelForm):
+    class Meta:
+        model = Pregao
+        fields = ('data_homologacao',)
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrarHomologacaoForm, self).__init__(*args, **kwargs)
+        self.fields['data_homologacao'].widget.attrs = {'class': 'vDateField'}

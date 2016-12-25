@@ -34,6 +34,9 @@
                        <td>
                            <a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/" title="opo">Visualizar</a>
                            <a class="btn btn-default btn-sm" href="/admin/base/pregao/{{pregao.id}}/">Editar</a>
+                           {% if eh_ordenador_despesa and pregao.data_adjudicacao %}
+                                <a class="btn btn-success btn-sm" href="/pregao/{{pregao.id}}/" title="opo">Homologar</a>
+                           {% endif %}
                        </td>
                    </tr>
                 {% endfor %}

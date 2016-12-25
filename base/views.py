@@ -87,7 +87,10 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
 
 @login_required()
 def index(request):
-
+    configuracao = None
+    if Configuracao.objects.exists():
+        configuracao = Configuracao.objects.latest('id')
+    eh_ordenador_despesa = request.user.pessoafisica == configuracao.ordenador_despesa
     tem_solicitacao = False
     title = u'Menu Inicial'
     if MovimentoSolicitacao.objects.filter(setor_destino=request.user.pessoafisica.setor, recebido_por__isnull=True).exists():
@@ -157,9 +160,9 @@ def pregao(request, pregao_id):
     title = u'Pregão N° %s' % pregao
     if eh_lote:
         lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
-        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
     else:
-        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
     #title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
     itens_pregao_unidades = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
     participantes = ParticipantePregao.objects.filter(pregao=pregao,desclassificado=False)
@@ -509,7 +512,10 @@ def ver_fornecedores(request, fornecedor_id=None):
 def ver_pregoes(request):
     title=u'Licitações'
     pregoes = Pregao.objects.all()
-
+    configuracao = None
+    if Configuracao.objects.exists():
+        configuracao = Configuracao.objects.latest('id')
+    eh_ordenador_despesa = request.user.pessoafisica == configuracao.ordenador_despesa
     return render_to_response('ver_pregoes.html', locals(), RequestContext(request))
 
 @login_required()
@@ -1186,7 +1192,7 @@ def encerrar_itempregao(request, item_id, motivo):
             historico.save()
         o.save()
         messages.success(request, u'Item atualizado com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % item.get_licitacao().id)
+        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
     return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
 
@@ -2329,19 +2335,20 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
                             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
 
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-                    novo_pedido = PedidoItem()
-                    novo_pedido.solicitacao = nova_solicitacao
-                    if eh_lote:
-                        novo_pedido.item = resultados[idx]
-                        novo_pedido.proposta = resultados[idx].get_proposta_item_lote()
-                    else:
-                        novo_pedido.item = resultados[idx].item
-                        novo_pedido.resultado = resultados[idx]
-                    novo_pedido.quantidade = valor_pedido
-                    novo_pedido.setor = setor
-                    novo_pedido.pedido_por = request.user
-                    novo_pedido.pedido_em = datetime.datetime.now()
-                    novo_pedido.save()
+                valor_pedido = int(valor)
+                novo_pedido = PedidoItem()
+                novo_pedido.solicitacao = nova_solicitacao
+                if eh_lote:
+                    novo_pedido.item = resultados[idx]
+                    novo_pedido.proposta = resultados[idx].get_proposta_item_lote()
+                else:
+                    novo_pedido.item = resultados[idx].item
+                    novo_pedido.resultado = resultados[idx]
+                novo_pedido.quantidade = valor_pedido
+                novo_pedido.setor = setor
+                novo_pedido.pedido_por = request.user
+                novo_pedido.pedido_em = datetime.datetime.now()
+                novo_pedido.save()
 
             messages.success(request, u'Pedido cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
@@ -2510,3 +2517,27 @@ def ver_ordem_compra(request, solicitacao_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+@login_required()
+def registrar_adjudicacao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    title=u'Registrar Adjudicação'
+    form = RegistrarAdjudicacaoForm(request.POST or None, instance=pregao)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Data de adjudicação registrada com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/#homologacao' % pregao.id)
+    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def registrar_homologacao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    title=u'Registrar Homologação'
+    form = RegistrarHomologacaoForm(request.POST or None, instance=pregao)
+    if form.is_valid():
+        o = form.save(False)
+        o.ordenador_despesa = request.user.pessoafisica
+        o.save()
+        messages.success(request, u'Data de homologação registrada com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_pregoes/')
+    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))

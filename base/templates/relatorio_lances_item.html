@@ -94,7 +94,7 @@ ul{
                                             {{ lance.valor|format_money }}
                                         {% endif %}
                                     </td>
-                                    <td>{{ lance.participante }}</td>
+                                    <td>{{ lance.participante }}{% if lance.ganhou_desempate %} <font color="red"><br>*Beneficiado pela lei da microempresa{% endif%}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

@@ -611,68 +611,69 @@ class ItemSolicitacaoLicitacao(models.Model):
         ResultadoItemPregao.objects.filter(item=self).delete()
         ids_participantes = []
         finalistas = []
-        eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
-        if PropostaItemPregao.objects.filter(item=self, concorre=True).exists():
+        if self.eh_ativo():
+            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+            if PropostaItemPregao.objects.filter(item=self, concorre=True).exists():
 
-            if self.solicitacao.eh_maior_desconto():
-                if eh_lote:
-                    propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=True).order_by('-valor')
+                if self.solicitacao.eh_maior_desconto():
+                    if eh_lote:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=True).order_by('-valor')
+                    else:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=False).order_by('-valor')
+                    for lance in propostas:
+                        if lance.participante.id not in ids_participantes:
+                            valor_registrado = lance.valor
+                            if LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).exists():
+                                melhor_lance_participante = LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).order_by('-valor')[0].valor
+                                if melhor_lance_participante > valor_registrado:
+                                    valor_registrado = melhor_lance_participante
+                            ids_participantes.append(lance.participante.id)
+                            finalistas.append((lance, valor_registrado))
+                    ordenado =  sorted(finalistas, key=lambda x:x[1], reverse=True)
+                    for idx, opcao in enumerate(ordenado, 1):
+                        novo_resultado = ResultadoItemPregao()
+                        novo_resultado.item = self
+                        novo_resultado.participante = opcao[0].participante
+                        novo_resultado.valor = opcao[1]
+                        novo_resultado.marca = opcao[0].marca
+                        novo_resultado.ordem = idx
+                        novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                        novo_resultado.save()
+
+                    for resultado in ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('-valor'):
+                        if ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).exclude(id=resultado.id).exists():
+                            ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).update(empate=True)
+
+
                 else:
-                    propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=False).order_by('-valor')
-                for lance in propostas:
-                    if lance.participante.id not in ids_participantes:
-                        valor_registrado = lance.valor
-                        if LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).exists():
-                            melhor_lance_participante = LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).order_by('-valor')[0].valor
-                            if melhor_lance_participante > valor_registrado:
-                                valor_registrado = melhor_lance_participante
-                        ids_participantes.append(lance.participante.id)
-                        finalistas.append((lance, valor_registrado))
-                ordenado =  sorted(finalistas, key=lambda x:x[1], reverse=True)
-                for idx, opcao in enumerate(ordenado, 1):
-                    novo_resultado = ResultadoItemPregao()
-                    novo_resultado.item = self
-                    novo_resultado.participante = opcao[0].participante
-                    novo_resultado.valor = opcao[1]
-                    novo_resultado.marca = opcao[0].marca
-                    novo_resultado.ordem = idx
-                    novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
-                    novo_resultado.save()
+                    if eh_lote:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=True).order_by('valor')
+                    else:
+                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=False).order_by('valor')
+                    for lance in propostas:
+                        if lance.participante.id not in ids_participantes:
+                            valor_registrado = lance.valor
+                            if LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).exists():
+                                melhor_lance_participante = LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante).order_by('valor')[0].valor
+                                if melhor_lance_participante < valor_registrado:
+                                    valor_registrado = melhor_lance_participante
+                            ids_participantes.append(lance.participante.id)
+                            finalistas.append((lance, valor_registrado))
+                    ordenado =  sorted(finalistas, key=lambda x:x[1])
+                    for idx, opcao in enumerate(ordenado, 1):
+                        novo_resultado = ResultadoItemPregao()
+                        novo_resultado.item = self
+                        novo_resultado.participante = opcao[0].participante
+                        novo_resultado.valor = opcao[1]
+                        novo_resultado.marca = opcao[0].marca
+                        novo_resultado.ordem = idx
+                        novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                        novo_resultado.save()
 
-                for resultado in ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('-valor'):
-                    if ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).exclude(id=resultado.id).exists():
-                        ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).update(empate=True)
-
-
-            else:
-                if eh_lote:
-                    propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=True).order_by('valor')
-                else:
-                    propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=False).order_by('valor')
-                for lance in propostas:
-                    if lance.participante.id not in ids_participantes:
-                        valor_registrado = lance.valor
-                        if LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante, valor__isnull=False).exists():
-                            melhor_lance_participante = LanceItemRodadaPregao.objects.filter(item=self, participante=lance.participante).order_by('valor')[0].valor
-                            if melhor_lance_participante < valor_registrado:
-                                valor_registrado = melhor_lance_participante
-                        ids_participantes.append(lance.participante.id)
-                        finalistas.append((lance, valor_registrado))
-                ordenado =  sorted(finalistas, key=lambda x:x[1])
-                for idx, opcao in enumerate(ordenado, 1):
-                    novo_resultado = ResultadoItemPregao()
-                    novo_resultado.item = self
-                    novo_resultado.participante = opcao[0].participante
-                    novo_resultado.valor = opcao[1]
-                    novo_resultado.marca = opcao[0].marca
-                    novo_resultado.ordem = idx
-                    novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
-                    novo_resultado.save()
-
-                for resultado in ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('valor'):
-                    if ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).exclude(id=resultado.id).exists():
-                        ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).update(empate=True)
-        return
+                    for resultado in ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('valor'):
+                        if ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).exclude(id=resultado.id).exists():
+                            ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, valor=resultado.valor).update(empate=True)
+            return
 
     def eh_ativo(self):
         return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO]
@@ -752,6 +753,9 @@ class Pregao(models.Model):
     responsavel = models.CharField(u'Responsável', max_length=255)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
     obs = models.CharField(u'Observação', max_length=3000, null=True, blank=True)
+    data_adjudicacao = models.DateField(u'Data da Adjudicação', null=True)
+    data_homologacao = models.DateField(u'Data da Homologação', null=True)
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True)
     #cabecalho_ata = RichTextField(u'Cabeçalho da Ata de Registro de Preço', null=True, blank=True)
 
     class Meta:
@@ -937,6 +941,19 @@ class LanceItemRodadaPregao(models.Model):
         if preco.exists():
             return preco[0].marca
         return None
+
+    def ganhou_desempate(self):
+        if (self.participante == self.item.get_lance_minimo().participante) and LanceItemRodadaPregao.objects.filter(rodada=self.rodada, item=self.item, participante=self.participante).count()>1:
+            if not self.item.solicitacao.eh_maior_desconto():
+                if LanceItemRodadaPregao.objects.filter(rodada=self.rodada, item=self.item, participante=self.participante).order_by('valor')[0].id == self.id:
+                    return True
+                return False
+            else:
+                if LanceItemRodadaPregao.objects.filter(rodada=self.rodada, item=self.item, participante=self.participante).order_by('-valor')[0].id == self.id:
+                    return True
+                return False
+
+        return False
 
 
 class PessoaFisica(models.Model):
@@ -1247,6 +1264,7 @@ class Configuracao(models.Model):
     email = models.CharField(u'Email', max_length=200, null=True)
     telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
     logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
+    ordenador_despesa = models.ForeignKey(PessoaFisica, verbose_name=u'Ordenador de Despesa', null=True)
 
 
     class Meta:
