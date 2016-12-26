@@ -93,8 +93,7 @@ ul{
                         <thead>
                             <tr>
                                 <th width="7%">Item</th>
-                                <th width="15%">Código</th>
-                                <th>Especificação</th>
+                                <th>Material</th>
                                 <th>Marca</th>
                                 <th>Unidade</th>
                                 <th width="15%">Quantidade</th>
@@ -113,8 +112,7 @@ ul{
 
                                 <tr>
                                     <td>{{ item.item }}</td>
-                                    <td>{{ item.material.codigo }}</td>
-                                    <td>{{ item.material.nome }}</td>
+                                    <td>{{ item.material}}</td>
                                     <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                     <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>
@@ -130,7 +128,7 @@ ul{
                                 </tr>
                             {% endfor %}
                             {% if not eh_maior_desconto %}
-                                <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                                <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
                             {% endif %}
                         </tbody>
                     </table>

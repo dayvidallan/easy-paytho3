@@ -30,6 +30,14 @@ ul{
      @page {
             size: a4 landscape;
             margin: 0.3cm;
+            @frame footer {
+    		    -pdf-frame-content: footerblock;
+    		    bottom: 1cm;
+    		    margin-left: 1cm;
+    		    margin-right: 1cm;
+             margin-top: 1cm;
+    		    height: 1cm;
+		}
 
 
 
@@ -65,8 +73,7 @@ ul{
             {% else %}
                 <tr>
                     <th width="7%">Item</th>
-                    <th width="15%">Código</th>
-                    <th>Especificação</th>
+                    <th>Material</th>
                     <th>Marca</th>
                     <th>Unidade</th>
                     <th width="15%">Quantidade</th>
@@ -105,8 +112,7 @@ ul{
 
                     <tr>
                         <td>{{ item.item }}</td>
-                        <td>{{ item.material.codigo }}</td>
-                        <td>{{ item.material.nome }}</td>
+                        <td>{{ item.material }}</td>
                         <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                         <td>{{ item.unidade }}</td>
                         <td>{{ item.quantidade }}</td>
@@ -125,9 +131,9 @@ ul{
             {% endfor %}
                 {% if not eh_maior_desconto %}
                     {% if eh_lote %}
-                        <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                        <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
                     {% else %}
-                        <tr><td colspan="8" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                        <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
                     {% endif %}
                 {% endif %}
         </tbody>
@@ -138,7 +144,9 @@ ul{
 
 
 
-
+<div id="footerblock" align="right">
+    <pdf:pagenumber>
+</div>
 
 {% endblock %}
 

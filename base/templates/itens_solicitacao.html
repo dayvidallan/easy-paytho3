@@ -92,11 +92,11 @@
 
         <br><br><br>
 
-        <table class="table table-bordered table-condensed table-striped" width="50%">
+        <table class="table table-bordered table-condensed table-striped">
             <thead>
                 <tr>
-                    <th>Memorando</th>
-                    <th width="20%">Descrição do Objeto</th>
+                    <th width="10%">Memorando</th>
+                    <th>Descrição do Objeto</th>
 
                     <th>Data de Cadastro</th>
 
@@ -113,7 +113,7 @@
                             <a href="/base/ver_processo/{{solicitacao.processo.id}}/">(Processo: {{ solicitacao.processo }})</a>
                         {% endif %}
                     </td>
-                    <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
+                    <td>{{ solicitacao.objeto|truncatechars:250  }}</td>
 
 
                     <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</td>

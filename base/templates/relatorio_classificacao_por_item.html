@@ -30,7 +30,13 @@ ul{
      @page {
             size: a4 landscape;
             margin: 0.5cm;
-
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0cm;
+                margin-left: 9cm;
+                margin-right: 1cm;
+                height: 1cm;
+            }
 
 
      }
@@ -109,7 +115,9 @@ ul{
 
 
 
-
+<div id="footerContent" align="right">
+   Página <pdf:pagenumber>
+</div>
 
 {% endblock %}
 
