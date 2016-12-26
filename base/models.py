@@ -280,10 +280,10 @@ class SolicitacaoLicitacao(models.Model):
         return Pregao.objects.filter(solicitacao=self)[0]
 
     def eh_maior_desconto(self):
-        return self.get_pregao().tipo == TipoPregao.DESCONTO
+        return self.get_pregao().tipo.id == TipoPregao.DESCONTO
 
     def eh_lote(self):
-        return self.get_pregao().criterio == CriterioPregao.LOTE
+        return self.get_pregao().criterio.id == CriterioPregao.LOTE
 
     def tem_pregao_cadastrado(self):
         return Pregao.objects.filter(solicitacao=self).exists()
@@ -624,7 +624,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         ids_participantes = []
         finalistas = []
         if self.eh_ativo():
-            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.LOTE
+            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio.id == CriterioPregao.LOTE
             if PropostaItemPregao.objects.filter(item=self, concorre=True).exists():
 
                 if self.solicitacao.eh_maior_desconto():

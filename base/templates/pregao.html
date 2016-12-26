@@ -195,7 +195,7 @@
      <div class="pull-right">
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
             <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
-        {% elif pregao.eh_ativo and pregao.eh_suspenso %}
+        {% elif pregao.eh_suspenso %}
             <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/?retomar=True/">Retomar Pregão</a>
         {% endif %}
         <br><br>
