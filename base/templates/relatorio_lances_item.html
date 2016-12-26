@@ -91,7 +91,7 @@ ul{
                                         {% if lance.declinio %}
                                             <font color="red">Declinado</font>
                                         {% else %}
-                                            {{ lance.valor|format_money }}
+                                            {{ lance.get_valor }}
                                         {% endif %}
                                     </td>
                                     <td>{{ lance.participante }}{% if lance.ganhou_desempate %} <font color="red"><br>*Beneficiado pela lei da microempresa{% endif%}</td>

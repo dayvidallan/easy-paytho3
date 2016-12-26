@@ -28,6 +28,12 @@ import collections
 LARGURA = 210*mm
 ALTURA = 297*mm
 
+
+def get_config():
+    if Configuracao.objects.exists():
+        return Configuracao.objects.latest('id')
+    return False
+
 class SecretariaAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
@@ -87,10 +93,9 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
 
 @login_required()
 def index(request):
-    configuracao = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-    eh_ordenador_despesa = request.user.pessoafisica == configuracao.ordenador_despesa
+    eh_ordenador_despesa = False
+    if get_config():
+        eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
     tem_solicitacao = False
     title = u'Menu Inicial'
     if MovimentoSolicitacao.objects.filter(setor_destino=request.user.pessoafisica.setor, recebido_por__isnull=True).exists():
@@ -151,12 +156,9 @@ def pregao(request, pregao_id):
         pregao.situacao = Pregao.CONCLUIDO
         pregao.save()
 
-    if (pregao.solicitacao.setor_atual == request.user.pessoafisica.setor) and pregao.situacao == Pregao.CONCLUIDO:
-        pregao.situacao = Pregao.CADASTRADO
-        pregao.save()
 
-    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
-    eh_maior_desconto = pregao.tipo == TipoPregao.objects.get(id=2)
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
     title = u'Pregão N° %s' % pregao
     if eh_lote:
         lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
@@ -378,6 +380,7 @@ def declinar_lance(request, rodada_id, item_id, participante_id):
 @login_required()
 def lances_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
+    pregao = item.solicitacao.get_pregao()
     desempatar = False
     botao_incluir = False
     eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
@@ -492,8 +495,7 @@ def lances_item(request, item_id):
         chave = '%s' % str(lance.rodada.rodada)
         tabela[chave].append(lance)
 
-
-    resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True))
+    resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True,  key=lambda x: int(x[0])))
     return render_to_response('lances_item.html', locals(), RequestContext(request))
 
 @login_required()
@@ -512,10 +514,9 @@ def ver_fornecedores(request, fornecedor_id=None):
 def ver_pregoes(request):
     title=u'Licitações'
     pregoes = Pregao.objects.all()
-    configuracao = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-    eh_ordenador_despesa = request.user.pessoafisica == configuracao.ordenador_despesa
+    eh_ordenador_despesa = False
+    if get_config():
+        eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
     return render_to_response('ver_pregoes.html', locals(), RequestContext(request))
 
 @login_required()
@@ -1281,7 +1282,7 @@ def ver_movimentacao(request, solicitacao_id):
 @login_required()
 def cadastrar_minuta(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Cadastrar Minuta -  %s' % solicitacao
+    title=u'Cadastrar Minuta -  Solicitação %s' % solicitacao
     form = CadastroMinutaForm(request.POST or None, request.FILES or None, instance=solicitacao)
     if form.is_valid():
         form.save()
@@ -1468,16 +1469,17 @@ def relatorio_resultado_final(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     configuracao = None
     logo = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-
+    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
 
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
@@ -1489,7 +1491,7 @@ def relatorio_resultado_final(request, pregao_id):
             total = total + item.get_total_lance_ganhador()
 
 
-    data = {'eh_lote':eh_lote, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
+    data = {'eh_lote':eh_lote,  'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
 
     template = get_template('relatorio_resultado_final.html')
 
@@ -1509,17 +1511,18 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     configuracao = None
     logo = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.LOTE
 
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-
+    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
     tabela = {}
     total = {}
 
@@ -1546,7 +1549,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'eh_lote':eh_lote, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_resultado_final_por_vencedor.html')
 
@@ -1571,9 +1574,14 @@ def relatorio_lista_participantes(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     participantes = ParticipantePregao.objects.filter(pregao=pregao)
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
 
-
-    data = {'participantes': participantes, 'data_emissao':data_emissao, 'pregao':pregao}
+    data = {'participantes': participantes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
     template = get_template('relatorio_lista_participantes.html')
 
@@ -1593,16 +1601,17 @@ def relatorio_classificacao_por_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     configuracao = None
     logo = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-
+    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
     tabela = {}
     itens = {}
     resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
@@ -1621,7 +1630,7 @@ def relatorio_classificacao_por_item(request, pregao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'itens':itens, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'itens':itens, 'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_classificacao_por_item.html')
 
@@ -1647,9 +1656,14 @@ def relatorio_ocorrencias(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     registros = HistoricoPregao.objects.filter(pregao=pregao)
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
 
-
-    data = {'registros': registros, 'data_emissao':data_emissao, 'pregao':pregao}
+    data = {'registros': registros, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
     template = get_template('relatorio_ocorrencias.html')
 
@@ -1671,10 +1685,11 @@ def relatorio_lances_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     configuracao = None
     logo = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    eh_lote = pregao.criterio == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
@@ -1730,7 +1745,7 @@ def relatorio_lances_item(request, pregao_id):
 @login_required()
 def relatorio_ata_registro_preco(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    eh_lote = pregao.criterio == CriterioPregao.LOTE
     tabela = {}
     total = {}
 
@@ -2047,9 +2062,10 @@ def extrato_inicial(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     configuracao = None
     logo = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
 
     destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
@@ -2080,9 +2096,10 @@ def termo_adjudicacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     configuracao = None
     logo = None
-    if Configuracao.objects.exists():
-        configuracao = Configuracao.objects.latest('id')
-        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
 
     destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
@@ -2092,7 +2109,7 @@ def termo_adjudicacao(request, pregao_id):
 
     tabela = {}
 
-    eh_lote = pregao.criterio == CriterioPregao.objects.get(id=2)
+    eh_lote = pregao.criterio == CriterioPregao.LOTE
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     else:
@@ -2105,6 +2122,7 @@ def termo_adjudicacao(request, pregao_id):
         tabela[chave] = dict(itens = list(), total = 0)
     total_geral = 0
     for item in itens_pregao.order_by('item'):
+
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['itens'].append(item.item)
@@ -2188,8 +2206,11 @@ def aprovar_todos_pedidos(request, item_id):
 def gestao_pedidos(request):
     setor = request.user.pessoafisica.setor
     title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
-    pregoes = ResultadoItemPregao.objects.filter(item__solicitacao__setor_origem=setor)
-    solicitacoes = SolicitacaoLicitacao.objects.filter(id__in=pregoes.values_list('item__solicitacao', flat=True))
+    pregoes_finalizados = Pregao.objects.filter(data_homologacao__isnull=False)
+    atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
+    contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
+    atas = SolicitacaoLicitacao.objects.filter(setor_origem=setor, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
+    contratos = SolicitacaoLicitacao.objects.filter(setor_origem=setor, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
 
     # if request.POST:
@@ -2336,19 +2357,20 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
 
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                 valor_pedido = int(valor)
-                novo_pedido = PedidoItem()
-                novo_pedido.solicitacao = nova_solicitacao
-                if eh_lote:
-                    novo_pedido.item = resultados[idx]
-                    novo_pedido.proposta = resultados[idx].get_proposta_item_lote()
-                else:
-                    novo_pedido.item = resultados[idx].item
-                    novo_pedido.resultado = resultados[idx]
-                novo_pedido.quantidade = valor_pedido
-                novo_pedido.setor = setor
-                novo_pedido.pedido_por = request.user
-                novo_pedido.pedido_em = datetime.datetime.now()
-                novo_pedido.save()
+                if valor_pedido > 0:
+                    novo_pedido = PedidoItem()
+                    novo_pedido.solicitacao = nova_solicitacao
+                    if eh_lote:
+                        novo_pedido.item = resultados[idx]
+                        novo_pedido.proposta = resultados[idx].get_proposta_item_lote()
+                    else:
+                        novo_pedido.item = resultados[idx].item
+                        novo_pedido.resultado = resultados[idx]
+                    novo_pedido.quantidade = valor_pedido
+                    novo_pedido.setor = setor
+                    novo_pedido.pedido_por = request.user
+                    novo_pedido.pedido_em = datetime.datetime.now()
+                    novo_pedido.save()
 
             messages.success(request, u'Pedido cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
@@ -2373,7 +2395,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     data_emissao = datetime.date.today()
 
     pedidos = PedidoItem.objects.filter(solicitacao=solicitacao)
-    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.LOTE
 
     tabela = {}
 
@@ -2470,7 +2492,7 @@ def ver_ordem_compra(request, solicitacao_id):
     ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
     pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
     pregao = pedidos[0].item.solicitacao.get_pregao()
-    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.LOTE
 
     tabela = {}
 
@@ -2537,7 +2559,8 @@ def registrar_homologacao(request, pregao_id):
     if form.is_valid():
         o = form.save(False)
         o.ordenador_despesa = request.user.pessoafisica
+        o.situacao = Pregao.CONCLUIDO
         o.save()
-        messages.success(request, u'Data de homologação registrada com sucesso.')
+        messages.success(request, u'Data de homologação registrada com sucesso. %s' % o.situacao)
         return HttpResponseRedirect(u'/base/ver_pregoes/')
     return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))

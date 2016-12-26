@@ -247,7 +247,6 @@ class Command(BaseCommand):
         ordenador.setor = setor_secretaria
         ordenador.user = user_ordenador
         ordenador.save()
-        user_ordenador.groups.add(grupo_secretaria)
 
 
         ramo1 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 1')[0]
@@ -270,4 +269,4 @@ class Command(BaseCommand):
         # solicitacao2= SolicitacaoLicitacao.objects.get_or_create(num_memorando=u'987/DI_RN', objeto=u'Objeto da licitacao 2', objetivo=u'Objetivo da licit. 2', justificativa=u'Justificativa da licitacao 2', data_cadastro=datetime.datetime.now())[0]
 
 
-        Configuracao.objects.get_or_create(nome=u'PREFEITURA MUNICIPAL DE GUAMARÉ', endereco=u'RUA LUIZ DE SOUZA MIRANDA', email=u'cpl.guamare@gmail.com', telefones=u'8435252966', ordenador_despesa=ordenador)
+        Configuracao.objects.get_or_create(nome=u'PREFEITURA MUNICIPAL DE GUAMARÉ', endereco=u'RUA LUIZ DE SOUZA MIRANDA', email=u'cpl.guamare@gmail.com', telefones=u'8435252966', ordenador_despesa=ordenador, logo=u'upload/logo/logo.jpg')

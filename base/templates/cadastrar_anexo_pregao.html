@@ -17,7 +17,6 @@ $(function() {
 </script>
 {% endblock %}
 {% block content %}
-
         <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">
@@ -26,15 +25,13 @@ $(function() {
                         {{ form|bootstrap }}
                     </div>
 		        </div>
-                <div class="form-group form-row">
-                    <div>
-                        <div class="controls">
-                            <button type="submit" class="btn btn-primary">Cadastrar</button>
-                        </div>
-                    </div>
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </div>
+
              </div>
         </form>
+
     </div>
 
 

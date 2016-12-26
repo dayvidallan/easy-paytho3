@@ -98,8 +98,13 @@ ul{
                                 <th>Marca</th>
                                 <th>Unidade</th>
                                 <th width="15%">Quantidade</th>
-                                <th width="20%">Valor Unit.</th>
-                                <th width="20%">Total</th>
+                                {% if eh_maior_desconto %}
+                                    <th width="20%">Valor Médio</th>
+                                    <th width="20%">Desconto</th>
+                                {% else %}
+                                    <th width="20%">Valor Unit.</th>
+                                    <th width="20%">Total</th>
+                                {% endif %}
 
                             </tr>
                         </thead>
@@ -113,13 +118,20 @@ ul{
                                     <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                     <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>
-                                    <td>R$ {{ item.get_vencedor.valor|format_money  }}</td>
-                                    <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                                    {% if eh_maior_desconto %}
+                                        <td>R$ {{ item.valor_medio|format_money }}</td>
+                                        <td>{{ item.get_vencedor.get_valor }}</td>
+                                    {% else %}
+                                        <td>{{ item.get_vencedor.get_valor }}</td>
+                                        <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                                   {% endif %}
 
 
                                 </tr>
                             {% endfor %}
-                            <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                            {% if not eh_maior_desconto %}
+                                <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 {% endif %}

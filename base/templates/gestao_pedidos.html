@@ -195,9 +195,9 @@
        <div id="atas" class="tab-pane">
 
 
-        {%  if solicitacoes.exists %}
-            {%  for solicitacao in solicitacoes %}
-                {% if solicitacao.eh_lote and solicitacao.get_pregao.data_homologacao %}
+        {%  if atas.exists %}
+            {%  for solicitacao in atas %}
+                {% if solicitacao.eh_lote %}
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
@@ -210,13 +210,16 @@
                                 <td>
                                     <div id="demo{{solicitacao.id}}" class="collapse in">
                                         <div class="pull-right">
-                                           <a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a>
+
                                         </div>
-                                        <br>
+                                        <br><br><br>
                                             {% for lote in solicitacao.get_lotes %}
 
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                     <thead>
+                                                        <tr>
+                                                            <th colspan="5"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></th>
+                                                        </tr>
                                                         <tr>
                                                             <th colspan="5">{{lote}}</th>
                                                         </tr>
@@ -242,6 +245,7 @@
 
                                                             </tr>
                                                         {% endfor%}
+
                                                     </tbody>
                                                 </table>
                                             {% endfor %}
@@ -256,7 +260,7 @@
 
                         </tbody>
                     </table>
-                {% elif not solicitacao.eh_lote  %}
+                {% else %}
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
@@ -268,12 +272,11 @@
                             <tr>
                                 <td>
                                     <div id="demo{{solicitacao.id}}" class="collapse">
-                                        <div class="pull-right">
-                                           <a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a>
-                                        </div>
-                                        <br>
                                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                             <thead>
+                                                <tr>
+                                                    <td colspan="5" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></td>
+                                                </tr>
                                                 <tr>
                                                     <th>Item</th>
                                                     <th>Marca</th>
@@ -295,7 +298,7 @@
 
 
                                                     </tr>
-                                                {% endfor%}
+                                                {% endfor %}
                                             </tbody>
                                         </table>
                                     </div>

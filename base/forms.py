@@ -133,7 +133,7 @@ class PregaoForm(forms.ModelForm):
 
      class Meta:
         model = Pregao
-        exclude = ['situacao', 'obs', 'ordenador_despesa', 'data_adjudicacao' 'data_homologacao']
+        fields = ['solicitacao', 'num_pregao', 'num_processo', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
 
      def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
@@ -368,7 +368,7 @@ class PrazoPesquisaForm(forms.ModelForm):
 class SetorEnvioForm(forms.Form):
     secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
 
-    setor = utils.ChainedModelChoiceField(Setor.objects,
+    setor = utils.ChainedModelChoiceField(Setor.objects.order_by('nome'),
       label                = u'Setor de Destino',
       empty_label          = u'Selecione a Secretaria',
       obj_label            = 'nome',
@@ -450,6 +450,11 @@ class ConfiguracaoForm(forms.ModelForm):
     class Meta:
         model = Configuracao
         fields = ('nome', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo', 'ordenador_despesa')
+
+    def __init__(self, *args, **kwargs):
+        super(ConfiguracaoForm, self).__init__(*args, **kwargs)
+        if self.instance.municipio:
+            self.fields['estado'].initial = self.instance.municipio.estado
 
 class DotacaoOrcamentariaForm(forms.ModelForm):
     projeto_atividade_num = forms.IntegerField(label=u'Número do Projeto de Atividade')

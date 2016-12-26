@@ -36,18 +36,15 @@ ul{
 
  </style>
 {% endblock %}
-
 {% block content_title %}
     <br>
   <h1 class="page-header">
-    <center><font size="4">Lista de Presentes - Pregão {{ pregao }}</font><br>
-        <font size="3">Fornecedores Participantes</font><br>
-        <font size="2">Gerado em {{ data_emissao }}</font></center>
+    {% include "cabecalho.html" %}
+    <center><font size="4">Lista de Presentes - Pregão {{ pregao }}</font><br><font size="3">Fornecedores Participantes</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
 
-
-
 {% endblock %}
+
 
 {% block content %}
 <center>

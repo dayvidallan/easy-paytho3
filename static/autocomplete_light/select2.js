@@ -1,22 +1,34 @@
 ;(function ($) {
+    function add_forwards(element) {
+        var forward = element.attr('data-autocomplete-light-forward');
+        if (forward !== undefined) {
+            forward = forward.split(',');
+
+            var prefix = $(element).getFormPrefix();
+            var data_forward = {};
+
+            for (var key in forward) {
+                var name = prefix + forward[key];
+                data_forward[forward[key]] = $('[name=' + name + ']').val();
+            }
+
+            return JSON.stringify(data_forward);
+        }
+    }
 
     $(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2]', function() {
         var element = $(this);
 
-        // Templating helper
-        function template(item) {
-            if (element.attr('data-html')) {
-                var $result = $('<span>');
-                $result.html(item.text);
-                return $result;
-            } else {
-                return item.text;
-            }
-        }
+        // This widget has a clear button
+        $(this).find('option[value=""]').remove();
 
-        var ajax = null;
-        if ($(this).attr('data-autocomplete-light-url')) {
-            ajax = {
+        $(this).select2({
+            tokenSeparators: element.attr('data-tags') ? [','] : null,
+            debug: true,
+            placeholder: '',
+            minimumInputLength: 0,
+            allowClear: ! $(this).is('required'),
+            ajax: {
                 url: $(this).attr('data-autocomplete-light-url'),
                 dataType: 'json',
                 delay: 250,
@@ -26,7 +38,7 @@
                         q: params.term, // search term
                         page: params.page,
                         create: element.attr('data-autocomplete-light-create') && !element.attr('data-tags'),
-                        forward: get_forwards(element)
+                        forward: add_forwards(element)
                     };
 
                     return data;
@@ -41,18 +53,7 @@
                     return data;
                 },
                 cache: true
-            };
-        }
-
-        $(this).select2({
-            tokenSeparators: element.attr('data-tags') ? [','] : null,
-            debug: true,
-            placeholder: '',
-            minimumInputLength: 0,
-            allowClear: ! $(this).is('required'),
-            templateResult: template,
-            templateSelection: template,
-            ajax: ajax,
+            },
         });
 
         $(this).on('select2:selecting', function (e) {
@@ -71,7 +72,7 @@
                 dataType: 'json',
                 data: {
                     text: data.id,
-                    forward: get_forwards($(this))
+                    forward: add_forwards($(this))
                 },
                 beforeSend: function(xhr, settings) {
                     xhr.setRequestHeader("X-CSRFToken", document.csrftoken);

@@ -21,7 +21,9 @@
                         <a href="/base/avancar_proximo_item/{{ item.id }}/?ultimo=True/" class="btn btn-warning">Finalizar Lances</a>
 
                     {% else %}
-                        <a href="/base/retomar_lances/{{ item.id }}/" class="btn btn-success">Retomar Lances</a>
+                        {% if pregao.eh_ativo %}
+                            <a href="/base/retomar_lances/{{ item.id }}/" class="btn btn-success">Retomar Lances</a>
+                        {% endif %}
                         <a href="/base/avancar_proximo_item/{{ item.id }}/?ultimo=True/" class="btn btn-default">Voltar para o Pregão</a>
                     {% endif %}
 

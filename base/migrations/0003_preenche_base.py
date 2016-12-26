@@ -18,6 +18,7 @@ def preenche_base(apps, schema_editor):
 
     criterio1 = CriterioPregao.objects.get_or_create(nome=u'Por Item')[0]
     criterio2 = CriterioPregao.objects.get_or_create(nome=u'Por Lote')[0]
+    criterio3 = CriterioPregao.objects.get_or_create(nome=u'Por Grupo de Itens')[0]
 
     tipo1 = TipoPregao.objects.get_or_create(nome=u'Menor Preço')[0]
     tipo2 = TipoPregao.objects.get_or_create(nome=u'Maior Desconto')[0]

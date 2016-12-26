@@ -77,7 +77,11 @@ ul{
                             {% if not eh_lote %}
                                 <th>Marca</th>
                             {% endif %}
-                            <th>Valor</th>
+                            {% if eh_maior_desconto %}
+                                <th>Desconto</th>
+                            {% else %}
+                                <th>Valor</th>
+                            {% endif %}
                             <th>Empresa</th>
                         </tr>
                     </thead>
@@ -90,7 +94,7 @@ ul{
                                 {% if not eh_lote %}
                                     <td>{{ item.marca }}</td>
                                 {% endif %}
-                                <td>{{ item.valor|format_money }}</td>
+                                <td>{{ item.get_valor }}</td>
                                 <td>{{ item.participante }}</td>
                             </tr>
                         {% endfor %}

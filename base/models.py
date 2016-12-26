@@ -8,6 +8,7 @@ from decimal import Decimal
 from django.db.models import Sum
 import datetime
 from ckeditor.fields import RichTextField
+from base.templatetags.app_filters import format_money
 TWOPLACES = Decimal(10) ** -2
 
 class User(AbstractUser):
@@ -64,6 +65,9 @@ class ModalidadePregao(models.Model):
 
 
 class CriterioPregao(models.Model):
+    ITEM = 1
+    LOTE = 2
+    GRUPO_ITENS = 3
     nome = models.CharField(u'Nome', max_length=80)
 
     def __unicode__(self):
@@ -74,6 +78,10 @@ class CriterioPregao(models.Model):
         verbose_name_plural = u'Critérios de Julgamento de Pregão'
 
 class TipoPregao(models.Model):
+
+    MENOR_PRECO = 1
+    DESCONTO = 2
+
     nome = models.CharField(u'Nome', max_length=80)
 
     def __unicode__(self):
@@ -272,10 +280,10 @@ class SolicitacaoLicitacao(models.Model):
         return Pregao.objects.filter(solicitacao=self)[0]
 
     def eh_maior_desconto(self):
-        return self.get_pregao().tipo == TipoPregao.objects.get(id=2)
+        return self.get_pregao().tipo == TipoPregao.DESCONTO
 
     def eh_lote(self):
-        return self.get_pregao().criterio == CriterioPregao.objects.get(id=2)
+        return self.get_pregao().criterio == CriterioPregao.LOTE
 
     def tem_pregao_cadastrado(self):
         return Pregao.objects.filter(solicitacao=self).exists()
@@ -553,6 +561,9 @@ class ItemSolicitacaoLicitacao(models.Model):
             return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
         return None
 
+
+
+
     def pode_gerar_resultado(self):
         return LanceItemRodadaPregao.objects.filter(item=self).exists() or PropostaItemPregao.objects.filter(item=self).exists()
     def tem_empate(self):
@@ -570,7 +581,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     def tem_item_anterior(self):
         if self.item > 1:
             anterior = self.item - 1
-            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.LOTE
 
             if eh_lote:
                 if ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao, eh_lote=True).exists():
@@ -584,7 +595,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def tem_proximo_item(self):
         proximo = self.item + 1
-        eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+        eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.LOTE
 
         if eh_lote:
             if ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=True).exists():
@@ -612,7 +623,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         ids_participantes = []
         finalistas = []
         if self.eh_ativo():
-            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.objects.get(id=2)
+            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.LOTE
             if PropostaItemPregao.objects.filter(item=self, concorre=True).exists():
 
                 if self.solicitacao.eh_maior_desconto():
@@ -676,7 +687,7 @@ class ItemSolicitacaoLicitacao(models.Model):
             return
 
     def eh_ativo(self):
-        return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO]
+        return self.situacao not in [ItemSolicitacaoLicitacao.FRACASSADO, ItemSolicitacaoLicitacao.DESERTO]
 
     def eh_fracassado(self):
         return self.situacao == Pregao.FRACASSADO
@@ -756,6 +767,7 @@ class Pregao(models.Model):
     data_adjudicacao = models.DateField(u'Data da Adjudicação', null=True)
     data_homologacao = models.DateField(u'Data da Homologação', null=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True)
+    eh_ata_registro_preco = models.BooleanField(u'Ata de Registro de Preço?', default=True)
     #cabecalho_ata = RichTextField(u'Cabeçalho da Ata de Registro de Preço', null=True, blank=True)
 
     class Meta:
@@ -766,7 +778,7 @@ class Pregao(models.Model):
         return self.num_pregao
 
     def eh_ativo(self):
-        return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO]
+        return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
 
     def eh_suspenso(self):
         return self.situacao in [Pregao.SUSPENSO]
@@ -780,6 +792,9 @@ class Pregao(models.Model):
 
     def tem_lance_registrado(self):
         return LanceItemRodadaPregao.objects.filter(rodada__pregao=self).exists()
+
+    def tem_ocorrencia(self):
+        return HistoricoPregao.objects.filter(pregao=self).exists()
 
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
@@ -943,7 +958,7 @@ class LanceItemRodadaPregao(models.Model):
         return None
 
     def ganhou_desempate(self):
-        if (self.participante == self.item.get_lance_minimo().participante) and LanceItemRodadaPregao.objects.filter(rodada=self.rodada, item=self.item, participante=self.participante).count()>1:
+        if (self.participante == self.item.get_lance_minimo().participante) and not self.participante.desclassificado and LanceItemRodadaPregao.objects.filter(rodada=self.rodada, item=self.item, participante=self.participante).count()>1:
             if not self.item.solicitacao.eh_maior_desconto():
                 if LanceItemRodadaPregao.objects.filter(rodada=self.rodada, item=self.item, participante=self.participante).order_by('valor')[0].id == self.id:
                     return True
@@ -954,6 +969,12 @@ class LanceItemRodadaPregao(models.Model):
                 return False
 
         return False
+
+    def get_valor(self):
+        if self.item.solicitacao.get_pregao().tipo.id == TipoPregao.DESCONTO:
+            return u'%s %%' % self.valor
+        else:
+            return 'R$ %s' % format_money(self.valor)
 
 
 class PessoaFisica(models.Model):
@@ -1165,6 +1186,12 @@ class ResultadoItemPregao(models.Model):
 
     def pode_alterar(self):
         return self.situacao == ResultadoItemPregao.CLASSIFICADO
+
+    def get_valor(self):
+        if self.item.solicitacao.get_pregao().tipo.id == TipoPregao.DESCONTO:
+            return u'%s %%' % self.valor
+        else:
+            return 'R$ %s' % format_money(self.valor)
 
 
 class AnexoPregao(models.Model):

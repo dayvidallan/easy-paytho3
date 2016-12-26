@@ -398,10 +398,6 @@
                                             <td>{{ item.item.valor_medio }}</td>
                                             <td>
                                                 <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item/{{ item.item.id }}/"  title="Propostas">Ver Propostas</a>
-
-
-
-
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -440,7 +436,7 @@
 
                                         {% if pregao.eh_ativo and  item.ativo %}
                                             <a class="btn btn-success btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
-                                        {% else %}
+                                        {% elif pregao.eh_ativo %}
                                             <a class="btn btn-default btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Ver Lances</a>
                                         {% endif %}
                                     </td>
@@ -472,7 +468,7 @@
                      </div>
                 </form>
                 {% if itens_pregao.exists %}
-                    {% if buscou %}
+                    {% if buscou and pregao.eh_ativo %}
                         <div class="pull-right">
                             <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
                             <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/2/" class="btn btn-danger">Desclassificar</a>
@@ -556,8 +552,13 @@
                                     <th>Marca</th>
                                     <th>Unidade</th>
                                     <th>Quantidade</th>
-                                    <th>Valor Unit.</th>
-                                    <th>Total</th>
+                                    {% if eh_maior_desconto %}
+                                        <th>Desconto</th>
+                                    {% else %}
+                                        <th>Valor</th>
+                                        <th>Total</th>
+                                    {% endif %}
+
                                     <th>Empresa Vencedora</th>
                                     <th>Opções</th>
                                 </tr>
@@ -573,12 +574,14 @@
                                         <td>{{ item.quantidade }}</td>
                                         <td>
                                             {% if item.get_vencedor %}
-                                                {{ item.get_vencedor.valor|format_money }}
+                                                {{ item.get_vencedor.get_valor }}
                                             {% else %}
                                                 -
                                             {% endif %}
                                             </td>
-                                        <td>{{ item.get_total_lance_ganhador|format_money }}</td>
+                                        {% if not eh_maior_desconto %}
+                                            <td>{{ item.get_total_lance_ganhador|format_money }}</td>
+                                        {% endif %}
                                         <td>
                                             {% if item.tem_empate %}
                                                 <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</font>
@@ -614,14 +617,28 @@
 
         </div>
         <div id="homologacao" class="tab-pane">
-            {% if not pregao.data_adjudicacao %}
-                <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
-            {% else %}
-                <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info">Ver Termo de Adjudicação</a>
-            {% endif %}
-            {% if pregao.data_homologacao %}
-                <a href="/base/termo_homologacao/{{ pregao.pk }}/" class="btn btn-default">Ver Termo de Homologação</a>
-            {% endif %}
+            <fieldset>
+                <legend>Adjudicação</legend>
+                {% if not pregao.data_adjudicacao %}
+                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
+                {% else %}
+                    <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info">Ver Termo de Adjudicação</a>
+                {% endif %}
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend>Homologação</legend>
+                {% if pregao.data_homologacao %}
+                    <a href="/base/termo_homologacao/{{ pregao.pk }}/" class="btn btn-default">Ver Termo de Homologação</a>
+                <br><br>
+                Ordenador de Despesa: {{ pregao.ordenador_despesa }}
+                {% elif pregao.data_adjudicacao %}
+                    <p class="alert alert-info">Aguardando a Homologação pelo ordenador de despesas.</p>
+                {% else %}
+                    <p class="alert alert-info">Aguardando Adjudicação.</p>
+                {% endif %}
+
+            </fieldset>
 
         </div>
         <div id="anexos" class="tab-pane">
@@ -726,9 +743,12 @@
                             </tr>
 
                         {% endif %}
-                        <tr>
-                            <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante o Pregão</a></td>
-                        </tr>
+
+                        {% if pregao.tem_ocorrencia %}
+                            <tr>
+                                <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante o Pregão</a></td>
+                            </tr>
+                        {% endif %}
 
                     </tbody>
                 </table>

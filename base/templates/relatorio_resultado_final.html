@@ -71,8 +71,14 @@ ul{
                     <th>Unidade</th>
                     <th width="15%">Quantidade</th>
                     <th>Empresa Vencedora</th>
-                    <th width="20%">Valor Unit.</th>
-                    <th width="20%">Total</th>
+
+                    {% if eh_maior_desconto %}
+                        <th width="20%">Valor Médio</th>
+                        <th width="20%">Desconto</th>
+                    {% else %}
+                        <th width="20%">Valor Unit.</th>
+                        <th width="20%">Total</th>
+                    {% endif %}
 
                 </tr>
             {% endif %}
@@ -90,7 +96,9 @@ ul{
                             {% endfor %}
                         </td>
                         <td>{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</td>
-                        <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                        {% if not eh_maior_desconto %}
+                            <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                        {% endif %}
                     </tr>
 
                 {% else %}
@@ -103,17 +111,24 @@ ul{
                         <td>{{ item.unidade }}</td>
                         <td>{{ item.quantidade }}</td>
                         <td>{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</td>
-                        <td>R$ {{ item.get_vencedor.valor|format_money  }}</td>
-                        <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                        {% if eh_maior_desconto %}
+                            <td>R$ {{ item.valor_medio|format_money }}</td>
+                            <td>{{ item.get_vencedor.get_valor }}</td>
+                        {% else %}
+                            <td>{{ item.get_vencedor.get_valor }}</td>
+                            <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                       {% endif %}
 
 
                     </tr>
                 {% endif %}
             {% endfor %}
-                {% if eh_lote %}
-                    <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
-                {% else %}
-                    <tr><td colspan="8" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                {% if not eh_maior_desconto %}
+                    {% if eh_lote %}
+                        <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                    {% else %}
+                        <tr><td colspan="8" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                    {% endif %}
                 {% endif %}
         </tbody>
     </table>
