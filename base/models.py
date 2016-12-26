@@ -291,7 +291,8 @@ class SolicitacaoLicitacao(models.Model):
     def get_proximo_pregao(self):
         if Pregao.objects.exists():
             pregao = Pregao.objects.order_by('-id')[0]
-            return int(pregao.num_pregao)+1
+            return int(pregao.id)+1
+
         return u'1'
 
     def get_resultado(self, vencedor=None):
