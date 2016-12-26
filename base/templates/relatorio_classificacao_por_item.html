@@ -31,7 +31,7 @@ ul{
             size: a4 landscape;
             margin: 0.5cm;
             @frame footer {
-                -pdf-frame-content: footerContent;
+                -pdf-frame-content: footerblock;
                 bottom: 0cm;
                 margin-left: 9cm;
                 margin-right: 1cm;
@@ -44,21 +44,22 @@ ul{
  </style>
 {% endblock %}
 
-{% block content_title %}
-    <br>
-  <h1 class="page-header">
-    {% include "cabecalho.html" %}
-    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
-  </h1>
 
-
-
-{% endblock %}
 {% block content %}
 
 <center>
     {% for key, lances in resultado.items %}
             {% if lances %}
+                {% block content_title %}
+                    <br>
+                  <h1 class="page-header">
+                    {% include "cabecalho.html" %}
+                    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+                  </h1>
+
+
+
+                {% endblock %}
                 {% if eh_lote %}
                     <h2>Lote: {{ key }}</h2>
                     {% for num, item in itens.items %}
@@ -106,7 +107,9 @@ ul{
                         {% endfor %}
                     </tbody>
                 </table>
-                <pdf:nextpage />
+                {% if not forloop.last %}
+                    <pdf:nextpage />
+                {% endif %}
             {% endif %}
     {% endfor %}
 </center>
@@ -115,8 +118,8 @@ ul{
 
 
 
-<div id="footerContent" align="right">
-   Página <pdf:pagenumber>
+<div id="footerblock" align="right">
+   Página <pdf:pagenumber> de <pdf:pagecount>
 </div>
 
 {% endblock %}

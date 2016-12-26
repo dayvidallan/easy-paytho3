@@ -30,6 +30,14 @@ ul{
      @page {
             size: a4 landscape;
             margin: 0.3cm;
+            @frame footer {
+    		    -pdf-frame-content: footerblock;
+    		    bottom: 1cm;
+    		    margin-left: 1cm;
+    		    margin-right: 1cm;
+             margin-top: 1cm;
+    		    height: 1cm;
+		    }
 
 
 
@@ -133,13 +141,17 @@ ul{
                         </tbody>
                     </table>
                 {% endif %}
-                <pdf:nextpage />
+                {% if not forloop.last %}
+                    <pdf:nextpage />
+                {% endif %}
             {% endif %}
     {% endfor %}
 </center>
 
 
-
+<div id="footerblock" align="right">
+   Página <pdf:pagenumber> de <pdf:pagecount>
+</div>
 
 
 
