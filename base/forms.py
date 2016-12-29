@@ -216,6 +216,9 @@ class RegistrarPrecoItemForm(forms.ModelForm):
 class PesquisaMercadologicaForm(forms.ModelForm):
 
     origem_opcao = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor'),(False, u'Ata de Registro de Preço')]))
+    ie = forms.CharField(label=u'Inscrição Estadual', required=False)
+    email = forms.EmailField(label=u'Email', required=True)
+    cpf_representante = utils.CpfFormField(label=u'CPF do Representante Legal', required=True)
 
     class Meta:
         model = PesquisaMercadologica
@@ -248,9 +251,6 @@ class PesquisaMercadologicaForm(forms.ModelForm):
 
             if not self.cleaned_data.get('cnpj'):
                 self.add_error('cnpj', u'Este campo é obrigatório')
-
-            if not self.cleaned_data.get('ie'):
-                self.add_error('ie', u'Este campo é obrigatório')
 
             if not self.cleaned_data.get('telefone'):
                 self.add_error('telefone', u'Este campo é obrigatório')

@@ -87,6 +87,9 @@ urlpatterns = patterns('base.views',
     url(r'^editar_pedido/(?P<pedido_id>\d+)/$', views.editar_pedido, name='editar_pedido'),
     url(r'^aprovar_todos_pedidos/(?P<item_id>\d+)/$', views.aprovar_todos_pedidos, name='aprovar_todos_pedidos'),
     url(r'^gestao_pedidos/$', views.gestao_pedidos, name='gestao_pedidos'),
+    url(r'^gestao_contratos/$', views.gestao_contratos, name='gestao_contratos'),
+
+
     url(r'^avaliar_pedidos/(?P<solicitacao_id>\d+)/$', views.avaliar_pedidos, name='avaliar_pedidos'),
     url(r'^aprovar_todos_pedidos_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.aprovar_todos_pedidos_secretaria, name='aprovar_todos_pedidos_secretaria'),
     url(r'^novo_pedido_compra/(?P<solicitacao_id>\d+)/$', views.novo_pedido_compra, name='novo_pedido_compra'),
@@ -99,6 +102,9 @@ urlpatterns = patterns('base.views',
     url(r'^ver_ordem_compra/(?P<solicitacao_id>\d+)/$', views.ver_ordem_compra, name='ver_ordem_compra'),
     url(r'^registrar_adjudicacao/(?P<pregao_id>\d+)/$', views.registrar_adjudicacao, name='registrar_adjudicacao'),
     url(r'^registrar_homologacao/(?P<pregao_id>\d+)/$', views.registrar_homologacao, name='registrar_homologacao'),
+    url(r'^termo_homologacao/(?P<pregao_id>\d+)/$', views.termo_homologacao, name='termo_homologacao'),
+    url(r'^visualizar_contrato/(?P<solicitacao_id>\d+)/$', views.visualizar_contrato, name='visualizar_contrato'),
+    url(r'^liberar_solicitacao_contrato/(?P<solicitacao_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_contrato, name='liberar_solicitacao_contrato'),
 
 
 

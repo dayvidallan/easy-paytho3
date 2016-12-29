@@ -1,0 +1,115 @@
+{% load bootstrap %}
+
+{% block extrastyle %}
+ <style>
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+        width: 100%;
+
+     }
+
+     @page {
+            @frame content_frame {
+				    {% block content_frame %}
+    				top: 20;
+    				left: 20;
+    				right: 20;
+    				bottom: 60;
+    				{% endblock %}
+    			}
+
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.5cm;
+                left: 0.5cm;
+                right: 0.5cm;
+                height: 1.8cm;
+            }
+     }
+
+     div.topo {
+
+       border-bottom-width:1px;
+        border-bottom-style:solid;
+        border-bottom-color:#BEBEBE;
+        height: 1px;
+      }
+
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center>
+        <font size="4">TERMO DE HOMOLOGAÇÃO – PREGÃO PRESENCIAL N° {{ pregao.num_processo }}</font><br><br>
+
+    </center>
+  </h1>
+
+{% endblock %}
+
+{% block content %}
+  <p align="justify">
+
+
+
+        O Prefeito do Município de <b>{{configuracao.nome}}</b>,
+        no uso de suas atribuições legais, em atendimento ao disposto no art. 43, inciso VI, da Lei Federal nº 8.666/93, em sua redação atual, resolve <b>homologar</b> os atos praticados no procedimento licitatório referente ao <b>PREGÃO PRESENCIAL N° {{ pregao.num_pregao }}, Processo N° {{ pregao.num_processo }}</b>
+        originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.solicitacao.objeto}}</b>,
+
+        conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital,
+        o qual foi adjudicado as empresas
+
+        {% for empresa, itens, total in resultado.items %}
+            <b>{{ empresa }}</b>,
+            quanto aos ITENS <b>{{itens.itens}}</b>, no valor total
+            de <b>R$ {{itens.total}}</b>,
+        {% endfor %}
+
+        totalizando o valor global, para fins de contratação,
+        de <b>R$ {{ total_geral }}</b>,
+
+
+        respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de <b>{{pregao.tipo}} {{pregao.criterio}}</b>,
+       para que produza os efeitos legais nos termos do art. 43, inciso VI, da Lei Federal nº 8.666/93, em sua redação atual.
+
+
+
+    <center>
+        <br><br>
+        {{configuracao.municipio}}, {{ pregao.data_adjudicacao }}
+
+
+        <br><br>
+        <b>{{ pregao.ordenador_despesa.nome }}</b><br>
+        Prefeito Municipal
+    </center>
+
+    </p>
+
+
+    <div id="footerContent">
+
+    </div>
+
+{% endblock %}

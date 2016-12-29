@@ -2209,34 +2209,23 @@ def gestao_pedidos(request):
     pregoes_finalizados = Pregao.objects.filter(data_homologacao__isnull=False)
     atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
     contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
+    atas = SolicitacaoLicitacao.objects.filter(liberada_compra=True, setor_origem=setor, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
+    contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, setor_origem=setor, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
+
+    return render_to_response('gestao_pedidos.html', locals(), RequestContext(request))
+
+@login_required()
+def gestao_contratos(request):
+    setor = request.user.pessoafisica.setor
+    title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
+    pregoes_finalizados = Pregao.objects.filter(data_homologacao__isnull=False)
+    atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
+    contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
     atas = SolicitacaoLicitacao.objects.filter(setor_origem=setor, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
     contratos = SolicitacaoLicitacao.objects.filter(setor_origem=setor, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
+    return render_to_response('gestao_contratos.html', locals(), RequestContext(request))
 
-    # if request.POST:
-    #     id_solicitacao = request.POST.get('solicitacao_escolhida')
-    #     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=id_solicitacao)
-    #     resultados = solicitacao.get_resultado()
-    #
-    #     for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-    #         valor_pedido = int(valor)
-    #         if valor_pedido > 0:
-    #             if valor_pedido > resultados[idx].item.get_quantidade_disponivel():
-    #                 messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
-    #                 return HttpResponseRedirect(u'/base/gestao_pedidos/#atas')
-    #
-    #             novo_pedido = PedidoItem()
-    #             novo_pedido.item = resultados[idx].item
-    #             novo_pedido.resultado = resultados[idx]
-    #             novo_pedido.quantidade = valor_pedido
-    #             novo_pedido.setor = setor
-    #             novo_pedido.pedido_por = request.user
-    #             novo_pedido.pedido_em = datetime.datetime.now()
-    #             novo_pedido.save()
-    #
-    #             messages.success(request, u'Pedido cadastrado com sucesso.')
-    #             return HttpResponseRedirect(u'/base/gestao_pedidos/#atas')
-    return render_to_response('gestao_pedidos.html', locals(), RequestContext(request))
 
 @login_required()
 def avaliar_pedidos(request, solicitacao_id):
@@ -2564,3 +2553,88 @@ def registrar_homologacao(request, pregao_id):
         messages.success(request, u'Data de homologação registrada com sucesso. %s' % o.situacao)
         return HttpResponseRedirect(u'/base/ver_pregoes/')
     return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+
+@login_required()
+def termo_homologacao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
+    destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+
+
+    tabela = {}
+
+    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    resultado = ResultadoItemPregao.objects.filter(ordem=1, item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO)
+    chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
+    for num in chaves:
+        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        chave = u'%s' % fornecedor
+        tabela[chave] = dict(itens = list(), total = 0)
+    total_geral = 0
+    for item in itens_pregao.order_by('item'):
+
+        if item.get_vencedor():
+            chave = u'%s' % item.get_vencedor().participante.fornecedor
+            tabela[chave]['itens'].append(item.item)
+            valor = tabela[chave]['total']
+            valor = valor + item.get_total_lance_ganhador()
+            tabela[chave]['total'] = valor
+            total_geral += valor
+
+    fracassados = list()
+    for item in itens_pregao.filter(situacao=ItemSolicitacaoLicitacao.FRACASSADO):
+        fracassados.append(item.item)
+
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+
+
+
+    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
+
+    template = get_template('termo_homologacao.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+
+
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
+@login_required()
+def visualizar_contrato(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    title = u'Contrato %s' % solicitacao.get_pregao().num_pregao
+    eh_ata = solicitacao.get_pregao().eh_ata_registro_preco
+
+    return render_to_response('visualizar_contrato.html', locals(), RequestContext(request))
+
+def liberar_solicitacao_contrato(request, solicitacao_id, origem):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+    if origem == u'1':
+        solicitacao.liberada_compra = True
+    elif origem == u'2':
+        solicitacao.liberada_compra = False
+    solicitacao.save()
+    return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % solicitacao.id)

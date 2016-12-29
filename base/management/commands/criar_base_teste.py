@@ -14,6 +14,7 @@ class Command(BaseCommand):
         grupo_compras = Group.objects.get_or_create(name=u'Compras')[0]
         grupo_juridico = Group.objects.get_or_create(name=u'Jurídico')[0]
         grupo_protocolo = Group.objects.get_or_create(name=u'Protocolo')[0]
+        grupo_gerente = Group.objects.get_or_create(name=u'Gerente')[0]
 
         secretaria = Secretaria.objects.get_or_create(nome=u'Secretaria de Planejamento', sigla=u'SEMPLA')[0]
         secretaria2 = Secretaria.objects.get_or_create(nome=u'Secretaria de Tributação', sigla=u'SEMUT')[0]
@@ -51,10 +52,6 @@ class Command(BaseCommand):
         pessoa.setor = setor_secretaria
         pessoa.user = user_secretaria
         pessoa.save()
-
-
-
-
 
         user_secretaria.groups.add(grupo_secretaria)
 
@@ -107,6 +104,20 @@ class Command(BaseCommand):
         pessoa.save()
 
         user_protocolo.groups.add(grupo_protocolo)
+
+
+
+        user_gerente = User.objects.get_or_create(username=u'gerente',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
+        #pessoa = PessoaFisica.objects.get_or_create(nome=u'Secretário do Planejamento', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_secretaria, user=user_secretaria)[0]
+        pessoa = PessoaFisica()
+        pessoa.nome = u'Gerente de Contratos'
+        pessoa.cpf = u'12345678900'
+        pessoa.sexo = PessoaFisica.SEXO_MASCULINO
+        pessoa.setor = setor_secretaria
+        pessoa.user = user_gerente
+        pessoa.save()
+
+        user_secretaria.groups.add(grupo_gerente)
 
 
         user_secretaria2 = User.objects.get_or_create(username=u'secretaria2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
@@ -249,6 +260,8 @@ class Command(BaseCommand):
         ordenador.save()
 
 
+
+
         ramo1 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 1')[0]
         ramo2 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 2')[0]
 
@@ -268,5 +281,6 @@ class Command(BaseCommand):
         #
         # solicitacao2= SolicitacaoLicitacao.objects.get_or_create(num_memorando=u'987/DI_RN', objeto=u'Objeto da licitacao 2', objetivo=u'Objetivo da licit. 2', justificativa=u'Justificativa da licitacao 2', data_cadastro=datetime.datetime.now())[0]
 
+        municipio = Municipio.objects.get(nome=u'GUAMARE')
 
-        Configuracao.objects.get_or_create(nome=u'PREFEITURA MUNICIPAL DE GUAMARÉ', endereco=u'RUA LUIZ DE SOUZA MIRANDA', email=u'cpl.guamare@gmail.com', telefones=u'8435252966', ordenador_despesa=ordenador, logo=u'upload/logo/logo.jpg')
+        Configuracao.objects.get_or_create(nome=u'PREFEITURA MUNICIPAL DE GUAMARÉ', endereco=u'RUA LUIZ DE SOUZA MIRANDA', email=u'cpl.guamare@gmail.com', municipio=municipio, telefones=u'8435252966', ordenador_despesa=ordenador, logo=u'upload/logo/logo.jpg')

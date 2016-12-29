@@ -11,6 +11,13 @@
                     <permission>change_pessoafisica</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>user</name>
+                <permissions>
+                    <permission>pode_gerenciar_contrato</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>

@@ -23,6 +23,7 @@ class User(AbstractUser):
             ('pode_ver_minuta', u'Pode Ver Minuta'),
             ('pode_avaliar_minuta', u'Pode Avaliar Minuta'),
             ('pode_abrir_processo', u'Pode Abrir Processo'),
+            ('pode_gerenciar_contrato', u'Pode Gerenciar Contrato')
         )
 
 class Secretaria(models.Model):
@@ -201,6 +202,7 @@ class SolicitacaoLicitacao(models.Model):
     arquivo_parecer_minuta = models.FileField(u'Arquivo com o Parecer', null=True, blank=True, upload_to=u'upload/minutas/')
     prazo_aberto = models.NullBooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
     processo = models.ForeignKey(Processo, null=True)
+    liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
 
     def __unicode__(self):
         return self.num_memorando
