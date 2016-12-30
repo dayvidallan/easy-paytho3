@@ -214,6 +214,7 @@
                                     <th>Data de Recebimento</th>
                                 {% endif %}
                                 <th>Tipo</th>
+                                <th>Situação</th>
                                 <th>Opções</th>
 
                             </tr>
@@ -232,6 +233,8 @@
                                        {% endif %}
                                    </td>
                                    <td>{{ solicitacao.tipo }}</td>
+                                   <td>{{ solicitacao.get_situacao }}</td>
+
                                    <td>
                                        <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
 
@@ -262,6 +265,7 @@
                                     <th>Data de Recebimento</th>
                                 {% endif %}
                                 <th>Tipo</th>
+                                <th>Situação</th>
                                 <th>Opções</th>
 
                             </tr>
@@ -280,6 +284,7 @@
                                        {% endif %}
                                    </td>
                                    <td>{{ solicitacao.tipo }}</td>
+                                   <td>{{ solicitacao.get_situacao }}</td>
                                    <td>
                                        <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
 

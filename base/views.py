@@ -2683,3 +2683,12 @@ def aditivar_contrato(request, contrato_id):
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
 
     return render_to_response('definir_vigencia_contrato.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cancelar_pedido_compra(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    PedidoItem.objects.filter(solicitacao=solicitacao).update(ativo=False)
+    messages.success(request, u'Solicitação cancelada com sucesso.')
+    return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+

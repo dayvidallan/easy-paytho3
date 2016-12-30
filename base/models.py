@@ -276,7 +276,7 @@ class SolicitacaoLicitacao(models.Model):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()
 
     def tem_pedidos_compra(self):
-        return PedidoItem.objects.filter(solicitacao=self).exists()
+        return PedidoItem.objects.filter(solicitacao=self, ativo=True).exists()
 
     def get_pregao(self):
         return Pregao.objects.filter(solicitacao=self)[0]
@@ -320,6 +320,16 @@ class SolicitacaoLicitacao(models.Model):
 
     def tem_itens_lote_com_valores(self):
         return PropostaItemPregao.objects.filter(item__solicitacao=self, valor_item_lote__isnull=False).exists()
+
+    def get_situacao(self):
+        if self.tipo == SolicitacaoLicitacao.COMPRA:
+            if OrdemCompra.objects.filter(solicitacao=self).exists() or PedidoItem.objects.filter(solicitacao=self, ativo=False).exists():
+                return u'Finalizada'
+            else:
+                return u'Aguardando Ordem de Compra'
+        else:
+            return u'Cadastrada'
+
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -713,7 +723,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
 
     def get_quantidade_disponivel(self):
-        pedidos = PedidoItem.objects.filter(item=self)
+        pedidos = PedidoItem.objects.filter(item=self, ativo=True)
         if pedidos.exists():
             return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
         else:
@@ -1323,6 +1333,7 @@ class PedidoItem(models.Model):
     setor = models.ForeignKey(Setor)
     pedido_por = models.ForeignKey(User)
     pedido_em = models.DateTimeField(u'Pedido em')
+    ativo = models.BooleanField(u'Ativo', default=True)
 
     class Meta:
         verbose_name = u'Pedido do Item'
