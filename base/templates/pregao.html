@@ -567,7 +567,7 @@
                                 {%  for item in itens_pregao %}
 
                                     <tr>
-                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ item.item }}</td>
                                         <td>{{ item.material }}</td>
                                         <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                         <td>{{ item.unidade }}</td>

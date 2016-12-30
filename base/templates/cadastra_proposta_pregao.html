@@ -51,7 +51,7 @@
                                     <td>{{ item.item }}</td>
                                     <td>{{ item.material }}</td>
                                     <td>{{ item.valor_medio|format_money }}</td>
-                                    <td><input name="marcas">{{ item.marca }}</td>
+                                    <td><input name="marcas">{{ item.marca|default_if_none:"-" }}</td>
                                     <td><input name="itens">{{ item.valor }}</td>
                                 </tr>
 
@@ -85,7 +85,7 @@
                                     <td>{{ item.item }}</td>
                                     <td>{{ item.item.material }}</td>
                                      <td>{{ item.item.valor_medio }}</td>
-                                    <td>{{ item.marca }}</td>
+                                    <td>{{ item.marca|default_if_none:"-" }}</td>
                                     <td>{{ item.valor }}</td>
                                     <td><a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a></td>
                                 </tr>

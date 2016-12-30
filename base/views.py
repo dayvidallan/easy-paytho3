@@ -221,13 +221,13 @@ def cadastra_proposta_pregao(request, pregao_id):
             for row in range(0, sheet.nrows):
                 try:
                     item = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 4)).strip()
+                    marca = unicode(sheet.cell_value(row, 4)).strip() or None
                     valor = unicode(sheet.cell_value(row, 5)).strip()
                     if row == 0:
-                        if item != u'Item' or marca != u'Marca' or valor != u'Valor':
-                            raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Marca e Valor.')
+                        if item != u'Item' or valor != u'Valor':
+                            raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
                     else:
-                        if item and valor and marca:
+                        if item and valor:
                             item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
                             if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
                                 PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
@@ -388,8 +388,8 @@ def lances_item(request, item_id):
     fornecedores_lance = PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
     if request.GET.get('empate'):
         desempatar = True
-    if not PropostaItemPregao.objects.filter(item=item).exists():
-        messages.error(request, u'Este item não possui nenhuma proposta cadastrada.')
+    # if not PropostaItemPregao.objects.filter(item=item).exists():
+    #     messages.error(request, u'Este item não possui nenhuma proposta cadastrada.')
         return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % item.get_licitacao().id)
     rodadas = RodadaPregao.objects.filter(item=item)
     itens_do_lote = False
@@ -1113,8 +1113,8 @@ def avancar_proximo_item(request, item_id):
     else:
         if item.eh_ativo():
             item.gerar_resultado()
-        item.ativo=False
-        item.save()
+        #item.ativo=False
+        #item.save()
         if request.GET.get('ultimo'):
             return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
         else:
@@ -2221,8 +2221,8 @@ def gestao_contratos(request):
     pregoes_finalizados = Pregao.objects.filter(data_homologacao__isnull=False)
     atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
     contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
-    atas = SolicitacaoLicitacao.objects.filter(setor_origem=setor, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
-    contratos = SolicitacaoLicitacao.objects.filter(setor_origem=setor, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
+    atas = Contrato.objects.filter(solicitacao__setor_origem__secretaria=setor.secretaria, solicitacao__in=atas_finalizadas.values_list('solicitacao', flat=True))
+    contratos = Contrato.objects.filter(solicitacao__setor_origem__secretaria=setor.secretaria, solicitacao__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
     return render_to_response('gestao_contratos.html', locals(), RequestContext(request))
 
@@ -2550,6 +2550,15 @@ def registrar_homologacao(request, pregao_id):
         o.ordenador_despesa = request.user.pessoafisica
         o.situacao = Pregao.CONCLUIDO
         o.save()
+
+        novo_contrato = Contrato()
+        novo_contrato.solicitacao = pregao.solicitacao
+        novo_contrato.pregao = pregao
+        novo_contrato.numero = pregao.num_pregao
+        novo_contrato.valor = pregao.get_valor_total()
+        novo_contrato.data_inicio = o.data_homologacao
+        novo_contrato.save()
+
         messages.success(request, u'Data de homologação registrada com sucesso. %s' % o.situacao)
         return HttpResponseRedirect(u'/base/ver_pregoes/')
     return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
@@ -2623,18 +2632,54 @@ def termo_homologacao(request, pregao_id):
 
 @login_required()
 def visualizar_contrato(request, solicitacao_id):
-    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title = u'Contrato %s' % solicitacao.get_pregao().num_pregao
-    eh_ata = solicitacao.get_pregao().eh_ata_registro_preco
+    contrato = get_object_or_404(Contrato, pk=solicitacao_id)
+    title = u'Contrato %s' % contrato.numero
+    eh_ata = contrato.pregao.eh_ata_registro_preco
 
     return render_to_response('visualizar_contrato.html', locals(), RequestContext(request))
 
+@login_required()
 def liberar_solicitacao_contrato(request, solicitacao_id, origem):
-    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    contrato = get_object_or_404(Contrato, pk=solicitacao_id)
 
     if origem == u'1':
-        solicitacao.liberada_compra = True
+        contrato.solicitacao.liberada_compra = True
+        contrato.suspenso = False
     elif origem == u'2':
-        solicitacao.liberada_compra = False
-    solicitacao.save()
-    return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % solicitacao.id)
+        contrato.solicitacao.liberada_compra = False
+        contrato.suspenso = True
+    contrato.solicitacao.save()
+    contrato.save()
+    return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
+
+@login_required()
+def definir_vigencia_contrato(request, contrato_id):
+    title=u'Definir Vigência do Contrato'
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+    form = DefinirVigenciaContratoForm(request.POST or None, instance=contrato)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Data de Vigência registrada com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
+
+    return render_to_response('definir_vigencia_contrato.html', locals(), RequestContext(request))
+
+@login_required()
+def aditivar_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+    title=u'Aditivar Contrato'
+    form = AditivarContratoForm(request.POST or None, contrato=contrato)
+    if form.is_valid():
+        aditivo = Aditivo()
+        aditivo.data_inicio = form.cleaned_data.get('data_inicio')
+        aditivo.data_fim = form.cleaned_data.get('data_fim')
+        aditivo.contrato = contrato
+        aditivo.ordem = contrato.get_proximo_aditivo()
+        aditivo.numero = contrato.get_proximo_aditivo()
+        aditivo.save()
+
+
+        messages.success(request, u'Contrato aditivado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
+
+    return render_to_response('definir_vigencia_contrato.html', locals(), RequestContext(request))

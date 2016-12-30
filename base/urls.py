@@ -105,7 +105,8 @@ urlpatterns = patterns('base.views',
     url(r'^termo_homologacao/(?P<pregao_id>\d+)/$', views.termo_homologacao, name='termo_homologacao'),
     url(r'^visualizar_contrato/(?P<solicitacao_id>\d+)/$', views.visualizar_contrato, name='visualizar_contrato'),
     url(r'^liberar_solicitacao_contrato/(?P<solicitacao_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_contrato, name='liberar_solicitacao_contrato'),
-
+    url(r'^definir_vigencia_contrato/(?P<contrato_id>\d+)/$', views.definir_vigencia_contrato, name='definir_vigencia_contrato'),
+    url(r'^aditivar_contrato/(?P<contrato_id>\d+)/$', views.aditivar_contrato, name='aditivar_contrato'),
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),

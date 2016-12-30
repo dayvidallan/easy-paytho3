@@ -8,14 +8,173 @@
     <a href="/base/gestao_contratos/">Gestão de Contratos<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
+{% block extrastyle %}
+    <style>
+			/** Start: to style navigation tab **/
+			.nav {
+			  margin-bottom: 18px;
+			  margin-left: 0;
+			  list-style: none;
+			}
 
+			.nav > li > a {
+			  display: block;
+			}
+
+			.nav-tabs{
+			  *zoom: 1;
+			}
+
+			.nav-tabs:before,
+			.nav-tabs:after {
+			  display: table;
+			  content: "";
+			}
+
+			.nav-tabs:after {
+			  clear: both;
+			}
+
+			.nav-tabs > li {
+			  float: left;
+			}
+
+			.nav-tabs > li > a {
+			  padding-right: 12px;
+			  padding-left: 12px;
+			  margin-right: 2px;
+			  line-height: 14px;
+			}
+
+			.nav-tabs {
+			  border-bottom: 1px solid #ddd;
+			}
+
+			.nav-tabs > li {
+			  margin-bottom: -1px;
+			}
+
+			.nav-tabs > li > a {
+			  padding-top: 8px;
+			  padding-bottom: 8px;
+			  line-height: 18px;
+			  border: 1px solid transparent;
+			  -webkit-border-radius: 4px 4px 0 0;
+				 -moz-border-radius: 4px 4px 0 0;
+					  border-radius: 4px 4px 0 0;
+			}
+
+			.nav-tabs > li > a:hover {
+			  border-color: #eeeeee #eeeeee #dddddd;
+			}
+
+			.nav-tabs > .active > a,
+			.nav-tabs > .active > a:hover {
+			  color: #555555;
+			  cursor: default;
+			  background-color: #ffffff;
+			  border: 1px solid #ddd;
+			  border-bottom-color: transparent;
+			}
+
+			li {
+			  line-height: 18px;
+			}
+
+			.tab-content.active{
+				display: block;
+			}
+
+			.tab-content.hide{
+				display: none;
+			}
+
+
+			/** End: to style navigation tab **/
+
+
+		</style>
+{% endblock %}
+
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?participante=" + escape( $('#'+campo.id).val()) + "#classificacao";
+
+        }
+        $(function () {
+            var hash = window.location.hash;
+            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+        });
+
+        $(document).ready(function() {
+            $('.nav-tabs > li > a').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+
+                //get displaying tab content jQuery selector
+                var active_tab_selector = $('.nav-tabs > li.active > a').attr('href');
+
+                //find actived navigation and remove 'active' css
+                var actived_nav = $('.nav-tabs > li.active');
+                actived_nav.removeClass('active');
+
+                //add 'active' css into clicked navigation
+                $(this).parents('li').addClass('active');
+
+                //hide displaying tab content
+                $(active_tab_selector).removeClass('active');
+                $(active_tab_selector).addClass('hide');
+
+                //show target tab content
+                var target_tab_selector = $(this).attr('href');
+                $(target_tab_selector).removeClass('hide');
+                $(target_tab_selector).addClass('active');
+            });
+
+
+            $('#itens > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#itens').hasClass( "hideInfo")){
+                    $('#itens').removeClass('hideInfo');
+                }
+                else {
+                    $('#itens').addClass('hideInfo');
+                }
+            });
+
+            $('#aditivos > h3').click(function(event){
+                event.preventDefault();//stop browser to take action for clicked anchor
+                if ($('#aditivos').hasClass( "hideInfo")){
+                    $('#aditivos').removeClass('hideInfo');
+                }
+                else {
+                    $('#aditivos').addClass('hideInfo');
+                }
+            });
+
+
+
+        });
+
+
+	</script>
+{% endblock %}
 
 
 
 
 
 {% block content %}
+    <div class="pull-right">
+        {% if not contrato.data_fim %}
+            <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
+        {% elif not eh_ata %}
+            <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
 
+        {% endif %}
+
+
+    </div><br><br>
 
    <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
         <thead>
@@ -39,23 +198,23 @@
         <tbody>
 
             <tr>
-                <td>{{ solicitacao.get_pregao.num_pregao }}</td>
-                <td>{{ solicitacao.get_pregao.num_processo}}</td>
-                <td>{{ solicitacao.objeto }}</td>
-                <td>Data</td>
-                <td>Vigência</td>
+                <td>{{ contrato.numero }}</td>
+                <td>{{ contrato.pregao.num_processo}}</td>
+                <td>{{ contrato.solicitacao.objeto }}</td>
+                <td>{{ contrato.data_inicio }}</td>
+                <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
                 {% if not eh_ata %}
-                    <th>Sim ou Não</th>
+                    <td>{{ contrato.get_carater_continuado}}</td>
                 {% endif %}
-                <td>Situação</td>
+                <td>{{ contrato.get_situacao }}</td>
                 <td>
-                    {% if not solicitacao.liberada_compra %}
-                        <a href="/base/liberar_solicitacao_contrato/{{solicitacao.id}}/1/" class="btn btn-success btn-sm">Liberar Solicitação</a>
+                    {% if not contrato.solicitacao.liberada_compra %}
+                        <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success btn-sm">Liberar Solicitação</a>
                     {% else %}
                         {% if eh_ata %}
-                            <a href="/base/liberar_solicitacao_contrato/{{solicitacao.id}}/2/" class="btn btn-danger btn-sm">Cancelar Solicitação</a>
+                            <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger btn-sm">Cancelar Solicitação</a>
                         {% else %}
-                            <a href="/base/liberar_solicitacao_contrato/{{solicitacao.id}}/2/" class="btn btn-danger btn-sm">Suspender Solicitação</a>
+                            <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger btn-sm">Suspender Solicitação</a>
                         {% endif %}
                     {% endif %}
                 </td>
@@ -65,99 +224,146 @@
 
         </tbody>
     </table>
+    <br><br>
+    <div>
 
-   {% if solicitacao.eh_lote %}
-        <table class="table table-bordered table-condensed table-striped">
+        <ul class="nav nav-tabs">
 
-            <tbody>
+            <li class="active">
+                <a data-toggle="tab" href="#itens">Itens</a>
+            </li>
+            <li>
+                <a href="#aditivos">Aditivos</a>
+            </li>
 
-                <tr>
-                    <td>
+        </ul>
+    </div>
+    <div class="tab-content">
+            <div id="itens" class="tab-pane in active">
+                   {% if contrato.solicitacao.eh_lote %}
+                        <table class="table table-bordered table-condensed table-striped">
 
-                            {% for lote in solicitacao.get_lotes %}
+                            <tbody>
 
-                                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="4">{{lote}}</th>
+                                <tr>
+                                    <td>
 
-                                        </tr>
-                                        <tr>
-                                            <th>Item</th>
-                                            <th>Marca</th>
-                                            <th>Empresa</th>
-                                            <th>Valor</th>
-                                            <th>Quantidade Disponível</th>
+                                            {% for lote in contrato.solicitacao.get_lotes %}
 
+                                                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="4">{{lote}}</th>
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for item in lote.get_itens_do_lote %}
-                                            <tr>
-                                                <td>{{ item }}</td>
-                                                <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
-                                                <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
-                                                <td>{{ item.get_valor_item_lote }}</td>
-                                                <td>{{ item.get_quantidade_disponivel }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Item</th>
+                                                            <th>Marca</th>
+                                                            <th>Empresa</th>
+                                                            <th>Valor</th>
+                                                            <th>Quantidade Disponível</th>
 
 
-                                            </tr>
-                                        {% endfor%}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for item in lote.get_itens_do_lote %}
+                                                            <tr>
+                                                                <td>{{ item }}</td>
+                                                                <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
+                                                                <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
+                                                                <td>{{ item.get_valor_item_lote }}</td>
+                                                                <td>{{ item.get_quantidade_disponivel }}</td>
 
-                                    </tbody>
-                                </table>
+
+                                                            </tr>
+                                                        {% endfor%}
+
+                                                    </tbody>
+                                                </table>
+                                            {% endfor %}
+
+
+
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                   {% else %}
+                        <table class="table table-bordered table-condensed table-striped">
+
+                            <tbody>
+
+                                <tr>
+                                    <td>
+
+                                            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                                <thead>
+
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Marca</th>
+                                                        <th>Empresa</th>
+                                                        <th>Valor</th>
+                                                        <th>Quantidade Disponível</th>
+
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for resultado in contrato.solicitacao.get_resultado %}
+                                                        <tr>
+                                                            <td>{{ resultado.item.item }}</td>
+                                                            <td>{{ resultado.marca|default_if_none:"-" }}</td>
+                                                            <td>{{ resultado.participante }}</td>
+                                                            <td>{{ resultado.valor }}</td>
+                                                            <td>{{ resultado.item.get_quantidade_disponivel }}</td>
+
+
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                   {% endif %}
+            </div>
+            <div id="aditivos" class="tab-pane">
+
+            {% if contrato.aditivo_set.exists %}
+                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                        <thead>
+
+                            <tr>
+                                <th>Número</th>
+                                <th>Data Início</th>
+                                <th>Data Fim</th>
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in contrato.aditivo_set.all %}
+                                <tr>
+                                    <td>{{ item.ordem }}</td>
+                                    <td>{{ item.data_inicio }}</td>
+                                    <td>{{ item.data_fim }}</td>
+                                </tr>
                             {% endfor %}
+                        </tbody>
+                    </table>
+            {% else %}
 
-
-
-
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-   {% else %}
-        <table class="table table-bordered table-condensed table-striped">
-
-            <tbody>
-
-                <tr>
-                    <td>
-
-                            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                                <thead>
-
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Marca</th>
-                                        <th>Empresa</th>
-                                        <th>Valor</th>
-                                        <th>Quantidade Disponível</th>
-
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for resultado in solicitacao.get_resultado %}
-                                        <tr>
-                                            <td>{{ resultado.item }}</td>
-                                            <td>{{ resultado.marca|default_if_none:"-" }}</td>
-                                            <td>{{ resultado.participante }}</td>
-                                            <td>{{ resultado.valor }}</td>
-                                            <td>{{ resultado.item.get_quantidade_disponivel }}</td>
-
-
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-   {% endif %}
+                <p class="alert alert-warning">Nenhum aditivo cadastrado.</p>
+            {% endif %}
+            </div>
+        </div>
 
 
 {% endblock %}

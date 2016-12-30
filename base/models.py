@@ -799,6 +799,18 @@ class Pregao(models.Model):
     def tem_ocorrencia(self):
         return HistoricoPregao.objects.filter(pregao=self).exists()
 
+    def get_valor_total(self):
+        eh_lote = self.criterio == CriterioPregao.LOTE
+        if eh_lote:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+        else:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+        total = 0
+        for item in itens_pregao:
+            if item.get_total_lance_ganhador():
+                total = total + item.get_total_lance_ganhador()
+        return total
+
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
@@ -1349,3 +1361,61 @@ class OrdemCompra(models.Model):
     class Meta:
         verbose_name = u'Ordem de Compra'
         verbose_name_plural = u'Ordens de Compra'
+
+
+class Contrato(models.Model):
+    numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
+    valor = models.DecimalField(decimal_places=2,max_digits=12)
+    data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
+    data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
+    continuado = models.BooleanField(default=False)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    pregao = models.ForeignKey(Pregao)
+    concluido = models.BooleanField(default=False)
+    suspenso = models.BooleanField(default=False)
+    cancelado = models.BooleanField(default=False)
+    motivo_cancelamento = models.TextField(blank=True)
+    dh_cancelamento = models.DateTimeField(blank=True, null=True)
+    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+
+
+
+    def get_situacao(self):
+        if self.concluido:
+            return u'Concluído'
+        elif self.suspenso:
+            return u'Suspenso'
+        elif self.cancelado:
+            return u'Cancelado'
+        else:
+            return u'Ativo'
+
+    def get_carater_continuado(self):
+        if self.continuado:
+            return u'Sim'
+        return u'Não'
+
+    def get_data_fim(self):
+        if not Aditivo.objects.filter(contrato=self).exists():
+            return self.data_fim
+        else:
+            return Aditivo.objects.filter(contrato=self).order_by('-data_fim')[0].data_fim
+
+    def get_proximo_aditivo(self):
+        if not Aditivo.objects.filter(contrato=self).exists():
+            return 1
+        return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].ordem + 1
+
+
+
+class Aditivo(models.Model):
+    contrato = models.ForeignKey(Contrato)
+    ordem = models.PositiveSmallIntegerField(default=0)
+    numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
+    valor = models.DecimalField(decimal_places=2,max_digits=9, null=True, blank=True)
+    data_inicio = models.DateField(db_column='data_inicio', verbose_name=u'Data de Início', null=True, blank=True)
+    data_fim = models.DateField(db_column='data_fim', verbose_name=u'Data de Vencimento', null=True, blank=True)
+    de_prazo = models.BooleanField(verbose_name=u'Aditivo de Prazo', default=False)
+    de_valor = models.BooleanField(verbose_name=u'Aditivo de Valor', default=False)
+    de_fiscal = models.BooleanField(verbose_name=u'Aditivo de Fiscal', default=False)
+

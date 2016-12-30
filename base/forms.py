@@ -533,3 +533,23 @@ class RegistrarHomologacaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RegistrarHomologacaoForm, self).__init__(*args, **kwargs)
         self.fields['data_homologacao'].widget.attrs = {'class': 'vDateField'}
+
+class DefinirVigenciaContratoForm(forms.ModelForm):
+    class Meta:
+        model = Contrato
+        fields = ('data_fim',)
+
+    def __init__(self, *args, **kwargs):
+        super(DefinirVigenciaContratoForm, self).__init__(*args, **kwargs)
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+
+
+class AditivarContratoForm(forms.Form):
+    data_inicio = forms.DateField(label=u'Data Inicial', widget=AdminDateWidget())
+    data_fim = forms.DateField(label=u'Data Final', widget=AdminDateWidget())
+
+    def __init__(self, *args, **kwargs):
+        self.contrato = kwargs.pop('contrato', None)
+        super(AditivarContratoForm, self).__init__(*args, **kwargs)
+
+        self.fields['data_inicio'].initial = self.contrato.get_data_fim()

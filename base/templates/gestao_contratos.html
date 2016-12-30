@@ -199,6 +199,7 @@
                         <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
                         <th>Caráter Continuado</th>
+                        <th>Valor</th>
                         <th>Situação</th>
                         <th>Opções</th>
                     </tr>
@@ -206,13 +207,14 @@
                 <tbody>
                     {% for item in contratos %}
                         <tr>
-                            <td>{{ item.get_pregao.num_pregao }}</td>
-                            <td>{{ item.get_pregao.num_processo}}</td>
-                            <td>{{ item.objeto }}</td>
-                            <td>Data</td>
-                            <td>Vigência</td>
-                            <td>Sim ou Não</td>
-                            <td>Situação</td>
+                            <td>{{ item.numero }}</td>
+                            <td>{{ item.pregao.num_processo}}</td>
+                            <td>{{ item.pregao.objeto }}</td>
+                            <td>{{ item.data_inicio }}</td>
+                            <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
+                            <td>{{ item.get_carater_continuado }}</td>
+                            <td>R$ {{ item.valor }}</td>
+                            <td>{{ item.get_situacao }}</td>
                             <td><a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info">Visualizar</a></td>
 
 
@@ -238,6 +240,7 @@
                         <th>Objeto</th>
                         <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
+                        <th>Valor</th>
                         <th>Situação</th>
                         <th>Opções</th>
                     </tr>
@@ -245,12 +248,13 @@
                 <tbody>
                     {% for item in atas %}
                         <tr>
-                            <td>{{ item.get_pregao.num_pregao }}</td>
-                            <td>{{ item.get_pregao.num_processo}}</td>
-                            <td>{{ item.objeto }}</td>
-                            <td>Data</td>
-                            <td>Vigência</td>
-                            <td>Situação</td>
+                            <td>{{ item.numero }}</td>
+                            <td>{{ item.pregao.num_processo}}</td>
+                            <td>{{ item.solicitacao.objeto }}</td>
+                            <td>{{ item.data_inicio }}</td>
+                            <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
+                            <td>R$ {{ item.valor }}</td>
+                            <td>{{ item.get_situacao }}</td>
                             <td><a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info">Visualizar</a></td>
 
 
