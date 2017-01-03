@@ -241,9 +241,9 @@ class SolicitacaoLicitacao(models.Model):
     def eh_dispensa(self):
         return self.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]
 
-    def tem_tres_propostas(self):
+    def tem_proposta(self):
         for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):
-            if ItemPesquisaMercadologica.objects.filter(item=item).count() < 3:
+            if not ItemPesquisaMercadologica.objects.filter(item=item).exists():
                 return False
         return True
 
