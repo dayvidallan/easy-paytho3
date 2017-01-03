@@ -524,7 +524,7 @@ def itens_solicitacao(request, solicitacao_id):
     url = settings.URL
 
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Solicitação Nº: %s - Tipo: %s' % (solicitacao, solicitacao.tipo)
+    title=u'Solicitação Nº: %s' % (solicitacao)
     setor_do_usuario = request.user.pessoafisica.setor
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
     pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
@@ -2517,6 +2517,47 @@ def ver_ordem_compra(request, solicitacao_id):
     data = {'pregao': pregao, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
+@login_required()
+def ver_ordem_compra_dispensa(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+
+    destino_arquivo = u'upload/ordens_compra/%s.pdf' % solicitacao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+    ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
+
+    lista = list()
+    for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=solicitacao):
+        total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa).aggregate(soma=Sum('valor_maximo'))['soma']
+
+        lista.append([pesquisa.id, total])
+
+    resultado = collections.OrderedDict(sorted(lista))
+    fornecedor = ItemPesquisaMercadologica.objects.get(id=resultado.items()[0][0]).pesquisa
+    itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado.items()[0][0]).order_by('item')
+    total = 0
+    for item in itens:
+        total += item.get_total()
+
+
+    data = {'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor,  'data_emissao': data_emissao, 'ordem': ordem}
+
+    template = get_template('ver_ordem_compra_dispensa.html')
 
     html  = template.render(Context(data))
 

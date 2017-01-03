@@ -176,7 +176,7 @@ class SolicitacaoForm(forms.ModelForm):
     prazo_resposta_interessados = forms.DateField(label=u'Prazo para retorno dos interessados', widget=AdminDateWidget(), required=False)
     class Meta:
         model = SolicitacaoLicitacao
-        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'outros_interessados', 'interessados', 'prazo_resposta_interessados']
+        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'outros_interessados', 'interessados', 'prazo_resposta_interessados']
 
     class Media:
             js = ['/static/base/js/solicitacao.js']

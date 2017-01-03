@@ -179,12 +179,23 @@ class SolicitacaoLicitacao(models.Model):
         (LICITACAO, LICITACAO),
 
     )
+
+    TIPO_AQUISICAO_LICITACAO = u'Licitação'
+    TIPO_AQUISICAO_DISPENSA = u'Dispensa'
+    TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
+
+    TIPO_AQUISICAO_CHOICES = (
+        (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
+        (TIPO_AQUISICAO_DISPENSA, TIPO_AQUISICAO_DISPENSA),
+        (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
+    )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.CharField(u'Descrição do Objeto', max_length=1500)
     objetivo = models.CharField(u'Objetivo', max_length=1500)
     justificativa = models.CharField(u'Justificativa', max_length=1500)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
     tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=LICITACAO)
+    tipo_aquisicao = models.CharField(u'Tipo de Aquisição', max_length=50, choices=TIPO_AQUISICAO_CHOICES, default=TIPO_AQUISICAO_LICITACAO)
     data_cadastro = models.DateTimeField(u'Cadastrada em')
     cadastrado_por = models.ForeignKey(User, null=True, blank=True)
     obs_negacao = models.CharField(u'Justificativa da Negação', max_length=1500, null=True, blank=True)
@@ -226,6 +237,15 @@ class SolicitacaoLicitacao(models.Model):
                     return int(ultimo.item) + 1
                 return u'1'
 
+
+    def eh_dispensa(self):
+        return self.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]
+
+    def tem_tres_propostas(self):
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):
+            if ItemPesquisaMercadologica.objects.filter(item=item).count() < 3:
+                return False
+        return True
 
 
     def pode_enviar_para_compra(self):
@@ -1172,6 +1192,8 @@ class ItemPesquisaMercadologica(models.Model):
     marca = models.CharField(u'Marca', max_length=255)
     valor_maximo = models.DecimalField(u'Valor Máximo', max_digits=10, decimal_places=2, null=True, blank=True)
 
+    def get_total(self):
+        return self.valor_maximo * self.item.quantidade
 
     def save(self):
         super(ItemPesquisaMercadologica, self).save()

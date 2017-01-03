@@ -88,6 +88,8 @@ urlpatterns = patterns('base.views',
     url(r'^aprovar_todos_pedidos/(?P<item_id>\d+)/$', views.aprovar_todos_pedidos, name='aprovar_todos_pedidos'),
     url(r'^gestao_pedidos/$', views.gestao_pedidos, name='gestao_pedidos'),
     url(r'^gestao_contratos/$', views.gestao_contratos, name='gestao_contratos'),
+    url(r'^ver_ordem_compra_dispensa/(?P<solicitacao_id>\d+)/$', views.ver_ordem_compra_dispensa, name='ver_ordem_compra_dispensa'),
+
 
 
     url(r'^avaliar_pedidos/(?P<solicitacao_id>\d+)/$', views.avaliar_pedidos, name='avaliar_pedidos'),
@@ -120,5 +122,6 @@ urlpatterns = patterns('base.views',
     url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
 
 )
+
 
 

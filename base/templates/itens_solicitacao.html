@@ -84,9 +84,19 @@
                 <a class="btn btn-success" href="/base/abrir_processo_para_solicitacao/{{ solicitacao.pk }}/">Abrir Processo</a>
 
              {% endif %}
+              {% if solicitacao.eh_dispensa %}
+                {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_tres_propostas %}
+                <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-success">Gerar Ordem de Compra/Serviço</a>
+                {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
+                    <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
+                {% endif %}
+
+            {% endif %}
              {% if solicitacao.prazo_aberto and perms.base.pode_cadastrar_pesquisa_mercadologica %}
                 <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{url}}base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
             {% endif %}
+
+
 
         </div>
 
@@ -183,7 +193,9 @@
                                     {% endif %}
 
                                 {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                                    <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
+                                    {% if  not solicitacao.eh_dispensa %}
+                                        <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
+                                    {% endif %}
                                     {% if item.tem_pesquisa_registrada %}
                                         <a href="/ver_pesquisa_mercadologica/{{item.id}}/" data-toggle="modal" data-target="#myModal" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
                                     {% endif %}

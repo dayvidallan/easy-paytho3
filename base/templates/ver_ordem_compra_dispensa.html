@@ -1,0 +1,157 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4;
+            margin: 0.3cm;
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+
+{% block content %}
+        {% block content_title %}
+
+        <h1 class="page-header">
+            {% include "cabecalho.html" %}
+        </h1>
+        <center><h2>Ordem de Compra/Serviço</h2></center>
+        <table border="0" width="100%" cellpadding="5" cellspacing="5">
+            <thead>
+                <tr>
+                    <th>N° da Ordem</th><td>{{ ordem.numero }}</td>
+                    <th>Data</th><td>{{ ordem.data }}</td>
+                </tr>
+                <tr>
+                    <th>Fornecedor</th><td>{{ fornecedor.razao_social }}</td>
+                    <th>CPF/CNPJ</th><td>{{ fornecedor.cnpj }}</td>
+                </tr>
+                <tr>
+                    <th>Endereço</th><td colspan="3">{{ fornecedor.endereco }}</td>
+
+                </tr>
+                <tr>
+                    <th>Dados Bancários</th><td colspan="3">Não Informado</td>
+
+                </tr>
+            </thead>
+        </table>
+
+        {% endblock %}
+<center>
+
+
+
+
+                <h2>Solicitamos a V.S.ª o fornecimento/realização dos itens abaixo especificados: </h2>
+
+                    <table border="1" width="100%" cellpadding="5" cellspacing="5">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th width="60%">Especificação</th>
+
+                                <th>Marca</th>
+                                <th>Unidade</th>
+
+
+                                <th>Quantidade</th>
+                                <th>Valor Unit.</th>
+                                <th>Total</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%  for proposta in itens %}
+
+                                <tr>
+                                    <td>{{ proposta.item }}</td>
+                                    <td>{{ proposta.item.material }}</td>
+
+                                    <td>{{ proposta.marca}}</td>
+                                    <td>{{ proposta.item.unidade}}</td>
+
+
+                                    <td>{{ proposta.item.quantidade }}</td>
+
+
+                                    <td>R$ {{ proposta.valor_maximo|format_money  }}</td>
+
+                                    <td>R$ {{ proposta.get_total|format_money  }}</td>
+
+
+                                </tr>
+                            {% endfor %}
+                            <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+
+                        </tbody>
+                    </table>
+
+
+
+
+    <br>
+    <table border="0" width="100%" cellpadding="5" cellspacing="5" align="left">
+            <thead>
+                <tr>
+                    <th>Processo N°</th><td>{{ solicitacao.num_processo }}</td>
+                </tr>
+                {% if ordem.dotacao_orcamentaria %}
+                    <tr>
+                        <th>Projeto/Atividade</th><td>{{ ordem.dotacao_orcamentaria.projeto_atividade_num }} - {{ ordem.dotacao_orcamentaria.projeto_atividade_descricao }}</td><td colspan="2">&nbsp;</td>
+
+                    </tr>
+                    <tr>
+                       <th>Elemento de Despesa</th><td>{{ ordem.dotacao_orcamentaria.programa_num }} - {{ ordem.dotacao_orcamentaria.programa_descricao }}</td><td colspan="2">&nbsp;</td>
+
+                    </tr>
+                    <tr>
+                        <th>Fonte</th><td>{{ ordem.dotacao_orcamentaria.elemento_despesa_num }} - {{ ordem.dotacao_orcamentaria.elemento_despesa_descricao }}</td><td colspan="2">&nbsp;</td>
+
+                    </tr>
+                {% endif %}
+            </thead>
+        </table>
+
+</center>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+

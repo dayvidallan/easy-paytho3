@@ -1,12 +1,15 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% load bootstrap static %}
-{% block breadcrumbs_class %}administracao{% endblock %}
-{% block breadcrumbs %}
-    <a href="/">Início <i class="fa fa-angle-right"></i></a>
-
-    <a href="javascript:void(0);">{{ title }}</a>
-{% endblock %}
+{% if request.user.pessoafisica %}
+    {% block breadcrumbs_class %}administracao{% endblock %}
+    {% block breadcrumbs %}
+        <a href="/">Início <i class="fa fa-angle-right"></i></a>
+        <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
+        <a href="/base/itens_solicitacao/{{pesquisa.solicitacao.id}}/">Solicitação {{ pesquisa.solicitacao }}<i class="fa fa-angle-right"></i></a>
+        <a href="javascript:void(0);">{{ title }}</a>
+    {% endblock %}
+{% endif %}
 {% block content %}
         <p class="alert alert-info"> Faça o download do documento, assine e faça o envio pelo formulário abaixo. Informe a validade da proposta.</p>
         <a href="/base/imprimir_pesquisa/{{ pesquisa.id }}/" target="_blank">Baixar Documento</a>
@@ -18,13 +21,13 @@
                         {{ form|bootstrap }}
                     </div>
 		        </div>
-                <div class="form-group form-row">
+
                     <div>
                         <div class="controls">
                             <button type="submit" class="btn btn-primary">Cadastrar</button>
                         </div>
                     </div>
-                </div>
+
              </div>
         </form>
     </div>

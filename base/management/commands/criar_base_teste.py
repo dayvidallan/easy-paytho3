@@ -117,7 +117,7 @@ class Command(BaseCommand):
         pessoa.user = user_gerente
         pessoa.save()
 
-        user_secretaria.groups.add(grupo_gerente)
+        user_gerente.groups.add(grupo_gerente)
 
 
         user_secretaria2 = User.objects.get_or_create(username=u'secretaria2',is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
