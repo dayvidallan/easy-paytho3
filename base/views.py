@@ -1473,7 +1473,7 @@ def relatorio_resultado_final(request, pregao_id):
         configuracao = get_config()
         if get_config().logo:
             logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
@@ -1515,7 +1515,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
         configuracao = get_config()
         if get_config().logo:
             logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
 
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
@@ -1605,7 +1605,7 @@ def relatorio_classificacao_por_item(request, pregao_id):
         configuracao = get_config()
         if get_config().logo:
             logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
@@ -1689,7 +1689,7 @@ def relatorio_lances_item(request, pregao_id):
         configuracao = get_config()
         if get_config().logo:
             logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
-    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
@@ -1745,7 +1745,7 @@ def relatorio_lances_item(request, pregao_id):
 @login_required()
 def relatorio_ata_registro_preco(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     tabela = {}
     total = {}
 
@@ -2109,7 +2109,8 @@ def termo_adjudicacao(request, pregao_id):
 
     tabela = {}
 
-    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     else:
@@ -2139,7 +2140,7 @@ def termo_adjudicacao(request, pregao_id):
 
 
 
-    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
 
     template = get_template('termo_adjudicacao.html')
 
@@ -2623,7 +2624,7 @@ def termo_homologacao(request, pregao_id):
 
     tabela = {}
 
-    eh_lote = pregao.criterio == CriterioPregao.LOTE
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     else:

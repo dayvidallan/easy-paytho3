@@ -21,7 +21,7 @@ def preenche_base(apps, schema_editor):
     criterio3 = CriterioPregao.objects.get_or_create(nome=u'Por Grupo de Itens')[0]
 
     tipo1 = TipoPregao.objects.get_or_create(nome=u'Menor Preço')[0]
-    tipo2 = TipoPregao.objects.get_or_create(nome=u'Maior Desconto')[0]
+    #tipo2 = TipoPregao.objects.get_or_create(nome=u'Maior Desconto')[0]
 
     secretaria = Secretaria.objects.get_or_create(nome=u'Secretaria de Planejamento', sigla=u'SEMPLA')[0]
     setor_licitacao = Setor.objects.get_or_create(nome=u'Setor de Licitação', sigla=u'SECLIC', secretaria=secretaria)[0]

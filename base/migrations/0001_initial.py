@@ -35,10 +35,24 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'auth_user',
-                'permissions': (('pode_cadastrar_solicitacao', 'Pode Cadastrar Solicita\xe7\xe3o'), ('pode_cadastrar_pregao', 'Pode Cadastrar Preg\xe3o'), ('pode_cadastrar_pesquisa_mercadologica', 'Pode Cadastrar Pesquisa Mercadol\xf3gica'), ('pode_ver_minuta', 'Pode Ver Minuta'), ('pode_avaliar_minuta', 'Pode Avaliar Minuta'), ('pode_abrir_processo', 'Pode Abrir Processo')),
+                'permissions': (('pode_cadastrar_solicitacao', 'Pode Cadastrar Solicita\xe7\xe3o'), ('pode_cadastrar_pregao', 'Pode Cadastrar Preg\xe3o'), ('pode_cadastrar_pesquisa_mercadologica', 'Pode Cadastrar Pesquisa Mercadol\xf3gica'), ('pode_ver_minuta', 'Pode Ver Minuta'), ('pode_avaliar_minuta', 'Pode Avaliar Minuta'), ('pode_abrir_processo', 'Pode Abrir Processo'), ('pode_gerenciar_contrato', 'Pode Gerenciar Contrato')),
             },
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Aditivo',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('ordem', models.PositiveSmallIntegerField(default=0)),
+                ('numero', models.CharField(help_text='No formato: 99999/9999', max_length=100, verbose_name='N\xfamero')),
+                ('valor', models.DecimalField(null=True, max_digits=9, decimal_places=2, blank=True)),
+                ('data_inicio', models.DateField(null=True, verbose_name='Data de In\xedcio', db_column='data_inicio', blank=True)),
+                ('data_fim', models.DateField(null=True, verbose_name='Data de Vencimento', db_column='data_fim', blank=True)),
+                ('de_prazo', models.BooleanField(default=False, verbose_name='Aditivo de Prazo')),
+                ('de_valor', models.BooleanField(default=False, verbose_name='Aditivo de Valor')),
+                ('de_fiscal', models.BooleanField(default=False, verbose_name='Aditivo de Fiscal')),
             ],
         ),
         migrations.CreateModel(
@@ -84,6 +98,22 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Contrato',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('numero', models.CharField(help_text='No formato: 99999/9999', max_length=100, verbose_name='N\xfamero')),
+                ('valor', models.DecimalField(max_digits=12, decimal_places=2)),
+                ('data_inicio', models.DateField(null=True, verbose_name='Data de In\xedcio')),
+                ('data_fim', models.DateField(null=True, verbose_name='Data de Vencimento')),
+                ('continuado', models.BooleanField(default=False)),
+                ('concluido', models.BooleanField(default=False)),
+                ('suspenso', models.BooleanField(default=False)),
+                ('cancelado', models.BooleanField(default=False)),
+                ('motivo_cancelamento', models.TextField(blank=True)),
+                ('dh_cancelamento', models.DateTimeField(null=True, blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
             name='CriterioPregao',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -92,6 +122,24 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Crit\xe9rio de Julgamento do Preg\xe3o',
                 'verbose_name_plural': 'Crit\xe9rios de Julgamento de Preg\xe3o',
+            },
+        ),
+        migrations.CreateModel(
+            name='DotacaoOrcamentaria',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('projeto_atividade_num', models.TextField(verbose_name='N\xfamero do Projeto de Atividade')),
+                ('projeto_atividade_descricao', models.TextField(verbose_name='Descri\xe7\xe3o do Projeto de Atividade')),
+                ('programa_num', models.TextField(verbose_name='N\xfamero do Programa')),
+                ('programa_descricao', models.TextField(verbose_name='Descri\xe7\xe3o do Programa')),
+                ('fonte_num', models.TextField(verbose_name='N\xfamero da Fonte')),
+                ('fonte_descricao', models.TextField(verbose_name='Descri\xe7\xe3o da Fonte')),
+                ('elemento_despesa_num', models.TextField(verbose_name='N\xfamero do Elemento de Despesa')),
+                ('elemento_despesa_descricao', models.TextField(verbose_name='Descri\xe7\xe3o do Elemento de Despesa')),
+            ],
+            options={
+                'verbose_name': 'Dota\xe7\xe3o Or\xe7ament\xe1ria',
+                'verbose_name_plural': 'Dota\xe7\xf5es Or\xe7ament\xe1rias',
             },
         ),
         migrations.CreateModel(
@@ -299,6 +347,19 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='OrdemCompra',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('numero', models.IntegerField(verbose_name='N\xfamero da Ordem')),
+                ('data', models.DateField(verbose_name='Data')),
+                ('dotacao_orcamentaria', models.ForeignKey(to='base.DotacaoOrcamentaria', null=True)),
+            ],
+            options={
+                'verbose_name': 'Ordem de Compra',
+                'verbose_name_plural': 'Ordens de Compra',
+            },
+        ),
+        migrations.CreateModel(
             name='ParticipanteItemPregao',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -334,6 +395,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantidade', models.IntegerField(verbose_name='Quantidade')),
                 ('pedido_em', models.DateTimeField(verbose_name='Pedido em')),
+                ('ativo', models.BooleanField(default=True, verbose_name='Ativo')),
                 ('item', models.ForeignKey(to='base.ItemSolicitacaoLicitacao')),
                 ('pedido_por', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -402,8 +464,12 @@ class Migration(migrations.Migration):
                 ('responsavel', models.CharField(max_length=255, verbose_name='Respons\xe1vel')),
                 ('situacao', models.CharField(default='Cadastrado', max_length=50, verbose_name='Situa\xe7\xe3o', choices=[('Cadastrado', 'Cadastrado'), ('Deserto', 'Deserto'), ('Fracassado', 'Fracassado'), ('Suspenso', 'Suspenso'), ('Conclu\xeddo', 'Conclu\xeddo')])),
                 ('obs', models.CharField(max_length=3000, null=True, verbose_name='Observa\xe7\xe3o', blank=True)),
+                ('data_adjudicacao', models.DateField(null=True, verbose_name='Data da Adjudica\xe7\xe3o')),
+                ('data_homologacao', models.DateField(null=True, verbose_name='Data da Homologa\xe7\xe3o')),
+                ('eh_ata_registro_preco', models.BooleanField(default=True, verbose_name='Ata de Registro de Pre\xe7o?')),
                 ('criterio', models.ForeignKey(verbose_name='Crit\xe9rio de Julgamento', to='base.CriterioPregao')),
                 ('modalidade', models.ForeignKey(verbose_name='Modalidade', to='base.ModalidadePregao')),
+                ('ordenador_despesa', models.ForeignKey(verbose_name='Ordenador de Despesa', to='base.PessoaFisica', null=True)),
             ],
             options={
                 'verbose_name': 'Preg\xe3o',
@@ -441,6 +507,7 @@ class Migration(migrations.Migration):
                 ('desistencia', models.BooleanField(default=False, verbose_name='Desist\xeancia')),
                 ('motivo_desistencia', models.CharField(max_length=2000, null=True, verbose_name='Motivo da Desist\xeancia', blank=True)),
                 ('concorre', models.BooleanField(default=True, verbose_name='Concorre')),
+                ('valor_item_lote', models.DecimalField(null=True, verbose_name='Valor do Item do Lote', max_digits=12, decimal_places=2, blank=True)),
                 ('item', models.ForeignKey(verbose_name='Solicita\xe7\xe3o', to='base.ItemSolicitacaoLicitacao')),
                 ('participante', models.ForeignKey(verbose_name='Participante', to='base.ParticipantePregao')),
                 ('pregao', models.ForeignKey(verbose_name='Preg\xe3o', to='base.Pregao')),
@@ -529,6 +596,7 @@ class Migration(migrations.Migration):
                 ('justificativa', models.CharField(max_length=1500, verbose_name='Justificativa')),
                 ('situacao', models.CharField(default='Cadastrado', max_length=50, verbose_name='Situa\xe7\xe3o', choices=[('Cadastrado', 'Cadastrado'), ('Aguardando Recebimento', 'Aguardando Recebimento'), ('Recebido', 'Recebido'), ('Devolvido', 'Devolvido'), ('Enviado para Licita\xe7\xe3o', 'Enviado para Licita\xe7\xe3o'), ('Em Licita\xe7\xe3o', 'Em Licita\xe7\xe3o'), ('Negada', 'Negada')])),
                 ('tipo', models.CharField(default='Licita\xe7\xe3o', max_length=50, verbose_name='Tipo', choices=[('Compra', 'Compra'), ('Licita\xe7\xe3o', 'Licita\xe7\xe3o')])),
+                ('tipo_aquisicao', models.CharField(default='Licita\xe7\xe3o', max_length=50, verbose_name='Tipo de Aquisi\xe7\xe3o', choices=[('Licita\xe7\xe3o', 'Licita\xe7\xe3o'), ('Dispensa', 'Dispensa'), ('Inexigibilidade', 'Inexigibilidade')])),
                 ('data_cadastro', models.DateTimeField(verbose_name='Cadastrada em')),
                 ('obs_negacao', models.CharField(max_length=1500, null=True, verbose_name='Justificativa da Nega\xe7\xe3o', blank=True)),
                 ('data_inicio_pesquisa', models.DateField(null=True, verbose_name='In\xedcio das Pesquisas', blank=True)),
@@ -540,6 +608,7 @@ class Migration(migrations.Migration):
                 ('obs_avaliacao_minuta', models.CharField(max_length=1500, null=True, verbose_name='Observa\xe7\xe3o - Minuta', blank=True)),
                 ('arquivo_parecer_minuta', models.FileField(upload_to='upload/minutas/', null=True, verbose_name='Arquivo com o Parecer', blank=True)),
                 ('prazo_aberto', models.NullBooleanField(default=False, verbose_name='Aberto para Recebimento de Pesquisa')),
+                ('liberada_compra', models.BooleanField(default=False, verbose_name='Liberada para Compra')),
                 ('cadastrado_por', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
                 ('interessados', models.ManyToManyField(to='base.Secretaria')),
                 ('minuta_avaliada_por', models.ForeignKey(related_name='aprova_minuta', verbose_name='Minuta Aprovada Por', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
@@ -606,8 +675,13 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='pedidoitem',
+            name='proposta',
+            field=models.ForeignKey(to='base.PropostaItemPregao', null=True),
+        ),
+        migrations.AddField(
+            model_name='pedidoitem',
             name='resultado',
-            field=models.ForeignKey(to='base.ResultadoItemPregao'),
+            field=models.ForeignKey(to='base.ResultadoItemPregao', null=True),
         ),
         migrations.AddField(
             model_name='pedidoitem',
@@ -628,6 +702,11 @@ class Migration(migrations.Migration):
             model_name='participanteitempregao',
             name='participante',
             field=models.ForeignKey(verbose_name='Participante', to='base.ParticipantePregao'),
+        ),
+        migrations.AddField(
+            model_name='ordemcompra',
+            name='solicitacao',
+            field=models.ForeignKey(to='base.SolicitacaoLicitacao'),
         ),
         migrations.AddField(
             model_name='movimentosolicitacao',
@@ -740,9 +819,29 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(verbose_name='Ramo de Atividade', to='base.RamoAtividade'),
         ),
         migrations.AddField(
+            model_name='contrato',
+            name='pregao',
+            field=models.ForeignKey(to='base.Pregao'),
+        ),
+        migrations.AddField(
+            model_name='contrato',
+            name='solicitacao',
+            field=models.ForeignKey(to='base.SolicitacaoLicitacao'),
+        ),
+        migrations.AddField(
+            model_name='contrato',
+            name='usuario_cancelamento',
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
             model_name='configuracao',
             name='municipio',
             field=models.ForeignKey(to='base.Municipio', null=True),
+        ),
+        migrations.AddField(
+            model_name='configuracao',
+            name='ordenador_despesa',
+            field=models.ForeignKey(verbose_name='Ordenador de Despesa', to='base.PessoaFisica', null=True),
         ),
         migrations.AddField(
             model_name='comissaolicitacao',
@@ -753,5 +852,10 @@ class Migration(migrations.Migration):
             model_name='anexopregao',
             name='pregao',
             field=models.ForeignKey(to='base.Pregao'),
+        ),
+        migrations.AddField(
+            model_name='aditivo',
+            name='contrato',
+            field=models.ForeignKey(to='base.Contrato'),
         ),
     ]

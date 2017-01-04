@@ -395,6 +395,9 @@ class ItemSolicitacaoLicitacao(models.Model):
         verbose_name = u'Item da Solicitação de Licitação'
         verbose_name_plural = u'Itens da Solicitação de Licitação'
 
+    def get_id_lote(self):
+        return ItemLote.objects.filter(item=self)[0].lote.item
+
     def get_lance_minimo(self):
         eh_maior_desconto = self.solicitacao.eh_maior_desconto()
         melhor_proposta = None
@@ -629,7 +632,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def tem_proximo_item(self):
         proximo = self.item + 1
-        eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.LOTE
+        eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio.id == CriterioPregao.LOTE
 
         if eh_lote:
             if ItemSolicitacaoLicitacao.objects.filter(item=proximo, solicitacao=self.solicitacao, eh_lote=True).exists():

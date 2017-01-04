@@ -81,7 +81,14 @@ ul{
 
         {% for empresa, itens, total in resultado.items %}
             <b>{{ empresa }}</b>,
-            quanto aos ITENS <b>{{itens.itens}}</b>, no valor total
+            quanto aos
+            {% if eh_lote %}
+                LOTES <b>{{itens.itens}}</b>,
+            {% else %}
+                ITENS <b>{{itens.itens}}</b>,
+            {% endif %}
+
+        no valor total
             de <b>R$ {{itens.total}}</b>,
         {% endfor %}
 
