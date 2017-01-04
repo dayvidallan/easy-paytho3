@@ -121,8 +121,8 @@ ul{
         <thead>
             <th>Item</th>
             <th>Material</th>
-            <th>Quantidade</th>
             <th>Marca</th>
+            <th>Quantidade</th>
             <th>Valor Unitário Máximo</th>
         </thead>
         <tbody>
@@ -130,8 +130,8 @@ ul{
                 <tr>
                     <td>{{ item.item.item }}</td>
                     <td>{{ item.item.material }}</td>
-                    <td>{{ item.item.quantidade }}</td>
                     <td>{{ item.marca }}</td>
+                    <td>{{ item.item.quantidade }}</td>
                     <td align="right">R$ {{ item.valor_maximo }}</td>
                 </tr>
             {% endfor %}
