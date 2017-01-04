@@ -2758,12 +2758,29 @@ def memorando(request, solicitacao_id):
     municipio = None
     if get_config():
         municipio = get_config().municipio
+
+    itens = []
+    quantidades = []
+    unidades  = []
+    descricoes = []
+
+    for item in solicitacao.itemsolicitacaolicitacao_set.all():
+        itens.append(item)
+        quantidades.append(item.quantidade)
+        unidades.append(item.unidade)
+        descricoes.append(item.material.nome)
+
     dicionario = {
-            '#NUM#' : solicitacao.num_memorando,
-            '#MUNICIPIO#' : municipio or u'-',
-            '#DATA#': datetime.date.today(),
-            '#OBJETIVO#': solicitacao.objetivo,
-            '#OBJETO#': solicitacao.objeto,
+        '#NUM#' : solicitacao.num_memorando,
+        '#MUNICIPIO#' : municipio or u'-',
+        '#DATA#': datetime.date.today(),
+        '#OBJETIVO#': solicitacao.objetivo,
+        '#OBJETO#': solicitacao.objeto,
+        '#IT#': libreoffice_new_line(itens or '-'),
+        '#QUANT#': libreoffice_new_line(quantidades or '-'),
+        '#UN#': libreoffice_new_line(unidades or '-'),
+        '#DES#': libreoffice_new_line(descricoes or '-'),
+
     }
     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/memorando.docx'))
     new_docx = zipfile.ZipFile('%s.docx' % tempfile.mktemp(), "a")
