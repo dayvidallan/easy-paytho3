@@ -2735,6 +2735,20 @@ def cancelar_pedido_compra(request, solicitacao_id):
     messages.success(request, u'Solicitação cancelada com sucesso.')
     return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
+
+def libreoffice_new_line(tokens, align_center='', font_size=17):
+    if len(tokens)>1:
+        if align_center:
+            align_center = '<w:jc w:val="center"/>'
+        out = ['</w:t></w:r></w:p>']
+        for token in tokens:
+            out.append('<w:p><w:pPr><w:spacing w:after="0"/>%s</w:pPr><w:r><w:rPr><w:sz w:val="%s"/></w:rPr><w:t>%s' % (align_center, font_size, token))
+            out.append('</w:t></w:r></w:p>')
+        del(out[-1])
+        return ''.join(out)
+    return tokens[0]
+
+
 @login_required()
 def memorando(request, solicitacao_id):
     import tempfile
