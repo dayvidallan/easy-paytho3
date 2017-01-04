@@ -2554,7 +2554,6 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     for item in itens:
         total += item.get_total()
 
-    import ipdb; ipdb.set_trace()
     data = {'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
