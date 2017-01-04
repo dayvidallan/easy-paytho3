@@ -132,12 +132,12 @@ ul{
                     <td>{{ item.item.material }}</td>
                     <td>{{ item.marca }}</td>
                     <td>{{ item.item.quantidade }}</td>
-                    <td align="right">R$ {{ item.valor_maximo }}</td>
+                    <td align="right">R$ {{ item.valor_maximo|format_money }}</td>
                 </tr>
             {% endfor %}
             <tr>
                 <td colspan="4" align="right">Total</td>
-                <td align="right">R$ {{ pesquisa.get_total }}</td>
+                <td align="right">R$ {{ pesquisa.get_total|format_money }}</td>
             </tr>
         </tbody>
     </table>
