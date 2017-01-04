@@ -109,6 +109,9 @@
             <thead>
                 <tr>
                     <th width="10%">Memorando</th>
+                    {% if solicitacao.processo %}
+                        <th>Processo</th>
+                    {% endif %}
                     <th>Descrição do Objeto</th>
 
                     <th>Data de Cadastro</th>
@@ -121,11 +124,10 @@
                     {% endif %}
                 </tr>
                 <tr>
-                    <td>{{ solicitacao.num_memorando }}
-                        {% if solicitacao.processo %}
-                            <a href="/base/ver_processo/{{solicitacao.processo.id}}/">(Processo: {{ solicitacao.processo }})</a>
-                        {% endif %}
-                    </td>
+                    <td>{{ solicitacao.num_memorando }}</td>
+                    {% if solicitacao.processo %}
+                        <td>{{ solicitacao.processo }}</td>
+                    {% endif %}
                     <td>{{ solicitacao.objeto|truncatechars:250  }}</td>
 
 
