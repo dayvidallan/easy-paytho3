@@ -1188,7 +1188,7 @@ class PesquisaMercadologica(models.Model):
 
     def get_total(self):
         total=0
-        for item in self.get_itens():
+        for item in ItemPesquisaMercadologica.objects.filter(pesquisa=self).order_by('item__item'):
             total += item.valor_maximo * item.item.quantidade
         return total
 
