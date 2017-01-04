@@ -232,7 +232,12 @@
                                             {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
                                        {% endif %}
                                    </td>
-                                   <td>{{ solicitacao.tipo_aquisicao }}</td>
+                                   <td>{% if solicitacao.tipo == solicitacao.COMPRA %}
+                                        Compra
+                                       {% else %}
+                                        {{ solicitacao.tipo_aquisicao }}
+                                       {% endif %}
+                                   </td>
                                    <td>{{ solicitacao.get_situacao }}</td>
 
                                    <td>
@@ -283,7 +288,13 @@
                                             {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
                                        {% endif %}
                                    </td>
-                                   <td>{{ solicitacao.tipo_aquisicao }}</td>
+                                   <td>
+                                       {% if solicitacao.tipo == solicitacao.COMPRA %}
+                                        Compra
+                                       {% else %}
+                                        {{ solicitacao.tipo_aquisicao }}
+                                       {% endif %}
+                                   </td>
                                    <td>{{ solicitacao.get_situacao }}</td>
                                    <td>
                                        <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
