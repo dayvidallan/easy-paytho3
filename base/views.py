@@ -282,7 +282,7 @@ def cadastra_proposta_pregao(request, pregao_id):
                             nova_proposta_para_lote.save()
 
         messages.success(request, u'Proposta cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % pregao.id)
+        return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
     else:
         if edicao or selecionou:
             form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao, initial=dict(fornecedor=participante))
@@ -434,7 +434,7 @@ def lances_item(request, item_id):
                 messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
                 return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-            if form.cleaned_data.get('lance') >= item.valor_medio:
+            if form.cleaned_data.get('lance') > item.valor_medio:
                 messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
                 return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 

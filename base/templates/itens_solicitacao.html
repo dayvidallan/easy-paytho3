@@ -73,7 +73,7 @@
              {% if perms.base.pode_cadastrar_pregao and recebida_no_setor and solicitacao.eh_apta and solicitacao.minuta_aprovada %}
 
                 {% if not solicitacao.tem_pregao_cadastrado %}
-                    <a class="btn btn-success" href="/base/cadastrar_pregao/{{solicitacao.id}}/">Criar Pregão</a>
+                    <a class="btn btn-success" href="/base/cadastrar_pregao/{{solicitacao.id}}/">Criar Licitação</a>
                     <a class="btn btn-danger" href="/rejeitar_solicitacao/{{ solicitacao.id }}/">Rejeitar</a>
                 {% endif %}
              {% endif %}
@@ -97,7 +97,7 @@
                 {% endif %}
 
             {% endif %}
-             {% if solicitacao.prazo_aberto and perms.base.pode_cadastrar_pesquisa_mercadologica %}
+             {% if solicitacao.prazo_aberto and perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
                 <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{url}}base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
             {% endif %}
 

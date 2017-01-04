@@ -45,8 +45,8 @@ ul{
         <h1 class="page-header">
             {% include "cabecalho.html" %}
         </h1>
-        <center><h2>Ordem de Compra/Serviço</h2></center>
-        <table border="0" width="100%" cellpadding="5" cellspacing="5">
+        <center><h2>Ordem de Compra/Serviço</h2>
+        <table border="0" width="90%" cellpadding="5" cellspacing="5">
             <thead>
                 <tr>
                     <th>N° da Ordem</th><td>{{ ordem.numero }}</td>
@@ -60,12 +60,9 @@ ul{
                     <th>Endereço</th><td colspan="3">{{ fornecedor.endereco }}</td>
 
                 </tr>
-                <tr>
-                    <th>Dados Bancários</th><td colspan="3">Não Informado</td>
 
-                </tr>
             </thead>
-        </table>
+        </table></center>
 
         {% endblock %}
 <center>
@@ -121,10 +118,10 @@ ul{
 
 
     <br>
-    <table border="0" width="100%" cellpadding="5" cellspacing="5" align="left">
+    <table border="0" width="80%" cellpadding="5" cellspacing="5" align="left">
             <thead>
                 <tr>
-                    <th>Processo N°</th><td>{{ solicitacao.num_processo }}</td>
+                    <th>Processo N°</th><td>{{ ordem.solicitacao.processo }}</td>
                 </tr>
                 {% if ordem.dotacao_orcamentaria %}
                     <tr>

@@ -1,4 +1,5 @@
 {% load bootstrap %}
+{% load app_filters %}
 {% block extrastyle %}
  <style>
      #rectangle{
@@ -88,7 +89,7 @@ ul{
 {% block content %}
     {% block conteudo_laudo %}
     <h3><b>Dados do Fornecedor</b></h3>
-    <table border="0" width="100%">
+    <table border="0" width="100%" cellpadding="5" cellspacing="5">
       <tr>
         <td width="70%">Razão Social: <b>{{ pesquisa.razao_social }} </b></td>
         <td width="30%">CNPJ: {{ pesquisa.cnpj }}</td>
