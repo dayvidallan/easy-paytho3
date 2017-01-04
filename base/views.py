@@ -25,6 +25,10 @@ from reportlab.pdfgen import canvas
 from reportlab.graphics.barcode.common import I2of5
 from reportlab.lib.utils import simpleSplit
 import collections
+from templated_docs import fill_template
+from templated_docs.http import FileResponse
+
+
 LARGURA = 210*mm
 ALTURA = 297*mm
 
@@ -2732,4 +2736,62 @@ def cancelar_pedido_compra(request, solicitacao_id):
     PedidoItem.objects.filter(solicitacao=solicitacao).update(ativo=False)
     messages.success(request, u'Solicitação cancelada com sucesso.')
     return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+
+@login_required()
+def memorando(request, solicitacao_id):
+    import tempfile
+    import zipfile
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+    municipio = None
+    if get_config():
+        municipio = get_config().municipio
+    dicionario = {
+            '#NUM#' : solicitacao.num_memorando,
+            '#MUNICIPIO#' : municipio or u'-',
+            '#DATA#': datetime.date.today(),
+            '#OBJETIVO#': solicitacao.objetivo,
+            '#OBJETO#': solicitacao.objeto,
+    }
+    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/memorando.docx'))
+    new_docx = zipfile.ZipFile('%s.docx' % tempfile.mktemp(), "a")
+
+    tmp_xml_file = open(template_docx.extract("word/document.xml", tempfile.mkdtemp()))
+    tempXmlStr = tmp_xml_file.read()
+    tmp_xml_file.close()
+    os.unlink(tmp_xml_file.name)
+
+    for key in dicionario.keys():
+        value = unicode(dicionario.get(key)).encode("utf8")
+        tempXmlStr = tempXmlStr.replace(key, value)
+
+    tmp_xml_file =  open(tempfile.mktemp(), "w+")
+    tmp_xml_file.write(tempXmlStr)
+    tmp_xml_file.close()
+
+    for arquivo in template_docx.filelist:
+        if not arquivo.filename == "word/document.xml":
+            new_docx.writestr(arquivo.filename, template_docx.read(arquivo))
+
+    new_docx.write(tmp_xml_file.name, "word/document.xml")
+
+    template_docx.close()
+    new_docx.close()
+    os.unlink(tmp_xml_file.name)
+
+
+    # Caso não seja informado, deverá retornar o caminho para o arquivo DOCX processado.
+    caminho_arquivo =  new_docx.filename
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
+    return response
+
 

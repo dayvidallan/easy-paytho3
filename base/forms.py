@@ -553,3 +553,12 @@ class AditivarContratoForm(forms.Form):
         super(AditivarContratoForm, self).__init__(*args, **kwargs)
 
         self.fields['data_inicio'].initial = self.contrato.get_data_fim()
+
+class InvoiceForm(forms.Form):
+    FORMAT_CHOICES = (
+        ('pdf', 'PDF'),
+        ('docx', 'MS Word'),
+        ('html', 'HTML'),
+    )
+    format = forms.ChoiceField(choices=FORMAT_CHOICES)
+    #solicitacao = forms.ModelChoiceField(SolicitacaoLicitacao.objects, )

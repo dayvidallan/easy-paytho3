@@ -29,3 +29,4 @@ django_select2
 django-ckeditor==5.0.2
 html5lib==1.0b8
 -e git+git://github.com/chrisglass/xhtml2pdf.git@223173579b8491cba82e8833374a1c773422605a#egg=xhtml2pdf
+

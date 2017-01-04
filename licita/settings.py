@@ -30,9 +30,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'debug_toolbar',
-
     # Local apps
     'base',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -142,5 +142,3 @@ DEFAULT_FROM_EMAIL = 'pnt@lais.huol.ufrn.br'
 
 
 URL = u'http://159.203.181.26/'
-
-

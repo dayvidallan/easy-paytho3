@@ -110,6 +110,7 @@ urlpatterns = patterns('base.views',
     url(r'^definir_vigencia_contrato/(?P<contrato_id>\d+)/$', views.definir_vigencia_contrato, name='definir_vigencia_contrato'),
     url(r'^aditivar_contrato/(?P<contrato_id>\d+)/$', views.aditivar_contrato, name='aditivar_contrato'),
     url(r'^cancelar_pedido_compra/(?P<solicitacao_id>\d+)/$', views.cancelar_pedido_compra, name='cancelar_pedido_compra'),
+    url(r'^memorando/(?P<solicitacao_id>\d+)/$', views.memorando, name='memorando'),
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),
