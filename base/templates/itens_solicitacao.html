@@ -64,7 +64,7 @@
                     <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a>
                     <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
                     <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
-                {% else %}
+                {% elif not solicitacao.eh_dispensa or not solicitacao.tem_ordem_compra %}
                     <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
                 {% endif %}
 
