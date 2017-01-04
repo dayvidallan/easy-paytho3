@@ -217,8 +217,8 @@ class PesquisaMercadologicaForm(forms.ModelForm):
 
     origem_opcao = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor'),(False, u'Ata de Registro de Preço')]))
     ie = forms.CharField(label=u'Inscrição Estadual', required=False)
-    email = forms.EmailField(label=u'Email', required=True)
-    cpf_representante = utils.CpfFormField(label=u'CPF do Representante Legal', required=True)
+    email = forms.EmailField(label=u'Email', required=False)
+    cpf_representante = utils.CpfFormField(label=u'CPF do Representante Legal', required=False)
 
     class Meta:
         model = PesquisaMercadologica
