@@ -232,7 +232,7 @@
                                             {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
                                        {% endif %}
                                    </td>
-                                   <td>{{ solicitacao.tipo }}</td>
+                                   <td>{{ solicitacao.tipo_aquisicao }}</td>
                                    <td>{{ solicitacao.get_situacao }}</td>
 
                                    <td>

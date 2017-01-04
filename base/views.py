@@ -2278,6 +2278,7 @@ def novo_pedido_compra(request, solicitacao_id):
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
+        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_COMPRA
         o.save()
 
         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))

@@ -183,11 +183,13 @@ class SolicitacaoLicitacao(models.Model):
     TIPO_AQUISICAO_LICITACAO = u'Licitação'
     TIPO_AQUISICAO_DISPENSA = u'Dispensa'
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
+    TIPO_AQUISICAO_COMPRA = u'Compra'
 
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
         (TIPO_AQUISICAO_DISPENSA, TIPO_AQUISICAO_DISPENSA),
         (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
+        (TIPO_AQUISICAO_COMPRA, TIPO_AQUISICAO_COMPRA),
     )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.CharField(u'Descrição do Objeto', max_length=1500)
