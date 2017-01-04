@@ -25,8 +25,6 @@ from reportlab.pdfgen import canvas
 from reportlab.graphics.barcode.common import I2of5
 from reportlab.lib.utils import simpleSplit
 import collections
-from templated_docs import fill_template
-from templated_docs.http import FileResponse
 
 
 LARGURA = 210*mm
