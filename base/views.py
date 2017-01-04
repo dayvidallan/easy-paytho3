@@ -2548,7 +2548,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
         lista.append([pesquisa.id, total])
 
     resultado = collections.OrderedDict(sorted(lista),  key=lambda x: x[1])
-    fornecedor = ItemPesquisaMercadologica.objects.get(id=resultado.items()[0][0]).pesquisa
+    fornecedor = PesquisaMercadologica.objects.get(id=resultado.items()[0][0])
     itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado.items()[0][0]).order_by('item')
     total = 0
     for item in itens:
