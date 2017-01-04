@@ -169,7 +169,7 @@
                         <th>Material</th>
                         <th>Unidade</th>
                         <th>Quantidade</th>
-                        {% if perms.base.pode_cadastrar_pregao or perms.base.pode_cadastrar_pesquisa_mercadologica %}
+                        {% if perms.base.pode_cadastrar_pregao or perms.base.pode_cadastrar_pesquisa_mercadologica and not solicitacao.eh_dispensa %}
                             <th>Valor Médio</th>
                             <th>Total</th>
                         {% endif %}

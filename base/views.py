@@ -2278,7 +2278,6 @@ def novo_pedido_compra(request, solicitacao_id):
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
-        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_COMPRA
         o.save()
 
         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))
@@ -2555,7 +2554,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     for item in itens:
         total += item.get_total()
 
-
+    import ipdb; ipdb.set_trace()
     data = {'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
