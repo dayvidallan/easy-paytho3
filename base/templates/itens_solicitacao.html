@@ -184,7 +184,7 @@
                             <td>{{ item.material }}</td>
                             <td>{{ item.unidade }}</td>
                             <td>{{ item.quantidade }}</td>
-                            {% if perms.base.pode_cadastrar_pregao or  perms.base.pode_cadastrar_pesquisa_mercadologica %}
+                            {% if perms.base.pode_cadastrar_pregao or  perms.base.pode_cadastrar_pesquisa_mercadologica and not solicitacao.eh_dispensa %}
                                 <td>{{ item.valor_medio|format_money }}</td>
                                 <td>{{ item.total|format_money }}</td>
                             {% endif %}
