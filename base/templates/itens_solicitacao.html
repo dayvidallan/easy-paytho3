@@ -40,6 +40,9 @@
 
      {% if solicitacao.tipo == solicitacao.LICITACAO %}
          <div class="pull-left">
+             {% if solicitacao.processo %}
+                <a href="/base/ver_processo/{{solicitacao.processo.id}}/"  class="btn btn-info">Capa do Processo</a>
+             {% endif %}
              {% if perms.base.pode_cadastrar_solicitacao %}
                 {% if solicitacao.situacao == solicitacao.CADASTRADO %}
                     {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
@@ -225,6 +228,9 @@
         </div>
     {% else %}
         <div class="pull-left">
+            {% if solicitacao.processo %}
+                <a href="/base/ver_processo/{{solicitacao.processo.id}}/"  class="btn btn-info">Capa do Processo</a>
+            {% endif %}
             {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra %}
                 <a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a>
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_pedidos_compra and not solicitacao.tem_ordem_compra %}
