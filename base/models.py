@@ -610,6 +610,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def pode_gerar_resultado(self):
         return LanceItemRodadaPregao.objects.filter(item=self).exists() or PropostaItemPregao.objects.filter(item=self).exists()
+
     def tem_empate(self):
         return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, empate=True)
 

@@ -616,7 +616,7 @@
                                                         <a href="/base/encerrar_itempregao/{{ item.id }}/2/2/" class="btn btn-danger btn-sm">Fracassado</a>
                                                     {% endif%}
 
-                                                {% elif item.pode_gerar_resultado %}
+                                                {% elif item.pode_gerar_resultado and pregao.eh_pregao %}
                                                     <a href="/base/gerar_resultado/{{ item.id }}/" class="btn btn-success btn-sm">Gerar Resultados</a>
                                                 {% else %}
                                                     -

@@ -1343,14 +1343,14 @@ def receber_solicitacao(request, solicitacao_id):
 @login_required()
 def ver_movimentacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Movimentação da Solicitação N°: %s' % solicitacao
+    title=u'Movimentação - %s' % solicitacao
     movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).order_by('-data_envio')
     return render_to_response('ver_movimentacao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_minuta(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Cadastrar Minuta -  Solicitação %s' % solicitacao
+    title=u'Cadastrar Minuta - %s' % solicitacao
     form = CadastroMinutaForm(request.POST or None, request.FILES or None, instance=solicitacao)
     if form.is_valid():
         form.save()
@@ -3064,19 +3064,24 @@ def gerar_resultado_licitacao(request, pregao_id):
 
         tabela[chave]['total'] += proposta.valor
     resultado = collections.OrderedDict(sorted(tabela.items()),  key=lambda x: x[1])
-    fornecedor = ParticipantePregao.objects.get(id=resultado.items()[0][0])
 
-    itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor)
+    total = len(resultado)-1
+    indice = 0
+    while indice < total:
+        fornecedor = ParticipantePregao.objects.get(id=resultado.items()[indice][0])
 
-    for item in itens:
-        novo_resultado = ResultadoItemPregao()
-        novo_resultado.item = item.item
-        novo_resultado.participante = fornecedor
-        novo_resultado.valor = item.valor
-        novo_resultado.marca = item.marca
-        novo_resultado.ordem = 1
-        novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
-        novo_resultado.save()
+        itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor)
+
+        for item in itens:
+            novo_resultado = ResultadoItemPregao()
+            novo_resultado.item = item.item
+            novo_resultado.participante = fornecedor
+            novo_resultado.valor = item.valor
+            novo_resultado.marca = item.marca
+            novo_resultado.ordem = indice+1
+            novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+            novo_resultado.save()
+        indice += 1
 
 
     messages.success(request, u'Resultado gerado com sucesso.')
