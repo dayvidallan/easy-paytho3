@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import base.models
 import newadmin.utils
 import django.contrib.auth.models
 import django.utils.timezone
@@ -125,17 +126,23 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='DocumentoSolicitacao',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('nome', models.TextField(max_length=500, verbose_name='Nome do Arquivo')),
+                ('cadastrado_em', models.DateTimeField(null=True, verbose_name='Cadastrado Em', blank=True)),
+                ('documento', models.FileField(upload_to=base.models.upload_path_documento, null=True, verbose_name='Documento', blank=True)),
+                ('cadastrado_por', models.ForeignKey(related_name='documento_cadastrado_por', to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'verbose_name': 'Documento da Solicita\xe7\xe3o',
+                'verbose_name_plural': 'Documentos da Solicita\xe7\xe3o',
+            },
+        ),
+        migrations.CreateModel(
             name='DotacaoOrcamentaria',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('projeto_atividade_num', models.TextField(verbose_name='N\xfamero do Projeto de Atividade')),
-                ('projeto_atividade_descricao', models.TextField(verbose_name='Descri\xe7\xe3o do Projeto de Atividade')),
-                ('programa_num', models.TextField(verbose_name='N\xfamero do Programa')),
-                ('programa_descricao', models.TextField(verbose_name='Descri\xe7\xe3o do Programa')),
-                ('fonte_num', models.TextField(verbose_name='N\xfamero da Fonte')),
-                ('fonte_descricao', models.TextField(verbose_name='Descri\xe7\xe3o da Fonte')),
-                ('elemento_despesa_num', models.TextField(verbose_name='N\xfamero do Elemento de Despesa')),
-                ('elemento_despesa_descricao', models.TextField(verbose_name='Descri\xe7\xe3o do Elemento de Despesa')),
             ],
             options={
                 'verbose_name': 'Dota\xe7\xe3o Or\xe7ament\xe1ria',
@@ -157,6 +164,11 @@ class Migration(migrations.Migration):
                 ('cnpj', models.CharField(help_text='Utilize pontos e tra\xe7os.', max_length=255, verbose_name='CNPJ/CPF')),
                 ('razao_social', models.CharField(max_length=255, verbose_name='Raz\xe3o Social')),
                 ('endereco', models.CharField(max_length=255, verbose_name='Endere\xe7o')),
+                ('telefones', models.CharField(max_length=300, verbose_name='Telefones')),
+                ('email', models.EmailField(max_length=254, verbose_name='Email')),
+                ('banco', models.CharField(max_length=200, null=True, verbose_name='Banco', blank=True)),
+                ('agencia', models.CharField(max_length=50, null=True, verbose_name='Ag\xeancia', blank=True)),
+                ('conta', models.CharField(max_length=200, null=True, verbose_name='Conta', blank=True)),
             ],
             options={
                 'verbose_name': 'Fornecedor',
@@ -352,7 +364,14 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('numero', models.IntegerField(verbose_name='N\xfamero da Ordem')),
                 ('data', models.DateField(verbose_name='Data')),
-                ('dotacao_orcamentaria', models.ForeignKey(to='base.DotacaoOrcamentaria', null=True)),
+                ('projeto_atividade_num', models.CharField(max_length=200, null=True, verbose_name='N\xfamero do Projeto de Atividade', blank=True)),
+                ('projeto_atividade_descricao', models.CharField(max_length=200, null=True, verbose_name='Descri\xe7\xe3o do Projeto de Atividade', blank=True)),
+                ('programa_num', models.CharField(max_length=200, null=True, verbose_name='N\xfamero do Programa', blank=True)),
+                ('programa_descricao', models.CharField(max_length=200, null=True, verbose_name='Descri\xe7\xe3o do Programa', blank=True)),
+                ('fonte_num', models.CharField(max_length=200, null=True, verbose_name='N\xfamero da Fonte', blank=True)),
+                ('fonte_descricao', models.CharField(max_length=200, null=True, verbose_name='Descri\xe7\xe3o da Fonte', blank=True)),
+                ('elemento_despesa_num', models.CharField(max_length=200, null=True, verbose_name='N\xfamero do Elemento de Despesa', blank=True)),
+                ('elemento_despesa_descricao', models.CharField(max_length=200, null=True, verbose_name='Descri\xe7\xe3o do Elemento de Despesa', blank=True)),
             ],
             options={
                 'verbose_name': 'Ordem de Compra',
@@ -455,7 +474,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('num_pregao', models.CharField(max_length=255, verbose_name='N\xfamero do Preg\xe3o')),
-                ('num_processo', models.CharField(max_length=255, verbose_name='N\xfamero do Processo')),
                 ('data_inicio', models.DateField(null=True, verbose_name='Data de In\xedcio da Retirada das Propostas')),
                 ('data_termino', models.DateField(null=True, verbose_name='Data de T\xe9rmino da Retirada das Propostas')),
                 ('data_abertura', models.DateField(null=True, verbose_name='Data de Abertura das Propostas')),
@@ -467,6 +485,7 @@ class Migration(migrations.Migration):
                 ('data_adjudicacao', models.DateField(null=True, verbose_name='Data da Adjudica\xe7\xe3o')),
                 ('data_homologacao', models.DateField(null=True, verbose_name='Data da Homologa\xe7\xe3o')),
                 ('eh_ata_registro_preco', models.BooleanField(default=True, verbose_name='Ata de Registro de Pre\xe7o?')),
+                ('arquivo_homologacao', models.FileField(upload_to=base.models.upload_path_termo_homologacao, null=True, verbose_name='Termo de Homologa\xe7\xe3o')),
                 ('criterio', models.ForeignKey(verbose_name='Crit\xe9rio de Julgamento', to='base.CriterioPregao')),
                 ('modalidade', models.ForeignKey(verbose_name='Modalidade', to='base.ModalidadePregao')),
                 ('ordenador_despesa', models.ForeignKey(verbose_name='Ordenador de Despesa', to='base.PessoaFisica', null=True)),
@@ -515,17 +534,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Valor do Item do Preg\xe3o',
                 'verbose_name_plural': 'Valores do Item do Preg\xe3o',
-            },
-        ),
-        migrations.CreateModel(
-            name='RamoAtividade',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('nome', models.CharField(max_length=200, verbose_name='Nome')),
-            ],
-            options={
-                'verbose_name': 'Ramo de Atividade',
-                'verbose_name_plural': 'Ramos de Atividade',
             },
         ),
         migrations.CreateModel(
@@ -814,9 +822,9 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(to='base.Pregao'),
         ),
         migrations.AddField(
-            model_name='fornecedor',
-            name='ramo_atividade',
-            field=models.ForeignKey(verbose_name='Ramo de Atividade', to='base.RamoAtividade'),
+            model_name='documentosolicitacao',
+            name='solicitacao',
+            field=models.ForeignKey(verbose_name='Solicita\xe7\xe3o', to='base.SolicitacaoLicitacao'),
         ),
         migrations.AddField(
             model_name='contrato',

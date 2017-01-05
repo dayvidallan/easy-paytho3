@@ -218,7 +218,7 @@ class SolicitacaoLicitacao(models.Model):
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
 
     def __unicode__(self):
-        return self.num_memorando
+        return u'Solicitação N°: %s' % self.num_memorando
 
     class Meta:
         verbose_name = u'Solicitação de Licitação'
@@ -776,6 +776,8 @@ class ItemLote(models.Model):
 
 
 
+def upload_path_termo_homologacao(instance, filename):
+    return os.path.join('upload/homologacoes/%s/' % instance.id, filename)
 
 class Pregao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -811,6 +813,7 @@ class Pregao(models.Model):
     data_homologacao = models.DateField(u'Data da Homologação', null=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True)
     eh_ata_registro_preco = models.BooleanField(u'Ata de Registro de Preço?', default=True)
+    arquivo_homologacao = models.FileField(u'Termo de Homologação', null=True, upload_to=upload_path_termo_homologacao)
     #cabecalho_ata = RichTextField(u'Cabeçalho da Ata de Registro de Preço', null=True, blank=True)
 
     class Meta:
@@ -1453,7 +1456,8 @@ class Contrato(models.Model):
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
     usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
 
-
+    def __unicode__(self):
+        return 'Contrato N° %s' % (self.numero)
 
     def get_situacao(self):
         if self.concluido:

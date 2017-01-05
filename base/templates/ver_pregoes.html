@@ -64,7 +64,7 @@
                            {% endif %}
                            {% if eh_ordenador_despesa and pregao.data_adjudicacao %}
                                 <a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a>
-                                {% if not pregao.data_homologacao %}
+                                {% if not pregao.arquivo_homologacao %}
                                     <a class="btn btn-success btn-sm" href="/registrar_homologacao/{{pregao.id}}/">Homologar</a>
                                 {% endif %}
                            {% endif %}

@@ -628,14 +628,14 @@
                 {% if not pregao.data_adjudicacao %}
                     <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
                 {% else %}
-                    <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info">Ver Termo de Adjudicação</a>
+                    <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
                 {% endif %}
             </fieldset>
             <br>
             <fieldset>
                 <legend>Homologação</legend>
-                {% if pregao.data_homologacao %}
-                    <a href="/base/termo_homologacao/{{ pregao.pk }}/" class="btn btn-default">Ver Termo de Homologação</a>
+                {% if pregao.arquivo_homologacao %}
+                    <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-default" target="_blank">Ver Termo de Homologação</a>
                 <br><br>
                 Ordenador de Despesa: {{ pregao.ordenador_despesa }}
                 {% elif pregao.data_adjudicacao %}

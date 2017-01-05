@@ -260,12 +260,12 @@ class Command(BaseCommand):
         ordenador.save()
 
 
-        empresa1 = Fornecedor.objects.get_or_create(cnpj=u'01.111.2345/0001-89', razao_social=u'Empresa 1',endereco=u'Endereco da empresa 1',ramo_atividade=ramo1)[0]
-        empresa2 = Fornecedor.objects.get_or_create(cnpj=u'02.222.253/0001-90', razao_social=u'Empresa 2',endereco=u'Endereco da empresa 2',ramo_atividade=ramo1)[0]
-        empresa3 = Fornecedor.objects.get_or_create(cnpj=u'03.333.253/0001-90', razao_social=u'Empresa 3',endereco=u'Endereco da empresa 3',ramo_atividade=ramo1)[0]
-        empresa4 = Fornecedor.objects.get_or_create(cnpj=u'04.444.253/0001-90', razao_social=u'Empresa 4',endereco=u'Endereco da empresa 4',ramo_atividade=ramo2)[0]
-        empresa5 = Fornecedor.objects.get_or_create(cnpj=u'05.555.253/0001-90', razao_social=u'Empresa 5',endereco=u'Endereco da empresa 5',ramo_atividade=ramo2)[0]
-        empresa6 = Fornecedor.objects.get_or_create(cnpj=u'06.666.253/0001-90', razao_social=u'Empresa 6',endereco=u'Endereco da empresa 6',ramo_atividade=ramo2)[0]
+        empresa1 = Fornecedor.objects.get_or_create(cnpj=u'01.111.2345/0001-89', razao_social=u'Empresa 1',endereco=u'Endereco da empresa 1', telefones=u'(84)99875-2558', email=u'emailempresa1@email.com')[0]
+        empresa2 = Fornecedor.objects.get_or_create(cnpj=u'02.222.253/0001-90', razao_social=u'Empresa 2',endereco=u'Endereco da empresa 2', telefones=u'(84)93215-2000', email=u'emailempresa2@email.com')[0]
+        empresa3 = Fornecedor.objects.get_or_create(cnpj=u'03.333.253/0001-90', razao_social=u'Empresa 3',endereco=u'Endereco da empresa 3', telefones=u'(84)94995-2589', email=u'emailempresa3@email.com')[0]
+        empresa4 = Fornecedor.objects.get_or_create(cnpj=u'04.444.253/0001-90', razao_social=u'Empresa 4',endereco=u'Endereco da empresa 4')[0]
+        empresa5 = Fornecedor.objects.get_or_create(cnpj=u'05.555.253/0001-90', razao_social=u'Empresa 5',endereco=u'Endereco da empresa 5')[0]
+        empresa6 = Fornecedor.objects.get_or_create(cnpj=u'06.666.253/0001-90', razao_social=u'Empresa 6',endereco=u'Endereco da empresa 6')[0]
 
         # solicitacao1= SolicitacaoLicitacao.objects.get_or_create(num_memorando=u'123/DI_RN', objeto=u'Objeto da licitacao 1', objetivo=u'Objetivo da licit. 1', justificativa=u'Justificativa da licitacao 1', data_cadastro=datetime.datetime.now())[0]
         # item1sol1 = ItemSolicitacaoLicitacao.objects.get_or_create(codigo=u'134', solicitacao=solicitacao1,item=u'1', especificacao=u'Especificacaodo item 1', unidade=uni1, quantidade=100, valor_medio=10.50, total=1050.00)[0]

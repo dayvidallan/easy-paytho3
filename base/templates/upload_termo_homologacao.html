@@ -5,14 +5,13 @@
     {% block breadcrumbs_class %}administracao{% endblock %}
     {% block breadcrumbs %}
         <a href="/">Início <i class="fa fa-angle-right"></i></a>
-        <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
-        <a href="/base/itens_solicitacao/{{pesquisa.solicitacao.id}}/">{{ pesquisa.solicitacao }}<i class="fa fa-angle-right"></i></a>
+        <a href="/base/ver_pregoes/">Licitações <i class="fa fa-angle-right"></i></a>
         <a href="javascript:void(0);">{{ title }}</a>
     {% endblock %}
 {% endif %}
 {% block content %}
-        <p class="alert alert-info"> Faça o download do documento, assine e faça o envio pelo formulário abaixo. Informe a validade da proposta.</p>
-        <a href="/base/imprimir_pesquisa/{{ pesquisa.id }}/" target="_blank">Baixar Documento</a>
+        <p class="alert alert-info"> Faça o download do documento, assine e envie pelo formulário abaixo.</p>
+        <a href="/base/termo_homologacao/{{ pregao.pk }}/" target="_blank">Baixar Documento</a>
         <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">

@@ -123,6 +123,7 @@ urlpatterns = patterns('base.views',
     url(r'^lista_documentos/(?P<solicitacao_id>\d+)/$', views.lista_documentos, name='lista_documentos'),
     url(r'^cadastrar_documento/(?P<solicitacao_id>\d+)/$', views.cadastrar_documento, name='cadastrar_documento'),
     url(r'^editar_pregao/(?P<pregao_id>\d+)/$', views.editar_pregao, name='editar_pregao'),
+    url(r'^upload_termo_homologacao/(?P<pregao_id>\d+)/$', views.upload_termo_homologacao, name='upload_termo_homologacao'),
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),

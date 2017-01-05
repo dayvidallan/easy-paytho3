@@ -15,7 +15,7 @@ def preenche_base(apps, schema_editor):
 
 
     modalidade = ModalidadePregao.objects.get_or_create(nome=u'Pregão Presencial')[0]
-    #modalidade = ModalidadePregao.objects.get_or_create(nome=u'Pregão Eletrônico')[0]
+    #modalidade = ModalidadePregao.objects.get_or_create(nome=u'PregÃ£o EletrÃ´nico')[0]
     modalidade = ModalidadePregao.objects.get_or_create(nome=u'Carta Convite')[0]
     modalidade = ModalidadePregao.objects.get_or_create(nome=u'Tomada de Preço')[0]
     modalidade = ModalidadePregao.objects.get_or_create(nome=u'Concorrência Pública')[0]
@@ -50,7 +50,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(preenche_base),
     ]
-
 
 
 

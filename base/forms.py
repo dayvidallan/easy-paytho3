@@ -120,7 +120,12 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
 
 class CadastraPrecoParticipantePregaoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(ParticipantePregao.objects, label=u'Fornecedor', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
+    preencher = forms.BooleanField(label=u'Preencher Manualmente', initial=False)
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
+
+    class Media:
+            js = ['/static/base/js/propostapregao.js']
+
     def __init__(self, *args, **kwargs):
         self.pregao = kwargs.pop('pregao',None)
         super(CadastraPrecoParticipantePregaoForm, self).__init__(*args, **kwargs)
@@ -570,3 +575,8 @@ class FornecedorForm(forms.ModelForm):
         model = Fornecedor
         fields = ('__all__')
 
+
+class UploadTermoHomologacaoForm(forms.ModelForm):
+    class Meta:
+        model = Pregao
+        fields = ('arquivo_homologacao',)

@@ -356,7 +356,7 @@ def lances_rodada_pregao(request, rodada_id, item_id):
 
     rodada = get_object_or_404(RodadaPregao, pk= rodada_id)
 
-    title=u'Rodada %s do Pregão %s' % (rodada.rodada, rodada.pregao)
+    title=u'Rodada %s do %s' % (rodada.rodada, rodada.pregao)
     lances_rodadas = LanceItemRodadaPregao.objects.filter(rodada=rodada).order_by('item')
     return render_to_response('lances_rodada_pregao.html', locals(), RequestContext(request))
 
@@ -1112,7 +1112,7 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
 @login_required()
 def cadastrar_anexo_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title=u'Cadastrar Anexo - Pregão N° %s' % pregao
+    title=u'Cadastrar Anexo - %s' % pregao
     form = AnexoPregaoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         o = form.save(False)
@@ -1212,7 +1212,7 @@ def editar_proposta(request, proposta_id):
 @login_required()
 def encerrar_pregao(request, pregao_id, motivo):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title=u'Alterar Situação do Pregão %s' % pregao
+    title=u'Alterar Situação - %s' % pregao
     form = EncerrarPregaoForm(request.POST or None, instance=pregao)
     if form.is_valid():
         o = form.save(False)
@@ -1268,7 +1268,7 @@ def encerrar_itempregao(request, item_id, motivo, origem):
 @login_required()
 def suspender_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title=u'Suspender Pregão N° %s' % pregao
+    title=u'Suspender - %s' % pregao
     if 'retomar' in request.GET:
         pregao.situacao = Pregao.CADASTRADO
         pregao.save()
@@ -2088,7 +2088,7 @@ def imprimir_capa_processo(request, processo_id):
 @login_required()
 def criar_lote(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title= u'Pregão %s - Cadastrar Novo Lote' % pregao
+    title= u'%s - Cadastrar Novo Lote' % pregao
     form = CriarLoteForm(request.POST or None, pregao=pregao)
     if form.is_valid():
         ids = list()
@@ -2338,7 +2338,7 @@ def aprovar_todos_pedidos_secretaria(request, solicitacao_id, secretaria_id):
 def novo_pedido_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
-    title=u'Novo Pedido de Compra - %s' % pregao.num_pregao
+    title=u'Novo Pedido de Compra - %s' % pregao
     form = NovoPedidoCompraForm(request.POST or None)
     if form.is_valid():
         o = form.save(False)
@@ -2668,8 +2668,8 @@ def registrar_homologacao(request, pregao_id):
         novo_contrato.data_inicio = o.data_homologacao
         novo_contrato.save()
 
-        messages.success(request, u'Data de homologação registrada com sucesso. %s' % o.situacao)
-        return HttpResponseRedirect(u'/base/ver_pregoes/')
+        messages.success(request, u'Data de homologação registrada com sucesso. Prossiga com o envio do termo assinado')
+        return HttpResponseRedirect(u'/base/upload_termo_homologacao/%s/' % pregao.id)
     return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
 
@@ -3031,3 +3031,15 @@ def editar_pregao(request, pregao_id):
         return HttpResponseRedirect(u'/base/ver_pregoes/')
 
     return render_to_response('editar_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def upload_termo_homologacao(request, pregao_id):
+    title=u'Enviar Termo de Homologação'
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    form = UploadTermoHomologacaoForm(request.POST or None, request.FILES or None, instance=pregao)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Termo de Homologação cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_pregoes/')
+
+    return render_to_response('upload_termo_homologacao.html', locals(), context_instance=RequestContext(request))

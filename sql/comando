@@ -25,6 +25,8 @@ CNTRL + D
 
 su root
 
+pip install -U -r deploy/requiremensts.txt
+
 ./manage.py sync
 
 ./manage.py criar_base_teste

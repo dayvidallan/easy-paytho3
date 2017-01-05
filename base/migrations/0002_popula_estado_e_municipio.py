@@ -5220,7 +5220,7 @@ INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (2759, '355590',
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (2451, '270440', 'MAJOR ISIDORO', 6);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (2997, '293320', 'VERA CRUZ', 9);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (549, '250350', 'CACIMBA DE DENTRO', 19);
-INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (5610, '422000', 'Balneário Rincão', 28);
+INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (5610, '422000', 'BalneÃ¡rio RincÃ£o', 28);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (3474, '351420', 'DOLCINOPOLIS', 30);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (1579, '240160', 'BENTO FERNANDES', 1);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (2001, '171830', 'PRAIA NORTE', 31);
@@ -5646,5 +5646,4 @@ INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (5486, '521710',
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (3143, '431820', 'SAO FRANCISCO DE PAULA', 2);
         ''')
     ]
-
 
