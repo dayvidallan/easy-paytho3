@@ -829,8 +829,14 @@ class Pregao(models.Model):
     def eh_suspenso(self):
         return self.situacao in [Pregao.SUSPENSO]
 
+    def eh_pregao(self):
+        return self.modalidade.nome == u'Pregão Presencial'
+
     def tem_resultado(self):
         return ResultadoItemPregao.objects.filter(item__solicitacao=self.solicitacao).exists()
+
+    def tem_proposta(self):
+        return PropostaItemPregao.objects.filter(pregao=self).exists()
 
     def tem_item_sem_lote(self):
         itens_em_lotes = ItemLote.objects.filter(item__solicitacao=self.solicitacao)
@@ -854,6 +860,20 @@ class Pregao(models.Model):
                 total = total + item.get_total_lance_ganhador()
         return total
 
+    def get_vencedora_global(self):
+        if ResultadoItemPregao.objects.filter(participante__pregao=self, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
+            return ResultadoItemPregao.objects.filter(participante__pregao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0].participante.fornecedor
+        return None
+
+    def get_total_global(self):
+        total = 0
+        if ResultadoItemPregao.objects.filter(participante__pregao=self, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
+            for resultado in ResultadoItemPregao.objects.filter(participante__pregao=self, situacao=ResultadoItemPregao.CLASSIFICADO):
+                total += resultado.valor * resultado.item.quantidade
+
+        return total
+
+
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
@@ -872,7 +892,7 @@ class ItemPregao(models.Model):
         return u'%s - %s' % (self.material, self.pregao)
 
 class Fornecedor(models.Model):
-    cnpj = models.CharField(u'CNPJ/CPF', max_length=255, help_text=u'Utilize pontos e traços.')
+    cnpj = models.CharField(u'CNPJ/CPF', max_length=255, help_text=u'Utilize pontos e traços.', unique=True)
     razao_social = models.CharField(u'Razão Social', max_length=255)
     endereco = models.CharField(u'Endereço', max_length=255)
     telefones = models.CharField(u'Telefones', max_length=300)

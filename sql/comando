@@ -25,7 +25,7 @@ CNTRL + D
 
 su root
 
-pip install -U -r deploy/requiremensts.txt
+pip install -U -r deploy/requirements.txt
 
 ./manage.py sync
 

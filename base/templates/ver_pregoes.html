@@ -62,10 +62,13 @@
                                <a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a>
                                <a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a>
                            {% endif %}
-                           {% if eh_ordenador_despesa and pregao.data_adjudicacao %}
-                                <a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a>
-                                {% if not pregao.arquivo_homologacao %}
-                                    <a class="btn btn-success btn-sm" href="/registrar_homologacao/{{pregao.id}}/">Homologar</a>
+                           {% if eh_ordenador_despesa and pregao.tem_resultado %}
+                                {% if pregao.eh_pregao and pregao.data_adjudicacao or not pregao.eh_pregao %}
+                                    <a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a>
+
+                                    {% if not pregao.arquivo_homologacao %}
+                                        <a class="btn btn-success btn-sm" href="/registrar_homologacao/{{pregao.id}}/">Homologar</a>
+                                    {% endif %}
                                 {% endif %}
                            {% endif %}
                        </td>

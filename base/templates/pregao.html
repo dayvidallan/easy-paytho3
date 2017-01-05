@@ -220,9 +220,11 @@
             <li>
                 <a href="#anexos">Anexos</a>
             </li>
-            <li>
-                <a href="#homologacao">Adjudicação e Homologação</a>
-            </li>
+            {% if pregao.eh_pregao %}
+                <li><a href="#homologacao">Adjudicação e Homologação</a></li>
+            {% else %}
+                <li><a href="#homologacao">Homologação e Adjudicação</a></li>
+            {% endif %}
             <!--<li>
                 <a href="#historico">Histórico</a>
             </li>-->
@@ -369,9 +371,9 @@
 
                         {% for lote in lotes %}
                             <h4>Lote {{ lote.item }}
-                            {% if pregao.eh_ativo and  lote.ativo and lote.tem_lance %}
+                            {% if pregao.eh_ativo and  lote.ativo and lote.tem_lance and pregao.eh_pregao %}
                                 <a class="btn btn-success btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
-                            {% elif pregao.eh_ativo and lote.tem_lance  %}
+                            {% elif pregao.eh_ativo and lote.tem_lance and pregao.eh_pregao  %}
                                 <a class="btn btn-default btn-sm" href="/base/lances_item/{{ lote.id }}/" class="is_popup" title="Lances">Ver Lances</a>
                             {% endif %}
                             </h4>
@@ -428,9 +430,9 @@
                                     <td>
                                         <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
 
-                                        {% if pregao.eh_ativo and  item.ativo %}
+                                        {% if pregao.eh_ativo and  item.ativo and pregao.eh_pregao %}
                                             <a class="btn btn-success btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Registrar Lances</a>
-                                        {% elif pregao.eh_ativo %}
+                                        {% elif pregao.eh_ativo and pregao.eh_pregao %}
                                             <a class="btn btn-default btn-sm" href="/base/lances_item/{{ item.id }}/" class="is_popup" title="Lances">Ver Lances</a>
                                         {% endif %}
                                     </td>
@@ -450,6 +452,15 @@
         </div>
         <div id="classificacao" class="tab-pane">
             <h2>Resultado do Pregão</h2>
+            {% if not pregao.eh_pregao and not pregao.tem_resultado %}
+                {% if pregao.tem_proposta %}
+                    <div class="pull-right">
+                        <a href="/base/gerar_resultado_licitacao/{{ pregao.id }}/" class="btn btn-success">Gerar Resultado</a>
+                    </div>
+                {% else %}
+                    <p class="alert alert-warning">Nenhuma proposta cadastrada.</p>
+                {% endif %}
+            {% endif %}
             {%  if pregao.solicitacao.itemsolicitacaolicitacao_set.exists %}
                 <form action="." method="post" class="form-horizontal">
                     {% csrf_token %}
@@ -623,28 +634,32 @@
 
         </div>
         <div id="homologacao" class="tab-pane">
-            <fieldset>
-                <legend>Adjudicação</legend>
-                {% if not pregao.data_adjudicacao %}
-                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
-                {% else %}
-                    <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
-                {% endif %}
-            </fieldset>
-            <br>
-            <fieldset>
-                <legend>Homologação</legend>
-                {% if pregao.arquivo_homologacao %}
-                    <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-default" target="_blank">Ver Termo de Homologação</a>
-                <br><br>
-                Ordenador de Despesa: {{ pregao.ordenador_despesa }}
-                {% elif pregao.data_adjudicacao %}
-                    <p class="alert alert-info">Aguardando a Homologação pelo ordenador de despesas.</p>
-                {% else %}
-                    <p class="alert alert-info">Aguardando Adjudicação.</p>
-                {% endif %}
+            {% if pregao.eh_pregao %}
+                <fieldset>
+                    <legend>Adjudicação</legend>
+                    {% if not pregao.data_adjudicacao %}
+                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
+                    {% else %}
+                        <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
+                    {% endif %}
+                </fieldset>
+                <br>
+                <fieldset>
+                    <legend>Homologação</legend>
+                    {% if pregao.arquivo_homologacao %}
+                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-default" target="_blank">Ver Termo de Homologação</a>
+                    <br><br>
+                    Ordenador de Despesa: {{ pregao.ordenador_despesa }}
+                    {% elif pregao.data_adjudicacao %}
+                        <p class="alert alert-info">Aguardando a Homologação pelo ordenador de despesas.</p>
+                    {% else %}
+                        <p class="alert alert-info">Aguardando Adjudicação.</p>
+                    {% endif %}
 
-            </fieldset>
+                </fieldset>
+            {% else %}
+
+            {% endif %}
 
         </div>
         <div id="anexos" class="tab-pane">
@@ -731,9 +746,11 @@
                         <tr>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
                         </tr>
-                        <tr>
-                            <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>
-                        </tr>
+                        {% if pregao.eh_pregao and pregao.tem_lance_registrado %}
+                            <tr>
+                                <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>
+                            </tr>
+                        {% endif %}
                         {%  if pregao.tem_resultado %}
                             <tr>
                                 <td><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a></td>

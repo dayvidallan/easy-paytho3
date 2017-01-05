@@ -161,7 +161,7 @@ def pregao(request, pregao_id):
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
-    title = u'%s N° %s' % (pregao.modalidade, pregao)
+    title = u'%s ' % pregao
     if eh_lote:
         lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
@@ -2723,8 +2723,11 @@ def termo_homologacao(request, pregao_id):
 
 
     data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
+    if pregao.eh_pregao():
+        template = get_template('termo_homologacao.html')
+    else:
+        template = get_template('termo_homologacao_e_adjudicacao.html')
 
-    template = get_template('termo_homologacao.html')
 
     html  = template.render(Context(data))
 
@@ -3043,3 +3046,38 @@ def upload_termo_homologacao(request, pregao_id):
         return HttpResponseRedirect(u'/base/ver_pregoes/')
 
     return render_to_response('upload_termo_homologacao.html', locals(), context_instance=RequestContext(request))
+
+
+@login_required()
+def gerar_resultado_licitacao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    # itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
+    # for item in itens:
+    #     item.gerar_resultado()
+
+    tabela = {}
+    for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+        chave= '%s' %  proposta.participante.id
+        tabela[chave] = dict(total = 0)
+    for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+        chave= '%s' %  proposta.participante.id
+
+        tabela[chave]['total'] += proposta.valor
+    resultado = collections.OrderedDict(sorted(tabela.items()),  key=lambda x: x[1])
+    fornecedor = ParticipantePregao.objects.get(id=resultado.items()[0][0])
+
+    itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor)
+
+    for item in itens:
+        novo_resultado = ResultadoItemPregao()
+        novo_resultado.item = item.item
+        novo_resultado.participante = fornecedor
+        novo_resultado.valor = item.valor
+        novo_resultado.marca = item.marca
+        novo_resultado.ordem = 1
+        novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+        novo_resultado.save()
+
+
+    messages.success(request, u'Resultado gerado com sucesso.')
+    return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)

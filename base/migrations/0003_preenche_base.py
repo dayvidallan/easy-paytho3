@@ -14,11 +14,13 @@ def preenche_base(apps, schema_editor):
     grupo_protocolo = Group.objects.get_or_create(name=u'Protocolo')[0]
 
 
-    modalidade = ModalidadePregao.objects.get_or_create(nome=u'Pregão Presencial')[0]
+
     #modalidade = ModalidadePregao.objects.get_or_create(nome=u'PregÃ£o EletrÃ´nico')[0]
     modalidade = ModalidadePregao.objects.get_or_create(nome=u'Carta Convite')[0]
-    modalidade = ModalidadePregao.objects.get_or_create(nome=u'Tomada de Preço')[0]
     modalidade = ModalidadePregao.objects.get_or_create(nome=u'Concorrência Pública')[0]
+    modalidade = ModalidadePregao.objects.get_or_create(nome=u'Concurso')[0]
+    modalidade = ModalidadePregao.objects.get_or_create(nome=u'Pregão Presencial')[0]
+    modalidade = ModalidadePregao.objects.get_or_create(nome=u'Tomada de Preço')[0]
 
     criterio1 = CriterioPregao.objects.get_or_create(nome=u'Por Item')[0]
     criterio2 = CriterioPregao.objects.get_or_create(nome=u'Por Lote')[0]
