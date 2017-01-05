@@ -1,6 +1,7 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
+{% load pagination_tags %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
@@ -164,10 +165,10 @@
     {% endif %}
     <div>
         <ul class="nav nav-tabs">
-             <li class="active">
+             <li class="{{class_aba1}}">
                 <a data-toggle="tab" href="#outras_secretarias">Todas as Solicitações</a>
             </li>
-            <li >
+            <li class="{{class_aba2}}">
                 <a data-toggle="tab" href="#propria_secretaria">Solicitações no Meu Setor</a>
             </li>
 
@@ -176,29 +177,29 @@
     </div>
     <div class="tab-content">
 
-        <div id="outras_secretarias" class="tab-pane  in active">
+        <div id="outras_secretarias" class="tab-pane {{aba1}}">
             {% if form %}
-            <fieldset>
-                <legend>Buscar Solicitações</legend>
-                <form action="." method="POST" class="form-horizontal">
-                    {% csrf_token %}
-                     <div class="miolo">
-                        <div class="row-fluid">
-                            <div class="col-xs-4">
+                <fieldset>
+                    <legend>Buscar Solicitações</legend>
+                    <form action="." method="POST" class="form-horizontal">
+                        {% csrf_token %}
+                         <div class="miolo">
+                            <div class="row-fluid">
+                                <div class="col-xs-4">
 
-                                {{ form|bootstrap }}
+                                    {{ form|bootstrap }}
+                                </div>
+
+                                <div class="col-xs-6">
+                                    <br>
+                                    <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+
+                                </div>
                             </div>
+                         </div>
+                    </form>
 
-                            <div class="col-xs-6">
-                                <br>
-                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
-
-                            </div>
-                        </div>
-                     </div>
-                </form>
-
-            </fieldset>
+                </fieldset>
             {% endif %}
             {% if outras.exists %}
                 <fieldset>
@@ -253,7 +254,7 @@
                 <p class="alert alert-info">Nenhuma solicitação.</p>
             {% endif %}
         </div>
-        <div id="propria_secretaria" class="tab-pane">
+        <div id="propria_secretaria" class="tab-pane {{aba2}}">
 
 
             {% if solicitacoes.exists %}
@@ -276,6 +277,8 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% autopaginate solicitacoes 10 %}
+                            {% paginate %}
                             {% for solicitacao in solicitacoes %}
                                <tr>
 

@@ -260,11 +260,6 @@ class Command(BaseCommand):
         ordenador.save()
 
 
-
-
-        ramo1 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 1')[0]
-        ramo2 = RamoAtividade.objects.get_or_create(nome=u'Ramo de Atividade 2')[0]
-
         empresa1 = Fornecedor.objects.get_or_create(cnpj=u'01.111.2345/0001-89', razao_social=u'Empresa 1',endereco=u'Endereco da empresa 1',ramo_atividade=ramo1)[0]
         empresa2 = Fornecedor.objects.get_or_create(cnpj=u'02.222.253/0001-90', razao_social=u'Empresa 2',endereco=u'Endereco da empresa 2',ramo_atividade=ramo1)[0]
         empresa3 = Fornecedor.objects.get_or_create(cnpj=u'03.333.253/0001-90', razao_social=u'Empresa 3',endereco=u'Endereco da empresa 3',ramo_atividade=ramo1)[0]

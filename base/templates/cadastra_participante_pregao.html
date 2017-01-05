@@ -12,7 +12,7 @@
 {% block content %}
 
         <div class="pull-right">
-          <a class="btn btn-success" href="/admin/base/fornecedor/add/">Cadastrar Fornecedor</a>
+          <a class="btn btn-success" href="/base/cadastrar_fornecedor/{{pregao.id}}/">Cadastrar Fornecedor</a>
         </div>
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}

@@ -171,27 +171,21 @@
 
 
 {% block content %}
-    <h4>Informações do Pregão</h4>
-    <div style="width:50%; float:left; position:absolute;">
+    <table class="table table-bordered table-condensed table-striped">
+        <tr>
+            <th><b>Memorando N°</b></th><td><a href="/base/itens_solicitacao/{{pregao.solicitacao.id}}/">{{ pregao.solicitacao.num_memorando }}</a></td>
+            <th><b>Situação</b></th><td>{{ pregao.situacao }}</td>
+            <th><b>Critério</b></th><td>{{ pregao.criterio }}</td>
+        </tr>
+        <tr>
+            <th><b>Processo N°</b></th><td>{{ pregao.solicitacao.processo|default_if_none:"-" }}</td>
+            <th><b>Tipo de Pregão</b></th><td>{{ pregao.tipo }}</td>
+            <th><b>Sessão Inicial</b></th><td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura}}</td>
+        </tr>
 
-        <table class="table table-bordered table-condensed table-striped">
-            <tr>
-                <th><b>Memorando N°</b></th><td><a href="/base/itens_solicitacao/{{pregao.solicitacao.id}}/">{{ pregao.solicitacao.num_memorando }}</a></td>
-                <th><b>Situação</b></th><td>{{ pregao.situacao }}</td>
-                <th><b>Critério</b></th><td>{{ pregao.criterio }}</td>
-            </tr>
-            <tr>
-                <th><b>Processo N°</b></th><td>{{ pregao.num_processo }}</td>
-                <th><b>Tipo de Pregão</b></th><td>{{ pregao.tipo }}</td>
-                <th><b>Sessão Inicial</b></th><td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura}}</td>
-            </tr>
-            <tr>
+    </table>
 
-
-            </tr>
-        </table>
-    </div>
-    <br><br><br><br>
+    <br>
      <div class="pull-right">
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
             <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
@@ -339,7 +333,7 @@
                                         {% if pregao.eh_ativo %}
                                             <a href="/admin/base/participantepregao/{{ item.id }}/" class="btn btn-info btn-sm">Editar</a>
                                             {% if item.pode_remover %}
-                                                <a href="/admin/base/participantepregao/{{ item.id }}/delete" class="btn btn-danger btn-sm">Remover</a>
+                                                <a href="/base/remover_participante_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Remover</a>
                                             {% endif %}
                                             {% if not item.desclassificado %}
                                                 <a href="/base/desclassificar_do_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Desclassificar</a>
@@ -494,8 +488,12 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            {% if item.tem_empate %}
-                                                <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</font>
+                                            {% if item.tem_empate or item.ganhou_com_valor_acima %}
+                                                <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
+                                                {% if item.ganhou_com_valor_acima %}
+                                                    <br>* Venceu com valor acima do valor máximo.
+                                                {% endif %}
+                                                </font>
                                             {% else %}
                                                 {{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
@@ -583,8 +581,12 @@
                                             <td>{{ item.get_total_lance_ganhador|format_money }}</td>
                                         {% endif %}
                                         <td>
-                                            {% if item.tem_empate %}
-                                                <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</font>
+                                            {% if item.tem_empate or item.ganhou_com_valor_acima %}
+                                                <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
+                                                {% if item.ganhou_com_valor_acima %}
+                                                    <br>* Venceu com valor acima do valor máximo.
+                                                {% endif %}
+                                                </font>
                                             {% else %}
                                                 {{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
@@ -593,6 +595,10 @@
                                             {% if pregao.eh_ativo %}
                                                 {% if item.tem_resultado %}
                                                     <a class="btn btn-info btn-sm" href="/base/resultado_classificacao/{{ item.id }}/"  title="Classificação">Classificação Completa</a>
+                                                    {% if item.ganhou_com_valor_acima %}
+                                                        <a href="/base/encerrar_itempregao/{{ item.id }}/2/2/" class="btn btn-danger btn-sm">Fracassado</a>
+                                                    {% endif%}
+
                                                 {% elif item.pode_gerar_resultado %}
                                                     <a href="/base/gerar_resultado/{{ item.id }}/" class="btn btn-success btn-sm">Gerar Resultados</a>
                                                 {% else %}

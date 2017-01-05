@@ -1,6 +1,7 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
+{% load pagination_tags %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
@@ -22,7 +23,7 @@
 {% block content %}
 
         <div class="pull-right">
-            <a class="btn btn-success" href="/admin/base/fornecedor/add/">Cadastrar Fornecedor</a>
+            <a class="btn btn-success" href="/base/cadastrar_fornecedor/0/">Cadastrar Fornecedor</a>
             <a class="btn btn-primary" href="/">Voltar</a>
             <br><br>
         </div>
@@ -33,21 +34,28 @@
                     <tr>
                         <th>CNPJ</th>
                         <th>Razão Social</th>
-                        <th>Ramo de Atividade</th>
+                        <th>Endereço</th>
+                        <th>Telefones</th>
+                        <th>Email</th>
+                        <th>Dados Bancários</th>
                         <th>Opções</th>
 
                     </tr>
                 </thead>
                 <tbody>
+                    {% autopaginate fornecedores 20 %}
+                    {% paginate %}
                     {% for fornecedor in fornecedores %}
                        <tr>
 
                            <td>{{ fornecedor.cnpj }}</td>
                            <td>{{ fornecedor.razao_social }}</td>
-                           <td>{{ fornecedor.ramo_atividade }}</td>
+                           <td>{{ fornecedor.endereco }}</td>
+                           <td>{{ fornecedor.telefones }}</td>
+                           <td>{{ fornecedor.email }}</td>
+                           <td>{{ fornecedor.get_dados_bancarios|safe }}</td>
                            <td>
-                               <a class="btn btn-info btn-sm" href="/ver_fornecedores/{{fornecedor.id}}/">Visualizar</a>
-                               <a class="btn btn-default btn-sm" href="/admin/base/fornecedor/{{fornecedor.id}}/">Editar</a>
+                               <a class="btn btn-default btn-sm" href="/base/editar_fornecedor/{{fornecedor.id}}/">Editar</a>
                            </td>
                        </tr>
                     {% endfor %}

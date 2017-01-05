@@ -1,0 +1,84 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load bootstrap %}
+{% load pagination_tags %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitações/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">Solicitação {{ solicitacao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+    <br>
+    <div class="pull-right">
+        <a class="btn btn-success" href="/base/cadastrar_documento/{{solicitacao.id}}/">Cadastrar Documento</a>
+        <a class="btn btn-default" href="/base/itens_solicitacao/{{solicitacao.id}}/">Voltar</a>
+    </div>
+    <br>
+
+    <fieldset>
+        <legend>Modelos Padrão</legend>
+
+        <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Arquivo</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Modelo de Memorando</td>
+                    <td><a class="btn btn-info btn-sm" href="/memorando/{{solicitacao.id}}/">Ver Documento</a></td>
+                </tr>
+                <tr>
+                    <td>Modelo de Termo de Referência</td>
+                    <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/">Ver Documento</a></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </fieldset>
+
+    {% if documentos.exists %}
+        <fieldset>
+            <legend>Lista de Documentos</legend>
+
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Cadastrado Em</th>
+                        <th>Cadastrado Por</th>
+                        <th>Arquivo</th>
+                        <th>Opções</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% autopaginate documentos 10 %}
+                    {% paginate %}
+                    {% for documento in documentos %}
+                       <tr>
+                           <td>{{ documento.nome }}</td>
+                           <td>{{ documento.cadastrado_em }}</td>
+                           <td>{{ documento.cadastrado_por }}</td>
+                           <td><a class="btn btn-info btn-sm" href="/media/{{documento.documento}}">Ver Documento</a></td>
+                           <td>
+                               {% if documento.cadastrado_por == request.user %}
+                                <a class="btn btn-danger btn-sm" href="/base/apagar_documento/{{documento.id}}/">Apagar</a>
+                               {% endif %}
+                           </td>
+                       </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>
+    {% endif %}
+
+
+{% endblock %}

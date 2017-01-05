@@ -18,6 +18,11 @@
     </script>
 {% endblock %}
 {% block content %}
+    <div class="pull-right">
+        <a class="btn btn-info" href="/base/pregao/{{pregao.id}}/#propostas">Voltar</a>
+
+    </div>
+    <br><br>
     <p class="alert alert-info">Faça upload do arquivo com as propostas ou preencha os campos abaixo.</p>
      <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
@@ -34,7 +39,7 @@
 
                     </div>
 		        </div>
-                {% if not edicao %}
+                {% if not edicao and selecionou %}
                     <h3>Preencher Proposta Manualmente</h3>
                     <div>
                         <table class="table table-bordered table-condensed table-striped">
@@ -67,7 +72,7 @@
                     </div>
                 </div>
 
-                {% else %}
+                {% elif selecionou %}
                     <h3>Editar Proposta Manualmente</h3>
                     <div>
                         <table class="table table-bordered table-condensed table-striped">

@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # 'debug_toolbar',
     # Local apps
+    'pagination',
     'base',
 
 )
@@ -45,6 +46,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'pagination.middleware.PaginationMiddleware',
 )
 
 ROOT_URLCONF = 'licita.urls'

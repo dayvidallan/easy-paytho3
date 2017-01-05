@@ -1,19 +1,24 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
-{% load bootstrap static %}
+{% load bootstrap %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
-    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">Solicitação {{ solicitacao}} <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitações/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">Solicitação {{ solicitacao }}<i class="fa fa-angle-right"></i></a>
+    <a href="/base/lista_documentos/{{solicitacao.id}}/">Documentos<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
-{% block content %}
-        <div class="pull-right">
-            <a class="btn btn-info" href="/base/cadastrar_material/{{solicitacao.id}}/">Cadastrar Material</a>
+{% block extrajs %}
 
-    </div>
-        <form action="." method="post" class="form-horizontal">
+<script>
+$(function() {
+    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
+});
+</script>
+{% endblock %}
+{% block content %}
+        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">
 				<div class="row-fluid">
@@ -27,6 +32,7 @@
 
              </div>
         </form>
+
     </div>
 
 

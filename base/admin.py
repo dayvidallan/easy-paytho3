@@ -28,8 +28,7 @@ admin.site.register(ItemSolicitacaoLicitacao, ItemSolicitacaoLicitacaoAdmin)
 
 class FornecedorAdmin(NewModelAdmin):
 
-    list_display = ('get_opcoes', 'cnpj', 'razao_social')
-    list_filter = ('ramo_atividade',)
+    list_display = ('get_opcoes', 'cnpj', 'razao_social','telefones', 'email')
 
     def get_opcoes(self, obj):
         return u'<a href="/base/fornecedor/%s/">Visualizar </a>' % obj.id
@@ -52,7 +51,7 @@ admin.site.register(Fornecedor, FornecedorAdmin)
 
 class PregaoAdmin(NewModelAdmin):
     form = PregaoForm
-    list_display = ('num_processo', 'solicitacao', 'modalidade', 'tipo','data_abertura', 'local', 'get_opcoes')
+    list_display = ('solicitacao', 'modalidade', 'tipo','data_abertura', 'local', 'get_opcoes')
     ordering = ('solicitacao',)
     list_filter = ('solicitacao', 'modalidade', 'tipo')
 
@@ -165,13 +164,6 @@ class SolicitacaoLicitacaoAdmin(NewModelAdmin):
 
 admin.site.register(SolicitacaoLicitacao,SolicitacaoLicitacaoAdmin)
 
-class RamoAtividadeAdmin(NewModelAdmin):
-    list_display = ('nome',)
-    ordering = ('nome',)
-    list_filter = ('nome',)
-
-
-admin.site.register(RamoAtividade, RamoAtividadeAdmin)
 
 class SecretariaAdmin(NewModelAdmin):
     list_display = ('nome','responsavel')
@@ -262,17 +254,3 @@ class ConfiguracaoAdmin(NewModelAdmin):
     list_filter = ('nome',)
 
 admin.site.register(Configuracao, ConfiguracaoAdmin)
-
-class DotacaoOrcamentariaAdmin(NewModelAdmin):
-    form = DotacaoOrcamentariaForm
-    list_display = ('projeto_atividade_num',)
-
-    def response_add(self, request, obj):
-        self.message_user(request, u'Dotação %s cadastrado com sucesso.' % obj, level=messages.SUCCESS)
-        tt = "%s_solicitacao" % (request.user.pessoafisica.id)
-        if request.session.get(tt):
-            return HttpResponseRedirect('/base/gerar_ordem_compra/%s/' % request.session.get(tt))
-        return super(DotacaoOrcamentariaAdmin, self).response_add(request, obj)
-
-
-admin.site.register(DotacaoOrcamentaria, DotacaoOrcamentariaAdmin)

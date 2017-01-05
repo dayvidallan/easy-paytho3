@@ -15,7 +15,7 @@ from django.template import Context
 from django.template.loader import get_template
 from django.template import RequestContext
 from xhtml2pdf import pisa
-from django.db.models import Q
+from django.db.models import Q, F
 from dal import autocomplete
 from django.contrib.auth.models import Group
 from templatetags.app_filters import format_money
@@ -103,7 +103,7 @@ def index(request):
     if MovimentoSolicitacao.objects.filter(setor_destino=request.user.pessoafisica.setor, recebido_por__isnull=True).exists():
         tem_solicitacao = MovimentoSolicitacao.objects.filter(setor_destino=request.user.pessoafisica.setor, recebido_por__isnull=True)[0]
     tem_preencher_itens = False
-    if SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False).exists():
+    if SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False, setor_atual=F('setor_origem')).exists():
         for item in SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False):
             if not ItemQuantidadeSecretaria.objects.filter(solicitacao=item, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True).exists():
                 tem_preencher_itens = item
@@ -161,7 +161,7 @@ def pregao(request, pregao_id):
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
-    title = u'Pregão N° %s' % pregao
+    title = u'%s N° %s' % (pregao.modalidade, pregao)
     if eh_lote:
         lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
@@ -519,6 +519,12 @@ def ver_pregoes(request):
     eh_ordenador_despesa = False
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
+
+    form = BuscarSolicitacaoForm(request.POST or None)
+
+    if form.is_valid():
+
+        pregoes = pregoes.filter(Q(solicitacao__processo__numero=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando=form.cleaned_data.get('info')))
     return render_to_response('ver_pregoes.html', locals(), RequestContext(request))
 
 @login_required()
@@ -579,10 +585,17 @@ def ver_solicitacoes(request):
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
     solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao__in=[SolicitacaoLicitacao.RECEBIDO, SolicitacaoLicitacao.EM_LICITACAO])).order_by('-data_cadastro')
     outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
-
+    aba1 = u''
+    aba2 = u'in active'
+    class_aba1 = u''
+    class_aba2 = u'active'
     form = BuscarSolicitacaoForm(request.POST or None)
 
     if form.is_valid():
+        aba1 = u'in active'
+        aba2 = u''
+        class_aba1 = u'active'
+        class_aba2 = u''
         outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
     return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
 
@@ -633,6 +646,55 @@ def cadastrar_solicitacao(request):
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
 
     return render_to_response('cadastrar_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_solicitacao(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    title=u'Editar Solicitação'
+    form = SolicitacaoForm(request.POST or None, instance=solicitacao, request=request)
+    if form.is_valid():
+        o = form.save(False)
+        o.setor_origem = request.user.pessoafisica.setor
+        o.setor_atual = request.user.pessoafisica.setor
+        o.data_cadastro = datetime.datetime.now()
+        o.cadastrado_por = request.user
+        if not form.cleaned_data['interessados']:
+            o.prazo_resposta_interessados = None
+        o.save()
+        if form.cleaned_data['interessados'] and form.cleaned_data['outros_interessados']:
+            form.save_m2m()
+        messages.success(request, u'Solicitação cadastrada com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
+
+    return render_to_response('cadastrar_pregao.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_material(request, solicitacao_id):
+    title=u'Cadastrar Material'
+    form = MaterialConsumoForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Material com sucesso.')
+        return HttpResponseRedirect(u'/base/cadastrar_item_solicitacao/%s/' % solicitacao_id)
+
+    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_documento(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    title=u'Cadastrar Documento'
+    form = DocumentoSolicitacaoForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.solicitacao = solicitacao
+        o.cadastrado_por = request.user
+        o.cadastrado_em = datetime.datetime.now()
+        o.save()
+        messages.success(request, u'Documento cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao_id)
+
+    return render_to_response('cadastrar_documento.html', locals(), RequestContext(request))
 
 @login_required()
 def enviar_para_licitacao(request, solicitacao_id):
@@ -707,7 +769,7 @@ def preencher_pesquisa_mercadologica(request, solicitacao_id):
 
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
 
-    form = PesquisaMercadologicaForm(request.POST or None, request=request)
+    form = PesquisaMercadologicaForm(request.POST or None, request=request, solicitacao=solicitacao)
     if form.is_valid():
         o = form.save(False)
         o.solicitacao = solicitacao
@@ -1173,7 +1235,7 @@ def encerrar_pregao(request, pregao_id, motivo):
     return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
-def encerrar_itempregao(request, item_id, motivo):
+def encerrar_itempregao(request, item_id, motivo, origem):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     title=u'Alterar Situação do Item %s' % item
     form = EncerrarItemPregaoForm(request.POST or None, instance=item)
@@ -1195,7 +1257,11 @@ def encerrar_itempregao(request, item_id, motivo):
             historico.save()
         o.save()
         messages.success(request, u'Item atualizado com sucesso.')
-        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+        if origem ==u'1':
+            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+        else:
+            return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
+
 
     return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
 
@@ -2736,6 +2802,15 @@ def cancelar_pedido_compra(request, solicitacao_id):
     return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
 
+@login_required()
+def lista_documentos(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    title = u'Lista de Documentos'
+    documentos = DocumentoSolicitacao.objects.filter(solicitacao=solicitacao)
+
+    return render_to_response('lista_documentos.html', locals(), RequestContext(request))
+
+
 def libreoffice_new_line(tokens, align_center='', font_size=17):
     if len(tokens)>1:
         if align_center:
@@ -2824,3 +2899,135 @@ def memorando(request, solicitacao_id):
     return response
 
 
+@login_required()
+def termo_referencia(request, solicitacao_id):
+    import tempfile
+    import zipfile
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+    municipio = None
+    if get_config():
+        municipio = get_config().municipio
+
+    itens = []
+    quantidades = []
+    unidades  = []
+    descricoes = []
+
+    for item in solicitacao.itemsolicitacaolicitacao_set.all():
+        itens.append(item)
+        quantidades.append(item.quantidade)
+        unidades.append(item.unidade)
+        descricoes.append(item.material.nome)
+
+    dicionario = {
+        '#NUM#' : solicitacao.num_memorando,
+        '#MUNICIPIO#' : municipio or u'-',
+        '#DATA#': datetime.date.today(),
+        '#OBJETIVO#': solicitacao.objetivo,
+        '#OBJETO#': solicitacao.objeto,
+        '#IT#': libreoffice_new_line(itens or '-'),
+        '#QUANT#': libreoffice_new_line(quantidades or '-'),
+        '#UN#': libreoffice_new_line(unidades or '-'),
+        '#DES#': libreoffice_new_line(descricoes or '-'),
+
+    }
+    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_referencia.docx'))
+    new_docx = zipfile.ZipFile('%s.docx' % tempfile.mktemp(), "a")
+
+    tmp_xml_file = open(template_docx.extract("word/document.xml", tempfile.mkdtemp()))
+    tempXmlStr = tmp_xml_file.read()
+    tmp_xml_file.close()
+    os.unlink(tmp_xml_file.name)
+
+    for key in dicionario.keys():
+        value = unicode(dicionario.get(key)).encode("utf8")
+        tempXmlStr = tempXmlStr.replace(key, value)
+
+    tmp_xml_file =  open(tempfile.mktemp(), "w+")
+    tmp_xml_file.write(tempXmlStr)
+    tmp_xml_file.close()
+
+    for arquivo in template_docx.filelist:
+        if not arquivo.filename == "word/document.xml":
+            new_docx.writestr(arquivo.filename, template_docx.read(arquivo))
+
+    new_docx.write(tmp_xml_file.name, "word/document.xml")
+
+    template_docx.close()
+    new_docx.close()
+    os.unlink(tmp_xml_file.name)
+
+
+    # Caso não seja informado, deverá retornar o caminho para o arquivo DOCX processado.
+    caminho_arquivo =  new_docx.filename
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
+    return response
+
+@login_required()
+def apagar_documento(request, documento_id):
+    documento = get_object_or_404(DocumentoSolicitacao, pk=documento_id)
+    solicitacao = documento.solicitacao.id
+    if request.user == documento.cadastrado_por:
+        documento.delete()
+
+        messages.success(request, u'Documento apagado com sucesso.')
+    return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao)
+
+@login_required()
+def editar_fornecedor(request, fornecedor_id):
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    title=u'Editar Fornecedor - %s' % fornecedor
+    form = FornecedorForm(request.POST or None, instance=fornecedor)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Fornecedor editado com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_fornecedores/')
+
+    return render_to_response('editar_fornecedor.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_fornecedor(request, opcao):
+    title=u'Cadastrar Fornecedor'
+    form = FornecedorForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+
+        messages.success(request, u'Fornecedor cadastrado com sucesso.')
+        if opcao == u'0':
+            return HttpResponseRedirect(u'/base/ver_fornecedores/')
+        else:
+            return HttpResponseRedirect(u'/base/cadastra_participante_pregao/%s/' % int(opcao))
+
+
+    return render_to_response('editar_fornecedor.html', locals(), RequestContext(request))
+
+
+@login_required()
+def remover_participante_pregao(request, participante_id):
+    participante = get_object_or_404(ParticipantePregao, pk=participante_id)
+    pregao = participante.pregao.id
+    participante.delete()
+    messages.success(request, u'Participante removido com sucesso.')
+    return HttpResponseRedirect(u'/base/pregao/%s/' % pregao)
+
+@login_required()
+def editar_pregao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    title = u'Editar %s' % pregao.modalidade
+    form = PregaoForm(request.POST or None, instance=pregao)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Licitação editada com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_pregoes/')
+
+    return render_to_response('editar_pregao.html', locals(), RequestContext(request))

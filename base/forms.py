@@ -133,22 +133,21 @@ class PregaoForm(forms.ModelForm):
 
      class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_pregao', 'num_processo', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_pregao', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
 
      def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PregaoForm, self).__init__(*args, **kwargs)
         if not self.instance.id:
             self.fields['solicitacao'] = forms.ModelChoiceField(label=u'Solicitação', queryset=SolicitacaoLicitacao.objects.filter(id=self.solicitacao.id), initial=0)
+        else:
+            del self.fields['solicitacao']
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_termino'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_abertura'].widget.attrs = {'class': 'vDateField'}
 
         if not self.instance.pk:
             self.fields['num_pregao'].initial = self.solicitacao.get_proximo_pregao()
-            if self.solicitacao.processo:
-                self.fields['num_processo'].initial = self.solicitacao.processo.numero
-
 
      def clean(self):
         if Pregao.objects.filter(solicitacao=self.solicitacao).exists():
@@ -188,7 +187,7 @@ class SolicitacaoForm(forms.ModelForm):
         self.fields['interessados'].queryset = Secretaria.objects.exclude(id=self.request.user.pessoafisica.setor.secretaria.id)
 
     def clean(self):
-        if self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando')).exists():
+        if not self.instance.pk and self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando')).exists():
             self.add_error('num_memorando', u'Já existe uma solicitação para este memorando.')
 
 class ItemSolicitacaoLicitacaoForm(forms.ModelForm):
@@ -229,9 +228,10 @@ class PesquisaMercadologicaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
+        self.solicitacao = kwargs.pop('solicitacao', None)
         super(PesquisaMercadologicaForm, self).__init__(*args, **kwargs)
         self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated() or (self.solicitacao.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]):
             self.fields['origem_opcao'] = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor')]), initial=True)
 
     def clean(self):
@@ -501,10 +501,13 @@ class ValorFinalItemLoteForm(forms.Form):
     valor = forms.DecimalField(label=u'Valor')
 
 class CriarOrdemForm(forms.ModelForm):
-    dotacao_orcamentaria = forms.ModelChoiceField(DotacaoOrcamentaria.objects, label=u'Dotação Orçamentária', required=False)
+    dotacao = forms.BooleanField(label=u'Preencher Dotação', initial=False)
     class Meta:
         model = OrdemCompra
-        fields = ('numero', 'data', 'dotacao_orcamentaria')
+        fields = ('numero', 'data', 'dotacao', 'projeto_atividade_num', 'projeto_atividade_descricao', 'programa_num', 'programa_descricao', 'fonte_num', 'fonte_descricao', 'elemento_despesa_num', 'elemento_despesa_descricao')
+
+    class Media:
+            js = ['/static/base/js/ordem.js']
 
     def __init__(self, *args, **kwargs):
         super(CriarOrdemForm, self).__init__(*args, **kwargs)
@@ -554,11 +557,16 @@ class AditivarContratoForm(forms.Form):
 
         self.fields['data_inicio'].initial = self.contrato.get_data_fim()
 
-class InvoiceForm(forms.Form):
-    FORMAT_CHOICES = (
-        ('pdf', 'PDF'),
-        ('docx', 'MS Word'),
-        ('html', 'HTML'),
-    )
-    format = forms.ChoiceField(choices=FORMAT_CHOICES)
-    #solicitacao = forms.ModelChoiceField(SolicitacaoLicitacao.objects, )
+
+
+class DocumentoSolicitacaoForm(forms.ModelForm):
+    class Meta:
+        model = DocumentoSolicitacao
+        fields = ('nome', 'documento')
+
+
+class FornecedorForm(forms.ModelForm):
+    class Meta:
+        model = Fornecedor
+        fields = ('__all__')
+

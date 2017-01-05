@@ -54,7 +54,7 @@ urlpatterns = patterns('base.views',
     url(r'^cancelar_rodada/(?P<item_id>\d+)/$', views.cancelar_rodada, name='cancelar_rodada'),
     url(r'^editar_proposta/(?P<proposta_id>\d+)/$', views.editar_proposta, name='editar_proposta'),
     url(r'^encerrar_pregao/(?P<pregao_id>\d+)/(?P<motivo>\d+)/$', views.encerrar_pregao, name='encerrar_pregao'),
-    url(r'^encerrar_itempregao/(?P<item_id>\d+)/(?P<motivo>\d+)/$', views.encerrar_itempregao, name='encerrar_itempregao'),
+    url(r'^encerrar_itempregao/(?P<item_id>\d+)/(?P<motivo>\d+)/(?P<origem>\d+)/$', views.encerrar_itempregao, name='encerrar_itempregao'),
     url(r'^suspender_pregao/(?P<pregao_id>\d+)/$', views.suspender_pregao, name='suspender_pregao'),
     url(r'^prazo_pesquisa_mercadologica/(?P<solicitacao_id>\d+)/$', views.prazo_pesquisa_mercadologica, name='prazo_pesquisa_mercadologica'),
     url(r'^resultado_alterar_todos/(?P<pregao_id>\d+)/(?P<participante_id>\d+)/(?P<situacao>\d+)/$', views.resultado_alterar_todos, name='resultado_alterar_todos'),
@@ -111,6 +111,18 @@ urlpatterns = patterns('base.views',
     url(r'^aditivar_contrato/(?P<contrato_id>\d+)/$', views.aditivar_contrato, name='aditivar_contrato'),
     url(r'^cancelar_pedido_compra/(?P<solicitacao_id>\d+)/$', views.cancelar_pedido_compra, name='cancelar_pedido_compra'),
     url(r'^memorando/(?P<solicitacao_id>\d+)/$', views.memorando, name='memorando'),
+    url(r'^termo_referencia/(?P<solicitacao_id>\d+)/$', views.termo_referencia, name='termo_referencia'),
+    url(r'^apagar_documento/(?P<documento_id>\d+)/$', views.apagar_documento, name='apagar_documento'),
+    url(r'^cadastrar_fornecedor/(?P<opcao>\d+)/$', views.cadastrar_fornecedor, name='cadastrar_fornecedor'),
+    url(r'^editar_fornecedor/(?P<fornecedor_id>\d+)/$', views.editar_fornecedor, name='editar_fornecedor'),
+    url(r'^remover_participante_pregao/(?P<participante_id>\d+)/$', views.remover_participante_pregao, name='remover_participante_pregao'),
+
+
+    url(r'^editar_solicitacao/(?P<solicitacao_id>\d+)/$', views.editar_solicitacao, name='editar_solicitacao'),
+    url(r'^cadastrar_material/(?P<solicitacao_id>\d+)/$', views.cadastrar_material, name='cadastrar_material'),
+    url(r'^lista_documentos/(?P<solicitacao_id>\d+)/$', views.lista_documentos, name='lista_documentos'),
+    url(r'^cadastrar_documento/(?P<solicitacao_id>\d+)/$', views.cadastrar_documento, name='cadastrar_documento'),
+    url(r'^editar_pregao/(?P<pregao_id>\d+)/$', views.editar_pregao, name='editar_pregao'),
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),
@@ -123,6 +135,7 @@ urlpatterns = patterns('base.views',
     url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
 
 )
+
 
 
 

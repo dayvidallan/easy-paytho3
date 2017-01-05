@@ -10,6 +10,7 @@ import datetime
 from ckeditor.fields import RichTextField
 from base.templatetags.app_filters import format_money
 TWOPLACES = Decimal(10) ** -2
+import os
 
 class User(AbstractUser):
 
@@ -394,6 +395,12 @@ class ItemSolicitacaoLicitacao(models.Model):
         ordering = ['item']
         verbose_name = u'Item da Solicitação de Licitação'
         verbose_name_plural = u'Itens da Solicitação de Licitação'
+
+    def ganhou_com_valor_acima(self):
+        vencedor = self.get_vencedor()
+        if vencedor.valor > self.valor_medio:
+            return True
+        return False
 
     def get_id_lote(self):
         return ItemLote.objects.filter(item=self)[0].lote.item
@@ -789,7 +796,6 @@ class Pregao(models.Model):
 
     solicitacao = models.ForeignKey(SolicitacaoLicitacao,verbose_name=u'Solicitação')
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
-    num_processo = models.CharField(u'Número do Processo', max_length=255)
     modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade')
     tipo = models.ForeignKey(TipoPregao, verbose_name=u'Tipo')
     criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Julgamento')
@@ -812,7 +818,7 @@ class Pregao(models.Model):
         verbose_name_plural = u'Pregões'
 
     def __unicode__(self):
-        return self.num_pregao
+        return u'%s N° %s' % (self.modalidade, self.num_pregao)
 
     def eh_ativo(self):
         return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
@@ -862,21 +868,15 @@ class ItemPregao(models.Model):
     def __unicode__(self):
         return u'%s - %s' % (self.material, self.pregao)
 
-class RamoAtividade(models.Model):
-    nome = models.CharField(u'Nome', max_length=200)
-
-    class Meta:
-        verbose_name = u'Ramo de Atividade'
-        verbose_name_plural = u'Ramos de Atividade'
-
-    def __unicode__(self):
-        return self.nome
-
 class Fornecedor(models.Model):
     cnpj = models.CharField(u'CNPJ/CPF', max_length=255, help_text=u'Utilize pontos e traços.')
     razao_social = models.CharField(u'Razão Social', max_length=255)
     endereco = models.CharField(u'Endereço', max_length=255)
-    ramo_atividade = models.ForeignKey(RamoAtividade, verbose_name=u'Ramo de Atividade')
+    telefones = models.CharField(u'Telefones', max_length=300)
+    email = models.EmailField(u'Email')
+    banco = models.CharField(u'Banco', max_length=200, null=True, blank=True)
+    agencia = models.CharField(u'Agência', max_length=50, null=True, blank=True)
+    conta = models.CharField(u'Conta', max_length=200, null=True, blank=True)
 
 
     class Meta:
@@ -885,6 +885,13 @@ class Fornecedor(models.Model):
 
     def __unicode__(self):
         return u'%s - %s' % (self.razao_social, self.cnpj)
+
+    def get_dados_bancarios(self):
+        if self.banco:
+            return u'Banco: %s<br>Agência: %s<br> Conta: %s' % (self.banco, self.agencia, self.conta)
+        else:
+            return u'Nenhuma conta bancária cadastrada.'
+
 
 class ParticipantePregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
@@ -1315,6 +1322,20 @@ class MovimentoSolicitacao(models.Model):
         verbose_name = u'Movimento da Solicitação'
         verbose_name_plural = u'Movimentos da Solicitação'
 
+def upload_path_documento(instance, filename):
+    return os.path.join('upload/documentos_solicitacao/%s/' % instance.solicitacao.id, filename)
+
+class DocumentoSolicitacao(models.Model):
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
+    nome = models.TextField(u'Nome do Arquivo', max_length=500)
+    cadastrado_em = models.DateTimeField(u'Cadastrado Em', null=True, blank=True)
+    cadastrado_por = models.ForeignKey(User, related_name=u'documento_cadastrado_por', null=True)
+    documento = models.FileField(u'Documento', null=True, blank=True, upload_to=upload_path_documento)
+
+    class Meta:
+        verbose_name = u'Documento da Solicitação'
+        verbose_name_plural = u'Documentos da Solicitação'
+
 
 class ItemQuantidadeSecretaria(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
@@ -1340,6 +1361,17 @@ class MaterialConsumo(models.Model):
     def __unicode__(self):
         return '%s (Cód: %s)' % (self.nome[:100], self.codigo)
 
+    def save(self):
+        if not self.pk:
+            if MaterialConsumo.objects.exists():
+                id = MaterialConsumo.objects.latest('id')
+                self.id = id.pk+1
+                self.codigo = id.pk+1
+            else:
+                self.id = 1
+                self.codigo = 1
+
+        super(MaterialConsumo, self).save()
 
 class Configuracao(models.Model):
     nome = models.CharField(u'Nome', max_length=200, null=True)
@@ -1379,14 +1411,7 @@ class PedidoItem(models.Model):
             return self.quantidade * self.item.get_valor_item_lote()
 
 class DotacaoOrcamentaria(models.Model):
-    projeto_atividade_num = models.TextField(u'Número do Projeto de Atividade')
-    projeto_atividade_descricao = models.TextField(u'Descrição do Projeto de Atividade')
-    programa_num = models.TextField(u'Número do Programa')
-    programa_descricao = models.TextField(u'Descrição do Programa')
-    fonte_num = models.TextField(u'Número da Fonte')
-    fonte_descricao = models.TextField(u'Descrição da Fonte')
-    elemento_despesa_num = models.TextField(u'Número do Elemento de Despesa')
-    elemento_despesa_descricao = models.TextField(u'Descrição do Elemento de Despesa')
+
 
     class Meta:
         verbose_name = u'Dotação Orçamentária'
@@ -1399,7 +1424,14 @@ class OrdemCompra(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao)
     numero = models.IntegerField(u'Número da Ordem')
     data = models.DateField(u'Data')
-    dotacao_orcamentaria = models.ForeignKey(u'base.DotacaoOrcamentaria', null=True)
+    projeto_atividade_num = models.CharField(u'Número do Projeto de Atividade', max_length=200, null=True, blank=True)
+    projeto_atividade_descricao = models.CharField(u'Descrição do Projeto de Atividade', max_length=200, null=True, blank=True)
+    programa_num = models.CharField(u'Número do Programa', max_length=200, null=True, blank=True)
+    programa_descricao = models.CharField(u'Descrição do Programa', max_length=200, null=True, blank=True)
+    fonte_num = models.CharField(u'Número da Fonte', max_length=200, null=True, blank=True)
+    fonte_descricao = models.CharField(u'Descrição da Fonte', max_length=200, null=True, blank=True)
+    elemento_despesa_num = models.CharField(u'Número do Elemento de Despesa', max_length=200, null=True, blank=True)
+    elemento_despesa_descricao = models.CharField(u'Descrição do Elemento de Despesa', max_length=200, null=True, blank=True)
 
     class Meta:
         verbose_name = u'Ordem de Compra'
