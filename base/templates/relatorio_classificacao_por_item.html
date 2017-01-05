@@ -54,7 +54,7 @@ ul{
                     <br>
                   <h1 class="page-header">
                     {% include "cabecalho.html" %}
-                    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+                    <center><font size="4">Classificação Final - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
                   </h1>
 
 
@@ -89,7 +89,8 @@ ul{
                     <thead>
                         <tr>
                             <th width="5%">Ordem</th>
-                            <th>Situação</th>
+                            <th>Empresa</th>
+
                             {% if not eh_lote %}
                                 <th>Marca</th>
                             {% endif %}
@@ -98,7 +99,7 @@ ul{
                             {% else %}
                                 <th>Valor</th>
                             {% endif %}
-                            <th>Empresa</th>
+                            <th>Situação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,12 +107,14 @@ ul{
 
                             <tr>
                                 <td>{{ item.ordem }}</td>
-                                <td>{{ item.situacao }}</td>
+                                <td>{{ item.participante }}</td>
+
                                 {% if not eh_lote %}
                                     <td>{{ item.marca }}</td>
                                 {% endif %}
                                 <td>{{ item.get_valor }}</td>
-                                <td>{{ item.participante }}</td>
+                                <td>{{ item.situacao }}</td>
+
                             </tr>
                         {% endfor %}
                     </tbody>

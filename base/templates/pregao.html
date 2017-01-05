@@ -338,7 +338,11 @@
                                                 <a href="/base/remover_participante_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Remover</a>
                                             {% endif %}
                                             {% if not item.desclassificado %}
-                                                <a href="/base/desclassificar_do_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Desclassificar</a>
+                                                {% if pregao.eh_pregao %}
+                                                    <a href="/base/desclassificar_do_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Desclassificar</a>
+                                                {% else %}
+                                                    <a href="/base/desclassificar_do_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Inabilitar</a>
+                                                {% endif %}
                                             {% endif %}
                                         {% endif %}
                                     </td>
@@ -475,7 +479,9 @@
                 {% if itens_pregao.exists %}
                     {% if buscou and pregao.eh_ativo %}
                         <div class="pull-right">
-                            <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
+                            {% if pregao.eh_pregao %}
+                                <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
+                            {% endif %}
                             <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/2/" class="btn btn-danger">Desclassificar</a>
                             <br><br>
                         </div>

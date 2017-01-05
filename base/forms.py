@@ -190,6 +190,12 @@ class SolicitacaoForm(forms.ModelForm):
         super(SolicitacaoForm, self).__init__(*args, **kwargs)
         self.fields['prazo_resposta_interessados'].widget.attrs = {'class': 'vDateField'}
         self.fields['interessados'].queryset = Secretaria.objects.exclude(id=self.request.user.pessoafisica.setor.secretaria.id)
+        if self.instance.tipo == SolicitacaoLicitacao.COMPRA:
+            del self.fields['justificativa']
+            del self.fields['tipo_aquisicao']
+            del self.fields['outros_interessados']
+            del self.fields['interessados']
+            del self.fields['prazo_resposta_interessados']
 
     def clean(self):
         if not self.instance.pk and self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando')).exists():

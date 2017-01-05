@@ -398,7 +398,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def ganhou_com_valor_acima(self):
         vencedor = self.get_vencedor()
-        if vencedor.valor > self.valor_medio:
+        if vencedor and vencedor.valor > self.valor_medio:
             return True
         return False
 

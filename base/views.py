@@ -907,7 +907,7 @@ def planilha_propostas(request, solicitacao_id):
 
     import xlwt
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=Proposta_%s.xls' % pregao.num_processo
+    response['Content-Disposition'] = 'attachment; filename=Proposta_%s.xls' % pregao.num_pregao
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet("Sheet1")
     row_num = 0
