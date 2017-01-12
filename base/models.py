@@ -12,6 +12,17 @@ from base.templatetags.app_filters import format_money
 TWOPLACES = Decimal(10) ** -2
 import os
 
+
+def get_tl():
+    """
+    Retorna threadlocals.
+    """
+    tl = None
+    exec 'from base.middleware import threadlocals as tl'
+    return tl
+
+tl = get_tl()
+
 class User(AbstractUser):
 
     class Meta:
@@ -755,11 +766,16 @@ class ItemSolicitacaoLicitacao(models.Model):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
 
     def get_quantidade_disponivel(self):
-        pedidos = PedidoItem.objects.filter(item=self, ativo=True)
-        if pedidos.exists():
-            return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-        else:
-            return self.quantidade
+        usuario = tl.get_user()
+
+        if ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+            valor_total = ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+            pedidos = PedidoItem.objects.filter(item=self, ativo=True)
+            if pedidos.exists():
+                return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            else:
+                return valor_total
+        return 0
 
 
     def get_empresa_item_lote(self):

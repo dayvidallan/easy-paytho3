@@ -47,6 +47,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'base.middleware.threadlocals.ThreadLocals',
 )
 
 ROOT_URLCONF = 'licita.urls'

@@ -403,6 +403,7 @@ class GanhadoresForm(forms.Form):
         self.fields['ganhador'].queryset = ParticipantePregao.objects.filter(id__in=self.participantes.values_list('id', flat=True))
 
 class CadastroMinutaForm(forms.ModelForm):
+    arquivo_minuta = forms.FileField(label=u'Arquivo da Minuta', required=True)
     class Meta:
         model = SolicitacaoLicitacao
         fields = ['arquivo_minuta']

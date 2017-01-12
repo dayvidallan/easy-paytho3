@@ -567,6 +567,16 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
         if o.valor_medio:
             o.total = o.valor_medio * o.quantidade
         o.save()
+        novo_item = ItemQuantidadeSecretaria()
+        novo_item.solicitacao = solicitacao
+        novo_item.item = o
+        novo_item.secretaria = request.user.pessoafisica.setor.secretaria
+        novo_item.quantidade = o.quantidade
+        novo_item.aprovado = True
+        novo_item.avaliado_por = request.user
+        novo_item.avaliado_em = datetime.datetime.now()
+        novo_item.save()
+
         messages.success(request, u'Item cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
@@ -658,10 +668,10 @@ def editar_solicitacao(request, solicitacao_id):
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
-        if not form.cleaned_data['interessados']:
+        if not form.cleaned_data.get('interessados'):
             o.prazo_resposta_interessados = None
         o.save()
-        if form.cleaned_data['interessados'] and form.cleaned_data['outros_interessados']:
+        if form.cleaned_data.get('interessados') and form.cleaned_data['outros_interessados']:
             form.save_m2m()
         messages.success(request, u'Solicitação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
@@ -2278,8 +2288,8 @@ def gestao_pedidos(request):
     pregoes_finalizados = Pregao.objects.filter(data_homologacao__isnull=False)
     atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
     contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
-    atas = SolicitacaoLicitacao.objects.filter(liberada_compra=True, setor_origem=setor, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
-    contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, setor_origem=setor, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
+    atas = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
+    contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
     return render_to_response('gestao_pedidos.html', locals(), RequestContext(request))
 

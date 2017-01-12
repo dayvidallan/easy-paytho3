@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/licita.iml" filepath="$PROJECT_DIR$/.idea/licita.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../suap/.idea/suap.iml" filepath="$PROJECT_DIR$/../suap/.idea/suap.iml" />
     </modules>
   </component>
 </project>
