@@ -3096,3 +3096,30 @@ def gerar_resultado_licitacao(request, pregao_id):
 
     messages.success(request, u'Resultado gerado com sucesso.')
     return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+
+
+@login_required()
+def lista_materiais(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+    destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % solicitacao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
+    data = {'solicitacao': solicitacao, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco}
+
+    template = get_template('lista_materiais.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')

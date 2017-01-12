@@ -1,0 +1,94 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4;
+            margin: 0.3cm;
+            @frame footer {
+    		    -pdf-frame-content: footerblock;
+    		    bottom: 1cm;
+    		    margin-left: 1cm;
+    		    margin-right: 1cm;
+             margin-top: 1cm;
+    		    height: 1cm;
+		    }
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center><font size="4">Itens da Solicitação {{ solicitacao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+
+
+{% endblock %}
+
+{% block content %}
+
+
+    <table border="1" cellpadding="10" cellspacing="10">
+        <thead>
+            <th>Item</th>
+            <th>Material</th>
+            <th>Unidade</th>
+            <th>Quantidade</th>
+            {% if pode_ver_preco %}
+                <th>Valor Unitário Máximo</th>
+            {% endif %}
+        </thead>
+        <tbody>
+            {% for item in solicitacao.itemsolicitacaolicitacao_set.all %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ item.material }}</td>
+                    <td>{{ item.unidade }}</td>
+                    <td>{{ item.quantidade }}</td>
+                    {% if pode_ver_preco %}
+                        <td align="right">R$ {{ item.valor_medio|format_money }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+    <br><br>
+
+
+{% endblock %}
+
+
+

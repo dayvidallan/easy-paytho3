@@ -20,7 +20,7 @@
     <br>
 
     <fieldset>
-        <legend>Modelos Padrão</legend>
+        <legend>Modelos</legend>
 
         <table class="table table-bordered table-condensed table-striped">
             <thead>
@@ -39,6 +39,12 @@
                     <td>Modelo de Termo de Referência</td>
                     <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/">Ver Documento</a></td>
                 </tr>
+                {% if solicitacao.itemsolicitacaolicitacao_set.exists %}
+                    <tr>
+                        <td>Lista de Materiais</td>
+                        <td><a class="btn btn-info btn-sm" href="/lista_materiais/{{solicitacao.id}}/">Ver Documento</a></td>
+                    </tr>
+                {% endif %}
 
             </tbody>
         </table>
