@@ -208,11 +208,12 @@
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th colspan="4">{{lote}}</th>
+                                                            <th colspan="5">{{lote}}</th>
                                                             <th align="right"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></th>
                                                         </tr>
                                                         <tr>
                                                             <th>Item</th>
+                                                            <th>Material</th>
                                                             <th>Marca</th>
                                                             <th>Empresa</th>
                                                             <th>Valor</th>
@@ -225,6 +226,7 @@
                                                         {% for item in lote.get_itens_do_lote %}
                                                             <tr>
                                                                 <td>{{ item }}</td>
+                                                                <td>{{ item.material }}</td>
                                                                 <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
                                                                 <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
                                                                 <td>{{ item.get_valor_item_lote }}</td>
@@ -261,10 +263,11 @@
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <td colspan="5" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></td>
+                                                        <td colspan="6" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></td>
                                                     </tr>
                                                     <tr>
                                                         <th>Item</th>
+                                                        <th>Material</th>
                                                         <th>Marca</th>
                                                         <th>Empresa</th>
                                                         <th>Valor</th>
@@ -277,6 +280,7 @@
                                                     {% for resultado in solicitacao.get_resultado %}
                                                         <tr>
                                                             <td>{{ resultado.item }}</td>
+                                                            <td>{{ resultado.item.material }}</td>
                                                             <td>{{ resultado.marca|default_if_none:"-" }}</td>
                                                             <td>{{ resultado.participante }}</td>
                                                             <td>{{ resultado.valor }}</td>
@@ -325,13 +329,14 @@
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th colspan="5"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></th>
+                                                            <th colspan="6"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></th>
                                                         </tr>
                                                         <tr>
-                                                            <th colspan="5">{{lote}}</th>
+                                                            <th colspan="6">{{lote}}</th>
                                                         </tr>
                                                         <tr>
                                                             <th>Item</th>
+                                                            <th>Material</th>
                                                             <th>Marca</th>
                                                             <th>Empresa</th>
                                                             <th>Valor</th>
@@ -344,6 +349,7 @@
                                                         {% for item in lote.get_itens_do_lote %}
                                                             <tr>
                                                                 <td>{{ item }}</td>
+                                                                <td>{{ item.material }}</td>
                                                                 <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
                                                                 <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
                                                                 <td>{{ item.get_valor_item_lote }}</td>
@@ -382,10 +388,11 @@
                                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                             <thead>
                                                 <tr>
-                                                    <td colspan="5" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></td>
+                                                    <td colspan="6" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></td>
                                                 </tr>
                                                 <tr>
                                                     <th>Item</th>
+                                                    <th>Material</th>
                                                     <th>Marca</th>
                                                     <th>Empresa</th>
                                                     <th>Valor</th>
@@ -398,6 +405,7 @@
                                                 {% for resultado in solicitacao.get_resultado %}
                                                     <tr>
                                                         <td>{{ resultado.item }}</td>
+                                                        <td>{{ resultado.item.material }}</td>
                                                         <td>{{ resultado.marca|default_if_none:"-" }}</td>
                                                         <td>{{ resultado.participante }}</td>
                                                         <td>{{ resultado.valor }}</td>

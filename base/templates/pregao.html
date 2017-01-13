@@ -198,18 +198,18 @@
     <div>
 
         <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#anexos">Anexos</a>
+            </li>
             {% if eh_lote %}
                 <li class="active">
                     <a data-toggle="tab" href="#lotes">Lotes</a>
                 </li>
-                <li>
-                    <a data-toggle="tab" href="#fornecedores">Fornecedores</a>
-                </li>
-            {% else %}
-                <li class="active">
-                    <a data-toggle="tab" href="#fornecedores">Fornecedores</a>
-                </li>
+
             {% endif %}
+            <li>
+                <a data-toggle="tab" href="#fornecedores">Fornecedores</a>
+            </li>
 
             <li>
                 <a data-toggle="tab" href="#propostas">Propostas</a>
@@ -217,9 +217,7 @@
             <li>
                 <a href="#classificacao">Classificação</a>
             </li>
-            <li>
-                <a href="#anexos">Anexos</a>
-            </li>
+
             {% if pregao.eh_pregao %}
                 <li><a href="#homologacao">Adjudicação e Homologação</a></li>
             {% else %}
@@ -237,7 +235,7 @@
     </div>
     <div class="tab-content">
         {% if eh_lote %}
-            <div id="lotes" class="tab-pane in active">
+            <div id="lotes" class="tab-pane">
                 <div class="pull-right">
                 {% if pregao.eh_ativo and pregao.tem_item_sem_lote %}
                     <a class="btn btn-success" href="/base/criar_lote/{{ pregao.pk }}/">Criar Lote</a>
@@ -283,12 +281,10 @@
                     <p class="alert alert-warning">Nenhum lote cadastrado.</p>
                 {% endif %}
             </div>
-
-            <div id="fornecedores" class="tab-pane">
-
-        {% else %}
-            <div id="fornecedores" class="tab-pane in active">
         {% endif %}
+        <div id="fornecedores" class="tab-pane">
+
+
             <div class="pull-right">
                 {% if pregao.eh_ativo %}
                     <a class="btn btn-primary" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
@@ -668,7 +664,7 @@
             {% endif %}
 
         </div>
-        <div id="anexos" class="tab-pane">
+        <div id="anexos" class="tab-pane in active">
             {% if pregao.eh_ativo %}
                 <div class="pull-right">
                     <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>

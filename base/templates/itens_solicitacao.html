@@ -47,7 +47,7 @@
              {% if perms.base.pode_cadastrar_solicitacao %}
                 {% if solicitacao.situacao == solicitacao.CADASTRADO %}
                     {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
-                        <a class="btn btn-info" href="/base/editar_solicitacao/{{ solicitacao.pk }}/">Editar Solicitação</a>
+
                         <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
                         <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
 
@@ -236,9 +236,7 @@
             {% if perms.base.pode_abrir_processo and solicitacao.processo %}
                 <a href="/base/ver_processo/{{solicitacao.processo.id}}/" class="btn btn-info">Capa do Processo</a>
              {% endif %}
-            {% if solicitacao.situacao == solicitacao.CADASTRADO  and solicitacao.setor_origem == request.user.pessoafisica.setor %}
-                <a class="btn btn-info" href="/base/editar_solicitacao/{{ solicitacao.pk }}/">Editar Solicitação</a>
-            {% endif %}
+
             {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra %}
                 <a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a>
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_pedidos_compra and not solicitacao.tem_ordem_compra %}

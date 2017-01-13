@@ -768,13 +768,22 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_quantidade_disponivel(self):
         usuario = tl.get_user()
 
-        if ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-            valor_total = ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+        if usuario.groups.filter(name=u'Gerente').exists():
             pedidos = PedidoItem.objects.filter(item=self, ativo=True)
             if pedidos.exists():
-                return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
             else:
-                return valor_total
+                return self.quantidade
+
+        else:
+
+            if ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+                pedidos = PedidoItem.objects.filter(item=self, ativo=True)
+                if pedidos.exists():
+                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                else:
+                    return valor_total
         return 0
 
 

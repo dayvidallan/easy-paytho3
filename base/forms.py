@@ -120,7 +120,7 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
 
 class CadastraPrecoParticipantePregaoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(ParticipantePregao.objects, label=u'Fornecedor', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
-    preencher = forms.BooleanField(label=u'Preencher Manualmente', initial=False)
+    preencher = forms.BooleanField(label=u'Preencher Manualmente', initial=False, required=False)
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
 
     class Media:
@@ -198,7 +198,7 @@ class SolicitacaoForm(forms.ModelForm):
             del self.fields['prazo_resposta_interessados']
 
     def clean(self):
-        if not self.instance.pk and self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando')).exists():
+        if not self.instance.pk and self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando'), setor_origem__secretaria=self.request.user.pessoafisica.setor.secretaria).exists():
             self.add_error('num_memorando', u'Já existe uma solicitação para este memorando.')
 
 class ItemSolicitacaoLicitacaoForm(forms.ModelForm):

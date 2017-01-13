@@ -2939,6 +2939,7 @@ def termo_referencia(request, solicitacao_id):
         '#DATA#': datetime.date.today(),
         '#OBJETIVO#': solicitacao.objetivo,
         '#OBJETO#': solicitacao.objeto,
+        '#JUST#': solicitacao.justificativa,
         '#IT#': libreoffice_new_line(itens or '-'),
         '#QUANT#': libreoffice_new_line(quantidades or '-'),
         '#UN#': libreoffice_new_line(unidades or '-'),
@@ -3109,7 +3110,11 @@ def lista_materiais(request, solicitacao_id):
     data_emissao = datetime.date.today()
 
     pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
-    data = {'solicitacao': solicitacao, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco}
+    itens = solicitacao.itemsolicitacaolicitacao_set.all()
+    total = 0
+    for item in itens:
+        total += item.quantidade * item.valor_medio
+    data = {'solicitacao': solicitacao, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
 
     template = get_template('lista_materiais.html')
 

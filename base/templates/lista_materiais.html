@@ -81,7 +81,14 @@ ul{
                         <td align="right">R$ {{ item.valor_medio|format_money }}</td>
                     {% endif %}
                 </tr>
+
             {% endfor %}
+            {% if pode_ver_preco %}
+                <tr>
+                    <td colspan="4" align="right">Total</td>
+                    <td align="right">{{total|format_money}}</td>
+                </tr>
+            {% endif %}
 
         </tbody>
     </table>
