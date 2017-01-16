@@ -494,6 +494,17 @@ class EditarPedidoForm(forms.ModelForm):
         model = ItemQuantidadeSecretaria
         fields = ('quantidade', )
 
+
+class ContratoForm(forms.ModelForm):
+    class Meta:
+        model = Contrato
+        fields = ('numero', 'data_inicio', 'data_fim')
+
+    def __init__(self, *args, **kwargs):
+        super(ContratoForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+
 class NovoPedidoCompraForm(forms.ModelForm):
     class Meta:
         model = SolicitacaoLicitacao

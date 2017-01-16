@@ -43,6 +43,9 @@
              {% if perms.base.pode_abrir_processo and  solicitacao.processo %}
                 <a href="/base/ver_processo/{{solicitacao.processo.id}}/" class="btn btn-info">Capa do Processo</a>
              {% endif %}
+             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.contrato_set.exists and solicitacao.get_pregao  and solicitacao.get_pregao.data_homologacao %}
+                <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
+             {% endif %}
 
              {% if perms.base.pode_cadastrar_solicitacao %}
                 {% if solicitacao.situacao == solicitacao.CADASTRADO %}

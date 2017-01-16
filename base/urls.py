@@ -129,7 +129,7 @@ urlpatterns = patterns('base.views',
     url(r'^cadastrar_anexo_contrato/(?P<contrato_id>\d+)/$', views.cadastrar_anexo_contrato, name='cadastrar_anexo_contrato'),
     url(r'^documentos_atas/(?P<solicitacao_id>\d+)/$', views.documentos_atas, name='documentos_atas'),
     url(r'^rejeitar_pesquisa/(?P<item_pesquisa_id>\d+)/$', views.rejeitar_pesquisa, name='rejeitar_pesquisa'),
-
+    url(r'^cadastrar_contrato/(?P<solicitacao_id>\d+)/$', views.cadastrar_contrato, name='cadastrar_contrato'),
 
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),

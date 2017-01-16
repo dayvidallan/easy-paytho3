@@ -536,7 +536,7 @@ def itens_solicitacao(request, solicitacao_id):
     url = settings.URL
 
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Solicitação Nº: %s' % (solicitacao)
+    title=u'%s' % (solicitacao)
     setor_do_usuario = request.user.pessoafisica.setor
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
     pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
@@ -1156,6 +1156,22 @@ def cadastrar_anexo_contrato(request, contrato_id):
 
     return render_to_response('cadastrar_anexo_contrato.html', locals(), RequestContext(request))
 
+@login_required()
+def cadastrar_contrato(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    pregao = solicitacao.get_pregao()
+    title=u'Cadastrar Contrato'
+    form = ContratoForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.solicitacao = solicitacao
+        o.pregao = pregao
+        o.valor = pregao.get_valor_total()
+        o.save()
+        messages.success(request, u'Contrato cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
+
+    return render_to_response('cadastrar_contrato.html', locals(), RequestContext(request))
 
 def baixar_arquivo(request, arquivo_id):
     title=u'Baixar Arquivo'
@@ -2308,7 +2324,7 @@ def gestao_pedidos(request):
     setor = request.user.pessoafisica.setor
     title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
     meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
-    pregoes_finalizados = Pregao.objects.filter(solicitacao__in=meus_pedidos, data_homologacao__isnull=False)
+    pregoes_finalizados = Pregao.objects.filter(solicitacao__in=meus_pedidos)
     atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
     contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
     atas = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
@@ -2320,11 +2336,11 @@ def gestao_pedidos(request):
 def gestao_contratos(request):
     setor = request.user.pessoafisica.setor
     title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
-    pregoes_finalizados = Pregao.objects.filter(data_homologacao__isnull=False)
-    atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
-    contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
-    atas = Contrato.objects.filter(solicitacao__setor_origem__secretaria=setor.secretaria, solicitacao__in=atas_finalizadas.values_list('solicitacao', flat=True))
-    contratos = Contrato.objects.filter(solicitacao__setor_origem__secretaria=setor.secretaria, solicitacao__in=contratos_finalizados.values_list('solicitacao', flat=True))
+    solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
+    atas_finalizadas = Pregao.objects.filter(eh_ata_registro_preco=True, solicitacao__in=solicitacoes.values_list('id', flat=True))
+    contratos_finalizados = Pregao.objects.filter(eh_ata_registro_preco=False, solicitacao__in=solicitacoes.values_list('id', flat=True))
+    atas = Contrato.objects.filter(solicitacao__in=atas_finalizadas.values_list('solicitacao', flat=True))
+    contratos = Contrato.objects.filter(solicitacao__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
     return render_to_response('gestao_contratos.html', locals(), RequestContext(request))
 
@@ -2703,13 +2719,13 @@ def registrar_homologacao(request, pregao_id):
         o.situacao = Pregao.CONCLUIDO
         o.save()
 
-        novo_contrato = Contrato()
-        novo_contrato.solicitacao = pregao.solicitacao
-        novo_contrato.pregao = pregao
-        novo_contrato.numero = pregao.num_pregao
-        novo_contrato.valor = pregao.get_valor_total()
-        novo_contrato.data_inicio = o.data_homologacao
-        novo_contrato.save()
+        # novo_contrato = Contrato()
+        # novo_contrato.solicitacao = pregao.solicitacao
+        # novo_contrato.pregao = pregao
+        # novo_contrato.numero = pregao.num_pregao
+        # novo_contrato.valor = pregao.get_valor_total()
+        # novo_contrato.data_inicio = o.data_homologacao
+        # novo_contrato.save()
 
         messages.success(request, u'Data de homologação registrada com sucesso. Prossiga com o envio do termo assinado')
         return HttpResponseRedirect(u'/base/upload_termo_homologacao/%s/' % pregao.id)

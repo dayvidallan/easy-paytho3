@@ -57,6 +57,22 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='AnexoContrato',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('nome', models.CharField(max_length=500, verbose_name='Nome')),
+                ('data', models.DateField(verbose_name='Data')),
+                ('arquivo', models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')),
+                ('cadastrado_em', models.DateTimeField(verbose_name='Cadastrado em')),
+                ('publico', models.BooleanField(default=False, help_text='Se sim, este documento ser\xe1 exibido publicamente', verbose_name='Documento P\xfablico')),
+                ('cadastrado_por', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'Anexo do Contrato',
+                'verbose_name_plural': 'Anexos do Contrato',
+            },
+        ),
+        migrations.CreateModel(
             name='AnexoPregao',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -64,6 +80,7 @@ class Migration(migrations.Migration):
                 ('data', models.DateField(verbose_name='Data')),
                 ('arquivo', models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')),
                 ('cadastrado_em', models.DateTimeField(verbose_name='Cadastrado em')),
+                ('publico', models.BooleanField(default=False, help_text='Se sim, este documento ser\xe1 exibido publicamente', verbose_name='Documento P\xfablico')),
                 ('cadastrado_por', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -161,7 +178,7 @@ class Migration(migrations.Migration):
             name='Fornecedor',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('cnpj', models.CharField(help_text='Utilize pontos e tra\xe7os.', max_length=255, verbose_name='CNPJ/CPF')),
+                ('cnpj', models.CharField(help_text='Utilize pontos e tra\xe7os.', unique=True, max_length=255, verbose_name='CNPJ/CPF')),
                 ('razao_social', models.CharField(max_length=255, verbose_name='Raz\xe3o Social')),
                 ('endereco', models.CharField(max_length=255, verbose_name='Endere\xe7o')),
                 ('telefones', models.CharField(max_length=300, verbose_name='Telefones')),
@@ -224,6 +241,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('marca', models.CharField(max_length=255, verbose_name='Marca')),
                 ('valor_maximo', models.DecimalField(null=True, verbose_name='Valor M\xe1ximo', max_digits=10, decimal_places=2, blank=True)),
+                ('ativo', models.BooleanField(default=True, verbose_name='Ativo')),
+                ('motivo_rejeicao', models.CharField(max_length=1000, null=True, verbose_name='Motivo da Rejei\xe7\xe3o', blank=True)),
+                ('rejeitado_em', models.DateTimeField(null=True, verbose_name='Rejeitado em')),
             ],
         ),
         migrations.CreateModel(
@@ -797,6 +817,11 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(verbose_name='Pesquisa', to='base.PesquisaMercadologica'),
         ),
         migrations.AddField(
+            model_name='itempesquisamercadologica',
+            name='rejeitado_por',
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
             model_name='itemlote',
             name='item',
             field=models.ForeignKey(related_name='item_do_lote', to='base.ItemSolicitacaoLicitacao'),
@@ -860,6 +885,11 @@ class Migration(migrations.Migration):
             model_name='anexopregao',
             name='pregao',
             field=models.ForeignKey(to='base.Pregao'),
+        ),
+        migrations.AddField(
+            model_name='anexocontrato',
+            name='contrato',
+            field=models.ForeignKey(to='base.Contrato'),
         ),
         migrations.AddField(
             model_name='aditivo',
