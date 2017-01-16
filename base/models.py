@@ -767,7 +767,6 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_quantidade_disponivel(self):
         usuario = tl.get_user()
-
         if usuario.groups.filter(name=u'Gerente').exists():
             pedidos = PedidoItem.objects.filter(item=self, ativo=True)
             if pedidos.exists():
@@ -779,7 +778,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
             if ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 valor_total = ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
-                pedidos = PedidoItem.objects.filter(item=self, ativo=True)
+                pedidos = PedidoItem.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
                 if pedidos.exists():
                     return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
                 else:
@@ -898,6 +897,9 @@ class Pregao(models.Model):
                 total += resultado.valor * resultado.item.quantidade
 
         return total
+
+    def get_arquivos_publicos(self):
+        return AnexoPregao.objects.filter(pregao=self, publico=True)
 
 
 #TODO usar esta estrutura para pregão por lote
@@ -1257,6 +1259,11 @@ class ItemPesquisaMercadologica(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao)
     marca = models.CharField(u'Marca', max_length=255)
     valor_maximo = models.DecimalField(u'Valor Máximo', max_digits=10, decimal_places=2, null=True, blank=True)
+    ativo = models.BooleanField(u'Ativo', default=True)
+    motivo_rejeicao = models.CharField(u'Motivo da Rejeição', max_length=1000, null=True, blank=True)
+    rejeitado_por = models.ForeignKey(User, null=True)
+    rejeitado_em = models.DateTimeField(u'Rejeitado em', null=True)
+
 
     def get_total(self):
         return self.valor_maximo * self.item.quantidade
@@ -1314,6 +1321,7 @@ class AnexoPregao(models.Model):
     arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
     cadastrado_por = models.ForeignKey(User)
     cadastrado_em = models.DateTimeField(u'Cadastrado em')
+    publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
     class Meta:
         verbose_name = u'Anexo do Pregão'
@@ -1321,6 +1329,23 @@ class AnexoPregao(models.Model):
 
     def __unicode__(self):
         return '%s - %s' % (self.nome, self.pregao)
+
+
+class AnexoContrato(models.Model):
+    contrato = models.ForeignKey('base.Contrato')
+    nome = models.CharField(u'Nome', max_length=500)
+    data = models.DateField(u'Data')
+    arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
+    cadastrado_por = models.ForeignKey(User)
+    cadastrado_em = models.DateTimeField(u'Cadastrado em')
+    publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
+
+    class Meta:
+        verbose_name = u'Anexo do Contrato'
+        verbose_name_plural = u'Anexos do Contrato'
+
+    def __unicode__(self):
+        return '%s - %s' % (self.nome, self.contrato)
 
 class LogDownloadArquivo(models.Model):
     PARTICIPAR = u'Participar da Licitação'

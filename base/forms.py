@@ -313,10 +313,19 @@ class DefinirColocacaoForm(forms.ModelForm):
 class AnexoPregaoForm(forms.ModelForm):
     class Meta:
         model = AnexoPregao
-        fields = ['nome', 'data', 'arquivo']
+        fields = ['nome', 'data', 'arquivo', 'publico']
 
     def __init__(self, *args, **kwargs):
         super(AnexoPregaoForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}
+
+class AnexoContratoForm(forms.ModelForm):
+    class Meta:
+        model = AnexoContrato
+        fields = ['nome', 'data', 'arquivo', 'publico']
+
+    def __init__(self, *args, **kwargs):
+        super(AnexoContratoForm, self).__init__(*args, **kwargs)
         self.fields['data'].widget.attrs = {'class': 'vDateField'}
 
 class LogDownloadArquivoForm(forms.ModelForm):
@@ -489,6 +498,12 @@ class NovoPedidoCompraForm(forms.ModelForm):
     class Meta:
         model = SolicitacaoLicitacao
         fields = ('num_memorando', 'objeto', 'objetivo')
+
+class RejeitarPesquisaForm(forms.ModelForm):
+    motivo_rejeicao = forms.CharField(label=u'Motivo da Rejeição', required=True, widget=forms.Textarea())
+    class Meta:
+        model = ItemPesquisaMercadologica
+        fields = ('motivo_rejeicao', )
 
 class FiltrarSecretariaForm(forms.Form):
     secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))

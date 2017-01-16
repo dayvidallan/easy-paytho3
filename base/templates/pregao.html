@@ -202,7 +202,7 @@
                 <a href="#anexos">Anexos</a>
             </li>
             {% if eh_lote %}
-                <li class="active">
+                <li>
                     <a data-toggle="tab" href="#lotes">Lotes</a>
                 </li>
 
@@ -234,6 +234,66 @@
         </ul>
     </div>
     <div class="tab-content">
+        <div id="anexos" class="tab-pane in active">
+            {% if pregao.eh_ativo %}
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>
+                    <br><br>
+                </div>
+            {% endif %}
+            <h2>Anexos do Pregão</h2>
+            {%  if pregao.anexopregao_set.exists %}
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th width="10%">Data</th>
+                                <th>Arquivo</th>
+                                <td>Documento Público</td>
+                                <th>Cadastrado Por</th>
+                                <th>Cadastrado Em</th>
+                                <th>Opções</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Extrato Inicial</td>
+                                <td> - </td>
+                                <td><a href="/base/extrato_inicial/{{ pregao.pk }}/">Ver arquivo</a></td>
+                                <td><font color="red">Não</font></td>
+                                <td>Gerado Automaticamente Pelo Sistema</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            {%  for item in pregao.anexopregao_set.all %}
+
+                                <tr>
+                                    <td>{{ item.nome }}</td>
+                                    <td>{{ item.data }}</td>
+                                    <td><a href="/media/{{ item.arquivo }}">Ver arquivo</a></td>
+                                    <td>
+                                        {% if item.publico %}
+                                            <font color="green">Sim</font>
+                                        {% else %}
+                                            <font color="red">Não</font>
+                                        {% endif%}
+                                    </td>
+                                    <td>{{ item.cadastrado_por }}</td>
+                                    <td>{{ item.cadastrado_em }}</td>
+                                    <td>
+                                        {% if item.cadastrado_por == request.user %}
+                                            <a href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-danger">Apagar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum anexo cadastrado.</p>
+            {% endif %}
+
+        </div>
         {% if eh_lote %}
             <div id="lotes" class="tab-pane">
                 <div class="pull-right">
@@ -313,8 +373,16 @@
                                 <tr>
 
                                     <td>{{ item.fornecedor.cnpj }}</td>
-                                     <td>{{ item.fornecedor.razao_social }}</td>
-                                    <td>{{ item.me_epp|yesno }}</td>
+                                    <td>{{ item.fornecedor.razao_social }}</td>
+                                    <td>
+                                        {% if item.me_epp %}
+                                            <font color="green">Sim</font></span>
+
+                                        {% else %}
+                                            <font color="red">Não</font></span>
+
+                                        {% endif %}
+                                    </td>
                                     <td>{{ item.nome_representante }}</td>
                                     <td>
                                         {% if item.desclassificado %}
@@ -322,7 +390,7 @@
 
 
                                         {% else %}
-                                            <font color="true">Ativo</font></span>
+                                            <font color="green">Ativo</font></span>
 
 
                                         {% endif %}
@@ -664,49 +732,7 @@
             {% endif %}
 
         </div>
-        <div id="anexos" class="tab-pane in active">
-            {% if pregao.eh_ativo %}
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>
-                    <br><br>
-                </div>
-            {% endif %}
-            <h2>Anexos do Pregão</h2>
-            {%  if pregao.anexopregao_set.exists %}
-                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th width="10%">Data</th>
-                                <th>Arquivo</th>
-                                <th>Cadastrado Por</th>
-                                <th>Cadastrado Em</th>
-                                <th>Opções</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {%  for item in pregao.anexopregao_set.all %}
 
-                                <tr>
-                                    <td>{{ item.nome }}</td>
-                                    <td>{{ item.data }}</td>
-                                    <td><a href="/media/{{ item.arquivo }}">Ver arquivo</a></td>
-                                    <td>{{ item.cadastrado_por }}</td>
-                                    <td>{{ item.cadastrado_em }}</td>
-                                    <td>
-                                        {% if item.cadastrado_por == request.user %}
-                                            <a href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-danger">Apagar</a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-            {% else %}
-                <p class="alert alert-warning">Nenhum anexo cadastrado.</p>
-            {% endif %}
-
-        </div>
         <div id="historico" class="tab-pane">
 
 

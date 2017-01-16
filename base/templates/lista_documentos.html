@@ -6,7 +6,7 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/ver_solicitações/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações<i class="fa fa-angle-right"></i></a>
     <a href="/base/itens_solicitacao/{{solicitacao.id}}/">{{ solicitacao }}<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
@@ -31,13 +31,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% if perms.base.pode_cadastrar_solicitacao %}
+                {% if perms.base.pode_cadastrar_solicitacao or perms.base.pode_cadastrar_pesquisa_mercadologica  %}
                     <tr>
                         <td>Modelo de Memorando</td>
                         <td><a class="btn btn-info btn-sm" href="/memorando/{{solicitacao.id}}/">Ver Documento</a></td>
                     </tr>
-                {% endif %}
-                {% if perms.base.pode_cadastrar_pesquisa_mercadologica %}
+
                     <tr>
                         <td>Modelo de Termo de Referência</td>
                         <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/">Ver Documento</a></td>

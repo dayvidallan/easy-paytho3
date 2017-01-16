@@ -88,7 +88,7 @@
                                 <tbody>
                                 {% for item in itens %}
                                     <tr>
-                                        <td>{{ item.item }}</td>
+                                        <td>{{ item.item.item }}</td>
                                         <td>{{ item.item.material }}</td>
                                          <td>{{ item.item.valor_medio }}</td>
                                         <td>{{ item.marca|default_if_none:"-" }}</td>

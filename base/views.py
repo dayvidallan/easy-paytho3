@@ -158,6 +158,10 @@ def pregao(request, pregao_id):
         pregao.situacao = Pregao.CONCLUIDO
         pregao.save()
 
+    elif pregao.solicitacao.setor_atual == request.user.pessoafisica.setor and pregao.situacao == Pregao.CONCLUIDO:
+        pregao.situacao = Pregao.CADASTRADO
+        pregao.save()
+
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
@@ -200,7 +204,7 @@ def cadastra_proposta_pregao(request, pregao_id):
     if request.GET.get('participante'):
         selecionou = True
         participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
-        itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante, item__eh_lote=False)
+        itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante, item__eh_lote=False).order_by('item')
         if itens.exists():
             edicao=True
         else:
@@ -392,7 +396,7 @@ def lances_item(request, item_id):
         desempatar = True
     # if not PropostaItemPregao.objects.filter(item=item).exists():
     #     messages.error(request, u'Este item não possui nenhuma proposta cadastrada.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % item.get_licitacao().id)
+    #    return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % item.get_licitacao().id)
     rodadas = RodadaPregao.objects.filter(item=item)
     itens_do_lote = False
     if item.eh_lote:
@@ -886,6 +890,7 @@ def resultado_classificacao(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     title = u'Classificação - %s' % item
     lances = ResultadoItemPregao.objects.filter(item=item).order_by('ordem')
+    pregao = item.get_licitacao()
     return render_to_response('resultado_classificacao.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
@@ -1134,6 +1139,23 @@ def cadastrar_anexo_pregao(request, pregao_id):
         return HttpResponseRedirect(u'/base/pregao/%s/#anexos' % pregao.id)
 
     return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_anexo_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+    title=u'Cadastrar Anexo - %s' % contrato
+    form = AnexoContratoForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.contrato = contrato
+        o.cadastrado_por = request.user
+        o.cadastrado_em = datetime.datetime.now()
+        o.save()
+        messages.success(request, u'Anexo cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
+
+    return render_to_response('cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+
 
 def baixar_arquivo(request, arquivo_id):
     title=u'Baixar Arquivo'
@@ -1415,8 +1437,8 @@ def informar_quantidades(request, solicitacao_id):
                 novo_preco.quantidade = request.POST.getlist('quantidade')[idx-1]
                 novo_preco.save()
 
-        messages.success(request, u'Quantidades cadastradas com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+        messages.success(request, u'Quantidades cadastradas com sucesso. Faça o upload do memorando de solicitação.')
+        return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao.id)
 
     return render_to_response('informar_quantidades.html', locals(), context_instance=RequestContext(request))
 
@@ -2129,7 +2151,7 @@ def criar_lote(request, pregao_id):
             controle +=1
 
         messages.success(request, u'Lote criado com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
+        return HttpResponseRedirect(u'/base/pregao/%s/#lotes' % pregao.id)
 
 
     return render_to_response('criar_lote.html', locals(), context_instance=RequestContext(request))
@@ -2285,7 +2307,8 @@ def aprovar_todos_pedidos(request, item_id):
 def gestao_pedidos(request):
     setor = request.user.pessoafisica.setor
     title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
-    pregoes_finalizados = Pregao.objects.filter(data_homologacao__isnull=False)
+    meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
+    pregoes_finalizados = Pregao.objects.filter(solicitacao__in=meus_pedidos, data_homologacao__isnull=False)
     atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
     contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
     atas = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
@@ -2512,9 +2535,11 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
 @login_required()
 def apagar_lote(request, item_id, pregao_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    itens_do_lote = ItemLote.objects.filter(lote=item)
+    PropostaItemPregao.objects.filter(item__in=itens_do_lote.values_list('item', flat=True)).delete()
     ItemLote.objects.filter(lote=item).delete()
     item.delete()
-    return HttpResponseRedirect(u'/base/pregao/%s/' % pregao_id)
+    return HttpResponseRedirect(u'/base/pregao/%s/#lotes' % pregao_id)
 
 
 @login_required()
@@ -2551,6 +2576,12 @@ def gerar_ordem_compra(request, solicitacao_id):
 def ver_ordem_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
 
     destino_arquivo = u'upload/ordens_compra/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
@@ -2593,7 +2624,7 @@ def ver_ordem_compra(request, solicitacao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'pregao': pregao, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 
@@ -2621,15 +2652,17 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
 
     lista = list()
+    dicionario = {}
     for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=solicitacao):
-        total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa).aggregate(soma=Sum('valor_maximo'))['soma']
-
-        lista.append([pesquisa.id, total])
-
-    resultado = collections.OrderedDict(sorted(lista),  key=lambda x: x[1])
-    fornecedor = PesquisaMercadologica.objects.get(id=resultado.items()[0][0])
-    itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado.items()[0][0]).order_by('item')
+        total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+        if total:
+            lista.append([pesquisa.id, total])
+            dicionario[pesquisa.id] = total
+    resultado = sorted(dicionario.items(), key=lambda x: x[1])
+    fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
+    itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado[0][0]).order_by('item')
     total = 0
+
     for item in itens:
         total += item.get_total()
 
@@ -3074,12 +3107,11 @@ def gerar_resultado_licitacao(request, pregao_id):
         chave= '%s' %  proposta.participante.id
 
         tabela[chave]['total'] += proposta.valor
-    resultado = collections.OrderedDict(sorted(tabela.items()),  key=lambda x: x[1])
-
-    total = len(resultado)-1
+    resultado = resultado = sorted(tabela.items(), key=lambda x: x[1])
+    total = len(resultado)
     indice = 0
     while indice < total:
-        fornecedor = ParticipantePregao.objects.get(id=resultado.items()[indice][0])
+        fornecedor = ParticipantePregao.objects.get(id=resultado[indice][0])
 
         itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor)
 
@@ -3128,3 +3160,28 @@ def lista_materiais(request, solicitacao_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+
+@login_required()
+def documentos_atas(request, solicitacao_id):
+    contrato = Contrato.objects.filter(solicitacao=solicitacao_id)
+
+    if contrato.exists():
+        contrato = contrato.latest('id')
+    title= u'Documentos - %s' % contrato
+    return render_to_response('documentos_atas.html', locals(), context_instance=RequestContext(request))
+
+@login_required()
+def rejeitar_pesquisa(request, item_pesquisa_id):
+    item = get_object_or_404(ItemPesquisaMercadologica, pk=item_pesquisa_id)
+    title=u'Rejeitar Proposta'
+    form = RejeitarPesquisaForm(request.POST or None, instance=item)
+    if form.is_valid():
+        o = form.save(False)
+        o.ativo = False
+        o.rejeitado_em = datetime.datetime.now()
+        o.rejeitado_por = request.user
+        o.save()
+        messages.success(request, u'Proposta rejeitada com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_pesquisa_mercadologica/%s/' % item.item.id)
+    return render_to_response('rejeitar_pesquisa.html', locals(), context_instance=RequestContext(request))

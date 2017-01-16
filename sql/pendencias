@@ -24,9 +24,15 @@ OS RELATÓRIOS DE ADJUDICAÇÃO E HOMOLOGAÇÃO NÃO ESTÃO FUNCIONANDO; - OK;
 INCLUIR AS DEMAIS MODALIDADES DE LICITAÇÃO (CARTA CONVITE, TOMADA DE PREÇO, CONCORRÊNCIA E CONCURSO), LEMBRAR QUE NESSES CASOS NÃO EXISTE MAIS A FAZE DE LANCES, TERIA UM BOTÃO GERAR RESULTADO, NÃO TERIAS O RELATÓRIO DOS LANCES E MUDARIA O MENU ADJUDICAÇÃO E HOMOLOGAÇÃO PARA (HOMOLOGAÇÃO E ADJUDICAÇÃO) E OS DOIS SERIAM ASSINADOS PELO ORDENADOR DE DESPESA. - OK;
 
 DEFINIR COMO CHAMAR PROXIMO QUANDO DESCLASSIFICAR PARTICIPANTE EM CONVITE; - OK;
+
+---------------------------------------------------------------------------------------
+
+Quando um secretaria beneficiada de um pedido comum, for informar a seus quantitativos de um licitação de vários interessados, ao clicar no botão informar quantidade do item, abrir a tela de informar o número do memorando, o objeto e a justificativa, só depois aparecer o quandro para informar os quantitativos, pois a secretaria também vai gerar um memorando e a lista de materiais, igual a um pedido normal;
+
+
 -----------------------------------------------
 
-VERIFICAR ERRO NO RETORNO NO PREGAO QUANDO CLICA EM PROXIMO ITEM E TEVE EMPATE
+
 
 VERIFICAR ERRO NO TERMO DE HOMOLOGACAO E ADJUDICACAO EM RELACAO A CHAVE DO FORNECEDOR 
 

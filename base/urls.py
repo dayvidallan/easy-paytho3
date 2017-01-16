@@ -126,6 +126,9 @@ urlpatterns = patterns('base.views',
     url(r'^editar_pregao/(?P<pregao_id>\d+)/$', views.editar_pregao, name='editar_pregao'),
     url(r'^upload_termo_homologacao/(?P<pregao_id>\d+)/$', views.upload_termo_homologacao, name='upload_termo_homologacao'),
     url(r'^gerar_resultado_licitacao/(?P<pregao_id>\d+)/$', views.gerar_resultado_licitacao, name='gerar_resultado_licitacao'),
+    url(r'^cadastrar_anexo_contrato/(?P<contrato_id>\d+)/$', views.cadastrar_anexo_contrato, name='cadastrar_anexo_contrato'),
+    url(r'^documentos_atas/(?P<solicitacao_id>\d+)/$', views.documentos_atas, name='documentos_atas'),
+    url(r'^rejeitar_pesquisa/(?P<item_pesquisa_id>\d+)/$', views.rejeitar_pesquisa, name='rejeitar_pesquisa'),
 
 
 

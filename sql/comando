@@ -46,3 +46,6 @@ sudo supervisorctl restart all
 
 sudo service nginx restart
 
+
+sudo su - postgres
+pg_dump postgres > postgres_db.bak

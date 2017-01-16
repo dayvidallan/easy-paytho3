@@ -1,8 +1,19 @@
-{% extends super_template|default:"admin/base_modal.html" %}
+{% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
-
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{item.solicitacao.id}}/">{{item.solicitacao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
 {% block content %}
+        <div class="pull-right">
+            <a class="btn btn-info" href="/base/itens_solicitacao/{{item.solicitacao.id}}/">Voltar</a>
+
+        </div>
+        <br><br>
         <h2>{{ titulo }}</h2>
         <table  width=100% class="table table-bordered table-condensed table-striped">
             <tr>
@@ -21,6 +32,7 @@
                     <th>Origem</th>
                     <th>Marca</th>
                     <th>Valor Máximo</th>
+                    <th>Situação</th>
                     <th>Proposta</th>
                 </thead>
                 <tbody>
@@ -37,11 +49,21 @@
                             <td>{{ pesquisa.marca }}</td>
                             <td>{{ pesquisa.valor_maximo }}</td>
                             <td>
-                                {% if pesquisa.pesquisa.arquivo %}
-                                    <a href="/media/{{ pesquisa.pesquisa.arquivo }}" target="_blank">Ver</a></td>
+                                {% if pesquisa.ativo %}
+                                    <font color="green">Ativo</font>
                                 {% else %}
-                                    <font color="red">Não enviou arquivo</font>
+                                    <font color="red">Rejeitado ({{pesquisa.motivo_rejeicao}})</font>
+                                {% endif%}
+                            </td>
+                            <td>
+                                {% if pesquisa.pesquisa.arquivo %}
+                                    <a href="/media/{{ pesquisa.pesquisa.arquivo }}" class="btn btn-default btn-sm" target="_blank">Visualizar</a>
+
                                 {% endif %}
+                                {% if pesquisa.ativo %}
+                                    <a href="/base/rejeitar_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Rejeitar</a>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     <tr>

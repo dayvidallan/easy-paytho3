@@ -12,7 +12,7 @@
             <table class="table table-bordered table-condensed table-striped">
                 <tr>
                     <th><b>Nº Edital</b></th>
-                    <td>{{ pregao.num_processo }}</td>
+                    <td>{{ pregao.num_pregao }}</td>
                 </tr>
                 <tr>
                     <th><b>Objeto</b></th>
@@ -38,7 +38,7 @@
                     <tr>
                         <th><b>Arquivos</b></th>
                         <td>
-                            {% for arquivo in pregao.anexopregao_set.all %}
+                            {% for arquivo in pregao.get_arquivos_publicos %}
                                 <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
                             {% endfor %}
                         </td>
