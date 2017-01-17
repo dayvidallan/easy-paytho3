@@ -48,7 +48,7 @@
                         </tr>
                     {% endif %}
                     {% if solicitacao.itemquantidadesecretaria_set.count > 1 %}
-                        {% for item in solicitacao.get_pedidos %}
+                        {% for item in solicitacao.get_pedidos_secretarias %}
                             <tr>
                                 <td>Relação de Materiais da Solicitação - Pedido {{ item.secretaria }}</td>
                                 <td><a class="btn btn-info btn-sm" href="/lista_materiais_por_secretaria/{{solicitacao.id}}/{{item.secretaria.id}}/">Ver Documento</a></td>
