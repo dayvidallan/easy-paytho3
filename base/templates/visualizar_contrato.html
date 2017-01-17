@@ -376,22 +376,24 @@
             <br><br>
 
 
-            {%  if contrato.anexocontrato_set.exists %}
-                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
-                        <thead>
+
+            <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th width="10%">Data</th>
+                            <th>Arquivo</th>
+                            <td>Documento Público</td>
+                            <th>Cadastrado Por</th>
+                            <th>Cadastrado Em</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% if contrato.eh_registro_preco %}
                             <tr>
-                                <th>Nome</th>
-                                <th width="10%">Data</th>
-                                <th>Arquivo</th>
-                                <td>Documento Público</td>
-                                <th>Cadastrado Por</th>
-                                <th>Cadastrado Em</th>
-                                <th>Opções</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Ata de Registro de Preço</td>
+                                <td>Modelo de Ata de Registro de Preço</td>
                                 <td> - </td>
                                 <td><a href="/base/relatorio_ata_registro_preco/{{ contrato.pregao.pk }}/">Ver arquivo</a></td>
                                 <td><font color="red">Não</font></td>
@@ -399,33 +401,42 @@
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
-                            {%  for item in contrato.anexocontrato_set.all %}
+                        {% else %}
+                            <tr>
+                                <td>Modelo de Contrato</td>
+                                <td> - </td>
+                                <td><a href="">Ver arquivo</a></td>
+                                <td><font color="red">Não</font></td>
+                                <td>Gerado Automaticamente Pelo Sistema</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        {% endif %}
+                        {%  for item in contrato.anexocontrato_set.all %}
 
-                                <tr>
-                                    <td>{{ item.nome }}</td>
-                                    <td>{{ item.data }}</td>
-                                    <td><a href="/media/{{ item.arquivo }}">Ver arquivo</a></td>
-                                    <td>
-                                        {% if item.publico %}
-                                            <font color="green">Sim</font>
-                                        {% else %}
-                                            <font color="red">Não</font>
-                                        {% endif%}
-                                    </td>
-                                    <td>{{ item.cadastrado_por }}</td>
-                                    <td>{{ item.cadastrado_em }}</td>
-                                    <td>
-                                        {% if item.cadastrado_por == request.user %}
-                                            <a href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-danger">Apagar</a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-            {% else %}
-                <p class="alert alert-warning">Nenhum anexo cadastrado.</p>
-            {% endif %}
+                            <tr>
+                                <td>{{ item.nome }}</td>
+                                <td>{{ item.data }}</td>
+                                <td><a href="/media/{{ item.arquivo }}">Ver arquivo</a></td>
+                                <td>
+                                    {% if item.publico %}
+                                        <font color="green">Sim</font>
+                                    {% else %}
+                                        <font color="red">Não</font>
+                                    {% endif%}
+                                </td>
+                                <td>{{ item.cadastrado_por }}</td>
+                                <td>{{ item.cadastrado_em }}</td>
+                                <td>
+                                    {% if item.cadastrado_por == request.user %}
+                                        <a href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
 
         </div>
    </div>

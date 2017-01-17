@@ -1556,6 +1556,9 @@ class Contrato(models.Model):
             return 1
         return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].ordem + 1
 
+    def eh_registro_preco(self):
+        return self.pregao.eh_ata_registro_preco
+
 
 
 class Aditivo(models.Model):
