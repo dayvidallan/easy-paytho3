@@ -3160,8 +3160,11 @@ def lista_materiais(request, solicitacao_id):
     pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
     itens = solicitacao.itemsolicitacaolicitacao_set.all()
     total = 0
-    for item in itens:
-        total += item.quantidade * item.valor_medio
+    if pode_ver_preco:
+        for item in itens:
+            if item.valor_medio:
+                total += item.quantidade * item.valor_medio
+
     data = {'solicitacao': solicitacao, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
 
     template = get_template('lista_materiais.html')
