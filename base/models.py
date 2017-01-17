@@ -260,6 +260,16 @@ class SolicitacaoLicitacao(models.Model):
                 return False
         return True
 
+    def get_pedidos_secretarias(self):
+        ids= list()
+        ids_secretaria = list()
+        for item in ItemQuantidadeSecretaria.objects.filter(solicitacao=self):
+            if item.secretaria.id not in ids_secretaria:
+                ids.append(item.id)
+                ids_secretaria.append(item.secretaria.id)
+
+        return ItemQuantidadeSecretaria.objects.filter(id__in=ids)
+
 
     def pode_enviar_para_compra(self):
         return self.situacao == SolicitacaoLicitacao.CADASTRADO and self.tem_item_cadastrado()
@@ -1428,6 +1438,8 @@ class ItemQuantidadeSecretaria(models.Model):
 
     def get_total(self):
         return self.quantidade * self.item.valor_medio
+
+
 
 class MaterialConsumo(models.Model):
     nome = models.TextField(u'Nome', max_length=1024, unique=True, help_text=u"Máximo de 1024 caracteres.")
