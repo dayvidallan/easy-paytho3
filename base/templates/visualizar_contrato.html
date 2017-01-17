@@ -200,7 +200,7 @@
 
             <tr>
                 <td>{{ contrato.numero }}</td>
-                <td>{{ contrato.pregao.num_processo}}</td>
+                <td>{{ contrato.solicitacao.processo }}</td>
                 <td>{{ contrato.solicitacao.objeto }}</td>
                 <td>{{ contrato.data_inicio }}</td>
                 <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>

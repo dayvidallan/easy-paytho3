@@ -4,14 +4,14 @@
 
 {% block content %}
 
-    <br><h3>Editais - Pregão Presencial</h3><br>
+    <br><h3>Editais - Licitações</h3><br>
 
     {%  if pregoes.exists %}
         {%  for pregao in pregoes %}
             ----------------------------------------------------------------<br><br>
             <table class="table table-bordered table-condensed table-striped">
                 <tr>
-                    <th><b>Nº Edital</b></th>
+                    <th width="20%"><b>{{ pregao.modalidade }} N°</b></th>
                     <td>{{ pregao.num_pregao }}</td>
                 </tr>
                 <tr>

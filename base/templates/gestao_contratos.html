@@ -208,8 +208,8 @@
                     {% for item in contratos %}
                         <tr>
                             <td>{{ item.numero }}</td>
-                            <td>{{ item.pregao.num_processo}}</td>
-                            <td>{{ item.pregao.objeto }}</td>
+                            <td>{{ item.pregao.solicitacao.processo}}</td>
+                            <td>{{ item.pregao.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
                             <td>{{ item.get_carater_continuado }}</td>
@@ -249,8 +249,8 @@
                     {% for item in atas %}
                         <tr>
                             <td>{{ item.numero }}</td>
-                            <td>{{ item.pregao.num_processo}}</td>
-                            <td>{{ item.solicitacao.objeto }}</td>
+                            <td>{{ item.pregao.solicitacao.processo}}</td>
+                            <td>{{ item.pregao.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
                             <td>R$ {{ item.valor }}</td>

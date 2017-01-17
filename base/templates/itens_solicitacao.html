@@ -44,7 +44,12 @@
                 <a href="/base/ver_processo/{{solicitacao.processo.id}}/" class="btn btn-info">Capa do Processo</a>
              {% endif %}
              {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.contrato_set.exists and solicitacao.get_pregao  and solicitacao.get_pregao.data_homologacao %}
-                <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
+                {% if solicitacao.get_pregao.eh_ata_registro_preco %}
+                    <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Ata de Registro de Preço</a>
+
+                {% else %}
+                    <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
+                {% endif %}
              {% endif %}
 
              {% if perms.base.pode_cadastrar_solicitacao %}
@@ -238,7 +243,10 @@
         <div class="pull-left">
             {% if perms.base.pode_abrir_processo and solicitacao.processo %}
                 <a href="/base/ver_processo/{{solicitacao.processo.id}}/" class="btn btn-info">Capa do Processo</a>
-             {% endif %}
+            {% endif %}
+            {% if perms.base.pode_abrir_processo and not solicitacao.processo and recebida_no_setor %}
+                <a class="btn btn-success" href="/base/abrir_processo_para_solicitacao/{{ solicitacao.pk }}/">Abrir Processo</a>
+            {% endif %}
 
             {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra %}
                 <a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a>
@@ -248,6 +256,7 @@
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
                 <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
             {% endif %}
+
             <a class="btn btn-default" href="/base/lista_documentos/{{ solicitacao.pk }}/">Documentos</a>
         </div>
         <br><br>

@@ -58,6 +58,7 @@
                                 </tr>
                                 <tr>
                                     <th>Item</th>
+                                    <th>Material</th>
                                     <th>Marca</th>
                                     <th>Empresa</th>
                                     <th>Valor</th>
@@ -73,6 +74,7 @@
                                 {% for resultado in lote.get_itens_do_lote %}
                                     <tr>
                                         <td>{{ resultado }}</td>
+                                        <td>{{ resultado.material }}</td>
                                         <td>{{ resultado.get_marca_item_lote|default_if_none:"-" }}</td>
                                         <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
                                         <td>{{ resultado.get_valor_item_lote }}</td>
@@ -104,6 +106,7 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
+                                <th>Material</th>
                                 <th>Marca</th>
                                 <th>Empresa</th>
                                 <th>Valor</th>
@@ -118,6 +121,7 @@
                             {% for resultado in resultados %}
                                 <tr>
                                     <td>{{ resultado.item }}</td>
+                                    <td>{{ resultado.material }}</td>
                                     <td>{{ resultado.marca }}</td>
                                     <td>{{ resultado.participante }}</td>
                                     <td>{{ resultado.valor }}</td>

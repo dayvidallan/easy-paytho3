@@ -629,14 +629,14 @@ def rejeitar_solicitacao(request, solicitacao_id):
 
 @login_required()
 def cadastrar_pregao(request, solicitacao_id):
-    title=u'Cadastrar Pregão'
+    title=u'Cadastrar Licitação'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     form = PregaoForm(request.POST or None, solicitacao=solicitacao)
     if form.is_valid():
         form.save()
         solicitacao.situacao = SolicitacaoLicitacao.EM_LICITACAO
         solicitacao.save()
-        messages.success(request, u'Pregão cadastrado com sucesso.')
+        messages.success(request, u'Licitação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/' % form.instance.id)
 
     return render_to_response('cadastrar_pregao.html', locals(), RequestContext(request))

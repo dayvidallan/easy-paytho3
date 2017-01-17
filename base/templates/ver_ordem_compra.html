@@ -136,77 +136,78 @@ ul{
     </center>
     <br>
     <table border="1" width="100%" cellpadding="5" cellspacing="5" align="center">
-            <thead>
-                <tr>
-                    <th width="60%">Referente ao Processo N°</th><td>{{ solicitacao.num_processo }}</td>
-                    <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
-                </tr>
+        <thead>
+            <tr>
+                <th width="60%">Referente ao Processo N°</th><td>{{ solicitacao.num_processo }}</td>
+                <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
+            </tr>
 
-                <tr>
-                    <th>Projeto/Atividade</th><td colspan="3">{{ ordem.projeto_atividade_num }} - {{ ordem.projeto_atividade_descricao }}</td>
+            <tr>
+                <th>Projeto/Atividade</th><td colspan="3">{{ ordem.projeto_atividade_num }} - {{ ordem.projeto_atividade_descricao }}</td>
 
-                </tr>
-                <tr>
-                   <th>Elemento de Despesa</th><td colspan="3">{{ ordem.programa_num }} - {{ ordem.programa_descricao }}</td>
+            </tr>
+            <tr>
+                <th>Programa</th><td colspan="3">{{ ordem.programa_num }} - {{ ordem.programa_descricao }}</td>
+            </tr>
+            <tr>
+                <th>Fonte</th><td colspan="3">{{ ordem.fonte_num }} - {{ ordem.fonte_descricao }}</td>
 
-                </tr>
-                <tr>
-                    <th>Fonte</th><td colspan="3">{{ ordem.elemento_despesa_num }} - {{ ordem.elemento_despesa_descricao }}</td>
+            </tr>
+            <tr>
+               <th>Elemento de Despesa</th><td colspan="3">{{ ordem.elemento_despesa_num }} - {{ ordem.elemento_despesa_descricao }}</td>
 
-                </tr>
+            </tr>
+        </thead>
+    </table>
+    <br><br>
+    <div style="text-align:justify; border-style: solid; border-width:1px;padding:5px; margin:5px;" >
+        1 – DAS SANÇÕES ADMINISTRATIVAS:<br>
 
+        1.1 – Nos termos do art. 7º da Lei nº 10.520/2002, ficará impedida de licitar e contratar com o {{ configuracao.municipio}}, pelo prazo de até 5 (CINCO) ANOS, sem prejuízo das multas previstas neste Edital e das demais penalidades legais, a licitante que:<br>
 
-            </thead>
-        </table>
-        <br><br>
-        <div style="text-align:justify; border-style: solid; border-width:1px;padding:5px; margin:5px;" >
-                            1 – DAS SANÇÕES ADMINISTRATIVAS:<br>
+        a) Não retirar a ordem de compra, quando convocada dentro do prazo de vigência do contrato;<br>
+        b) Apresentar documentação falsa;<br>
+        c) Deixar de entregar os documentos exigidos para o certame;<br>
+        d) Ensejar o retardamento, falhar ou fraudar a execução da obrigação assumida;<br>
+        e) Não mantiver a proposta;<br>
+        f) Comportar-se de modo inidôneo ou cometer fraude fiscal.<br>
 
-1.1 – Nos termos do art. 7º da Lei nº 10.520/2002, ficará impedida de licitar e contratar com o {{ configuracao.municipio}}, pelo prazo de até 5 (CINCO) ANOS, sem prejuízo das multas previstas neste Edital e das demais penalidades legais, a licitante que:<br>
+        1.2 – Para fins de aplicação de penalidades, a autorização de compra, ordem de execução de serviço ou outro instrumento semelhante tem a mesma eficácia jurídica que o instrumento contratual, devendo consignar quais as sanções previstas em caso de falta na execução do contrato;<br>
 
-a) Não retirar a ordem de compra, quando convocada dentro do prazo de vigência do contrato;<br>
-b) Apresentar documentação falsa;<br>
-c) Deixar de entregar os documentos exigidos para o certame;<br>
-d) Ensejar o retardamento, falhar ou fraudar a execução da obrigação assumida;<br>
-e) Não mantiver a proposta;<br>
-f) Comportar-se de modo inidôneo ou cometer fraude fiscal.<br>
+        1.3 – Nos casos em que a entrega do produto ou a prestação do serviço ocorrer de forma fracionada, a multa incidirá apenas sobre a parcela que estiver em atraso;<br>
 
-1.2 – Para fins de aplicação de penalidades, a autorização de compra, ordem de execução de serviço ou outro instrumento semelhante tem a mesma eficácia jurídica que o instrumento contratual, devendo consignar quais as sanções previstas em caso de falta na execução do contrato;<br>
+        1.4 – Atrasar injustificadamente a execução do objeto licitado, após o prazo preestabelecido neste Edital, sujeitará o contratado a multa, na forma estabelecida a seguir:<br>
+        a) 0,3% (três décimos por cento) por dia de atraso, até o máximo de 15 (quinze) dias; e<br>
+        b) 2% (dois por cento) a partir do 16º (décimo sexto) dia, até o 30º (trigésimo) dia de atraso, configurando-se após esse prazo a inexecução do contrato.<br>
 
-1.3 – Nos casos em que a entrega do produto ou a prestação do serviço ocorrer de forma fracionada, a multa incidirá apenas sobre a parcela que estiver em atraso;<br>
+        1.5 – As multas a que se refere o item acima incidem sobre o valor contratado e serão descontadas dos pagamentos eventualmente devidos em razão da presente contratação ou, quando for o caso, cobradas judicialmente.<br>
 
-1.4 – Atrasar injustificadamente a execução do objeto licitado, após o prazo preestabelecido neste Edital, sujeitará o contratado a multa, na forma estabelecida a seguir:<br>
-a) 0,3% (três décimos por cento) por dia de atraso, até o máximo de 15 (quinze) dias; e<br>
-b) 2% (dois por cento) a partir do 16º (décimo sexto) dia, até o 30º (trigésimo) dia de atraso, configurando-se após esse prazo a inexecução do contrato.<br>
+        1.6 – A recusa injustificada da adjudicatária em assinar o contrato, aceitar ou retirar o instrumento equivalente, dentro do prazo estabelecido pela CONTRATANTE, caracteriza o descumprimento total das obrigações assumidas, sujeitando-a as penalidades legalmente estabelecidas, o que não se aplica aos licitantes remanescentes.<br>
 
-1.5 – As multas a que se refere o item acima incidem sobre o valor contratado e serão descontadas dos pagamentos eventualmente devidos em razão da presente contratação ou, quando for o caso, cobradas judicialmente.<br>
+        1.7 – Pela inexecução total ou parcial da avença a CONTRATANTE, poderá aplicar as seguintes sanções:<br>
+        a) Advertência;<br>
+        b) Multa por atraso a cada 30 dias após o prazo previsto na alínea “b”, do subitem 20.2, no percentual de 5% (cinco por cento), calculada sobre o valor do contrato, caso não sejam cumpridas fielmente as condições pactuadas;<br>
+        c) Suspensão temporária de participação em licitação e impedimento de contratar com a Administração por período não superior a cinco (5) anos; e<br>
+        d) Declaração de inidoneidade para licitar ou contratar com a Administração Pública por período não superior a cinco (5) anos.<br>
+        Parágrafo Único: a aplicação da sanção prevista na alínea “b”, não prejudica a incidência cumulativa das penalidades das alíneas “a”, “c” e “d”, principalmente, sem prejuízo de outras hipóteses, em caso de reincidência de atraso na entrega do objeto licitado ou caso haja cumulação de inadimplemento de eventuais cotas mensais, expressamente prevista, facultada a defesa prévia do interessado, no prazo de dez (10) dias úteis.<br>
 
-1.6 – A recusa injustificada da adjudicatária em assinar o contrato, aceitar ou retirar o instrumento equivalente, dentro do prazo estabelecido pela CONTRATANTE, caracteriza o descumprimento total das obrigações assumidas, sujeitando-a as penalidades legalmente estabelecidas, o que não se aplica aos licitantes remanescentes.<br>
+        1.8 – Ocorrendo a inexecução do contrato, reserva-se ao órgão CONTRATANTE o direito de acatar a oferta que se apresentar como aquela mais vantajosa, pela ordem de classificação.<br>
 
-1.7 – Pela inexecução total ou parcial da avença a CONTRATANTE, poderá aplicar as seguintes sanções:<br>
-a) Advertência;<br>
-b) Multa por atraso a cada 30 dias após o prazo previsto na alínea “b”, do subitem 20.2, no percentual de 5% (cinco por cento), calculada sobre o valor do contrato, caso não sejam cumpridas fielmente as condições pactuadas;<br>
-c) Suspensão temporária de participação em licitação e impedimento de contratar com a Administração por período não superior a cinco (5) anos; e<br>
-d) Declaração de inidoneidade para licitar ou contratar com a Administração Pública por período não superior a cinco (5) anos.<br>
-Parágrafo Único: a aplicação da sanção prevista na alínea “b”, não prejudica a incidência cumulativa das penalidades das alíneas “a”, “c” e “d”, principalmente, sem prejuízo de outras hipóteses, em caso de reincidência de atraso na entrega do objeto licitado ou caso haja cumulação de inadimplemento de eventuais cotas mensais, expressamente prevista, facultada a defesa prévia do interessado, no prazo de dez (10) dias úteis.<br>
+        1.9 – A aplicação das penalidades previstas nesta Cláusula será feita por intermédio da autoridade competente, na forma legalmente prevista.<br>
 
-1.8 – Ocorrendo a inexecução do contrato, reserva-se ao órgão CONTRATANTE o direito de acatar a oferta que se apresentar como aquela mais vantajosa, pela ordem de classificação.<br>
+        2 – OBSERVAÇÕES IMPORTANTES:<br>
 
-1.9 – A aplicação das penalidades previstas nesta Cláusula será feita por intermédio da autoridade competente, na forma legalmente prevista.<br>
+        2.1 – A presente Ordem de Compra/Serviço constitui o modelo simplificado de contrato de compra e venda/prestação de serviço e foi celebrado de acordo com a parte final do artigo 62, da Lei nº 8.666, de 12 de junho de 1993.<br>
 
-2 – OBSERVAÇÕES IMPORTANTES:<br>
+        2.2 – Para quaisquer esclarecimento complementar procurar o(a) Sr(a). ________________, através do telefone (84) _________.<br>
 
-2.1 – A presente Ordem de Compra/Serviço constitui o modelo simplificado de contrato de compra e venda/prestação de serviço e foi celebrado de acordo com a parte final do artigo 62, da Lei nº 8.666, de 12 de junho de 1993.<br>
+        2.3 – O número desta ordem e o empenho deve constar, obrigatoriamente, em todos os documentos do contratado.<br>
 
-2.2 – Para quaisquer esclarecimento complementar procurar o(a) Sr(a). ________________, através do telefone (84) _________.<br>
+        2.4 – O objeto adquirido ou o serviço prestado deve ser entregue acompanhado de toda documentação fiscal necessária a liquidação da despesa.<br>
 
-2.3 – O número desta ordem e o empenho deve constar, obrigatoriamente, em todos os documentos do contratado.<br>
+        2.5 – Fica acordado que ao Órgão Contratante fica reservado o direito de recusar o material, obra ou serviço desta ordem, caso não sejam obedecidas as especificações desta Ordem<br>
 
-2.4 – O objeto adquirido ou o serviço prestado deve ser entregue acompanhado de toda documentação fiscal necessária a liquidação da despesa.<br>
-
-2.5 – Fica acordado que ao Órgão Contratante fica reservado o direito de recusar o material, obra ou serviço desta ordem, caso não sejam obedecidas as especificações desta Ordem<br>
-
-<br>
+        <br>
 
         <div style="text-align:center">
             AUTORIZO
@@ -215,16 +216,10 @@ Parágrafo Único: a aplicação da sanção prevista na alínea “b”, não p
             _______________________________________________________________<br><br>
             Secretário Municipal de {{configuracao.municipio }}
         </div>
-</div>
+    </div>
 
 
 </center>
-
-
-
-
-
-
 
 {% endblock %}
 

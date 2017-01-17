@@ -135,16 +135,17 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
 
 
 class PregaoForm(forms.ModelForm):
-
-     class Meta:
+    num_processo = forms.CharField(label=u'Número do Processo', required=True)
+    class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_pregao', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
 
-     def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PregaoForm, self).__init__(*args, **kwargs)
         if not self.instance.id:
             self.fields['solicitacao'] = forms.ModelChoiceField(label=u'Solicitação', queryset=SolicitacaoLicitacao.objects.filter(id=self.solicitacao.id), initial=0)
+            self.fields['solicitacao'].widget.attrs = {'readonly': 'True'}
         else:
             del self.fields['solicitacao']
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
@@ -154,7 +155,11 @@ class PregaoForm(forms.ModelForm):
         if not self.instance.pk:
             self.fields['num_pregao'].initial = self.solicitacao.get_proximo_pregao()
 
-     def clean(self):
+        if self.solicitacao.processo:
+            self.fields['num_processo'].initial = self.solicitacao.processo
+            self.fields['num_processo'].widget.attrs = {'readonly': 'True'}
+
+    def clean(self):
         if Pregao.objects.filter(solicitacao=self.solicitacao).exists():
             self.add_error('solicitacao', u'Já existe um pregão para esta solicitação.')
 
