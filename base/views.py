@@ -3151,6 +3151,13 @@ def gerar_resultado_licitacao(request, pregao_id):
 def lista_materiais(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
     destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos'))
@@ -3165,7 +3172,7 @@ def lista_materiais(request, solicitacao_id):
             if item.valor_medio:
                 total += item.quantidade * item.valor_medio
 
-    data = {'solicitacao': solicitacao, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
+    data = {'solicitacao': solicitacao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
 
     template = get_template('lista_materiais.html')
 
