@@ -790,6 +790,11 @@ class ItemSolicitacaoLicitacao(models.Model):
         lote = ItemLote.objects.filter(item=self)[0].lote
         return lote.get_empresa_vencedora()
 
+    def get_total(self):
+        if self.valor_medio:
+            return self.quantidade * self.valor_medio
+        return 0
+
 class ItemLote(models.Model):
     lote = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'lote')
     item = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'item_do_lote')
