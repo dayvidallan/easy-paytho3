@@ -1296,7 +1296,7 @@ class ItemPesquisaMercadologica(models.Model):
 
 
 class ResultadoItemPregao(models.Model):
-    CLASSIFICADO = u'Habilitado'
+    CLASSIFICADO = u'Classificado'
     INABILITADO = u'Inabilitado'
     DESCLASSIFICADO = u'Desclassificado'
     RESULTADO_CHOICES = (
