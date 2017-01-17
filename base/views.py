@@ -3187,6 +3187,47 @@ def lista_materiais(request, solicitacao_id):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
+@login_required()
+def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    secretaria = get_object_or_404(Secretaria, pk=secretaria_id)
+
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
+    destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % solicitacao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
+    itens = ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao, secretaria=secretaria)
+    total = 0
+    if pode_ver_preco:
+        for item in itens:
+            if item.item.valor_medio:
+                total += item.quantidade * item.item.valor_medio
+
+    data = {'itens': itens, 'solicitacao': solicitacao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
+
+    template = get_template('lista_materiais_por_secretaria.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 @login_required()
 def documentos_atas(request, solicitacao_id):

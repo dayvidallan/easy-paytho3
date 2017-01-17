@@ -132,6 +132,9 @@ urlpatterns = patterns('base.views',
     url(r'^cadastrar_contrato/(?P<solicitacao_id>\d+)/$', views.cadastrar_contrato, name='cadastrar_contrato'),
 
 
+
+    url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),
+
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),
     url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
 

@@ -1426,6 +1426,8 @@ class ItemQuantidadeSecretaria(models.Model):
     avaliado_em = models.DateTimeField(u'Avaliado Em', null=True, blank=True)
     avaliado_por = models.ForeignKey(User, related_name=u'pedido_avaliado_por', null=True)
 
+    def get_total(self):
+        return self.quantidade * self.item.valor_medio
 
 class MaterialConsumo(models.Model):
     nome = models.TextField(u'Nome', max_length=1024, unique=True, help_text=u"Máximo de 1024 caracteres.")
