@@ -1160,7 +1160,12 @@ def cadastrar_anexo_contrato(request, contrato_id):
 def cadastrar_contrato(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
-    title=u'Cadastrar Contrato'
+
+    if not pregao.eh_ata_registro_preco:
+        title=u'Cadastrar Contrato'
+    else:
+        title=u'Cadastrar Ata de Registro de Preço'
+
     form = ContratoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         o = form.save(False)
@@ -1168,7 +1173,7 @@ def cadastrar_contrato(request, solicitacao_id):
         o.pregao = pregao
         o.valor = pregao.get_valor_total()
         o.save()
-        messages.success(request, u'Contrato cadastrado com sucesso.')
+        messages.success(request, u'Cadastrado realizado com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
 
     return render_to_response('cadastrar_contrato.html', locals(), RequestContext(request))
@@ -2495,6 +2500,13 @@ def apagar_anexo_pregao(request, item_id):
 def gerar_pedido_fornecedores(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
     destino_arquivo = u'upload/pedidos/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pedidos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/pedidos'))
@@ -2533,7 +2545,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
+    data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
 
     template = get_template('gerar_pedido_fornecedores.html')
 
