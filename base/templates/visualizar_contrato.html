@@ -262,6 +262,7 @@
                                                     </tr>
                                                     <tr>
                                                         <th>Item</th>
+                                                        <th>Material</th>
                                                         <th>Marca</th>
                                                         <th>Empresa</th>
                                                         <th>Valor</th>
@@ -274,6 +275,7 @@
                                                     {% for item in lote.get_itens_do_lote %}
                                                         <tr>
                                                             <td>{{ item }}</td>
+                                                            <td>{{ item.material|truncatechars:500 }}</td>
                                                             <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
                                                             <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
                                                             <td>{{ item.get_valor_item_lote }}</td>
