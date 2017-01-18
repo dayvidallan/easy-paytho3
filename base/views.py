@@ -939,7 +939,7 @@ def planilha_propostas(request, solicitacao_id):
     nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor')
     file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls')
     rb = open_workbook(file_path,formatting_info=True)
-    
+
     wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
     w_sheet.write(1, 1, solicitacao.get_pregao().num_pregao)
@@ -954,7 +954,7 @@ def planilha_propostas(request, solicitacao_id):
         w_sheet.write(row_index, 4, item.quantidade)
         w_sheet.write(row_index, 5, item.valor_medio)
 
-    salvou = nome + u'_%s' % pregao.num_pregao + '.xls'
+    salvou = nome + u'_%s' % pregao.id + '.xls'
     wb.save(salvou)
 
     arquivo = open(salvou, "rb")
