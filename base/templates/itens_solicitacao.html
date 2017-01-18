@@ -295,6 +295,7 @@
                 <thead>
                     <tr>
                         <th>Item</th>
+                        <th>Material</th>
                         <th>Marca</th>
                         <th>Empresa</th>
                         <th>Valor</th>
@@ -306,6 +307,7 @@
                         {% if eh_lote %}
                             <tr>
                                 <td>{{ pedido.item }}</td>
+                                <td>{{ pedido.item.material }}</td>
                                 <td>{{ pedido.item.get_marca_item_lote }}</td>
                                 <td>{{ pedido.item.get_empresa_item_lote }}</td>
                                 <td>{{ pedido.item.get_valor_item_lote }}</td>
@@ -316,6 +318,7 @@
                         {% else %}
                             <tr>
                                 <td>{{ pedido.resultado.item }}</td>
+                                <td>{{ pedido.resultado.item.material }}</td>
                                 <td>{{ pedido.resultado.marca }}</td>
                                 <td>{{ pedido.resultado.participante }}</td>
                                 <td>{{ pedido.resultado.valor }}</td>
