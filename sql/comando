@@ -49,3 +49,5 @@ sudo service nginx restart
 
 sudo su - postgres
 pg_dump postgres > postgres_db.bak
+
+mkvirtualenv licita --python=/usr/bin/python2.7 
