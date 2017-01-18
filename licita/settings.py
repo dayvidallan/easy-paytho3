@@ -19,7 +19,6 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'django_extensions',
     'compressor',
-    'dal',
     'dal_select2',
     'ckeditor',
     # Django apps
