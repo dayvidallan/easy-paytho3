@@ -1578,44 +1578,42 @@ def importar_itens(request, solicitacao_id):
             except XLRDError:
                 raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-            for row in range(0, sheet.nrows):
+            for row in range(3, sheet.nrows):
 
                 #codigo = unicode(sheet.cell_value(row, 0)).strip()
                 especificacao = unicode(sheet.cell_value(row, 0)).strip()
                 unidade = unicode(sheet.cell_value(row, 1)).strip()
                 qtd = unicode(sheet.cell_value(row, 2)).strip()
-                if row == 0:
-                    if especificacao != u'Especificacao' or unidade != u'Unidade' or qtd != u'Quantidade':
+                if row == 3:
+                    if especificacao != u'ESPECIFICAÇÃO DO PRODUTO' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
                         raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
                 else:
                     if especificacao and unidade and qtd:
                         if TipoUnidade.objects.filter(nome__icontains=unidade).exists():
                             un = TipoUnidade.objects.filter(nome__icontains=unidade)[0]
-                            novo_item = ItemSolicitacaoLicitacao()
-                            novo_item.solicitacao = solicitacao
-                            novo_item.item = row
-
-                            if MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0)).exists():
-                                material = MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0))[0]
-                            else:
-                                material = MaterialConsumo()
-                                if MaterialConsumo.objects.exists():
-                                    id = MaterialConsumo.objects.latest('id')
-                                    material.id = id.pk+1
-                                    material.codigo = id.pk+1
-                                else:
-                                    material.id = 1
-                                    material.codigo = 1
-                                material.nome = especificacao
-                                material.save()
-                            novo_item.material = material
-                            novo_item.unidade = un
-                            novo_item.quantidade = int(sheet.cell_value(row, 2))
-                            novo_item.save()
                         else:
-                            raise Exception(u'Unidade Inválida.')
+                            un = TipoUnidade.objects.get_or_create(nome=unidade)[0]
+                        novo_item = ItemSolicitacaoLicitacao()
+                        novo_item.solicitacao = solicitacao
+                        novo_item.item = row
 
-
+                        if MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0)).exists():
+                            material = MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0))[0]
+                        else:
+                            material = MaterialConsumo()
+                            if MaterialConsumo.objects.exists():
+                                id = MaterialConsumo.objects.latest('id')
+                                material.id = id.pk+1
+                                material.codigo = id.pk+1
+                            else:
+                                material.id = 1
+                                material.codigo = 1
+                            material.nome = especificacao
+                            material.save()
+                        novo_item.material = material
+                        novo_item.unidade = un
+                        novo_item.quantidade = int(sheet.cell_value(row, 2))
+                        novo_item.save()
 
 
         messages.success(request, u'Itens cadastrados com sucesso.')
