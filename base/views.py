@@ -935,16 +935,11 @@ def planilha_propostas(request, solicitacao_id):
     # workbook.save(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor_teste.xls'))
     from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
     from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
-    from xlwt import easyxf # http://pypi.python.org/pypi/xlwt
 
-    START_ROW = 297 # 0 based (subtract 1 from excel row number)
-    col_age_november = 1
-    col_summer1 = 2
-    col_fall1 = 3
     nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor')
     file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls')
     rb = open_workbook(file_path,formatting_info=True)
-    r_sheet = rb.sheet_by_index(0) # read only copy to introspect the file
+    
     wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
     w_sheet.write(1, 1, solicitacao.get_pregao().num_pregao)
