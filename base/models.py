@@ -1515,7 +1515,7 @@ class DotacaoOrcamentaria(models.Model):
 
 class OrdemCompra(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao)
-    numero = models.IntegerField(u'Número da Ordem')
+    numero = models.CharField(u'Número da Ordem', max_length=200)
     data = models.DateField(u'Data')
     projeto_atividade_num = models.CharField(u'Número do Projeto de Atividade', max_length=200, null=True, blank=True)
     projeto_atividade_descricao = models.CharField(u'Descrição do Projeto de Atividade', max_length=200, null=True, blank=True)
