@@ -224,11 +224,11 @@ def cadastra_proposta_pregao(request, pregao_id):
             except XLRDError:
                 raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-            for row in range(0, sheet.nrows):
+            for row in range(40, sheet.nrows):
                 try:
                     item = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 4)).strip() or None
-                    valor = unicode(sheet.cell_value(row, 5)).strip()
+                    marca = unicode(sheet.cell_value(row, 2)).strip() or None
+                    valor = unicode(sheet.cell_value(row, 6)).strip()
                     if row == 0:
                         if item != u'Item' or valor != u'Valor':
                             raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
@@ -920,40 +920,126 @@ def planilha_propostas(request, solicitacao_id):
     pregao = get_object_or_404(Pregao, solicitacao=solicitacao)
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
 
-    import xlwt
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=Proposta_%s.xls' % pregao.num_pregao
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet("Sheet1")
-    row_num = 0
+    # import xlwt
+    #
+    # workbook = xlwt.open_workbook(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls'))
+    #
+    #
+    # sheet = workbook.sheet_by_index(0)
+    #
+    # for row in range(0, sheet.nrows):
+    #     if row == 20:
+    #
+    #        sheet.write(row, 0, label = 'Row 0, Column 0 Value')
+    #
+    # workbook.save(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor_teste.xls'))
+    from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
+    from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
+    from xlwt import easyxf # http://pypi.python.org/pypi/xlwt
 
-    columns = [
-        (u"Item"),
-        (u"Material"),
-        (u"Unidade"),
-        (u"Quantidade"),
-        (u"Marca"),
-        (u"Valor"),
-    ]
+    START_ROW = 297 # 0 based (subtract 1 from excel row number)
+    col_age_november = 1
+    col_summer1 = 2
+    col_fall1 = 3
+    nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor')
+    file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls')
+    rb = open_workbook(file_path,formatting_info=True)
+    r_sheet = rb.sheet_by_index(0) # read only copy to introspect the file
+    wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+    w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+    w_sheet.write(1, 1, solicitacao.get_pregao().num_pregao)
+    w_sheet.write(2, 1, solicitacao.objetivo)
+    endereco = u'%s, dia %s às %s.' % (solicitacao.get_pregao().local, solicitacao.get_pregao().data_abertura, solicitacao.get_pregao().hora_abertura)
+    w_sheet.write(3, 1, endereco)
+    for idx, item in enumerate(itens, 0):
+        row_index = 40 + idx
+        w_sheet.write(row_index, 0, item.item)
+        w_sheet.write(row_index, 1, item.material.nome)
+        w_sheet.write(row_index, 3, item.unidade.nome)
+        w_sheet.write(row_index, 4, item.quantidade)
+        w_sheet.write(row_index, 5, item.valor_medio)
 
-    for col_num in xrange(len(columns)):
-        ws.write(row_num, col_num, columns[col_num])
+    salvou = nome + u'_%s' % pregao.num_pregao + '.xls'
+    wb.save(salvou)
 
-    for obj in itens:
-        row_num += 1
-        row = [
-            obj.item,
-            obj.material.nome,
-            obj.unidade.nome,
-            obj.quantidade,
-            '',
-            '',
-        ]
-        for col_num in xrange(len(row)):
-            ws.write(row_num, col_num, row[col_num])
+    arquivo = open(salvou, "rb")
 
-    wb.save(response)
+
+    content_type = 'application/vnd.ms-excel'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    nome_arquivo = salvou.split('/')[-1]
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(salvou)
     return response
+
+    # import ipdb; ipdb.set_trace()
+    # wb = load_workbook(filename = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xlsx'))
+    #
+    # wb = load_workbook(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xlsx'))
+    # sheet = wb.get_sheet_by_name('Sheet1')
+    # print sheet
+    # #
+    # # import ipdb; ipdb.set_trace()
+    # # stimulusTimes = [1, 2, 3]
+    # # reactionTimes = [2.3, 5.1, 7.0]
+    # #
+    # # for i in range(len(stimulusTimes)):
+    # #     sheet['A' + str(i + 6)].value = stimulusTimes[i]
+    # #     sheet['B' + str(i + 6)].value = reactionTimes[i]
+    # #
+    # # wb.save(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xlsx'))
+    #
+    #
+    #
+    #
+    #
+    #
+    # return
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    # import xlwt
+    # response = HttpResponse(content_type='application/ms-excel')
+    # response['Content-Disposition'] = 'attachment; filename=Proposta_%s.xls' % pregao.num_pregao
+    # wb = xlwt.Workbook(encoding='utf-8')
+    # ws = wb.add_sheet("Sheet1")
+    # row_num = 0
+    #
+    # columns = [
+    #     (u"Item"),
+    #     (u"Material"),
+    #     (u"Unidade"),
+    #     (u"Quantidade"),
+    #     (u"Marca"),
+    #     (u"Valor"),
+    # ]
+    #
+    # for col_num in xrange(len(columns)):
+    #     ws.write(row_num, col_num, columns[col_num])
+    #
+    # for obj in itens:
+    #     row_num += 1
+    #     row = [
+    #         obj.item,
+    #         obj.material.nome,
+    #         obj.unidade.nome,
+    #         obj.quantidade,
+    #         '',
+    #         '',
+    #     ]
+    #     for col_num in xrange(len(row)):
+    #         ws.write(row_num, col_num, row[col_num])
+    #
+    # wb.save(response)
+    # return response
 
 @login_required()
 def remover_participante(request, proposta_id, situacao):
