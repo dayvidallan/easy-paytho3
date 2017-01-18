@@ -2652,7 +2652,7 @@ def ver_ordem_compra(request, solicitacao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    data = {'solicitacao': solicitacao, 'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 
@@ -2694,7 +2694,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     for item in itens:
         total += item.get_total()
 
-    data = {'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor,  'data_emissao': data_emissao, 'ordem': ordem}
+    data = {'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
 
