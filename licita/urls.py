@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^newadmin/', include('newadmin.urls'))
 
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += [
 #     # Servindo os arquivos estáticos
