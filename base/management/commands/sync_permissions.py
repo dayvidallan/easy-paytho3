@@ -23,7 +23,8 @@
 from os.path import isfile
 
 from django.core.management.base import BaseCommand
-from django.db.models.loading import get_app, get_models
+#from django.db.models.loading import get_app, get_models
+from django.apps import apps as loader
 from django.utils import termcolors
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
@@ -62,8 +63,8 @@ class Command(BaseCommand):
 
             #recupera todas as permissões dos modelos do app
             try:
-                module = get_app(app)
-                for model in get_models(module):
+
+                for model in loader.get_models():
                     for permissao in model._meta.permissions:
                         module_permissions.append(u'%s.%s.%s' % (app, model.__name__.lower(), permissao[0]))
             except:
