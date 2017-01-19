@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, render
 from base.models import *
 from base.forms import *
 from django.contrib.auth.decorators import login_required
@@ -110,37 +110,37 @@ def index(request):
                 continue
 
 
-    return render_to_response('index.html', locals(), RequestContext(request))
+    return render(request, 'index.html', locals(), RequestContext(request))
 
 @login_required()
 def solicitacoes(request):
 
     title = u'Solicitações'
-    return render_to_response('solicitacoes.html', locals(), RequestContext(request))
+    return render(request, 'solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
 def licitacoes(request):
 
     title = u'Licitações'
-    return render_to_response('licitacoes.html', locals(), RequestContext(request))
+    return render(request, 'licitacoes.html', locals(), RequestContext(request))
 
 @login_required()
 def pedidos_e_controle(request):
 
     title = u'Pedidos e Controle'
-    return render_to_response('pedidos_e_controle.html', locals(), RequestContext(request))
+    return render(request, 'pedidos_e_controle.html', locals(), RequestContext(request))
 
 @login_required()
 def administracao(request):
 
     title = u'Administração'
-    return render_to_response('administracao.html', locals(), RequestContext(request))
+    return render(request, 'administracao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastros(request):
 
     title = u'Cadastros'
-    return render_to_response('cadastros.html', locals(), RequestContext(request))
+    return render(request, 'cadastros.html', locals(), RequestContext(request))
 
 @login_required()
 def fornecedor(request, fornecedor_id):
@@ -148,7 +148,7 @@ def fornecedor(request, fornecedor_id):
     fornecedor = get_object_or_404(Fornecedor, pk= fornecedor_id)
     title = u'Dados do Fornecedor: %s' % fornecedor.razao_social
     exibe_popup = True
-    return render_to_response('ver_fornecedores.html', locals(), RequestContext(request))
+    return render(request, 'ver_fornecedores.html', locals(), RequestContext(request))
 
 @login_required()
 def pregao(request, pregao_id):
@@ -191,7 +191,7 @@ def pregao(request, pregao_id):
     else:
         form = GanhadoresForm(request.POST or None, participantes = participantes)
 
-    return render_to_response('pregao.html', locals(), RequestContext(request))
+    return render(request, 'pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastra_proposta_pregao(request, pregao_id):
@@ -293,7 +293,7 @@ def cadastra_proposta_pregao(request, pregao_id):
         else:
             form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao)
 
-    return render_to_response('cadastra_proposta_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastra_proposta_pregao.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -303,7 +303,7 @@ def propostas_item(request, item_id):
     titulo = u'Valores - Item %s - Pregão: %s' % (item.item, item.solicitacao.pregao_set.all()[0])
     eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
 
-    return render_to_response('propostas_item.html', locals(), RequestContext(request))
+    return render(request, 'propostas_item.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastra_participante_pregao(request, pregao_id):
@@ -331,7 +331,7 @@ def cadastra_participante_pregao(request, pregao_id):
         messages.success(request, u'Participante cadastrado com sucesso')
         return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    return render_to_response('cadastra_participante_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastra_participante_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def rodada_pregao(request, item_id):
@@ -362,7 +362,7 @@ def lances_rodada_pregao(request, rodada_id, item_id):
 
     title=u'Rodada %s do %s' % (rodada.rodada, rodada.pregao)
     lances_rodadas = LanceItemRodadaPregao.objects.filter(rodada=rodada).order_by('item')
-    return render_to_response('lances_rodada_pregao.html', locals(), RequestContext(request))
+    return render(request, 'lances_rodada_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def declinar_lance(request, rodada_id, item_id, participante_id):
@@ -502,7 +502,7 @@ def lances_item(request, item_id):
         tabela[chave].append(lance)
 
     resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True,  key=lambda x: int(x[0])))
-    return render_to_response('lances_item.html', locals(), RequestContext(request))
+    return render(request, 'lances_item.html', locals(), RequestContext(request))
 
 @login_required()
 def ver_fornecedores(request, fornecedor_id=None):
@@ -514,7 +514,7 @@ def ver_fornecedores(request, fornecedor_id=None):
         fornecedor = get_object_or_404(Fornecedor, pk= fornecedor_id)
         exibe_popup = True
 
-    return render_to_response('ver_fornecedores.html', locals(), RequestContext(request))
+    return render(request, 'ver_fornecedores.html', locals(), RequestContext(request))
 
 @login_required()
 def ver_pregoes(request):
@@ -529,7 +529,7 @@ def ver_pregoes(request):
     if form.is_valid():
 
         pregoes = pregoes.filter(Q(solicitacao__processo__numero=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando=form.cleaned_data.get('info')))
-    return render_to_response('ver_pregoes.html', locals(), RequestContext(request))
+    return render(request, 'ver_pregoes.html', locals(), RequestContext(request))
 
 @login_required()
 def itens_solicitacao(request, solicitacao_id):
@@ -554,7 +554,7 @@ def itens_solicitacao(request, solicitacao_id):
         elif solicitacao.tipo == SolicitacaoLicitacao.COMPRA:
             recebida_no_setor = True
 
-    return render_to_response('itens_solicitacao.html', locals(), RequestContext(request))
+    return render(request, 'itens_solicitacao.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -584,12 +584,12 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
         messages.success(request, u'Item cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
-    return render_to_response('cadastrar_item_solicitacao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_item_solicitacao.html', locals(), RequestContext(request))
 
 def baixar_editais(request):
     hoje = datetime.date.today()
     pregoes = Pregao.objects.all()
-    return render_to_response('baixar_editais.html', locals(), RequestContext(request))
+    return render(request, 'baixar_editais.html', locals(), RequestContext(request))
 
 @login_required()
 def ver_solicitacoes(request):
@@ -611,7 +611,7 @@ def ver_solicitacoes(request):
         class_aba1 = u'active'
         class_aba2 = u''
         outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
-    return render_to_response('ver_solicitacoes.html', locals(), RequestContext(request))
+    return render(request, 'ver_solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
 def rejeitar_solicitacao(request, solicitacao_id):
@@ -625,7 +625,7 @@ def rejeitar_solicitacao(request, solicitacao_id):
         messages.success(request, u'Solicitação rejeitada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_solicitacoes/')
 
-    return render_to_response('rejeitar_solicitacao.html', locals(), RequestContext(request))
+    return render(request, 'rejeitar_solicitacao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_pregao(request, solicitacao_id):
@@ -639,7 +639,7 @@ def cadastrar_pregao(request, solicitacao_id):
         messages.success(request, u'Licitação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/' % form.instance.id)
 
-    return render_to_response('cadastrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_solicitacao(request):
@@ -659,7 +659,7 @@ def cadastrar_solicitacao(request):
         messages.success(request, u'Solicitação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
 
-    return render_to_response('cadastrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def editar_solicitacao(request, solicitacao_id):
@@ -680,7 +680,7 @@ def editar_solicitacao(request, solicitacao_id):
         messages.success(request, u'Solicitação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
 
-    return render_to_response('cadastrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -692,7 +692,7 @@ def cadastrar_material(request, solicitacao_id):
         messages.success(request, u'Material com sucesso.')
         return HttpResponseRedirect(u'/base/cadastrar_item_solicitacao/%s/' % solicitacao_id)
 
-    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_documento(request, solicitacao_id):
@@ -708,7 +708,7 @@ def cadastrar_documento(request, solicitacao_id):
         messages.success(request, u'Documento cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao_id)
 
-    return render_to_response('cadastrar_documento.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_documento.html', locals(), RequestContext(request))
 
 @login_required()
 def enviar_para_licitacao(request, solicitacao_id):
@@ -729,7 +729,7 @@ def registrar_preco_item(request, item_id):
         o.save()
         messages.success(request, u'Valor registrado com sucesso.')
         return HttpResponseRedirect(u'/itens_solicitacao/%s/' % item.solicitacao.id)
-    return render_to_response('registrar_preco_item.html', locals(), RequestContext(request))
+    return render(request, 'registrar_preco_item.html', locals(), RequestContext(request))
 
 @login_required()
 def pesquisa_mercadologica(request, solicitacao_id):
@@ -805,7 +805,7 @@ def preencher_pesquisa_mercadologica(request, solicitacao_id):
             messages.success(request, u'Cadastro realizado com sucesso. Envie a planilha abaixo com os valores dos itens.')
             return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % o.id)
 
-    return render_to_response('preencher_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'preencher_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
 
 def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
     title=u'Preencher Itens da Pesquisa Mercadológica'
@@ -834,7 +834,7 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
 
 
-    return render_to_response('preencher_itens_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'preencher_itens_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
 
 
 def upload_pesquisa_mercadologica(request, pesquisa_id):
@@ -848,7 +848,7 @@ def upload_pesquisa_mercadologica(request, pesquisa_id):
         messages.success(request, u'Pesquisa cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_solicitacoes/')
 
-    return render_to_response('upload_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'upload_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
 
 
 def imprimir_pesquisa(request, pesquisa_id):
@@ -883,7 +883,7 @@ def ver_pesquisa_mercadologica(request, item_id):
     title=u'Pesquisa Mercadológica'
     pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
 
-    return render_to_response('ver_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'ver_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def resultado_classificacao(request, item_id):
@@ -891,7 +891,7 @@ def resultado_classificacao(request, item_id):
     title = u'Classificação - %s' % item
     lances = ResultadoItemPregao.objects.filter(item=item).order_by('ordem')
     pregao = item.get_licitacao()
-    return render_to_response('resultado_classificacao.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'resultado_classificacao.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def desclassificar_do_pregao(request, participante_id):
@@ -912,7 +912,7 @@ def desclassificar_do_pregao(request, participante_id):
         historico.save()
         messages.success(request, u'Desclassificação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/' % participante.pregao.id)
-    return render_to_response('desclassificar_do_pregao.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'desclassificar_do_pregao.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def planilha_propostas(request, solicitacao_id):
@@ -1070,7 +1070,7 @@ def remover_participante(request, proposta_id, situacao):
 
 
 
-    return render_to_response('remover_participante.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'remover_participante.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def adicionar_por_discricionaridade(request, proposta_id):
@@ -1115,7 +1115,7 @@ def resultado_alterar(request, resultado_id, situacao):
         historico.save()
         messages.success(request, u'Situação alterada com sucesso.')
         return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
-    return render_to_response('resultado_alterar.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'resultado_alterar.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
@@ -1140,7 +1140,7 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
 
         historico.save()
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
-    return render_to_response('encerrar_pregao.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'encerrar_pregao.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -1152,7 +1152,7 @@ def resultado_ajustar_preco(request, resultado_id):
         form.save()
         messages.success(request, u'Situação alterada com sucesso.')
         return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
-    return render_to_response('resultado_ajustar_preco.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'resultado_ajustar_preco.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def desempatar_item(request, item_id):
@@ -1160,7 +1160,7 @@ def desempatar_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     resultados = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
 
-    return render_to_response('desempatar_item.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'desempatar_item.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def definir_colocacao(request, resultado_id):
@@ -1172,7 +1172,7 @@ def definir_colocacao(request, resultado_id):
         o.save()
         messages.success(request, u'Colocação registrada com sucesso.')
         return HttpResponseRedirect(u'/base/desempatar_item/%s/' % resultado.item.id)
-    return render_to_response('definir_colocacao.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'definir_colocacao.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def movimentar_solicitacao(request, solicitacao_id, tipo):
@@ -1202,7 +1202,7 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
         nova_movimentacao.save()
         messages.success(request, u'Solicitação enviada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_solicitacoes/')
-    return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -1219,7 +1219,7 @@ def cadastrar_anexo_pregao(request, pregao_id):
         messages.success(request, u'Anexo cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#anexos' % pregao.id)
 
-    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_anexo_contrato(request, contrato_id):
@@ -1235,7 +1235,7 @@ def cadastrar_anexo_contrato(request, contrato_id):
         messages.success(request, u'Anexo cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
 
-    return render_to_response('cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_contrato(request, solicitacao_id):
@@ -1257,7 +1257,7 @@ def cadastrar_contrato(request, solicitacao_id):
         messages.success(request, u'Cadastrado realizado com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
 
-    return render_to_response('cadastrar_contrato.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_contrato.html', locals(), RequestContext(request))
 
 def baixar_arquivo(request, arquivo_id):
     title=u'Baixar Arquivo'
@@ -1268,7 +1268,7 @@ def baixar_arquivo(request, arquivo_id):
         o.arquivo = arquivo
         o.save()
         return HttpResponseRedirect(u'/media/%s' % arquivo.arquivo)
-    return render_to_response('baixar_arquivo.html', locals(), RequestContext(request))
+    return render(request, 'baixar_arquivo.html', locals(), RequestContext(request))
 
 @login_required()
 def alterar_valor_lance(request, lance_id):
@@ -1300,7 +1300,7 @@ def alterar_valor_lance(request, lance_id):
         form.save()
         messages.success(request, u'Lance alterado com sucesso.')
         return HttpResponseRedirect(u'/base/lances_item/%s/' % lance.item.id)
-    return render_to_response('alterar_valor_lance.html', locals(), RequestContext(request))
+    return render(request, 'alterar_valor_lance.html', locals(), RequestContext(request))
 
 @login_required()
 def avancar_proximo_item(request, item_id):
@@ -1341,7 +1341,7 @@ def editar_proposta(request, proposta_id):
         messages.success(request, u'Item da proposta atualizada com sucesso.')
         return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (proposta.pregao.id, proposta.participante.id))
 
-    return render_to_response('editar_proposta.html', locals(), RequestContext(request))
+    return render(request, 'editar_proposta.html', locals(), RequestContext(request))
 
 @login_required()
 def encerrar_pregao(request, pregao_id, motivo):
@@ -1366,7 +1366,7 @@ def encerrar_pregao(request, pregao_id, motivo):
         messages.success(request, u'Pregão atualizado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def encerrar_itempregao(request, item_id, motivo, origem):
@@ -1397,7 +1397,7 @@ def encerrar_itempregao(request, item_id, motivo, origem):
             return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
 
 
-    return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def suspender_pregao(request, pregao_id):
@@ -1427,7 +1427,7 @@ def suspender_pregao(request, pregao_id):
         messages.success(request, u'Pregão suspenso com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -1445,7 +1445,7 @@ def prazo_pesquisa_mercadologica(request, solicitacao_id):
 
     return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
 
-    return render_to_response('encerrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def modelo_memorando(request, solicitacao_id):
@@ -1479,7 +1479,7 @@ def ver_movimentacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'Movimentação - %s' % solicitacao
     movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).order_by('-data_envio')
-    return render_to_response('ver_movimentacao.html', locals(), RequestContext(request))
+    return render(request, 'ver_movimentacao.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_minuta(request, solicitacao_id):
@@ -1490,7 +1490,7 @@ def cadastrar_minuta(request, solicitacao_id):
         form.save()
         messages.success(request, u'Minuta cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
-    return render_to_response('cadastrar_minuta.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_minuta.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -1510,7 +1510,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
         solicitacao.save()
         messages.success(request, u'Minuta avaliada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
-    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def retomar_lances(request, item_id):
@@ -1542,7 +1542,7 @@ def informar_quantidades(request, solicitacao_id):
         messages.success(request, u'Quantidades cadastradas com sucesso. Faça o upload do memorando de solicitação.')
         return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao.id)
 
-    return render_to_response('informar_quantidades.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'informar_quantidades.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def ver_pedidos_secretaria(request, item_id):
@@ -1554,7 +1554,7 @@ def ver_pedidos_secretaria(request, item_id):
     tem_pendente = pedidos.filter(avaliado_em__isnull=True).exists()
     total = pedidos.aggregate(total=Sum('quantidade'))
     pode_avaliar = request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor
-    return render_to_response('ver_pedidos_secretaria.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'ver_pedidos_secretaria.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -1619,7 +1619,7 @@ def importar_itens(request, solicitacao_id):
         messages.success(request, u'Itens cadastrados com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
-    return render_to_response('importar_itens.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'importar_itens.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -1662,7 +1662,7 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
         messages.success(request, u'Itens cadastrados com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
 
-    return render_to_response('upload_itens_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'upload_itens_pesquisa_mercadologica.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def relatorio_resultado_final(request, pregao_id):
@@ -2046,7 +2046,7 @@ def gerenciar_grupos(request):
             else:
                 grupos_usuario.append((grupo, 2))
 
-    return render_to_response('gerenciar_grupos.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'gerenciar_grupos.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -2098,7 +2098,7 @@ def pedido_outro_interessado(request, pedido_id, opcao):
 
 
 
-    return render_to_response('pedido_outro_interessado.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'pedido_outro_interessado.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -2115,7 +2115,7 @@ def abrir_processo_para_solicitacao(request, solicitacao_id):
         solicitacao.save()
         messages.success(request, u'Processo aberto com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
-    return render_to_response('abrir_processo_para_solicitacao.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'abrir_processo_para_solicitacao.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -2125,7 +2125,7 @@ def ver_processo(request, processo_id):
     if solicitacao.exists():
         solicitacao = solicitacao[0]
     title=u'Processo N°: %s' % processo.numero
-    return render_to_response('ver_processo.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'ver_processo.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -2254,7 +2254,7 @@ def criar_lote(request, pregao_id):
         return HttpResponseRedirect(u'/base/pregao/%s/#lotes' % pregao.id)
 
 
-    return render_to_response('criar_lote.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'criar_lote.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -2371,7 +2371,7 @@ def editar_meu_perfil(request, pessoa_id):
             return HttpResponseRedirect(u'/')
 
 
-    return render_to_response('editar_meu_perfil.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'editar_meu_perfil.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -2386,7 +2386,7 @@ def editar_pedido(request, pedido_id):
         return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % pedido.item.id)
 
 
-    return render_to_response('editar_pedido.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'editar_pedido.html', locals(), context_instance=RequestContext(request))
 
 
 
@@ -2414,7 +2414,7 @@ def gestao_pedidos(request):
     atas = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
     contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
-    return render_to_response('gestao_pedidos.html', locals(), RequestContext(request))
+    return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
 
 @login_required()
 def gestao_contratos(request):
@@ -2426,7 +2426,7 @@ def gestao_contratos(request):
     atas = Contrato.objects.filter(solicitacao__in=atas_finalizadas.values_list('solicitacao', flat=True))
     contratos = Contrato.objects.filter(solicitacao__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
-    return render_to_response('gestao_contratos.html', locals(), RequestContext(request))
+    return render(request, 'gestao_contratos.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -2453,7 +2453,7 @@ def avaliar_pedidos(request, solicitacao_id):
         tabela[chave]['pedido'].append(item)
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
-    return render_to_response('avaliar_pedidos.html', locals(), RequestContext(request))
+    return render(request, 'avaliar_pedidos.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -2483,7 +2483,7 @@ def novo_pedido_compra(request, solicitacao_id):
         o.save()
 
         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))
-    return render_to_response('novo_pedido_compra.html', locals(), RequestContext(request))
+    return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
 
 @login_required()
 def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitacao):
@@ -2565,7 +2565,7 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
 
             messages.success(request, u'Pedido cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
-    return render_to_response('informar_quantidades_do_pedido.html', locals(), RequestContext(request))
+    return render(request, 'informar_quantidades_do_pedido.html', locals(), RequestContext(request))
 
 @login_required()
 def apagar_anexo_pregao(request, item_id):
@@ -2660,7 +2660,7 @@ def informar_valor_final_item_lote(request, item_id, pregao_id):
 
         messages.success(request, u'Valor cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
-    return render_to_response('informar_valor_final_item_lote.html', locals(), RequestContext(request))
+    return render(request, 'informar_valor_final_item_lote.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -2676,7 +2676,7 @@ def gerar_ordem_compra(request, solicitacao_id):
         o.save()
         messages.success(request, u'Ordem de Compra/Serviço gerada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
-    return render_to_response('gerar_ordem_compra.html', locals(), RequestContext(request))
+    return render(request, 'gerar_ordem_compra.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -2797,7 +2797,7 @@ def registrar_adjudicacao(request, pregao_id):
         form.save()
         messages.success(request, u'Data de adjudicação registrada com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#homologacao' % pregao.id)
-    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def registrar_homologacao(request, pregao_id):
@@ -2820,7 +2820,7 @@ def registrar_homologacao(request, pregao_id):
 
         messages.success(request, u'Data de homologação registrada com sucesso. Prossiga com o envio do termo assinado')
         return HttpResponseRedirect(u'/base/upload_termo_homologacao/%s/' % pregao.id)
-    return render_to_response('cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
 
 
@@ -2898,7 +2898,7 @@ def visualizar_contrato(request, solicitacao_id):
     title = u'Contrato %s' % contrato.numero
     eh_ata = contrato.pregao.eh_ata_registro_preco
 
-    return render_to_response('visualizar_contrato.html', locals(), RequestContext(request))
+    return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
 @login_required()
 def liberar_solicitacao_contrato(request, solicitacao_id, origem):
@@ -2924,7 +2924,7 @@ def definir_vigencia_contrato(request, contrato_id):
         messages.success(request, u'Data de Vigência registrada com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
 
-    return render_to_response('definir_vigencia_contrato.html', locals(), RequestContext(request))
+    return render(request, 'definir_vigencia_contrato.html', locals(), RequestContext(request))
 
 @login_required()
 def aditivar_contrato(request, contrato_id):
@@ -2944,7 +2944,7 @@ def aditivar_contrato(request, contrato_id):
         messages.success(request, u'Contrato aditivado com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
 
-    return render_to_response('definir_vigencia_contrato.html', locals(), RequestContext(request))
+    return render(request, 'definir_vigencia_contrato.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -2961,7 +2961,7 @@ def lista_documentos(request, solicitacao_id):
     title = u'Lista de Documentos'
     documentos = DocumentoSolicitacao.objects.filter(solicitacao=solicitacao)
 
-    return render_to_response('lista_documentos.html', locals(), RequestContext(request))
+    return render(request, 'lista_documentos.html', locals(), RequestContext(request))
 
 
 def libreoffice_new_line(tokens, align_center='', font_size=17):
@@ -3147,7 +3147,7 @@ def editar_fornecedor(request, fornecedor_id):
         messages.success(request, u'Fornecedor editado com sucesso.')
         return HttpResponseRedirect(u'/base/ver_fornecedores/')
 
-    return render_to_response('editar_fornecedor.html', locals(), RequestContext(request))
+    return render(request, 'editar_fornecedor.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_fornecedor(request, opcao):
@@ -3163,7 +3163,7 @@ def cadastrar_fornecedor(request, opcao):
             return HttpResponseRedirect(u'/base/cadastra_participante_pregao/%s/' % int(opcao))
 
 
-    return render_to_response('editar_fornecedor.html', locals(), RequestContext(request))
+    return render(request, 'editar_fornecedor.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -3184,7 +3184,7 @@ def editar_pregao(request, pregao_id):
         messages.success(request, u'Licitação editada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_pregoes/')
 
-    return render_to_response('editar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'editar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
 def upload_termo_homologacao(request, pregao_id):
@@ -3196,7 +3196,7 @@ def upload_termo_homologacao(request, pregao_id):
         messages.success(request, u'Termo de Homologação cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/ver_pregoes/')
 
-    return render_to_response('upload_termo_homologacao.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'upload_termo_homologacao.html', locals(), context_instance=RequestContext(request))
 
 
 @login_required()
@@ -3327,7 +3327,7 @@ def documentos_atas(request, solicitacao_id):
     if contrato.exists():
         contrato = contrato.latest('id')
     title= u'Documentos - %s' % contrato
-    return render_to_response('documentos_atas.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'documentos_atas.html', locals(), context_instance=RequestContext(request))
 
 @login_required()
 def rejeitar_pesquisa(request, item_pesquisa_id):
@@ -3342,4 +3342,4 @@ def rejeitar_pesquisa(request, item_pesquisa_id):
         o.save()
         messages.success(request, u'Proposta rejeitada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_pesquisa_mercadologica/%s/' % item.item.id)
-    return render_to_response('rejeitar_pesquisa.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'rejeitar_pesquisa.html', locals(), context_instance=RequestContext(request))
