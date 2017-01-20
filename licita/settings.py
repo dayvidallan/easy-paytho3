@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_PATH = abspath(dirname(dirname(__file__)))
 SECRET_KEY = '0$p#v)*(zb22za#6c=7yg$=$v-7xh8w12f2gbd9*mezlsr*3*o'
 DEBUG = True
-TEMPLATE_DEBUG = True
+
 
 INSTALLED_APPS = (
 
@@ -90,7 +90,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 INTERNAL_IPS = ('127.0.0.1',)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-TEMPLATE_DIRS = (BASE_DIR,)
+#TEMPLATE_DIRS = (BASE_DIR,)
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 DATE_INPUT_FORMATS = ('%d/%m/%Y',)
 DATETIME_INPUT_FORMATS = ('%d/%m/%Y %H:%M:%S', '%d/%m/%Y %H:%M',)
@@ -143,5 +143,27 @@ DEFAULT_FROM_EMAIL = 'pnt@lais.huol.ufrn.br'
 #
 # SELECT2_CACHE_BACKEND = 'select2'
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # insert your TEMPLATE_DIRS here
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 URL = u'http://159.203.181.26/'

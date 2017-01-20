@@ -1,10 +1,10 @@
 # coding: utf-8
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from base import views
 from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete
 
-urlpatterns = patterns('base.views',
+urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^solicitacoes/$', views.solicitacoes, name='solicitacoes'),
     url(r'^cadastros/$', views.cadastros, name='cadastros'),
@@ -144,7 +144,7 @@ urlpatterns = patterns('base.views',
     url(r'^pessoafisica-autocomplete/$', PessoaFisicaAutocomplete.as_view(), name='pessoafisica-autocomplete'),
     url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
 
-)
+]
 
 
 

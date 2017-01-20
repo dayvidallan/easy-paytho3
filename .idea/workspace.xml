@@ -2,19 +2,73 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51aad98f-dbd2-4dc3-a5d0-a437d3a264d9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/media/upload/modelos/termo_referencia.docx" afterPath="$PROJECT_DIR$/media/upload/modelos/termo_referencia.docx" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/css/ie.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/changelist-bg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/changelist-bg_rtl.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/default-bg-reverse.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/default-bg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/deleted-overlay.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/gis/move_vertex_off.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/gis/move_vertex_on.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon-no.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon-unknown.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon-yes.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_addlink.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_alert.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_calendar.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_changelink.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_clock.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_deletelink.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_error.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_searchbox.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/icon_success.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/inline-delete-8bit.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/inline-delete.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/inline-restore-8bit.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/inline-restore.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/inline-splitter-bg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/nav-bg-grabber.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/nav-bg-reverse.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/nav-bg-selected.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/nav-bg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/selector-icons.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/selector-search.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/sorting-icons.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/tooltag-add.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/img/tooltag-arrowright.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/js/LICENSE-JQUERY.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/js/jquery.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/js/jquery.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/admin/js/related-widget-wrapper.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/django_extensions/js/jquery-1.7.2.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/django_extensions/js/jquery.bgiframe.min.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/forms.py" afterPath="$PROJECT_DIR$/base/forms.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/models.py" afterPath="$PROJECT_DIR$/base/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/gestao_pedidos.html" afterPath="$PROJECT_DIR$/base/templates/gestao_pedidos.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/itens_solicitacao.html" afterPath="$PROJECT_DIR$/base/templates/itens_solicitacao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/lista_documentos.html" afterPath="$PROJECT_DIR$/base/templates/lista_documentos.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/lista_materiais.html" afterPath="$PROJECT_DIR$/base/templates/lista_materiais.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/pregao.html" afterPath="$PROJECT_DIR$/base/templates/pregao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/resultado_classificacao.html" afterPath="$PROJECT_DIR$/base/templates/resultado_classificacao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/ver_solicitacoes.html" afterPath="$PROJECT_DIR$/base/templates/ver_solicitacoes.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/views.py" afterPath="$PROJECT_DIR$/base/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sql/pendencias" afterPath="$PROJECT_DIR$/sql/pendencias" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/management/commands/sync.py" afterPath="$PROJECT_DIR$/base/management/commands/sync.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/management/commands/sync_initial.py" afterPath="$PROJECT_DIR$/base/management/commands/sync_initial.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/management/commands/sync_permissions.py" afterPath="$PROJECT_DIR$/base/management/commands/sync_permissions.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/css/base.css" afterPath="$PROJECT_DIR$/static/admin/css/base.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/css/changelists.css" afterPath="$PROJECT_DIR$/static/admin/css/changelists.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/css/forms.css" afterPath="$PROJECT_DIR$/static/admin/css/forms.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/css/login.css" afterPath="$PROJECT_DIR$/static/admin/css/login.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/css/rtl.css" afterPath="$PROJECT_DIR$/static/admin/css/rtl.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/css/widgets.css" afterPath="$PROJECT_DIR$/static/admin/css/widgets.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/SelectBox.js" afterPath="$PROJECT_DIR$/static/admin/js/SelectBox.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/SelectFilter2.js" afterPath="$PROJECT_DIR$/static/admin/js/SelectFilter2.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/actions.js" afterPath="$PROJECT_DIR$/static/admin/js/actions.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/actions.min.js" afterPath="$PROJECT_DIR$/static/admin/js/actions.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/admin/DateTimeShortcuts.js" afterPath="$PROJECT_DIR$/static/admin/js/admin/DateTimeShortcuts.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/admin/RelatedObjectLookups.js" afterPath="$PROJECT_DIR$/static/admin/js/admin/RelatedObjectLookups.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/calendar.js" afterPath="$PROJECT_DIR$/static/admin/js/calendar.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/collapse.js" afterPath="$PROJECT_DIR$/static/admin/js/collapse.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/collapse.min.js" afterPath="$PROJECT_DIR$/static/admin/js/collapse.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/core.js" afterPath="$PROJECT_DIR$/static/admin/js/core.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/inlines.js" afterPath="$PROJECT_DIR$/static/admin/js/inlines.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/inlines.min.js" afterPath="$PROJECT_DIR$/static/admin/js/inlines.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/prepopulate.js" afterPath="$PROJECT_DIR$/static/admin/js/prepopulate.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/prepopulate.min.js" afterPath="$PROJECT_DIR$/static/admin/js/prepopulate.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/timeparse.js" afterPath="$PROJECT_DIR$/static/admin/js/timeparse.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/admin/js/urlify.js" afterPath="$PROJECT_DIR$/static/admin/js/urlify.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/django_extensions/css/jquery.autocomplete.css" afterPath="$PROJECT_DIR$/static/django_extensions/css/jquery.autocomplete.css" />
     </list>
     <ignored path="licita.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,58 +92,60 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/licita/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.44392523">
+            <state vertical-scroll-proportion="0.30373833">
               <caret line="77" column="0" selection-start-line="67" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/views.py">
+      <file leaf-file-name="sync.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/management/commands/sync.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.914286">
-              <caret line="2205" column="42" selection-start-line="2205" selection-start-column="42" selection-end-line="2205" selection-end-column="42" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="23" column="52" selection-start-line="23" selection-start-column="52" selection-end-line="23" selection-end-column="52" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pregao.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/pregao.html">
+      <file leaf-file-name="sync_initial.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/management/commands/sync_initial.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.8135595">
-              <caret line="666" column="50" selection-start-line="666" selection-start-column="50" selection-end-line="666" selection-end-column="50" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="resultado_classificacao.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/resultado_classificacao.html">
+      <file leaf-file-name="sync_permissions.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/management/commands/sync_permissions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.745763">
-              <caret line="27" column="58" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="58" />
+            <state vertical-scroll-proportion="-6.742857">
+              <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/forms.py">
+      <file leaf-file-name="sync_permissions.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../suap/djtools/management/commands/sync_permissions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.571428">
-              <caret line="200" column="241" selection-start-line="200" selection-start-column="241" selection-end-line="200" selection-end-column="241" />
-              <folding />
+            <state vertical-scroll-proportion="-5.7714286">
+              <caret line="67" column="45" selection-start-line="67" selection-start-column="36" selection-end-line="67" selection-end-column="45" />
+              <folding>
+                <element signature="e#531#557#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="lista_documentos.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/lista_documentos.html">
+      <file leaf-file-name="0005_auto_20170119_1727.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/migrations/0005_auto_20170119_1727.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.625">
-              <caret line="50" column="25" selection-start-line="50" selection-start-column="25" selection-end-line="50" selection-end-column="25" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -98,8 +154,8 @@
       <file leaf-file-name="lista_materiais.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/templates/lista_materiais.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-20.75">
-              <caret line="88" column="58" selection-start-line="88" selection-start-column="58" selection-end-line="88" selection-end-column="58" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="90" column="58" selection-start-line="90" selection-start-column="58" selection-end-line="90" selection-end-column="58" />
               <folding />
             </state>
           </provider>
@@ -108,8 +164,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.7714286">
-              <caret line="613" column="8" selection-start-line="613" selection-start-column="8" selection-end-line="613" selection-end-column="8" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="627" column="0" selection-start-line="627" selection-start-column="0" selection-end-line="627" selection-end-column="0" />
               <folding>
                 <element signature="e#25#64#0" expanded="true" />
               </folding>
@@ -120,7 +176,7 @@
       <file leaf-file-name="novo_pedido_compra.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/templates/novo_pedido_compra.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
+            <state vertical-scroll-proportion="0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -130,8 +186,8 @@
       <file leaf-file-name="gestao_pedidos.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/templates/gestao_pedidos.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-22.625">
-              <caret line="228" column="85" selection-start-line="228" selection-start-column="85" selection-end-line="228" selection-end-column="85" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="232" column="85" selection-start-line="232" selection-start-column="85" selection-end-line="232" selection-end-column="85" />
               <folding />
             </state>
           </provider>
@@ -160,15 +216,18 @@
         <option value="$PROJECT_DIR$/base/models.py" />
         <option value="$PROJECT_DIR$/base/forms.py" />
         <option value="$PROJECT_DIR$/base/templates/pregao.html" />
+        <option value="$PROJECT_DIR$/base/management/commands/sync.py" />
+        <option value="$PROJECT_DIR$/base/management/commands/sync_permissions.py" />
+        <option value="$PROJECT_DIR$/base/management/commands/sync_initial.py" />
         <option value="$PROJECT_DIR$/licita/settings.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
-    <option name="y" value="24" />
+    <option name="y" value="-4" />
     <option name="width" value="1301" />
-    <option name="height" value="744" />
+    <option name="height" value="772" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -195,6 +254,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -223,60 +284,12 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="sql" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
               <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views.py" />
-              <option name="myItemType" value="com.jetbrains.python.projectView.PyFileNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -427,7 +440,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="24" width="1301" height="744" extended-state="6" />
+    <frame x="65" y="-4" width="1301" height="772" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24980783" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -465,48 +478,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/base/templates/relatorio_resultado_final.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="58" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/imprimir_pesquisa.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="3" selection-start-line="0" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/lista_documentos.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="39" column="78" selection-start-line="39" selection-start-column="62" selection-end-line="39" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="283" column="0" selection-start-line="283" selection-start-column="0" selection-end-line="283" selection-end-column="0" />
-          <folding>
-            <element signature="e#25#64#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/itens_solicitacao.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="239" column="104" selection-start-line="239" selection-start-column="94" selection-end-line="239" selection-end-column="104" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/licita/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -526,7 +497,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1484857410465" expanded="false" signature="24:135" placeholder="import ..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -582,7 +555,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="239" column="104" selection-start-line="239" selection-start-column="94" selection-end-line="239" selection-end-column="104" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -605,7 +577,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="881" column="4" selection-start-line="881" selection-start-column="4" selection-end-line="881" selection-end-column="4" />
-          <folding />
+          <folding>
+            <marker date="1484857410465" expanded="false" signature="24:135" placeholder="import ..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -746,7 +720,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="20" column="3" selection-start-line="0" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -762,7 +735,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="58" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -770,7 +742,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-7.0">
           <caret line="287" column="85" selection-start-line="287" selection-start-column="85" selection-end-line="287" selection-end-column="85" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -778,23 +749,66 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.79661">
           <caret line="241" column="68" selection-start-line="241" selection-start-column="20" selection-end-line="241" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2328" column="42" selection-start-line="2328" selection-start-column="42" selection-end-line="2328" selection-end-column="42" />
+          <folding>
+            <marker date="1484857410465" expanded="false" signature="24:135" placeholder="import ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/pregao.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="691" column="45" selection-start-line="691" selection-start-column="45" selection-end-line="691" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/resultado_classificacao.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="32" column="30" selection-start-line="31" selection-start-column="39" selection-end-line="31" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="214" column="47" selection-start-line="214" selection-start-column="47" selection-end-line="214" selection-end-column="47" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/base/templates/lista_documentos.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.625">
-          <caret line="50" column="25" selection-start-line="50" selection-start-column="25" selection-end-line="50" selection-end-column="25" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="60" column="25" selection-start-line="60" selection-start-column="25" selection-end-line="60" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/base/templates/lista_materiais.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.75">
-          <caret line="88" column="58" selection-start-line="88" selection-start-column="58" selection-end-line="88" selection-end-column="58" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="90" column="58" selection-start-line="90" selection-start-column="58" selection-end-line="90" selection-end-column="58" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="627" column="0" selection-start-line="627" selection-start-column="0" selection-end-line="627" selection-end-column="0" />
+          <folding>
+            <element signature="e#25#64#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -808,57 +822,57 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/base/templates/gestao_pedidos.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-22.625">
-          <caret line="228" column="85" selection-start-line="228" selection-start-column="85" selection-end-line="228" selection-end-column="85" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="232" column="85" selection-start-line="232" selection-start-column="85" selection-end-line="232" selection-end-column="85" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/resultado_classificacao.html">
+    <entry file="file://$PROJECT_DIR$/base/migrations/0005_auto_20170119_1727.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.745763">
-          <caret line="27" column="58" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="58" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.571428">
-          <caret line="200" column="241" selection-start-line="200" selection-start-column="241" selection-end-line="200" selection-end-column="241" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/models.py">
+    <entry file="file://$PROJECT_DIR$/../suap/djtools/management/commands/sync_permissions.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-5.7714286">
-          <caret line="613" column="8" selection-start-line="613" selection-start-column="8" selection-end-line="613" selection-end-column="8" />
+          <caret line="67" column="45" selection-start-line="67" selection-start-column="36" selection-end-line="67" selection-end-column="45" />
           <folding>
-            <element signature="e#25#64#0" expanded="true" />
+            <element signature="e#531#557#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/views.py">
+    <entry file="file://$PROJECT_DIR$/base/management/commands/sync_permissions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.914286">
-          <caret line="2205" column="42" selection-start-line="2205" selection-start-column="42" selection-end-line="2205" selection-end-column="42" />
+        <state vertical-scroll-proportion="-6.742857">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/pregao.html">
+    <entry file="file://$PROJECT_DIR$/base/management/commands/sync.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.8135595">
-          <caret line="666" column="50" selection-start-line="666" selection-start-column="50" selection-end-line="666" selection-end-column="50" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="52" selection-start-line="23" selection-start-column="52" selection-end-line="23" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/management/commands/sync_initial.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/licita/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44392523">
+        <state vertical-scroll-proportion="0.30373833">
           <caret line="77" column="0" selection-start-line="67" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
           <folding />
         </state>
