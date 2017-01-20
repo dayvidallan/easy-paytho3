@@ -5,9 +5,7 @@ cd /home/workspace/
 
 rm -rf licita
 
-git clone https://walkyso@bitbucket.org/walkyso/easy_licitacao.git
-
-mv easy_licitacao/ licita
+git clone https://walkyso@bitbucket.org/walkyso/licita.git
 
 chown www-data:www-data -R licita
 
