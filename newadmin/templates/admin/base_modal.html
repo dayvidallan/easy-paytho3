@@ -1,9 +1,9 @@
-{% load admin_static %}{% load firstof from future %}{% load i18n %}{% load newadmin %}{% load compress %}
+{% load admin_static %}{% load i18n %}{% load newadmin %}{% load compress %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Licita{% endblock %}</title>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}E@sy - Sistema Gerenciador de Licitações{% endblock %}</title>
   {% compress css %}
 
     <link rel="stylesheet" type="text/css" href="{% static "base/css/bootstrap.min.css" %}">
