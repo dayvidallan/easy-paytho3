@@ -11,6 +11,8 @@ chown www-data:www-data -R licita
 
 cd licita
 
+pip install -U -r deploy/requirements.txt
+
 sudo su postgres
 
 psql
@@ -23,7 +25,7 @@ CNTRL + D
 
 su root
 
-pip install -U -r deploy/requirements.txt
+
 
 ./manage.py sync
 
