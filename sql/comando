@@ -60,4 +60,8 @@ sudo crontab -e
 
 0 3 * * * /bin/bash /home/workspace/licita/sql/backup_media.sh
 
+configurar dropbox
+
+https://www.digitalocean.com/community/tutorials/how-to-install-dropbox-client-as-a-service-on-ubuntu-14-04
+
 
