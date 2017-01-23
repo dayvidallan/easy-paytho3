@@ -391,14 +391,14 @@ class PrazoPesquisaForm(forms.ModelForm):
 
 
 class SetorEnvioForm(forms.Form):
-    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', required=True)
 
     setor = utils.ChainedModelChoiceField(Setor.objects.order_by('nome'),
       label                = u'Setor de Destino',
       empty_label          = u'Selecione a Secretaria',
       obj_label            = 'nome',
       form_filters         = [('secretaria', 'secretaria_id')],
-      required=False
+      required=True
     )
 
     obs = forms.CharField(label=u'Observações', widget=forms.Textarea, required=False)
