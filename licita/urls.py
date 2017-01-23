@@ -6,7 +6,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.views import login
 from django.conf import settings
-from newadmin import utils
 from django.conf.urls.static import static
 
 admin.autodiscover()

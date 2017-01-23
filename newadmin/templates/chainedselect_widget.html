@@ -54,7 +54,7 @@
         if(id) {
             $.ajax({
                 type: "POST",
-                url: "{{ url }}",
+                url: "/newadmin{{ url }}",
                 data: options["{{id}}"],
                 async: false,
             }).done(function (data) {

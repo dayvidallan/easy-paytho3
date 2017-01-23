@@ -280,11 +280,12 @@ class ChainedSelectWidget(forms.Select):
         return mark_safe('\n'.join(output))
 
 
+
 class ChainedModelChoiceField(forms.ModelChoiceField):
     """
     Uma versão do forms.ModelChoiceField que trabalha de forma aninhada, onde ele é preenchido de acordo com uma escolha de outro "select".
     Keyword arguments:
-       *obj_label:             Uma string com o nome do atributo do objeto que deve ser colocado no option do select
+       *obj_label:             Uma string com o label que deve ser colocado no option do select
         empty_label            Uma string a ser apresentada quando não tiver dados
         url:                   Uma string com a url de pesquisa. Ela deve retornar um Json e recebe os seguintes parametros: `request.POST` expected args: 'chained_attr', 'id', 'obj_label'
         qs_filter:             Uma query no formato string
@@ -292,7 +293,7 @@ class ChainedModelChoiceField(forms.ModelChoiceField):
         qs_filter_params_map   Um dict com parâmetros para o qs_fitler
                                  Exemplo: qs_filter='avaliadores_de_agendamentos=current_user'
                                           qs_filter_params_map    = {'current_user': tl.get_user().id},
-      * form_filters           Uma lista de lista que tem 'Uma string com o nome do campo relacionado' e 'Uma string representado com o falor que deve colocar no filter'
+      * form_filters           Uma lista de lista que tem 'Uma string com o nome do campo relacionado' e 'Uma string representado com o valor que deve colocar no filter'
 
     * parametros obrigatórios
 
@@ -308,7 +309,7 @@ class ChainedModelChoiceField(forms.ModelChoiceField):
     """
     widget = ChainedSelectWidget
 
-    def __init__(self, queryset, empty_label=u"---------", cache_choices=False,
+    def __init__(self, queryset, empty_label=u"---------",
                  required=True, widget=None, label=None, initial=None,
                  help_text=None, to_field_name=None, *args, **kwargs):
         try:
@@ -327,11 +328,10 @@ class ChainedModelChoiceField(forms.ModelChoiceField):
         if not url:
             class_name = queryset.model.__name__
             class_module = queryset.model.__module__.split('.')[0]
-            url = '/newadmin/chained_select/%s/%s/' % (class_module, class_name)
+            url = '/chained_select/%s/%s/' % (class_module, class_name)
 
         super(ChainedModelChoiceField, self).__init__(
-            queryset, empty_label, cache_choices,
-            required, widget, label, initial,
+            queryset, empty_label, required, widget, label, initial,
             help_text, to_field_name, *args, **kwargs)
 
         self.widget.initial = initial
@@ -342,6 +342,7 @@ class ChainedModelChoiceField(forms.ModelChoiceField):
         self.widget.qs_filter = qs_filter
         self.widget.qs_filter_params_map = qs_filter_params_map
         self.widget.queryset = queryset
+
 
 
 class ChainedMultipleSelectWidget(forms.SelectMultiple):

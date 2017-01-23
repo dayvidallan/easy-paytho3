@@ -1202,7 +1202,7 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
         nova_movimentacao.save()
         messages.success(request, u'Solicitação enviada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_solicitacoes/')
-    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+    return render(request, 'movimentar_solicitacao.html', locals(), RequestContext(request))
 
 
 @login_required()
