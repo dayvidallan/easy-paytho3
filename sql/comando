@@ -58,7 +58,6 @@ mkvirtualenv licita --python=/usr/bin/python2.7
 
 sudo crontab -e
 
-0 3 * * * pg_dump --dbname=postgresql://walkyso:licitaeasy@127.0.0.1:5432/licita | gzip > /home/licita_bkp/$(date +%Y-%m-%d).psql.gz
 0 3 * * * /bin/bash /home/workspace/licita/sql/backup_media.sh
 
 
