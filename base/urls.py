@@ -134,6 +134,7 @@ urlpatterns = [
 
 
     url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),
+    url(r'^apagar_item/(?P<item_id>\d+)/$', views.apagar_item, name='apagar_item'),
 
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),
     url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),

@@ -1589,8 +1589,8 @@ def importar_itens(request, solicitacao_id):
                         raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
                 else:
                     if especificacao and unidade and qtd:
-                        if TipoUnidade.objects.filter(nome__icontains=unidade).exists():
-                            un = TipoUnidade.objects.filter(nome__icontains=unidade)[0]
+                        if TipoUnidade.objects.filter(nome=unidade).exists():
+                            un = TipoUnidade.objects.filter(nome=unidade)[0]
                         else:
                             un = TipoUnidade.objects.get_or_create(nome=unidade)[0]
                         novo_item = ItemSolicitacaoLicitacao()
@@ -1614,6 +1614,16 @@ def importar_itens(request, solicitacao_id):
                         novo_item.unidade = un
                         novo_item.quantidade = int(sheet.cell_value(row, 2))
                         novo_item.save()
+
+                        novo_item_qtd = ItemQuantidadeSecretaria()
+                        novo_item_qtd.solicitacao = solicitacao
+                        novo_item_qtd.item = novo_item
+                        novo_item_qtd.secretaria = request.user.pessoafisica.setor.secretaria
+                        novo_item_qtd.quantidade = novo_item.quantidade
+                        novo_item_qtd.aprovado = True
+                        novo_item_qtd.avaliado_por = request.user
+                        novo_item_qtd.avaliado_em = datetime.datetime.now()
+                        novo_item_qtd.save()
 
 
         messages.success(request, u'Itens cadastrados com sucesso.')
@@ -3382,3 +3392,11 @@ def relatorio_lista_download_licitacao(request, pregao_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+@login_required()
+def apagar_item(request, item_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    solicitacao = item.solicitacao
+    item.delete()
+    messages.success(request, u'Item apagado com sucesso.')
+    return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
