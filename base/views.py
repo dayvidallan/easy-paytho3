@@ -1940,7 +1940,7 @@ def relatorio_lances_item(request, pregao_id):
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
-    
+
     itens = collections.OrderedDict(sorted(itens.items()))
 
 

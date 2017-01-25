@@ -711,13 +711,14 @@
                         <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
                     {% else %}
                         <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
+                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
                     {% endif %}
                 </fieldset>
                 <br>
                 <fieldset>
                     <legend>Homologação</legend>
                     {% if pregao.arquivo_homologacao %}
-                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-default" target="_blank">Ver Termo de Homologação</a>
+                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn info" target="_blank">Ver Termo de Homologação</a>
                     <br><br>
                     Ordenador de Despesa: {{ pregao.ordenador_despesa }}
                     {% elif pregao.data_adjudicacao %}
@@ -770,11 +771,10 @@
                         <tr>
                             <td><a href="/base/extrato_inicial/{{ pregao.pk }}/" target="_blank">Extrato Inicial</a></td>
                         </tr>
-                        {% if pregao.tem_download %}
-                            <tr>
-                                <td><a href="/base/relatorio_lista_download_licitacao/{{ pregao.pk }}/" target="_blank">Lista de Interessados no Edital</a></td>
-                            </tr>
-                        {% endif %}
+
+                        <tr>
+                            <td><a href="/base/relatorio_lista_download_licitacao/{{ pregao.pk }}/" target="_blank">Lista de Interessados no Edital</a></td>
+                        </tr>
 
                         <tr>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
