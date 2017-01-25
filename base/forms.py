@@ -342,9 +342,11 @@ class LogDownloadArquivoForm(forms.ModelForm):
       form_filters         = [('estado', 'estado_id')],
       required=False
     )
+    cpf = utils.CpfFormField(label=u'CPF', required=True)
+
     class Meta:
         model = LogDownloadArquivo
-        fields = ['nome', 'responsavel', 'cpf', 'cnpj', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']
+        fields = ['cnpj', 'nome','responsavel', 'cpf', 'email', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']
 
 class UploadPesquisaForm(forms.ModelForm):
     class Meta:

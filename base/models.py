@@ -863,6 +863,9 @@ class Pregao(models.Model):
     def __unicode__(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
 
+    def tem_download(self):
+        return LogDownloadArquivo.objects.filter(arquivo__pregao=self).exists()
+
     def eh_ativo(self):
         return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
 
@@ -1371,15 +1374,16 @@ class LogDownloadArquivo(models.Model):
 
     )
     nome = models.CharField(u'Nome Empresarial', max_length=500)
-    responsavel = models.CharField(u'Responsável', max_length=500)
+    responsavel = models.CharField(u'Nome do Responsável', max_length=500)
     cpf = models.CharField(u'CPF', max_length=500)
-    cnpj = models.CharField(u'CNPJ', max_length=500)
+    cnpj = models.CharField(u'CNPJ Empresarial', max_length=500)
     endereco = models.CharField(u'Endereço', max_length=500)
     municipio = models.ForeignKey(Municipio, verbose_name=u'Cidade')
     telefone = models.CharField(u'Telefone', max_length=500)
     email =models.CharField(u'Email', max_length=500)
     interesse = models.CharField(u'Interesse', max_length=100, choices=INTERESSE_CHOICES)
     arquivo = models.ForeignKey(AnexoPregao)
+    baixado_em = models.DateTimeField(u'Baixado em', auto_now_add=True, null=True)
 
     class Meta:
         verbose_name = u'Log de Download de Arquivo'

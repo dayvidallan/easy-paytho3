@@ -1,0 +1,98 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4;
+            margin: 0.3cm;
+            @frame footer {
+    		    -pdf-frame-content: footerblock;
+    		    bottom: 1cm;
+    		    margin-left: 1cm;
+    		    margin-right: 1cm;
+             margin-top: 1cm;
+    		    height: 1cm;
+		    }
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center>
+        <font size="4">Lista de Downloads - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font>
+        <br><br>
+        Total de Downloads: {{ total_downloads }}   - Total de Empresas: {{ total_empresas }}
+        <br>
+    </center>
+  </h1>
+
+
+
+
+
+{% endblock %}
+
+{% block content %}
+
+
+    <table border="1" cellpadding="10" cellspacing="10">
+        <thead>
+            <th>Arquivo</th>
+            <th>Empresa</th>
+            <th>Responsável</th>
+            <th>Baixado Em</th>
+
+        </thead>
+        <tbody>
+            {% for item in itens %}
+                <tr>
+                    <td>{{ item.arquivo }}</td>
+                    <td>{{ item.nome }}  <br>CNPJ: {{ item.cnpj }} <br>Telefone: {{ item.telefone }} <br>Email: {{ item.email }}</td>
+                    <td>{{ item.responsavel }} <br>CPF: {{ item.cpf }}</td>
+                    <td>{{ item.baixado_em }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+    </table>
+    <br><br>
+
+
+{% endblock %}
+
+
+

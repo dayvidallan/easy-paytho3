@@ -3343,3 +3343,42 @@ def rejeitar_pesquisa(request, item_pesquisa_id):
         messages.success(request, u'Proposta rejeitada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_pesquisa_mercadologica/%s/' % item.item.id)
     return render(request, 'rejeitar_pesquisa.html', locals(), RequestContext(request))
+
+
+@login_required()
+def relatorio_lista_download_licitacao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
+    destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % pregao.id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+
+    itens = LogDownloadArquivo.objects.filter(arquivo__pregao=pregao)
+    total_downloads = itens.count()
+    total_empresas = itens.distinct('cnpj').count()
+
+
+    data = {'itens': itens, 'pregao': pregao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'total_downloads': total_downloads, 'total_empresas': total_empresas}
+
+    template = get_template('relatorio_lista_download_licitacao.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')

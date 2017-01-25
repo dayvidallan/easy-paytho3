@@ -71,7 +71,7 @@ function modal_form_init(href) {
 //     })
 // });
 
-$(document).ready(function(){
+$(document).ready(function($){
     if ($('.cep').length) {
         $('.cep').mask('00000-000');
     }

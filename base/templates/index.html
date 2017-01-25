@@ -121,28 +121,27 @@
     {% endif %}
 
 
-        {% if request.user.is_superuser %}
-            <a href="/admin/">
-        {% else %}
-            <a href="/cadastros/">
-        {% endif %}
-            <div class="col-lg-2 col-md-4">
+        {% if not request.user.is_superuser %}
 
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-users fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ num_membros }}</div>
-                                <div><strong>Cadastros</strong></div>
+            <a href="/cadastros/">
+
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-users fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Cadastros</strong></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </a>
+            </a>
+        {% endif %}
 
 
 {% endblock %}
