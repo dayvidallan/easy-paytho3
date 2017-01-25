@@ -2349,7 +2349,10 @@ def termo_adjudicacao(request, pregao_id):
             valor = tabela[chave]['total']
             valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
-            total_geral += valor
+
+
+    for item in tabela:
+        total_geral = total_geral + tabela[item]['total']
 
     fracassados = list()
     for item in itens_pregao.filter(situacao=ItemSolicitacaoLicitacao.FRACASSADO):
