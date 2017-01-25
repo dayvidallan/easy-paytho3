@@ -817,7 +817,7 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
             return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
         for idx, item in enumerate(request.POST.getlist('itens'), 1):
             if item:
-                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, item=idx)
+                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, id=request.POST.getlist('id_item')[idx-1])
                 novo_preco = ItemPesquisaMercadologica()
                 novo_preco.pesquisa = pesquisa
                 novo_preco.item = item_do_pregao
