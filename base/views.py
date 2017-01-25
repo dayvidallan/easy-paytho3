@@ -257,7 +257,7 @@ def cadastra_proposta_pregao(request, pregao_id):
         if not edicao and not arquivo_up:
             for idx, item in enumerate(request.POST.getlist('itens'), 1):
                 if item:
-                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=idx)
+                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao, id=request.POST.getlist('id_item')[idx-1])
                     novo_preco = PropostaItemPregao()
                     novo_preco.item = item_do_pregao
                     novo_preco.pregao = pregao

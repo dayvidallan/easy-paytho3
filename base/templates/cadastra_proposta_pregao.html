@@ -59,6 +59,7 @@
                                         <td>{{ item.valor_medio|format_money }}</td>
                                         <td><input name="marcas">{{ item.marca|default_if_none:"-" }}</td>
                                         <td><input name="itens">{{ item.valor }}</td>
+                                        <input name="id_item" type="hidden" value="{{ item.id }}">
                                     </tr>
 
 
