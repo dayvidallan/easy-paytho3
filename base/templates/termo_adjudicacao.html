@@ -79,7 +79,7 @@ ul{
         conforme quantidades e especificações constantes no Anexo I – Termo de Referência do Edital,
         que ADJUDICA às empresas
 
-        {% for empresa, itens, total in resultado.items %}
+        {% for empresa, itens in resultado.items %}
             <b>{{ empresa }}</b>,
             quanto aos
             {% if eh_lote %}

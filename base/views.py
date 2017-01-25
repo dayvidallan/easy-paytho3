@@ -946,13 +946,21 @@ def planilha_propostas(request, solicitacao_id):
     w_sheet.write(2, 1, solicitacao.objetivo)
     endereco = u'%s, dia %s às %s.' % (solicitacao.get_pregao().local, solicitacao.get_pregao().data_abertura, solicitacao.get_pregao().hora_abertura)
     w_sheet.write(3, 1, endereco)
+
+
+    sheet = rb.sheet_by_name("Sheet1")
     for idx, item in enumerate(itens, 0):
         row_index = 40 + idx
+        cell = sheet.cell(row_index, 0)
+        print "cell.xf_index is", cell.xf_index
+        fmt = rb.xf_list[cell.xf_index]
+        print "type(fmt) is", type(fmt)
+
         w_sheet.write(row_index, 0, item.item)
         w_sheet.write(row_index, 1, item.material.nome)
-        w_sheet.write(row_index, 3, item.unidade.nome)
-        w_sheet.write(row_index, 4, item.quantidade)
-        w_sheet.write(row_index, 5, item.valor_medio)
+        w_sheet.write(row_index, 2, item.unidade.nome)
+        w_sheet.write(row_index, 3, item.quantidade)
+        w_sheet.write(row_index, 4, item.valor_medio)
 
     salvou = nome + u'_%s' % pregao.id + '.xls'
     wb.save(salvou)
@@ -1932,6 +1940,7 @@ def relatorio_lances_item(request, pregao_id):
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
+    import ipdb; ipdb.set_trace()
     itens = collections.OrderedDict(sorted(itens.items()))
 
 
@@ -2347,7 +2356,6 @@ def termo_adjudicacao(request, pregao_id):
         fracassados.append(item.item)
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
-
 
 
     data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
