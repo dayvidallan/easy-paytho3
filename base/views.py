@@ -1940,7 +1940,7 @@ def relatorio_lances_item(request, pregao_id):
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
-    import ipdb; ipdb.set_trace()
+    
     itens = collections.OrderedDict(sorted(itens.items()))
 
 
