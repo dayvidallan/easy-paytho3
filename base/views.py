@@ -1531,7 +1531,7 @@ def informar_quantidades(request, solicitacao_id):
         ItemQuantidadeSecretaria.objects.filter(secretaria = request.user.pessoafisica.setor.secretaria, solicitacao = solicitacao).delete()
         for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
             if item:
-                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=solicitacao, item=idx)
+                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=solicitacao, id=request.POST.getlist('id_item')[idx-1])
                 novo_preco = ItemQuantidadeSecretaria()
                 novo_preco.solicitacao = solicitacao
                 novo_preco.item = item_do_pregao
