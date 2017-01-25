@@ -80,7 +80,7 @@ ul{
         conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital,
         o qual foi adjudicado as empresas
 
-        {% for empresa, itens, total in resultado.items %}
+        {% for empresa, itens in resultado.items %}
             <b>{{ empresa }}</b>,
             quanto aos ITENS <b>{{itens.itens}}</b>, no valor total
             de <b>R$ {{itens.total|format_money}}</b>,
