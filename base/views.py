@@ -1603,7 +1603,7 @@ def importar_itens(request, solicitacao_id):
                             un = TipoUnidade.objects.get_or_create(nome=unidade)[0]
                         novo_item = ItemSolicitacaoLicitacao()
                         novo_item.solicitacao = solicitacao
-                        novo_item.item = row
+                        novo_item.item = solicitacao.get_proximo_item()
 
                         if MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0)).exists():
                             material = MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0))[0]
