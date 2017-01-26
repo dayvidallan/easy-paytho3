@@ -620,3 +620,7 @@ class UploadTermoHomologacaoForm(forms.ModelForm):
     class Meta:
         model = Pregao
         fields = ('arquivo_homologacao',)
+
+
+class BaixarEditaisForm(forms.Form):
+    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade')
