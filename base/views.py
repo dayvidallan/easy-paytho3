@@ -2600,6 +2600,28 @@ def apagar_anexo_pregao(request, item_id):
     return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
 
 @login_required()
+def apagar_anexo_contrato(request, item_id):
+    anexo = get_object_or_404(AnexoContrato, pk=item_id)
+    contrato = anexo.contrato
+    anexo.delete()
+    messages.success(request, u'Anexo removido com sucesso.')
+    return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
+
+@login_required()
+def editar_anexo_contrato(request, item_id):
+    anexo = get_object_or_404(AnexoContrato, pk=item_id)
+    contrato = anexo.contrato
+    title=u'Editar Anexo - %s' % contrato
+    form = AnexoContratoForm(request.POST or None, request.FILES or None, instance=anexo)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Anexo cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
+
+    return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+
+
+@login_required()
 def gerar_pedido_fornecedores(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 

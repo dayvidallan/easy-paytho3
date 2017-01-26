@@ -881,6 +881,11 @@ class Pregao(models.Model):
     def tem_proposta(self):
         return PropostaItemPregao.objects.filter(pregao=self).exists()
 
+    def get_contrato(self):
+        if Contrato.objects.filter(pregao=self).exists():
+            return Contrato.objects.filter(pregao=self)[0]
+        return False
+
     def tem_item_sem_lote(self):
         itens_em_lotes = ItemLote.objects.filter(item__solicitacao=self.solicitacao)
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False).exclude(id__in=itens_em_lotes.values_list('item', flat=True))
@@ -1581,6 +1586,9 @@ class Contrato(models.Model):
 
     def eh_registro_preco(self):
         return self.pregao.eh_ata_registro_preco
+
+    def get_arquivos_publicos(self):
+        return AnexoContrato.objects.filter(contrato=self, publico=True)
 
 
 
