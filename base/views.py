@@ -224,7 +224,7 @@ def cadastra_proposta_pregao(request, pregao_id):
             except XLRDError:
                 raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-            for row in range(40, sheet.nrows):
+            for row in range(1, sheet.nrows):
                 try:
                     item = unicode(sheet.cell_value(row, 0)).strip()
                     marca = unicode(sheet.cell_value(row, 2)).strip() or None
@@ -946,10 +946,10 @@ def planilha_propostas(request, solicitacao_id):
 
     wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
-    w_sheet.write(1, 1, solicitacao.get_pregao().num_pregao)
-    w_sheet.write(2, 1, solicitacao.objetivo)
-    endereco = u'%s, dia %s às %s.' % (solicitacao.get_pregao().local, solicitacao.get_pregao().data_abertura, solicitacao.get_pregao().hora_abertura)
-    w_sheet.write(3, 1, endereco)
+    # w_sheet.write(1, 1, solicitacao.get_pregao().num_pregao)
+    # w_sheet.write(2, 1, solicitacao.objetivo)
+    # endereco = u'%s, dia %s às %s.' % (solicitacao.get_pregao().local, solicitacao.get_pregao().data_abertura, solicitacao.get_pregao().hora_abertura)
+    # w_sheet.write(3, 1, endereco)
 
 
     sheet = rb.sheet_by_name("Sheet1")
@@ -961,7 +961,7 @@ def planilha_propostas(request, solicitacao_id):
         # print "type(fmt) is", type(fmt)
 
         w_sheet.write(row_index, 0, item.item)
-        w_sheet.write(row_index, 1, item.material.observacao)
+        w_sheet.write(row_index, 1, item.material.nome)
         w_sheet.write(row_index, 2, item.unidade.nome)
         w_sheet.write(row_index, 3, item.quantidade)
         w_sheet.write(row_index, 4, item.valor_medio)

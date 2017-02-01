@@ -395,7 +395,7 @@ class PrazoPesquisaForm(forms.ModelForm):
 
 
 class SetorEnvioForm(forms.Form):
-    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', required=True)
+    secretaria = forms.ModelChoiceField(Secretaria.objects.order_by('nome'), label=u'Filtrar por Secretaria', required=True)
 
     setor = utils.ChainedModelChoiceField(Setor.objects.order_by('nome'),
       label                = u'Setor de Destino',

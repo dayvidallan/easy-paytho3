@@ -103,7 +103,7 @@ STATICFILES_FINDERS = (
 )
 
 LOGIN_URL = '/admin/login/'
-
+#
 AUTH_USER_MODEL = 'base.User'
 
 
