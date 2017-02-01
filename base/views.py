@@ -227,10 +227,10 @@ def cadastra_proposta_pregao(request, pregao_id):
             for row in range(1, sheet.nrows):
                 try:
                     item = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 2)).strip() or None
+                    marca = unicode(sheet.cell_value(row, 5)).strip() or None
                     valor = unicode(sheet.cell_value(row, 6)).strip()
                     if row == 0:
-                        if item != u'Item' or valor != u'Valor':
+                        if item != u'Item' or valor != u'VALOR UNITÁRIO':
                             raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
                     else:
                         if item and valor:
