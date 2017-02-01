@@ -541,7 +541,8 @@ def itens_solicitacao(request, solicitacao_id):
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
     pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
     eh_lote = pedidos.filter(proposta__isnull=False).exists()
-    ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True)
+    ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria)
+    ja_aprovou = ja_registrou_preco.filter(aprovado=True).exists()
     recebida_no_setor = False
     movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao)
     if movimentacao.exists():
@@ -953,14 +954,14 @@ def planilha_propostas(request, solicitacao_id):
 
     sheet = rb.sheet_by_name("Sheet1")
     for idx, item in enumerate(itens, 0):
-        row_index = 40 + idx
-        cell = sheet.cell(row_index, 0)
-        print "cell.xf_index is", cell.xf_index
-        fmt = rb.xf_list[cell.xf_index]
-        print "type(fmt) is", type(fmt)
+        row_index = idx + 1
+        # cell = sheet.cell(row_index, 0)
+        # print "cell.xf_index is", cell.xf_index
+        # fmt = rb.xf_list[cell.xf_index]
+        # print "type(fmt) is", type(fmt)
 
         w_sheet.write(row_index, 0, item.item)
-        w_sheet.write(row_index, 1, item.material.nome)
+        w_sheet.write(row_index, 1, item.material.observacao)
         w_sheet.write(row_index, 2, item.unidade.nome)
         w_sheet.write(row_index, 3, item.quantidade)
         w_sheet.write(row_index, 4, item.valor_medio)
@@ -2889,6 +2890,7 @@ def termo_homologacao(request, pregao_id):
     tabela = {}
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     else:
@@ -2908,7 +2910,10 @@ def termo_homologacao(request, pregao_id):
             valor = tabela[chave]['total']
             valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
-            total_geral += valor
+
+
+    for item in tabela:
+        total_geral = total_geral + tabela[item]['total']
 
     fracassados = list()
     for item in itens_pregao.filter(situacao=ItemSolicitacaoLicitacao.FRACASSADO):
@@ -3343,7 +3348,7 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
     data_emissao = datetime.date.today()
 
     pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
-    itens = ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao, secretaria=secretaria)
+    itens = ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao, secretaria=secretaria).order_by('item')
     total = 0
     if pode_ver_preco:
         for item in itens:

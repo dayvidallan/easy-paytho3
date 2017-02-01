@@ -224,6 +224,7 @@ admin.site.register(TipoUnidade, TipoUnidadeAdmin)
 class MaterialConsumoAdmin(NewModelAdmin):
     list_display = ('codigo', 'nome',)
     ordering = ('nome',)
+    search_fields = ('nome', )
     form = MaterialConsumoForm
 
     def save_model(self, request, obj, form, change):
