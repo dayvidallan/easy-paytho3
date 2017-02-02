@@ -3253,7 +3253,8 @@ def upload_termo_homologacao(request, pregao_id):
 @login_required()
 def gerar_resultado_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    # itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
+    ResultadoItemPregao.objects.filter(item__in=itens.values_list('id', flat=True)).delete()
     # for item in itens:
     #     item.gerar_resultado()
 
@@ -3265,9 +3266,10 @@ def gerar_resultado_licitacao(request, pregao_id):
         chave= '%s' %  proposta.participante.id
 
         tabela[chave]['total'] += proposta.valor
-    resultado = resultado = sorted(tabela.items(), key=lambda x: x[1])
+    resultado = sorted(tabela.items(), key=lambda x: x[1])
     total = len(resultado)
     indice = 0
+
     while indice < total:
         fornecedor = ParticipantePregao.objects.get(id=resultado[indice][0])
 
