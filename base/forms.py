@@ -169,8 +169,17 @@ class PregaoForm(forms.ModelForm):
 
         if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino'):
             teste = self.cleaned_data.get('data_termino')- self.cleaned_data.get('data_inicio')
-            if teste.days < 10:
+            if self.cleaned_data.get('modalidade').nome == u'Pregão Presencial' and teste.days < 10:
                 self.add_error('data_termino', u'A data de término deve ser de pelo menos 8 dias úteis de acordo com a legislação atual.')
+            elif self.cleaned_data.get('modalidade').nome == u'Carta Convite' and teste.days < 5:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 5 dias corridos de acordo com a legislação atual.')
+            elif self.cleaned_data.get('modalidade').nome == u'Tomada de Preço' and teste.days < 15:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 15 dias corridos de acordo com a legislação atual.')
+            elif self.cleaned_data.get('modalidade').nome == u'Concorrência Pública' and teste.days < 30:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 30 dias corridos de acordo com a legislação atual.')
+
+
+
 
         if self.cleaned_data.get('data_abertura') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_abertura') < self.cleaned_data.get('data_termino'):
             self.add_error('data_abertura', u'A data de abertura deve ser maior do que a data de término.')
