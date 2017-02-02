@@ -188,9 +188,17 @@
     <br>
      <div class="pull-right">
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
-            <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
+            {% if pregao.eh_pregao %}
+                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
+            {% else %}
+                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Licitação</a>
+            {% endif %}
         {% elif pregao.eh_suspenso %}
-            <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/?retomar=True/">Retomar Pregão</a>
+            {% if pregao.eh_pregao %}
+                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/?retomar=True/">Retomar Pregão</a>
+            {% else %}
+                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/?retomar=True/">Retomar Licitação</a>
+            {% endif %}
         {% endif %}
         <br><br>
     </div>
@@ -643,6 +651,9 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if pregao.tem_empate_ficto %}
+                                    <center><h3><font color="red">Empate ficto entre os concorrentes.</font></h3></center>
+                                {% endif %}
                                 {%  for item in itens_pregao %}
 
                                     <tr>
@@ -704,33 +715,31 @@
 
         </div>
         <div id="homologacao" class="tab-pane">
-            {% if pregao.eh_pregao %}
-                <fieldset>
-                    <legend>Adjudicação</legend>
-                    {% if not pregao.data_adjudicacao %}
-                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
-                    {% else %}
-                        <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
-                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
-                    {% endif %}
-                </fieldset>
-                <br>
-                <fieldset>
-                    <legend>Homologação</legend>
-                    {% if pregao.arquivo_homologacao %}
-                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação</a>
-                    <br><br>
-                    Ordenador de Despesa: {{ pregao.ordenador_despesa }}
-                    {% elif pregao.data_adjudicacao %}
-                        <p class="alert alert-info">Aguardando a Homologação pelo ordenador de despesas.</p>
-                    {% else %}
-                        <p class="alert alert-info">Aguardando Adjudicação.</p>
-                    {% endif %}
 
-                </fieldset>
-            {% else %}
+            <fieldset>
+                <legend>Adjudicação</legend>
+                {% if not pregao.data_adjudicacao %}
+                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
+                {% else %}
+                    <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
+                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
+                {% endif %}
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend>Homologação</legend>
+                {% if pregao.arquivo_homologacao %}
+                    <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação</a>
+                <br><br>
+                Ordenador de Despesa: {{ pregao.ordenador_despesa }}
+                {% elif pregao.data_adjudicacao %}
+                    <p class="alert alert-info">Aguardando a Homologação pelo ordenador de despesas.</p>
+                {% else %}
+                    <p class="alert alert-info">Aguardando Adjudicação.</p>
+                {% endif %}
 
-            {% endif %}
+            </fieldset>
+
 
         </div>
 
@@ -788,9 +797,11 @@
                             <tr>
                                 <td><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a></td>
                             </tr>
-                            <tr>
-                                <td><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a></td>
-                            </tr>
+                            {% if pregao.eh_pregao %}
+                                <tr>
+                                    <td><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a></td>
+                                </tr>
+                            {% endif %}
                             <tr>
                                 <td><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a></td>
                             </tr>
@@ -800,7 +811,11 @@
 
                         {% if pregao.tem_ocorrencia %}
                             <tr>
-                                <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante o Pregão</a></td>
+                                {% if pregao.eh_pregao %}
+                                    <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante o Pregão</a></td>
+                                {% else %}
+                                    <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante a Licitação</a></td>
+                                {% endif %}
                             </tr>
                         {% endif %}
 

@@ -1162,8 +1162,12 @@ def resultado_ajustar_preco(request, resultado_id):
     form = ResultadoAjustePrecoForm(request.POST or None, instance=resultado)
     if form.is_valid():
         form.save()
-        messages.success(request, u'Situação alterada com sucesso.')
-        return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
+        if resultado.item.get_licitacao().eh_pregao():
+            messages.success(request, u'Situação alterada com sucesso.')
+            return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
+        else:
+            PropostaItemPregao.objects.filter(item=resultado.item, participante=resultado.participante, marca=resultado.marca).update(valor=resultado.valor)
+            return HttpResponseRedirect(u'/base/gerar_resultado_licitacao/%s/' % resultado.item.get_licitacao().id)
     return render(request, 'resultado_ajustar_preco.html', locals(), RequestContext(request))
 
 @login_required()
@@ -1711,9 +1715,10 @@ def relatorio_resultado_final(request, pregao_id):
     for item in itens_pregao:
         if item.get_total_lance_ganhador():
             total = total + item.get_total_lance_ganhador()
-
-
-    data = {'eh_lote':eh_lote,  'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
+    observacao = False
+    if not pregao.eh_pregao() and ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id', flat=True), observacoes__isnull=False, ordem=1).exists():
+        observacao = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id', flat=True), observacoes__isnull=False, ordem=1)[0].observacoes
+    data = {'eh_lote':eh_lote, 'observacao': observacao,  'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
 
     template = get_template('relatorio_resultado_final.html')
 
@@ -3253,11 +3258,6 @@ def upload_termo_homologacao(request, pregao_id):
 @login_required()
 def gerar_resultado_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
-    ResultadoItemPregao.objects.filter(item__in=itens.values_list('id', flat=True)).delete()
-    # for item in itens:
-    #     item.gerar_resultado()
-
     tabela = {}
     for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
         chave= '%s' %  proposta.participante.id
@@ -3269,21 +3269,37 @@ def gerar_resultado_licitacao(request, pregao_id):
     resultado = sorted(tabela.items(), key=lambda x: x[1])
     total = len(resultado)
     indice = 0
-
+    # print resultado
+    # tem_empate_ficto = False
+    # total_global_vencedor = 0
+    # ganhador_eh_beneficiario = False
     while indice < total:
         fornecedor = ParticipantePregao.objects.get(id=resultado[indice][0])
+        # if indice == 0:
+        #     total_global_vencedor = resultado[indice][0]
+        #     ganhador_eh_beneficiario = fornecedor.me_epp
+        #
+        # elif not tem_empate_ficto and not ganhador_eh_beneficiario:
+        #     if fornecedor.me_epp:
+        #         limite_lance = total_global_vencedor + (total_global_vencedor*10)/100
+        #         if resultado[indice][0] < limite_lance:
+        #             tem_empate_ficto = True
 
         itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor)
 
         for item in itens:
-            novo_resultado = ResultadoItemPregao()
-            novo_resultado.item = item.item
-            novo_resultado.participante = fornecedor
-            novo_resultado.valor = item.valor
-            novo_resultado.marca = item.marca
-            novo_resultado.ordem = indice+1
-            novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
-            novo_resultado.save()
+            if ResultadoItemPregao.objects.filter(item=item.item, participante=fornecedor).exists():
+                ResultadoItemPregao.objects.filter(item=item.item, participante=fornecedor).update(valor=item.valor, ordem=indice+1)
+            else:
+                novo_resultado = ResultadoItemPregao()
+                novo_resultado.item = item.item
+                novo_resultado.participante = fornecedor
+                novo_resultado.valor = item.valor
+                novo_resultado.marca = item.marca
+                novo_resultado.ordem = indice+1
+                novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                novo_resultado.save()
+
         indice += 1
 
 

@@ -869,6 +869,42 @@ class Pregao(models.Model):
     def eh_ativo(self):
         return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
 
+    def tem_empate_ficto(self):
+        pregao = self
+        if pregao.eh_pregao():
+            return False
+
+        tabela = {}
+        for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+            chave= '%s' %  proposta.participante.id
+            tabela[chave] = dict(total = 0)
+        for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+            chave= '%s' %  proposta.participante.id
+
+            tabela[chave]['total'] += proposta.valor
+        resultado = sorted(tabela.items(), key=lambda x: x[1])
+        total = len(resultado)
+        indice = 0
+        print resultado
+        tem_empate_ficto = False
+        total_global_vencedor = 0.00
+        ganhador_eh_beneficiario = False
+
+        while indice < total:
+            fornecedor = ParticipantePregao.objects.get(id=resultado[indice][0])
+            if indice == 0:
+                total_global_vencedor = int(resultado[indice][0])
+                ganhador_eh_beneficiario = fornecedor.me_epp
+
+            elif not tem_empate_ficto and not ganhador_eh_beneficiario:
+                if fornecedor.me_epp:
+                    limite_lance = total_global_vencedor + (total_global_vencedor*10)/100
+                    if int(resultado[indice][0]) < limite_lance:
+                        tem_empate_ficto = True
+            indice += 1
+
+        return tem_empate_ficto
+
     def eh_suspenso(self):
         return self.situacao in [Pregao.SUSPENSO]
 

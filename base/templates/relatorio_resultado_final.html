@@ -50,7 +50,7 @@ ul{
     <br>
   <h1 class="page-header">
     {% include "cabecalho.html" %}
-    <center><font size="4">Classificação Final - Pregão {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+    <center><font size="4">Classificação Final - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
 
 
@@ -129,15 +129,20 @@ ul{
                     </tr>
                 {% endif %}
             {% endfor %}
-                {% if not eh_maior_desconto %}
-                    {% if eh_lote %}
-                        <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
-                    {% else %}
-                        <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
-                    {% endif %}
+            {% if not eh_maior_desconto %}
+                {% if eh_lote %}
+                    <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                {% else %}
+                    <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
                 {% endif %}
+            {% endif %}
+
         </tbody>
     </table>
+    <br><br>
+    {% if observacao %}
+        <font color="red">*Obs: {{ observacao }}</font>
+    {% endif %}
         </center>
 
 
