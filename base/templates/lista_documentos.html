@@ -58,6 +58,14 @@
 
                         {% endif %}
                     {% endif %}
+                    {% if solicitacao.get_documentos_contrato %}
+                        {% for item in solicitacao.get_documentos_contrato %}
+                                <tr>
+                                    <td>{{ item.nome }}</td>
+                                    <td><a class="btn btn-info btn-sm" href="/media/{{item.arquivo}}">Ver Documento</a></td>
+                                </tr>
+                            {% endfor %}
+                    {% endif %}
                 {% endif %}
 
             </tbody>

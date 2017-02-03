@@ -373,6 +373,12 @@ class SolicitacaoLicitacao(models.Model):
         else:
             return u'Cadastrada'
 
+    def get_documentos_contrato(self):
+        contrato = self.get_pregao().get_contrato()
+        if contrato:
+            return AnexoContrato.objects.filter(contrato=contrato)
+        return False
+
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
