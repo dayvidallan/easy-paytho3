@@ -854,7 +854,8 @@ class Pregao(models.Model):
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True)
     eh_ata_registro_preco = models.BooleanField(u'Ata de Registro de Preço?', default=True)
     arquivo_homologacao = models.FileField(u'Termo de Homologação', null=True, upload_to=upload_path_termo_homologacao)
-    #cabecalho_ata = RichTextField(u'Cabeçalho da Ata de Registro de Preço', null=True, blank=True)
+    pode_homologar = models.BooleanField(u'Pode Homologar', default=False)
+
 
     class Meta:
         verbose_name = u'Pregão'
@@ -885,7 +886,7 @@ class Pregao(models.Model):
         resultado = sorted(tabela.items(), key=lambda x: x[1])
         total = len(resultado)
         indice = 0
-        print resultado
+
         tem_empate_ficto = False
         total_global_vencedor = 0.00
         ganhador_eh_beneficiario = False

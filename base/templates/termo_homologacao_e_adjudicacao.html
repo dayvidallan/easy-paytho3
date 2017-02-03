@@ -61,7 +61,7 @@ ul{
   <h1 class="page-header">
     {% include "cabecalho.html" %}
     <center>
-        <font size="4">TERMO DE HOMOLOGAÇÃO E ADJUDICAÇÃO – {{ pregao.modalidade }} N° {{ pregao.num_processo }}</font><br><br>
+        <font size="4">TERMO DE HOMOLOGAÇÃO E ADJUDICAÇÃO – {{ pregao }}</font><br><br>
 
     </center>
   </h1>
@@ -74,7 +74,7 @@ ul{
 
 
         O Prefeito do Município de <b>{{configuracao.nome}}</b>,
-        no uso de suas atribuições legais, em atendimento ao disposto no art. 43, inciso VI, da Lei Federal nº 8.666/93, em sua redação atual, resolve <b>homologar</b> os atos praticados no procedimento licitatório referente a(ao) <b>{{ pregao.modalidade }} N° {{ pregao.num_pregao }}, Processo N° {{ pregao.num_processo }}</b>
+        no uso de suas atribuições legais, em atendimento ao disposto no art. 43, inciso VI, da Lei Federal nº 8.666/93, em sua redação atual, resolve <b>homologar</b> os atos praticados no procedimento licitatório referente a(ao) <b>{{ pregao }} {% if  pregao.solicitacao.processo %}, Processo N° {{ pregao.solicitacao.processo }}{% endif %}</b>
         originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.solicitacao.objeto}}</b>,
 
         , e em consequência, adjudicar o objeto do referido certame em favor da empresa

@@ -3459,3 +3459,10 @@ def apagar_item(request, item_id):
     item.delete()
     messages.success(request, u'Item apagado com sucesso.')
     return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+
+@login_required()
+def liberar_licitacao_homologacao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    pregao.pode_homologar = True
+    pregao.save()
+    return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)

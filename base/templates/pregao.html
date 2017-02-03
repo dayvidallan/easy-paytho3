@@ -715,21 +715,30 @@
 
         </div>
         <div id="homologacao" class="tab-pane">
+            {% if pregao.eh_pregao %}
+                <fieldset>
+                    <legend>Adjudicação</legend>
+                    {% if not pregao.data_adjudicacao %}
+                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
+                    {% else %}
+                        <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
+                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
+                    {% endif %}
+                </fieldset>
 
-            <fieldset>
-                <legend>Adjudicação</legend>
-                {% if not pregao.data_adjudicacao %}
-                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
-                {% else %}
-                    <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
-                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
-                {% endif %}
-            </fieldset>
+            {% endif %}
             <br>
             <fieldset>
                 <legend>Homologação</legend>
+                {% if not pregao.data_adjudicacao and not pregao.eh_pregao %}
+                    <a href="/base/liberar_licitacao_homologacao/{{ pregao.pk }}/" class="btn btn-success">Liberar Homologação</a>
+                {% endif %}
                 {% if pregao.arquivo_homologacao %}
-                    <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação</a>
+                    {% if pregao.eh_pregao %}
+                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação</a>
+                    {% else %}
+                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação e Adjudicação</a>
+                    {% endif%}
                 <br><br>
                 Ordenador de Despesa: {{ pregao.ordenador_despesa }}
                 {% elif pregao.data_adjudicacao %}

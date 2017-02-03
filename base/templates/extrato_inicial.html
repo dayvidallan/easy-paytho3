@@ -75,7 +75,7 @@ ul{
 
         O Pregoeiro Oficial da <b>{{configuracao.nome}}</b>, objetivando o grau de competitividade preconizado pela administração pública, torna público que estará realizando a(s) licitação(ões) abaixo descrita(s), a saber:
 
-        <br><br>- PREGÃO PRESENCIAL No <b>{{ pregao.num_pregao }}</b> - Processo Administrativo nº <b>{{ pregao.num_processo }}</b>
+        <br><br>- {{ pregao }}</b> - Processo Administrativo nº <b>{{ pregao.num_processo }}</b>
         <br><br> Originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b>, que objetiva a <b>{{pregao.solicitacao.objeto}}</b>, conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital, cuja sessão inicial está marcada para o DIA <b>{{ pregao.data_abertura }}</b>, às <b>{{ pregao.hora_abertura}}</b> (Horário local).
 
     A(s) referida(s) sessão(ões) será(ão) realizada(s) em: {{ pregao.local}}.
