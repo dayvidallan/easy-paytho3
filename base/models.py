@@ -322,7 +322,9 @@ class SolicitacaoLicitacao(models.Model):
         return PedidoItem.objects.filter(solicitacao=self, ativo=True).exists()
 
     def get_pregao(self):
-        return Pregao.objects.filter(solicitacao=self)[0]
+        if Pregao.objects.filter(solicitacao=self).exists():
+            return Pregao.objects.filter(solicitacao=self)[0]
+        return False
 
     def eh_maior_desconto(self):
         return self.get_pregao().tipo.id == TipoPregao.DESCONTO
