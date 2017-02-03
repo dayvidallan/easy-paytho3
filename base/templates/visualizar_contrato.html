@@ -310,6 +310,7 @@
 
                                                 <tr>
                                                     <th>Item</th>
+                                                    <th>Material</th>
                                                     <th>Marca</th>
                                                     <th>Empresa</th>
                                                     <th>Valor</th>
@@ -322,6 +323,7 @@
                                                 {% for resultado in contrato.solicitacao.get_resultado %}
                                                     <tr>
                                                         <td>{{ resultado.item.item }}</td>
+                                                        <td>{{ resultado.item.material|truncatechars:500 }}</td>
                                                         <td>{{ resultado.marca|default_if_none:"-" }}</td>
                                                         <td>{{ resultado.participante }}</td>
                                                         <td>{{ resultado.valor }}</td>
