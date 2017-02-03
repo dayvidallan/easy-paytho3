@@ -377,6 +377,7 @@ class SolicitacaoLicitacao(models.Model):
 
     def get_documentos_contrato(self):
         pregao = self.get_pregao()
+        contrato = None
         if pregao:
             contrato = pregao.get_contrato()
         if contrato:
