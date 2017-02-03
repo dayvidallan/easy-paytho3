@@ -374,7 +374,9 @@ class SolicitacaoLicitacao(models.Model):
             return u'Cadastrada'
 
     def get_documentos_contrato(self):
-        contrato = self.get_pregao().get_contrato()
+        pregao = self.get_pregao()
+        if pregao:
+            contrato = pregao.get_contrato()
         if contrato:
             return AnexoContrato.objects.filter(contrato=contrato)
         return False
