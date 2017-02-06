@@ -730,7 +730,7 @@
             <br>
             <fieldset>
                 <legend>Homologação</legend>
-                {% if not pregao.data_adjudicacao and not pregao.eh_pregao %}
+                {% if not pregao.data_adjudicacao and not pregao.eh_pregao and not pregao.pode_homologar %}
                     <a href="/base/liberar_licitacao_homologacao/{{ pregao.pk }}/" class="btn btn-success">Liberar Homologação</a>
                 {% endif %}
                 {% if pregao.arquivo_homologacao %}

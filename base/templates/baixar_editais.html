@@ -60,7 +60,7 @@
                             {% endfor %}
                             {% if pregao.get_contrato %}
                                 {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
-                                    <a  href="/media/{{arquivo.arquivo }}/">{{ arquivo.nome }}</a><br>
+                                    <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
                                 {% endfor %}
                             {% endif %}
                         </td>

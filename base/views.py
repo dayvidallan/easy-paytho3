@@ -2931,7 +2931,6 @@ def termo_homologacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-
     data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
     if pregao.eh_pregao():
         template = get_template('termo_homologacao.html')
