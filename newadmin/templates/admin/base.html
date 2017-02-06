@@ -3,7 +3,7 @@
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
   <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}E@sy - Sistema Gerenciador de Licitações{% endblock %}</title>
+  <title>{% block title %}E@sy Gestão Pública{% endblock %}</title>
   {% compress css %}
 
     <link rel="stylesheet" type="text/css" href="{% static "base/css/bootstrap.min.css" %}">
@@ -52,7 +52,7 @@
                 <div class="logo">
                   <a href="/">
 
-                    <p>E@sy - Sistema Gerenciador de Licitações</p>
+                    <p>E@sy Gestão Pública</p>
                   </a>
                 </div>
                 {% if request.user.pessoafisica %}
