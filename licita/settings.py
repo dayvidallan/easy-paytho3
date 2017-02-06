@@ -6,8 +6,8 @@ from os.path import abspath, dirname
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_PATH = abspath(dirname(dirname(__file__)))
 SECRET_KEY = '0$p#v)*(zb22za#6c=7yg$=$v-7xh8w12f2gbd9*mezlsr*3*o'
-DEBUG = True
-
+DEBUG = False
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
 
@@ -136,6 +136,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    ADMINS = (
+        ('Walkyso', 'walkyso@gmail.com'),
+    )
 
 
 
@@ -179,3 +183,4 @@ TEMPLATES = [
 ]
 
 URL = u'http://159.203.181.26/'
+
