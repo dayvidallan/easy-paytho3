@@ -122,10 +122,22 @@ MESSAGE_TAGS = {
 PDF_SIGNER_DIR = os.path.join(BASE_DIR, 'telediagnostico/assinatura_digital/portable_signer/')
 SYSTEM_CERTIFICATE_PATH = os.path.join(BASE_DIR, 'telediagnostico/assinatura_digital/certificados/certificate.pfx')
 SYSTEM_PRIVATE_KEY_PASSWORD = 'senha'
+
+
+
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_PASSWORD = 'l1c1t@c@0' #my gmail password
+EMAIL_HOST_USER = 'easylicitacao@gmail.com' #my gmail username
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-DEFAULT_FROM_EMAIL = 'pnt@lais.huol.ufrn.br'
+
 
 # CACHES = {
 #     "default": {

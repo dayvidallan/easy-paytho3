@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404, render
+from django.shortcuts import get_object_or_404, render
 from base.models import *
 from base.forms import *
 from django.contrib.auth.decorators import login_required
@@ -9,7 +9,6 @@ from django.http import HttpResponse
 import xlrd
 from xlrd.biffh import XLRDError
 import datetime
-from licita import settings
 import os
 from django.template import Context
 from django.template.loader import get_template
@@ -25,7 +24,8 @@ from reportlab.pdfgen import canvas
 from reportlab.graphics.barcode.common import I2of5
 from reportlab.lib.utils import simpleSplit
 import collections
-
+from django.conf import settings
+from django.core.mail import send_mail
 
 LARGURA = 210*mm
 ALTURA = 297*mm
@@ -581,6 +581,10 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
         novo_item.avaliado_por = request.user
         novo_item.avaliado_em = datetime.datetime.now()
         novo_item.save()
+
+        # send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
+        #  ['walkyso@gmail.com'], fail_silently=False)
+
 
         messages.success(request, u'Item cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
