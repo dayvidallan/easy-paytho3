@@ -62,25 +62,33 @@ ul{
 
     <table border="1" cellpadding="10" cellspacing="10">
         <thead>
-            <th>Item</th>
-            <th>Material</th>
-            <th>Unidade</th>
-            <th>Quantidade</th>
+            <th width="10%">Item</th>
             {% if pode_ver_preco %}
-                <th>Valor Unitário Máximo</th>
-                <th>Total</th>
+                <th width="55%">Material</th>
+            {% else %}
+                <th width="75%">Material</th>
+            {% endif %}
+            <th width="10%">Unidade</th>
+            <th width="10%">Qtd.</th>
+            {% if pode_ver_preco %}
+                <th width="10%">Valor Unitário Máximo</th>
+                <th width="10%">Total</th>
             {% endif %}
         </thead>
         <tbody>
             {% for item in itens %}
                 <tr>
-                    <td>{{ item }}</td>
-                    <td>{{ item.material }}</td>
-                    <td>{{ item.unidade }}</td>
-                    <td>{{ item.quantidade }}</td>
+                    <td width="10%">{{ item.item }}</td>
                     {% if pode_ver_preco %}
-                        <td align="right">R$ {{ item.valor_medio|format_money }}</td>
-                        <td align="right">R$ {{ item.total|format_money }}</td>
+                        <td width="55%">{{ item.material }}</td>
+                    {% else %}
+                        <td width="75%">{{ item.material }}</td>
+                    {% endif %}
+                    <td width="10%">{{ item.unidade }}</td>
+                    <td width="10%">{{ item.quantidade }}</td>
+                    {% if pode_ver_preco %}
+                        <td align="right" width="15%">R$ {{ item.valor_medio|format_money }}</td>
+                        <td align="right" width="15%">R$ {{ item.total|format_money }}</td>
                     {% endif %}
                 </tr>
 
