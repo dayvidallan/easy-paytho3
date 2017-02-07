@@ -1,0 +1,100 @@
+sudo apt-get update
+
+sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib nginx
+
+sudo su - postgres
+
+psql
+
+CREATE DATABASE licita;
+
+GRANT ALL PRIVILEGES ON DATABASE licita TO postgres;
+
+ALTER USER postgres WITH PASSWORD 'licitaeasy';
+
+\q
+
+exit
+
+sudo pip install virtualenvwrapper
+
+nano ~/.bashrc
+
+Adicionar no fim do arquivo:
+
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/Devel
+source /usr/local/bin/virtualenvwrapper.sh
+
+salvar e sair
+
+source ~/.bashrc
+
+no diretorio home, digitar sudo mkdir workspace
+
+cd workspace
+
+sudo apt-get install git
+
+git clone https://walkyso@bitbucket.org/walkyso/licita.git
+
+chown www-data:www-data -R licita
+
+cd licita
+
+mkvirtualenv licita --python=/usr/bin/python2.7 
+
+pip install django gunicorn psycopg2
+
+pip install -U -r deploy/requirements.txt
+
+./manage.py sync
+
+./manage.py criar_base_teste
+
+./manage.py collectstatic --noinput --clear
+
+cd sql
+
+psql -Upostgres -hlocalhost -d licita < dump_material.sql
+
+cd ..
+
+deactivate
+
+cd licita/sql
+
+sudo cp licita /etc/nginx/sites-avaliable/
+
+sudo ln -s /etc/nginx/sites-available/licita /etc/nginx/sites-enabled
+
+cd /etc/nginx/sites-enabled
+
+sudo rm default
+
+sudo nginx -t
+
+sudo service nginx restart
+
+sudo apt-get install supervisor
+
+sudo rm /etc/supervisor/supervisord.conf
+
+sudo cp /home/workspace/licita/sql/supervisord.conf /etc/supervisor/
+
+sudo cp /home/workspace/licita/sql/gunicorn.service /etc/systemd/system/
+
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+
+sudo service supervisor start
+
+sudo supervisorctl start all
+
+sudo supervisorctl restart all
+
+sudo systemctl enable supervisor
+
+sudo systemctl start supervisor
+
+http://192.168.32.133/
