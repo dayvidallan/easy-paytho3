@@ -1506,7 +1506,7 @@ class MaterialConsumo(models.Model):
 
 
     def __unicode__(self):
-        return '%s (Cód: %s)' % (self.nome[:100], self.codigo)
+        return '%s (Cód: %s)' % (self.nome, self.codigo)
 
     def save(self):
         if not self.pk:
