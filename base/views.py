@@ -3328,14 +3328,11 @@ def lista_materiais(request, solicitacao_id):
     data_emissao = datetime.date.today()
 
     pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
-    itens = solicitacao.itemsolicitacaolicitacao_set.all()
-    total = 0
-    if pode_ver_preco:
-        for item in itens:
-            if item.valor_medio:
-                total += item.quantidade * item.valor_medio
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao)
+    total = itens.aggregate(Sum('total'))['total__sum']
 
-    data = {'solicitacao': solicitacao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
+
+    data = {'solicitacao': solicitacao,'itens': itens, 'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
 
     template = get_template('lista_materiais.html')
 
