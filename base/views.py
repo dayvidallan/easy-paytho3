@@ -3466,3 +3466,16 @@ def liberar_licitacao_homologacao(request, pregao_id):
     pregao.pode_homologar = True
     pregao.save()
     return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
+
+@login_required()
+def registrar_ocorrencia_pregao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    title=u'Registrar Ocorrência - %s' % pregao
+    form = HistoricoPregaoForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.pregao = pregao
+        o.save()
+        messages.success(request, u'Ocorrência registrada com sucesso.')
+        return HttpResponseRedirect(u'/pregao/%s/' % pregao.id)
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))

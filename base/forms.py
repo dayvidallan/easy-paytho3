@@ -635,3 +635,14 @@ class UploadTermoHomologacaoForm(forms.ModelForm):
 
 class BaixarEditaisForm(forms.Form):
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade')
+
+
+class HistoricoPregaoForm(forms.ModelForm):
+    obs = forms.CharField(label=u'Descrição da Ocorrência', widget=forms.Textarea, required=True)
+    class Meta:
+        model = HistoricoPregao
+        fields = ('data', 'obs')
+
+    def __init__(self, *args, **kwargs):
+        super(HistoricoPregaoForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}

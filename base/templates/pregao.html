@@ -188,6 +188,7 @@
     <br>
      <div class="pull-right">
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
+            <a class="btn info" href="/base/registrar_ocorrencia_pregao/{{ pregao.pk }}/">Registrar Ocorrência</a>
             {% if pregao.eh_pregao %}
                 <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
             {% else %}
