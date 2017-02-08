@@ -434,6 +434,9 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_id_lote(self):
         return ItemLote.objects.filter(item=self)[0].lote.item
 
+    def tem_lance_registrado(self):
+        return LanceItemRodadaPregao.objects.filter(item=self).exists()
+
     def get_lance_minimo(self):
         eh_maior_desconto = self.solicitacao.eh_maior_desconto()
         melhor_proposta = None

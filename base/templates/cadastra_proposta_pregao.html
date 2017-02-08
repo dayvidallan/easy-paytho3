@@ -94,7 +94,11 @@
                                          <td>{{ item.item.valor_medio }}</td>
                                         <td>{{ item.marca|default_if_none:"-" }}</td>
                                         <td>{{ item.valor }}</td>
-                                        <td><a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a></td>
+                                        <td>
+                                            {% if not item.item.tem_lance_registrado %}
+                                                <a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a>
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
