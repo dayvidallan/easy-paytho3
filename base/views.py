@@ -1355,6 +1355,7 @@ def cancelar_rodada(request, item_id):
 @login_required()
 def editar_proposta(request, proposta_id):
     proposta = get_object_or_404(PropostaItemPregao, pk=proposta_id)
+    title=u'Editar Proposta'
     form = EditarPropostaForm(request.POST or None, instance=proposta)
     if form.is_valid():
         form.save()
