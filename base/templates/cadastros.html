@@ -29,6 +29,26 @@
                 </div>
             </a>
         {% endif %}
+        {% if perms.base.pode_cadastrar_pregao %}
+            <a href="/admin/base/comissaolicitacao/">
+                <div class="col-lg-2 col-md-4">
+
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-users fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Comissão de Licitação</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endif %}
 
         <a href="/base/ver_fornecedores/">
             <div class="col-lg-2 col-md-4">

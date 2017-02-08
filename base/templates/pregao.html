@@ -805,6 +805,9 @@
                         {% endif %}
                         {%  if pregao.tem_resultado %}
                             <tr>
+                                <td><a href="/base/ata_sessao/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
+                            </tr>
+                            <tr>
                                 <td><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a></td>
                             </tr>
                             {% if pregao.eh_pregao %}

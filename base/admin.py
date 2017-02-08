@@ -79,17 +79,23 @@ admin.site.register(Pregao, PregaoAdmin)
 
 class ComissaoLicitacaoAdmin(NewModelAdmin):
 
-    list_display = ('nome','portaria', 'get_membros' )
+    list_display = ('nome', 'get_membros', 'get_opcoes')
     ordering = ('nome',)
     list_filter = ('nome',)
 
     def get_membros(self, obj):
         texto = u''
-        for membro in obj.membro.all():
-            texto = texto + u'%s, ' % membro.nome
+        for membro in MembroComissaoLicitacao.objects.filter(comissao=obj):
+            texto = texto + u'%s, ' % membro.membro.nome
 
         return texto[:len(texto)-2]
     get_membros.short_description = u'Membros'
+
+    def get_opcoes(self, obj):
+        return u'<a href="/base/adicionar_membro_comissao/%s/" class="btn-sm btn-primary">Adicionar Membro</a>' % obj.id
+
+    get_opcoes.short_description = u'Opções'
+    get_opcoes.allow_tags = True
 
 
 admin.site.register(ComissaoLicitacao, ComissaoLicitacaoAdmin)

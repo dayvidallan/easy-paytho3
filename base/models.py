@@ -1249,8 +1249,7 @@ class Municipio(models.Model):
 
 class ComissaoLicitacao(models.Model):
     nome = models.CharField(u'Identificação', max_length=80)
-    portaria = models.CharField(u'Portaria', max_length=80)
-    membro = models.ManyToManyField(PessoaFisica, related_name=u'Membros')
+
 
     def __unicode__(self):
         return self.nome
@@ -1258,6 +1257,18 @@ class ComissaoLicitacao(models.Model):
     class Meta:
         verbose_name = u'Comissão de Licitação'
         verbose_name_plural = u'Comissões de Licitação'
+
+class MembroComissaoLicitacao(models.Model):
+    comissao = models.ForeignKey(ComissaoLicitacao)
+    portaria = models.CharField(u'Portaria', max_length=80)
+    membro = models.ForeignKey(PessoaFisica)
+
+    def __unicode__(self):
+        return self.nome
+
+    class Meta:
+        verbose_name = u'Membro da Comissão de Licitação'
+        verbose_name_plural = u'Membros da Comissão de Licitação'
 
 
 class InteressadoEdital(models.Model):

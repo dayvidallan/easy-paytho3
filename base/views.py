@@ -3499,3 +3499,106 @@ def registrar_ocorrencia_pregao(request, pregao_id):
         messages.success(request, u'Ocorrência registrada com sucesso.')
         return HttpResponseRedirect(u'/pregao/%s/' % pregao.id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+@login_required()
+def ata_sessao(request, pregao_id):
+    import tempfile
+    import zipfile
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+    municipio = None
+    if get_config():
+        municipio = get_config().municipio
+
+    participantes = []
+    ocorrencias = []
+    comissao  = []
+    descricoes = []
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+        nome = u'%s' % item.fornecedor
+        participantes.append(nome.replace('&',"e"))
+    #     quantidades.append(item.quantidade)
+    #     unidades.append(item.unidade)
+    #     descricoes.append(item.material.nome)
+
+    for item in HistoricoPregao.objects.filter(pregao=pregao):
+        nome = u'%s'% item.obs
+        ocorrencias.append(nome.replace('&',"e"))
+
+    for item in MembroComissaoLicitacao.objects.all():
+
+        nome = u'%s - Portaria %s'% (item.membro.nome , item.portaria)
+        comissao.append(nome.replace('&',"e"))
+
+    dicionario = {
+        '#PREGAO#' : pregao,
+        '#HORA#' : pregao.hora_abertura,
+        '#DIA#' : pregao.data_abertura or '-',
+        '#LOCAL#': pregao.local,
+        '#OBJETO#': pregao.solicitacao.objeto,
+        '#RESPONSAVEL#': pregao.responsavel,
+        '#COMISSAO#': u', '.join(comissao),
+        # '#OBJETO#': solicitacao.objeto,
+        '#PARTICIPANTES#': libreoffice_new_line(participantes or '-'),
+        '#OCORRENCIAS#': libreoffice_new_line(ocorrencias or '-'),
+        # '#QUANT#': libreoffice_new_line(quantidades or '-'),
+        # '#UN#': libreoffice_new_line(unidades or '-'),
+        # '#DES#': libreoffice_new_line(descricoes or '-'),
+
+    }
+    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ata_sessao.docx'))
+    new_docx = zipfile.ZipFile('%s.docx' % tempfile.mktemp(), "a")
+
+    tmp_xml_file = open(template_docx.extract("word/document.xml", tempfile.mkdtemp()))
+    tempXmlStr = tmp_xml_file.read()
+    tmp_xml_file.close()
+    os.unlink(tmp_xml_file.name)
+
+    for key in dicionario.keys():
+        value = unicode(dicionario.get(key)).encode("utf8")
+        tempXmlStr = tempXmlStr.replace(key, value)
+
+    tmp_xml_file =  open(tempfile.mktemp(), "w+")
+    tmp_xml_file.write(tempXmlStr)
+    tmp_xml_file.close()
+
+    for arquivo in template_docx.filelist:
+        if not arquivo.filename == "word/document.xml":
+            new_docx.writestr(arquivo.filename, template_docx.read(arquivo))
+
+    new_docx.write(tmp_xml_file.name, "word/document.xml")
+
+    template_docx.close()
+    new_docx.close()
+    os.unlink(tmp_xml_file.name)
+
+
+    # Caso não seja informado, deverá retornar o caminho para o arquivo DOCX processado.
+    caminho_arquivo =  new_docx.filename
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
+    return response
+
+
+@login_required()
+def adicionar_membro_comissao(request, comissao_id):
+    comissao = get_object_or_404(ComissaoLicitacao, pk=comissao_id)
+    title=u'Adicionar Membro da Comissão'
+    form = MembroComissaoLicitacaoForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.comissao = comissao
+        o.save()
+        messages.success(request, u'Membro cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/admin/base/comissaolicitacao/')
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))

@@ -646,3 +646,9 @@ class HistoricoPregaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(HistoricoPregaoForm, self).__init__(*args, **kwargs)
         self.fields['data'].widget.attrs = {'class': 'vDateField'}
+
+class MembroComissaoLicitacaoForm(forms.ModelForm):
+
+    class Meta:
+        model = MembroComissaoLicitacao
+        fields = ('membro', 'portaria',)

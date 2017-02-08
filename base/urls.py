@@ -138,6 +138,8 @@ urlpatterns = [
     url(r'^cadastrar_contrato/(?P<solicitacao_id>\d+)/$', views.cadastrar_contrato, name='cadastrar_contrato'),
     url(r'^relatorio_lista_download_licitacao/(?P<pregao_id>\d+)/$', views.relatorio_lista_download_licitacao, name='relatorio_lista_download_licitacao'),
     url(r'^registrar_ocorrencia_pregao/(?P<pregao_id>\d+)/$', views.registrar_ocorrencia_pregao, name='registrar_ocorrencia_pregao'),
+    url(r'^ata_sessao/(?P<pregao_id>\d+)/$', views.ata_sessao, name='ata_sessao'),
+    url(r'^adicionar_membro_comissao/(?P<comissao_id>\d+)/$', views.adicionar_membro_comissao, name='adicionar_membro_comissao'),
 
 
     url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),
