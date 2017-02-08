@@ -1846,9 +1846,9 @@ def relatorio_classificacao_por_item(request, pregao_id):
     eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
     tabela = {}
     itens = {}
-    resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
-    chaves =  resultado.values('item__item').order_by('item')
-    for num in chaves:
+    resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item__item')
+    chaves =  resultado.values('item__item').order_by('item__item')
+    for num in sorted(chaves):
         chave = '%s' % num['item__item']
         tabela[chave] = []
         itens[chave] =  []
@@ -1858,9 +1858,17 @@ def relatorio_classificacao_por_item(request, pregao_id):
         tabela[chave].append(item)
         itens[chave] = item.item.get_itens_do_lote()
 
+    from blist import sorteddict
+
+    def my_key(dict_key):
+           try:
+                  return int(dict_key)
+           except ValueError:
+                  return dict_key
 
 
-    resultado = collections.OrderedDict(sorted(tabela.items()))
+    resultado =  sorteddict(my_key, **tabela)
+
 
     data = {'itens':itens, 'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 

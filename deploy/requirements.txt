@@ -30,3 +30,4 @@ html5lib==1.0b8
 -e git+git://github.com/hugotacito/django-pagination.git#egg=django-pagination
 xlutils
 dj-static==0.0.6
+blist
