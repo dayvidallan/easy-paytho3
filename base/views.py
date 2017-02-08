@@ -1945,7 +1945,7 @@ def relatorio_lances_item(request, pregao_id):
         rodadas = RodadaPregao.objects.filter(item=item)
         for rodada in rodadas:
             lista_rodadas[rodada.rodada] = dict(lances=list())
-        chave = u'%s' % (item)
+        chave = u'%s' % (item.item)
         tabela[chave] =  lista_rodadas
         itens[chave] =  item.get_itens_do_lote()
 
@@ -1961,7 +1961,18 @@ def relatorio_lances_item(request, pregao_id):
         #     tabela[chave].append(lance)
 
 
-    resultado = collections.OrderedDict(sorted(tabela.items()))
+    from blist import sorteddict
+
+    def my_key(dict_key):
+           try:
+                  return int(dict_key)
+           except ValueError:
+                  return dict_key
+
+
+    resultado =  sorteddict(my_key, **tabela)
+
+    #resultado = collections.OrderedDict(sorted(tabela.items()))
 
     itens = collections.OrderedDict(sorted(itens.items()))
 
