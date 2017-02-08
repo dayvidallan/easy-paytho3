@@ -28,9 +28,11 @@
             {% csrf_token %}
              <div class="miolo">
 				<div class="row-fluid">
-                    <div class="col-xs-12">
-                        {{ form|bootstrap }}
-                    </div>
+                    {% if not pregao.tem_lance_registrado %}
+                        <div class="col-xs-12">
+                            {{ form|bootstrap }}
+                        </div>
+                    {% endif %}
 
                     <div>
                         <div class="controls">
