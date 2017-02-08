@@ -100,9 +100,9 @@
 
                     <td><font color="red"><b>{{ item.valor_medio|format_money }}</b></font></td>
                     {% if eh_modalidade_desconto %}
-                        <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor }}%</b></font></td>
+                        <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor }}%</b><br>{{ item.get_lance_minimo_participante }}</font></td>
                     {% else %}
-                        <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor|format_money }}</b></font></td>
+                        <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor|format_money }}</b><br>{{ item.get_lance_minimo_participante }}</font></td>
                     {% endif %}
                     <td>
                         {% if item.eh_ativo and item.ativo %}

@@ -477,6 +477,10 @@ class ItemSolicitacaoLicitacao(models.Model):
         if self.get_lance_minimo():
             return self.get_lance_minimo().valor
         return None
+    def get_lance_minimo_participante(self):
+        if self.get_lance_minimo():
+            return self.get_lance_minimo().participante
+        return None
 
 
     def get_reducao_empresa(self):
