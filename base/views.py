@@ -3257,7 +3257,7 @@ def remover_participante_pregao(request, participante_id):
 def editar_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     title = u'Editar %s' % pregao.modalidade
-    form = PregaoForm(request.POST or None, instance=pregao)
+    form = PregaoForm(request.POST or None, instance=pregao, solicitacao=pregao.solicitacao)
     if form.is_valid():
         form.save()
         messages.success(request, u'Licitação editada com sucesso.')
@@ -3527,10 +3527,10 @@ def ata_sessao(request, pregao_id):
         nome = u'%s'% item.obs
         ocorrencias.append(nome.replace('&',"e"))
 
-    for item in MembroComissaoLicitacao.objects.all():
-
-        nome = u'%s - Portaria %s'% (item.membro.nome , item.portaria)
-        comissao.append(nome.replace('&',"e"))
+    if pregao.comissao:
+        for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao):
+            nome = u'%s - Portaria %s'% (item.membro.nome , item.portaria)
+            comissao.append(nome.replace('&',"e"))
 
     dicionario = {
         '#PREGAO#' : pregao,
@@ -3594,11 +3594,34 @@ def ata_sessao(request, pregao_id):
 def adicionar_membro_comissao(request, comissao_id):
     comissao = get_object_or_404(ComissaoLicitacao, pk=comissao_id)
     title=u'Adicionar Membro da Comissão'
-    form = MembroComissaoLicitacaoForm(request.POST or None)
+    form = MembroComissaoLicitacaoForm(request.POST or None, comissao=comissao)
     if form.is_valid():
         o = form.save(False)
         o.comissao = comissao
         o.save()
         messages.success(request, u'Membro cadastrado com sucesso.')
         return HttpResponseRedirect(u'/admin/base/comissaolicitacao/')
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'comissao_licitacao.html', locals(), RequestContext(request))
+
+@login_required()
+def remover_membro_comissao(request, comissao_id):
+    comissao = get_object_or_404(ComissaoLicitacao, pk=comissao_id)
+    title=u'Remover Membro da Comissão'
+    form = RemoverMembroComissaoLicitacaoForm(request.POST or None, comissao=comissao)
+    if form.is_valid():
+        MembroComissaoLicitacao.objects.filter(comissao=comissao, membro=form.cleaned_data.get('membro')).delete()
+        messages.success(request, u'Membro removido com sucesso.')
+        return HttpResponseRedirect(u'/admin/base/comissaolicitacao/')
+    return render(request, 'comissao_licitacaos.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_membro_comissao(request, membro_id):
+    membro = get_object_or_404(MembroComissaoLicitacao, pk=membro_id)
+    title=u'Editar Membro da Comissão'
+    form = MembroComissaoLicitacaoForm(request.POST or None, instance=membro)
+    if form.is_valid():
+        form.save()
+
+        messages.success(request, u'Membro editado com sucesso.')
+        return HttpResponseRedirect(u'/admin/base/comissaolicitacao/')
+    return render(request, 'comissao_licitacao.html', locals(), RequestContext(request))

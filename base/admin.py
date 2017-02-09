@@ -79,20 +79,32 @@ admin.site.register(Pregao, PregaoAdmin)
 
 class ComissaoLicitacaoAdmin(NewModelAdmin):
 
-    list_display = ('nome', 'get_membros', 'get_opcoes')
+    form = ComissaoLicitacaoForm
+    list_display = ('nome', 'secretaria', 'get_membros', 'get_opcoes')
     ordering = ('nome',)
     list_filter = ('nome',)
 
     def get_membros(self, obj):
         texto = u''
         for membro in MembroComissaoLicitacao.objects.filter(comissao=obj):
-            texto = texto + u'%s, ' % membro.membro.nome
+            texto = texto + u'<a href="/base/editar_membro_comissao/%s/">%s</a>, ' % (membro.membro.id, membro.membro.nome)
 
         return texto[:len(texto)-2]
     get_membros.short_description = u'Membros'
+    get_membros.allow_tags = True
 
     def get_opcoes(self, obj):
-        return u'<a href="/base/adicionar_membro_comissao/%s/" class="btn-sm btn-primary">Adicionar Membro</a>' % obj.id
+        texto = u'<table><tr><td><a href="/base/adicionar_membro_comissao/%s/" class="btn-sm btn-primary">Adicionar Membro</a></td>' % obj.id
+        texto += u'<td><a href="/base/remover_membro_comissao/%s/" class="btn-sm btn-danger">Remover Membro</a></td></tr></table>' % obj.id
+        return texto
+
+    def save_model(self, request, obj, form, change):
+        obj.secretaria = request.user.pessoafisica.setor.secretaria
+        obj.save()
+
+    def get_queryset(self, request):
+        qs = super(ComissaoLicitacaoAdmin, self).get_queryset(request)
+        return qs.filter(secretaria=request.user.pessoafisica.setor.secretaria)
 
     get_opcoes.short_description = u'Opções'
     get_opcoes.allow_tags = True

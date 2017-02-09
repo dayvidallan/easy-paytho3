@@ -138,7 +138,7 @@ class PregaoForm(forms.ModelForm):
     num_processo = forms.CharField(label=u'Número do Processo', required=True)
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
 
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
@@ -160,7 +160,7 @@ class PregaoForm(forms.ModelForm):
             self.fields['num_processo'].widget.attrs = {'readonly': 'True'}
 
     def clean(self):
-        if Pregao.objects.filter(solicitacao=self.solicitacao).exists():
+        if not self.instance.pk and Pregao.objects.filter(solicitacao=self.solicitacao).exists():
             self.add_error('solicitacao', u'Já existe um pregão para esta solicitação.')
 
         if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_termino') < self.cleaned_data.get('data_inicio'):
@@ -648,7 +648,30 @@ class HistoricoPregaoForm(forms.ModelForm):
         self.fields['data'].widget.attrs = {'class': 'vDateField'}
 
 class MembroComissaoLicitacaoForm(forms.ModelForm):
-
+    membro = forms.ModelChoiceField(PessoaFisica.objects, label=u'Pessoa', required=True, widget=autocomplete.ModelSelect2(url='pessoafisica-autocomplete'))
     class Meta:
         model = MembroComissaoLicitacao
         fields = ('membro', 'portaria',)
+
+    def __init__(self, *args, **kwargs):
+        self.comissao = kwargs.pop('comissao', None)
+        super(MembroComissaoLicitacaoForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        if self.cleaned_data.get('membro'):
+            if MembroComissaoLicitacao.objects.filter(comissao=self.comissao, membro=self.cleaned_data.get('membro')).exists():
+                raise forms.ValidationError(u'Esta pessoa já é membro do pregão.')
+
+class RemoverMembroComissaoLicitacaoForm(forms.Form):
+    membro = forms.ModelChoiceField(PessoaFisica.objects, label=u'Pessoa', required=True)
+
+    def __init__(self, *args, **kwargs):
+        self.comissao = kwargs.pop('comissao', None)
+        super(RemoverMembroComissaoLicitacaoForm, self).__init__(*args, **kwargs)
+        self.fields['membro'].queryset = PessoaFisica.objects.filter(id__in=MembroComissaoLicitacao.objects.filter(comissao=self.comissao).values_list('membro', flat=True))
+
+
+class ComissaoLicitacaoForm(forms.ModelForm):
+    class Meta:
+        model = ComissaoLicitacao
+        fields = ('nome', )

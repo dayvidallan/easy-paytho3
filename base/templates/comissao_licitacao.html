@@ -4,8 +4,7 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
-    <a href="/base/pregao/{{pregao.id}}/">{{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="/base/admin/base/comissaolicitacao/">Comissões de Licitação<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 {% block extrajs %}
@@ -17,6 +16,10 @@ $(function() {
 </script>
 {% endblock %}
 {% block content %}
+        <div class="pull-right">
+            <a class="btn btn-info" href="/admin/base/comissaolicitacao/">Voltar</a>
+
+        </div>
         <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">

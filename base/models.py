@@ -851,7 +851,7 @@ class Pregao(models.Model):
     )
 
 
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao,verbose_name=u'Solicitação')
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
     modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade')
     tipo = models.ForeignKey(TipoPregao, verbose_name=u'Tipo')
@@ -870,6 +870,7 @@ class Pregao(models.Model):
     eh_ata_registro_preco = models.BooleanField(u'Ata de Registro de Preço?', default=True)
     arquivo_homologacao = models.FileField(u'Termo de Homologação', null=True, upload_to=upload_path_termo_homologacao)
     pode_homologar = models.BooleanField(u'Pode Homologar', default=False)
+    comissao = models.ForeignKey('base.ComissaoLicitacao', verbose_name=u'Comissão de Licitação', null=True )
 
 
     class Meta:
@@ -1249,6 +1250,7 @@ class Municipio(models.Model):
 
 class ComissaoLicitacao(models.Model):
     nome = models.CharField(u'Identificação', max_length=80)
+    secretaria = models.ForeignKey('base.Secretaria', null=True)
 
 
     def __unicode__(self):
