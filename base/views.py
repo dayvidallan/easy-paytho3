@@ -3514,23 +3514,30 @@ def ata_sessao(request, pregao_id):
     participantes = []
     ocorrencias = []
     comissao  = []
-    descricoes = []
+    membros = []
 
     for item in ParticipantePregao.objects.filter(pregao=pregao):
         nome = u'%s' % item.fornecedor
         participantes.append(nome.replace('&',"e"))
-    #     quantidades.append(item.quantidade)
+
+
+
     #     unidades.append(item.unidade)
     #     descricoes.append(item.material.nome)
 
     for item in HistoricoPregao.objects.filter(pregao=pregao):
         nome = u'%s'% item.obs
         ocorrencias.append(nome.replace('&',"e"))
-
+    portaria = None
     if pregao.comissao:
         for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao):
-            nome = u'%s - Portaria %s'% (item.membro.nome , item.portaria)
+            nome = u'%s'% (item.membro.nome)
             comissao.append(nome.replace('&',"e"))
+
+            texto = u'%s, %s,  %s ' % (nome, item.matricula, item.funcao)
+            membros.append(texto)
+
+        portaria = pregao.comissao.nome
 
     dicionario = {
         '#PREGAO#' : pregao,
@@ -3540,12 +3547,13 @@ def ata_sessao(request, pregao_id):
         '#OBJETO#': pregao.solicitacao.objeto,
         '#RESPONSAVEL#': pregao.responsavel,
         '#COMISSAO#': u', '.join(comissao),
+        '#PORTARIA#':portaria or '-',
         # '#OBJETO#': solicitacao.objeto,
         '#PARTICIPANTES#': libreoffice_new_line(participantes or '-'),
         '#OCORRENCIAS#': libreoffice_new_line(ocorrencias or '-'),
         # '#QUANT#': libreoffice_new_line(quantidades or '-'),
         # '#UN#': libreoffice_new_line(unidades or '-'),
-        # '#DES#': libreoffice_new_line(descricoes or '-'),
+        '#MEMBROS#': libreoffice_new_line(membros or '-'),
 
     }
     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ata_sessao.docx'))

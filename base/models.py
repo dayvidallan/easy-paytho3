@@ -1249,7 +1249,7 @@ class Municipio(models.Model):
 
 
 class ComissaoLicitacao(models.Model):
-    nome = models.CharField(u'Identificação', max_length=80)
+    nome = models.CharField(u'Portaria', max_length=80)
     secretaria = models.ForeignKey('base.Secretaria', null=True)
 
 
@@ -1261,9 +1261,23 @@ class ComissaoLicitacao(models.Model):
         verbose_name_plural = u'Comissões de Licitação'
 
 class MembroComissaoLicitacao(models.Model):
+
+    APOIO = u'Apoio'
+    PREGOEIRO = u'Pregoeiro'
+    MEMBRO_EQUIPE = u'Membro da Equipe do Pregão'
+    PRESIDENTE = u'Presidente'
+    MEMBRO_CPL = u'Membro da CPL'
+    FUNCAO_CHOICES = (
+        (APOIO, APOIO),
+        (MEMBRO_CPL, MEMBRO_CPL),
+        (MEMBRO_EQUIPE, MEMBRO_EQUIPE),
+        (PREGOEIRO, PREGOEIRO),
+        (PRESIDENTE, PRESIDENTE),
+    )
     comissao = models.ForeignKey(ComissaoLicitacao)
-    portaria = models.CharField(u'Portaria', max_length=80)
     membro = models.ForeignKey(PessoaFisica)
+    matricula = models.CharField(u'Matrícula', max_length=100)
+    funcao = models.CharField(u'Função', max_length=100, choices=FUNCAO_CHOICES, default=MEMBRO_CPL)
 
     def __unicode__(self):
         return self.nome

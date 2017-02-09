@@ -651,7 +651,7 @@ class MembroComissaoLicitacaoForm(forms.ModelForm):
     membro = forms.ModelChoiceField(PessoaFisica.objects, label=u'Pessoa', required=True, widget=autocomplete.ModelSelect2(url='pessoafisica-autocomplete'))
     class Meta:
         model = MembroComissaoLicitacao
-        fields = ('membro', 'portaria',)
+        fields = ('membro', 'matricula', 'funcao')
 
     def __init__(self, *args, **kwargs):
         self.comissao = kwargs.pop('comissao', None)
