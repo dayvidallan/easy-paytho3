@@ -3538,21 +3538,64 @@ def ata_sessao(request, pregao_id):
             membros.append(texto)
 
         portaria = pregao.comissao.nome
+        tipo = u'%s por %s' % (pregao.tipo, pregao.criterio)
+
+
+
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+
+
+    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    tabela = {}
+    total = {}
+
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO)
+    chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
+    for num in chaves:
+        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        chave = u'%s' % fornecedor
+        tabela[chave] = dict(lance = list(), total = 0)
+
+    for item in itens_pregao.order_by('item'):
+        if item.get_vencedor():
+            chave = u'%s' % item.get_vencedor().participante.fornecedor
+            tabela[chave]['lance'].append(item)
+            valor = tabela[chave]['total']
+            valor = valor + item.get_total_lance_ganhador()
+            tabela[chave]['total'] = valor
+
+    total_geral = Decimal()
+    resultado_pregao = u''
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+    for result in resultado.items():
+        if result[1]['total'] != 0:
+            result[0]
+            lista = []
+            for item in result[1]['lance']:
+                lista.append(item.item)
+
+
+            resultado_pregao = resultado_pregao + u'%s, quanto aos itens %s, no valor total de R$ %s, ' % (result[0], lista, format_money(result[1]['total']))
+            total_geral = total_geral + result[1]['total']
 
     dicionario = {
         '#PREGAO#' : pregao,
         '#HORA#' : pregao.hora_abertura,
-        '#DIA#' : pregao.data_abertura or '-',
+        '#DIA#' : pregao.data_abertura.strftime('%d/%m/%y') or '-',
         '#LOCAL#': pregao.local,
         '#OBJETO#': pregao.solicitacao.objeto,
         '#RESPONSAVEL#': pregao.responsavel,
         '#COMISSAO#': u', '.join(comissao),
         '#PORTARIA#':portaria or '-',
-        # '#OBJETO#': solicitacao.objeto,
+        '#TIPOLICITACAO#': tipo,
         '#PARTICIPANTES#': libreoffice_new_line(participantes or '-'),
         '#OCORRENCIAS#': libreoffice_new_line(ocorrencias or '-'),
-        # '#QUANT#': libreoffice_new_line(quantidades or '-'),
-        # '#UN#': libreoffice_new_line(unidades or '-'),
+        '#RESULTADO#': resultado_pregao,
+        '#VALORTOTAL#': format_money(total_geral),
         '#MEMBROS#': libreoffice_new_line(membros or '-'),
 
     }
