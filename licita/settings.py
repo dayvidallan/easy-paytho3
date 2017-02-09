@@ -65,17 +65,6 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'licita',
-        'USER': 'walkyso',
-        'PASSWORD': 'licitaeasy',
-        'HOST': '127.0.0.1',
-        'PORT': '',
-    }
-}
-
 
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Recife'
@@ -183,4 +172,9 @@ TEMPLATES = [
 ]
 
 URL = u'http://159.203.181.26/'
+
+try:
+    from settings_base import *
+except ImportError, e:
+    pass
 
