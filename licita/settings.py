@@ -108,12 +108,6 @@ MESSAGE_TAGS = {
 
 
 
-PDF_SIGNER_DIR = os.path.join(BASE_DIR, 'telediagnostico/assinatura_digital/portable_signer/')
-SYSTEM_CERTIFICATE_PATH = os.path.join(BASE_DIR, 'telediagnostico/assinatura_digital/certificados/certificate.pfx')
-SYSTEM_PRIVATE_KEY_PASSWORD = 'senha'
-
-
-
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -130,23 +124,6 @@ else:
         ('Walkyso', 'walkyso@gmail.com'),
     )
 
-
-
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://127.0.0.1:6379/1",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     },
-#     'select2': {
-#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': '127.0.0.1:11211',
-#     }
-# }
-#
-# SELECT2_CACHE_BACKEND = 'select2'
 
 TEMPLATES = [
     {
