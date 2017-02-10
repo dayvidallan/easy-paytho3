@@ -3503,9 +3503,18 @@ def registrar_ocorrencia_pregao(request, pregao_id):
 
 @login_required()
 def ata_sessao(request, pregao_id):
+
     import tempfile
     import zipfile
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
 
     municipio = None
     if get_config():
@@ -3515,10 +3524,16 @@ def ata_sessao(request, pregao_id):
     ocorrencias = []
     comissao  = []
     membros = []
+    licitantes = []
 
     for item in ParticipantePregao.objects.filter(pregao=pregao):
         nome = u'%s' % item.fornecedor
         participantes.append(nome.replace('&',"e"))
+        me = u'Não'
+        if item.me_epp:
+            me = u'Sim'
+        texto = u'%s - %s - %s - %s - %s' % (item.fornecedor.cnpj, nome.replace('&',"e"), me, item.nome_representante, item.cpf_representante)
+        licitantes.append(texto)
 
 
 
@@ -3582,56 +3597,214 @@ def ata_sessao(request, pregao_id):
             resultado_pregao = resultado_pregao + u'%s, quanto aos itens %s, no valor total de R$ %s, ' % (result[0], lista, format_money(result[1]['total']))
             total_geral = total_geral + result[1]['total']
 
-    dicionario = {
-        '#PREGAO#' : pregao,
-        '#HORA#' : pregao.hora_abertura,
-        '#DIA#' : pregao.data_abertura.strftime('%d/%m/%y') or '-',
-        '#LOCAL#': pregao.local,
-        '#OBJETO#': pregao.solicitacao.objeto,
-        '#RESPONSAVEL#': pregao.responsavel,
-        '#COMISSAO#': u', '.join(comissao),
-        '#PORTARIA#':portaria or '-',
-        '#TIPOLICITACAO#': tipo,
-        '#PARTICIPANTES#': libreoffice_new_line(participantes or '-'),
-        '#OCORRENCIAS#': libreoffice_new_line(ocorrencias or '-'),
-        '#RESULTADO#': resultado_pregao,
-        '#VALORTOTAL#': format_money(total_geral),
-        '#MEMBROS#': libreoffice_new_line(membros or '-'),
+    from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+    from docx import Document
+    from docx.shared import Inches, Pt
 
-    }
-    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ata_sessao.docx'))
-    new_docx = zipfile.ZipFile('%s.docx' % tempfile.mktemp(), "a")
-
-    tmp_xml_file = open(template_docx.extract("word/document.xml", tempfile.mkdtemp()))
-    tempXmlStr = tmp_xml_file.read()
-    tmp_xml_file.close()
-    os.unlink(tmp_xml_file.name)
-
-    for key in dicionario.keys():
-        value = unicode(dicionario.get(key)).encode("utf8")
-        tempXmlStr = tempXmlStr.replace(key, value)
-
-    tmp_xml_file =  open(tempfile.mktemp(), "w+")
-    tmp_xml_file.write(tempXmlStr)
-    tmp_xml_file.close()
-
-    for arquivo in template_docx.filelist:
-        if not arquivo.filename == "word/document.xml":
-            new_docx.writestr(arquivo.filename, template_docx.read(arquivo))
-
-    new_docx.write(tmp_xml_file.name, "word/document.xml")
-
-    template_docx.close()
-    new_docx.close()
-    os.unlink(tmp_xml_file.name)
+    document = Document()
+    table = document.add_table(rows=2, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells2 = table.rows[1].cells
 
 
-    # Caso não seja informado, deverá retornar o caminho para o arquivo DOCX processado.
-    caminho_arquivo =  new_docx.filename
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(10)
+
+    style2 = document.styles['Normal']
+    font = style2.font
+    font.name = 'Arial'
+    font.size = Pt(6)
+
+
+
+    paragraph = hdr_cells[0].paragraphs[0]
+    run = paragraph.add_run()
+    run.add_picture(logo, width=Inches(1.75))
+
+    paragraph2 = hdr_cells[1].paragraphs[0]
+    paragraph2.style = document.styles['Normal']
+    hdr_cells[1].text =  u'%s' % (configuracao.nome)
+
+
+    paragraph3 = hdr_cells2[1].paragraphs[0]
+    paragraph3.style2 = document.styles['Normal']
+
+
+
+    hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, configuracao.municipio)
+
+    document.add_paragraph()
+    p = document.add_paragraph(u'Ata de ')
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'%s' % pregao).bold = True
+
+
+
+    comissao = u', '.join(comissao)
+    texto = u'''
+    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
+    ''' % (pregao.hora_abertura, pregao.data_abertura.strftime('%d/%m/%y'), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
+
+    #document.add_paragraph(texto)
+    p = document.add_paragraph()
+    p.alignment = 3
+    p.add_run(texto)
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DO CREDENCIAMENTO').bold = True
+
+    p = document.add_paragraph(u'Na sequência, solicitou dos licitantes presentes a declaração de cumprimento dos requisitos de habilitação e dos documentos para credenciamento dos licitantes presentes:')
+
+    table = document.add_table(rows=1, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Empresa'
+    hdr_cells[1].text = 'Representante'
+
+
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+        me = u'Não Compareceu'
+        if item.nome_representante:
+            me = item.nome_representante
+
+        row_cells = table.add_row().cells
+        row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+        row_cells[1].text = u'%s' % me
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    p = document.add_paragraph(u'Finalizado o credenciamento foram recebidos os envelopes contendo as propostas de preços e a documentação de habilitação (envelopes nº 01 e 02) das mãos dos representantes credenciados.')
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DO REGISTRO DO PREGÃO').bold = True
+
+
+    p = document.add_paragraph()
+    p.alignment = 3
+
+    p.add_run(u'Ato contínuo, foram abertos os Envelopes contendo as Propostas e, com a colaboração dos membros da Equipe de Apoio, o Pregoeiro examinou a compatibilidade do objeto, prazos e condições de fornecimento ou de execução, com aqueles definidos no Edital, tendo selecionados todos os licitantes para participarem da Fase de Lances em razão dos preços propostos estarem em conformidade  com as exigências do edital.')
+
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DOS LANCES').bold = True
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    if pregao.criterio == CriterioPregao.ITEM:
+        tipo = u'Itens'
+    else:
+        tipo = u'Lotes'
+    p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % tipo)
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DA HABILITAÇÃO').bold = True
+
+    p = document.add_paragraph()
+    p.alignment = 3
+
+    p.add_run(u'Em seguida, foi analisada a aceitabilidade da proposta detentora do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.')
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DO RESULTADO').bold = True
+
+    p = document.add_paragraph()
+    p.alignment = 3
+
+    p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, foi declarada pelo Pregoeiro e equipe, a vencedora do certame, a empresa:')
+
+
+    p.add_run(resultado_pregao)
+
+    p = document.add_paragraph()
+    p.alignment = 3
+    p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s, respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), tipo))
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
+
+
+    for item in ocorrencias:
+        p = document.add_paragraph()
+        p.alignment = 3
+        p.add_run(item)
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DO ENCERRAMENTO').bold = True
+
+    p = document.add_paragraph()
+    p.alignment = 3
+    p.add_run(u'O Pregoeiro, após encerramento desta fase, concedeu aos proponentes vistas ao processo e a todos os documentos. Franqueada a palavra, para observações, questionamentos e/ou interposição de recursos, caso alguém assim desejasse, como nenhum dos proponentes manifestou intenção de recorrer, pelo que renunciam, desde logo, em caráter irrevogável e irretratável, ao direito de interposição de recurso. Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes.')
+
+
+
+    for item in membros:
+
+        texto = item.split(',')
+        p = document.add_paragraph()
+        p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(texto[0])
+        p = document.add_paragraph()
+        p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'Matrícula %s' % texto[1])
+        p = document.add_paragraph()
+        p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(texto[2])
+
+
+    table = document.add_table(rows=1, cols=4)
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = u'CNPJ/CPF'
+    hdr_cells[1].text = u'Razão Social'
+    hdr_cells[2].text = u'ME/EPP'
+    hdr_cells[3].text = u'Representante'
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+        me = u'Não '
+        if item.me_epp:
+            me = u'SIm'
+
+        repre = u'Não Compareceu'
+        if item.nome_representante:
+            repre = item.nome_representante
+
+        row_cells = table.add_row().cells
+        row_cells[0].text = u'%s' % item.fornecedor.cnpj
+        row_cells[1].text = u'%s' % item.fornecedor.razao_social
+        row_cells[2].text = u'%s' % me
+        row_cells[3].text = u'%s' % repre
+
+
+    document.add_page_break()
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/ata_sessao_%s.docx' % pregao.id)
+    document.save(caminho_arquivo)
+
+
+
     nome_arquivo = caminho_arquivo.split('/')[-1]
     extensao = nome_arquivo.split('.')[-1]
     arquivo = open(caminho_arquivo, "rb")
-
 
     content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
     response = HttpResponse(arquivo.read(), content_type=content_type)
@@ -3639,6 +3812,77 @@ def ata_sessao(request, pregao_id):
     arquivo.close()
     os.unlink(caminho_arquivo)
     return response
+
+
+
+
+
+
+
+
+
+    #
+    #
+    #
+    # dicionario = {
+    #     '#PREGAO#' : pregao,
+    #     '#HORA#' : pregao.hora_abertura,
+    #     '#DIA#' : pregao.data_abertura.strftime('%d/%m/%y') or '-',
+    #     '#LOCAL#': pregao.local,
+    #     '#OBJETO#': pregao.solicitacao.objeto,
+    #     '#RESPONSAVEL#': pregao.responsavel,
+    #     '#COMISSAO#': u', '.join(comissao),
+    #     '#PORTARIA#':portaria or '-',
+    #     '#TIPOLICITACAO#': tipo,
+    #     '#PARTICIPANTES#': libreoffice_new_line(participantes or '-'),
+    #     '#OCORRENCIAS#': libreoffice_new_line(ocorrencias or '-'),
+    #     '#RESULTADO#': resultado_pregao,
+    #     '#VALORTOTAL#': format_money(total_geral),
+    #     '#MEMBROS#': libreoffice_new_line(membros or '-'),
+    #     '#LICITANTES#': libreoffice_new_line(licitantes or '-'),
+    #
+    # }
+    # template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ata_sessao.docx'))
+    # new_docx = zipfile.ZipFile('%s.docx' % tempfile.mktemp(), "a")
+    #
+    # tmp_xml_file = open(template_docx.extract("word/document.xml", tempfile.mkdtemp()))
+    # tempXmlStr = tmp_xml_file.read()
+    # tmp_xml_file.close()
+    # os.unlink(tmp_xml_file.name)
+    #
+    # for key in dicionario.keys():
+    #     value = unicode(dicionario.get(key)).encode("utf8")
+    #     tempXmlStr = tempXmlStr.replace(key, value)
+    #
+    # tmp_xml_file =  open(tempfile.mktemp(), "w+")
+    # tmp_xml_file.write(tempXmlStr)
+    # tmp_xml_file.close()
+    #
+    # for arquivo in template_docx.filelist:
+    #     if not arquivo.filename == "word/document.xml":
+    #         new_docx.writestr(arquivo.filename, template_docx.read(arquivo))
+    #
+    # new_docx.write(tmp_xml_file.name, "word/document.xml")
+    #
+    # template_docx.close()
+    # new_docx.close()
+    # os.unlink(tmp_xml_file.name)
+    #
+    #
+    # # Caso não seja informado, deverá retornar o caminho para o arquivo DOCX processado.
+    # caminho_arquivo =  new_docx.filename
+    # nome_arquivo = caminho_arquivo.split('/')[-1]
+    # extensao = nome_arquivo.split('.')[-1]
+    #
+    #
+    # arquivo = open(caminho_arquivo, "rb")
+    #
+    # content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    # response = HttpResponse(arquivo.read(), content_type=content_type)
+    # response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    # arquivo.close()
+    # os.unlink(caminho_arquivo)
+    # return response
 
 
 @login_required()
