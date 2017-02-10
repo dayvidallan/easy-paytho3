@@ -3703,9 +3703,9 @@ def ata_sessao(request, pregao_id):
     p.add_run(u'DOS LANCES').bold = True
 
     p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.alignment = 3
 
-    if pregao.criterio == CriterioPregao.ITEM:
+    if pregao.criterio.nome == u'Por Item':
         tipo = u'Itens'
     else:
         tipo = u'Lotes'
