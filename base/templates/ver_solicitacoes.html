@@ -300,7 +300,7 @@
                                    </td>
                                    <td>{{ solicitacao.get_situacao }}</td>
                                    <td>
-                                       <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a>
+                                       <a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a><br>
                                        {% if solicitacao.setor_origem == request.user.pessoafisica.setor and solicitacao.situacao == solicitacao.CADASTRADO  and not solicitacao.tipo == solicitacao.LICITACAO %}
                                             <a class="btn btn-default btn-sm" href="/base/editar_solicitacao/{{ solicitacao.pk }}/">Editar Solicitação</a>
                                        {% endif %}

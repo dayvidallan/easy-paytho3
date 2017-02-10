@@ -3545,7 +3545,7 @@ def ata_sessao(request, pregao_id):
         ocorrencias.append(nome.replace('&',"e"))
     portaria = None
     if pregao.comissao:
-        for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao):
+        for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao).order_by('-funcao'):
             nome = u'%s'% (item.membro.nome)
             comissao.append(nome.replace('&',"e"))
 

@@ -94,8 +94,8 @@ class ComissaoLicitacaoAdmin(NewModelAdmin):
     get_membros.allow_tags = True
 
     def get_opcoes(self, obj):
-        texto = u'<table><tr><td><a class="btn btn-info btn-sm href="/base/adicionar_membro_comissao/%s/" class="btn-sm btn-primary">Adicionar Membro</a>' % obj.id
-        texto += u'<br><br><a class="btn btn-danger btn-sm href="/base/remover_membro_comissao/%s/" class="btn-sm btn-danger">Remover Membro</a></td></tr></table>' % obj.id
+        texto = u'<a class="btn btn-info btn-sm" href="/base/adicionar_membro_comissao/%s/" class="btn-sm btn-primary">Adicionar Membro</a>' % obj.id
+        texto += u'<br><br><a class="btn btn-danger btn-sm" href="/base/remover_membro_comissao/%s/" class="btn-sm btn-danger">Remover Membro</a>' % obj.id
         return texto
 
     def save_model(self, request, obj, form, change):
