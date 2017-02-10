@@ -3547,7 +3547,8 @@ def ata_sessao(request, pregao_id):
     if pregao.comissao:
         for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao).order_by('-funcao'):
             nome = u'%s'% (item.membro.nome)
-            comissao.append(nome.replace('&',"e"))
+            if not (item.funcao == MembroComissaoLicitacao.PREGOEIRO):
+                comissao.append(nome.replace('&',"e"))
 
             texto = u'%s, %s,  %s ' % (nome, item.matricula, item.funcao)
             membros.append(texto)
