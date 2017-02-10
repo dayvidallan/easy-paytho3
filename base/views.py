@@ -3607,15 +3607,17 @@ def ata_sessao(request, pregao_id):
     hdr_cells2 = table.rows[1].cells
 
 
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(10)
+
 
     style2 = document.styles['Normal']
     font = style2.font
     font.name = 'Arial'
     font.size = Pt(6)
+
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(11)
 
 
 
