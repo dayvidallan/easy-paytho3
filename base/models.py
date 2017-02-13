@@ -432,9 +432,9 @@ class ItemSolicitacaoLicitacao(models.Model):
             lote = ItemLote.objects.filter(item=self)[0].lote
             if lote.get_vencedor():
                 vencedor = lote.get_vencedor().participante
-            if vencedor:
-                if PropostaItemPregao.objects.filter(item=self, participante=vencedor).exists():
-                    return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
+                if vencedor:
+                    if PropostaItemPregao.objects.filter(item=self, participante=vencedor).exists():
+                        return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
         return False
 
 
