@@ -274,7 +274,8 @@ def cadastra_proposta_pregao(request, pregao_id):
                 if itens.exists():
                     propostas = PropostaItemPregao.objects.filter(item__in=itens.values_list('item', flat=True), participante=fornecedor, pregao=pregao)
                     if propostas.exists():
-                        total_propostas = propostas.aggregate(total=Sum('valor'))['total']
+                        for proposta in propostas:
+                            total_propostas = total_propostas + proposta.valor * proposta.item.quantidade
                         if PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).exists():
                             PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).update(valor=total_propostas)
                         else:
