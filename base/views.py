@@ -2074,8 +2074,9 @@ def relatorio_ata_registro_preco(request, pregao_id):
                     conteudo = u''
                     for componente in lance.get_itens_do_lote():
                         conteudo += '%s<br>' % componente.material.nome
+                    marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
 
-                    texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, conteudo, format_money(total))
+                    texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, conteudo, marca, componente.unidade, lance.quantidade, format_money(total))
                 else:
                     texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.material.nome, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
 
