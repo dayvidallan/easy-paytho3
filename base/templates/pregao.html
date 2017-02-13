@@ -561,8 +561,8 @@
                     {% endif %}
 
                     {% if eh_lote %}
-                        {% for item in itens_pregao %}
-                            <h2>Lote {{item.item}}</h2>
+                        {% for lote in itens_pregao %}
+                            <h2>Lote {{lote.item}}</h2>
                             <table class="table table-bordered table-condensed table-striped">
                                 <thead>
                                     <tr>
@@ -578,21 +578,21 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            {% if item.tem_empate or item.ganhou_com_valor_acima %}
-                                                <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
-                                                {% if item.ganhou_com_valor_acima %}
+                                            {% if lote.tem_empate or lote.ganhou_com_valor_acima %}
+                                                <font color="red">{{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
+                                                {% if lote.ganhou_com_valor_acima %}
                                                     <br>* Venceu com valor acima do valor máximo.
                                                 {% endif %}
                                                 </font>
                                             {% else %}
-                                                {{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
+                                                {{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
                                         </td>
                                         {% if eh_maior_desconto %}
-                                            <td>{{ item.get_total_lance_ganhador }}%</td>
+                                            <td>{{ lote.get_total_lance_ganhador }}%</td>
 
                                         {% else %}
-                                            <td>{{ item.get_total_lance_ganhador|format_money }}</td>
+                                            <td>{{ lote.get_total_lance_ganhador|format_money }}</td>
                                         {% endif %}
 
                                         <td>
@@ -602,18 +602,20 @@
                                                         <th>Item</th>
                                                         <th>Quantidade</th>
                                                         <th>Valor Médio</th>
+                                                        <th>Valor Unitário Proposto</th>
                                                         <th>Valor Final</th>
                                                         <th>Opções</th>
 
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for item in item.get_itens_do_lote %}
+                                                    {% for item in lote.get_itens_do_lote %}
                                                         <tr>
                                                             <td>{{ item }}</td>
                                                             <td>{{ item.quantidade }}</td>
                                                             <td>{{ item.valor_medio }}</td>
-                                                            <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }}</td>
+                                                            <td>{{ item.get_valor_unitario_proposto }}</td>
+                                                            <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }} {% if item.get_valor_item_lote %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/">(Editar)</a>{% endif %}</td>
                                                             <td>
                                                                 {% if not item.get_valor_item_lote %}
                                                                     <a href="/base/informar_valor_final_item_lote/{{item.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>

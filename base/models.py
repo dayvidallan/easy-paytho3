@@ -112,6 +112,7 @@ class TipoUnidade(models.Model):
         return self.nome
 
     class Meta:
+        ordering = ('nome', )
         verbose_name = u'Tipo de Unidade'
         verbose_name_plural = u'Tipos de Unidade'
 
@@ -140,7 +141,7 @@ class Processo(models.Model):
     data_cadastro = models.DateTimeField(auto_now_add=True)
     pessoa_cadastro = models.ForeignKey(User, related_name='pessoa_cadastro_set')
     numero = models.CharField(u'Número do Processo', max_length=25, unique=True)
-    objeto = models.CharField(max_length=100)
+    objeto = models.CharField(max_length=1500)
     tipo = models.PositiveIntegerField(choices=PROCESSO_TIPO)
     status = models.PositiveIntegerField(u'Situação', choices=PROCESSO_STATUS, default=STATUS_EM_TRAMITE)
     setor_origem = models.ForeignKey(Setor, verbose_name=u"Setor de Origem")
@@ -424,6 +425,16 @@ class ItemSolicitacaoLicitacao(models.Model):
         ordering = ['item']
         verbose_name = u'Item da Solicitação de Licitação'
         verbose_name_plural = u'Itens da Solicitação de Licitação'
+
+
+    def get_valor_unitario_proposto(self):
+        lote = ItemLote.objects.filter(item=self)[0].lote
+        vencedor = lote.get_vencedor().participante
+
+        if PropostaItemPregao.objects.filter(item=self, participante=vencedor).exists():
+            return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
+        return False
+
 
     def ganhou_com_valor_acima(self):
         vencedor = self.get_vencedor()

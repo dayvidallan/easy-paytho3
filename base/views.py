@@ -643,6 +643,15 @@ def cadastrar_pregao(request, solicitacao_id):
     if form.is_valid():
         form.save()
         solicitacao.situacao = SolicitacaoLicitacao.EM_LICITACAO
+        if not solicitacao.processo and form.cleaned_data.get('num_processo'):
+            novo_processo = Processo()
+            novo_processo.pessoa_cadastro = request.user
+            novo_processo.numero = form.cleaned_data.get('num_processo')
+            novo_processo.objeto = solicitacao.objeto
+            novo_processo.tipo = Processo.TIPO_MEMORANDO
+            novo_processo.setor_origem = request.user.pessoafisica.setor
+            novo_processo.save()
+            solicitacao.processo = novo_processo
         solicitacao.save()
         messages.success(request, u'Licitação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/' % form.instance.id)
@@ -2280,7 +2289,7 @@ def criar_lote(request, pregao_id):
         quantidade = 1
         for item in form.cleaned_data.get('solicitacoes'):
             ids.append(item.id)
-            valor_medio += item.valor_medio
+            valor_medio = valor_medio +  (item.valor_medio * item.quantidade)
 
 
         novo_lote = ItemSolicitacaoLicitacao()
@@ -2727,12 +2736,24 @@ def apagar_lote(request, item_id, pregao_id):
 
 @login_required()
 def informar_valor_final_item_lote(request, item_id, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    lote =ItemLote.objects.filter(item=item)[0].lote.get_empresa_vencedora()
-    tite=u'Informar Valor do %s - %s' % (item, lote)
+    lote =ItemLote.objects.filter(item=item)[0].lote
+    vencedor = lote.get_empresa_vencedora()
+    title=u'Informar Valor do %s - %s' % (item , lote)
     form = ValorFinalItemLoteForm(request.POST or None)
     if form.is_valid():
-        PropostaItemPregao.objects.filter(participante=lote, item=item).update(valor_item_lote=form.cleaned_data.get('valor'))
+        if form.cleaned_data.get('valor') > item.get_valor_unitario_proposto() or form.cleaned_data.get('valor') > item.valor_medio:
+            messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto nem do que o valor medio.')
+            return HttpResponseRedirect(u'/base/informar_valor_final_item_lote/%s/%s/' % (item.id, pregao.id))
+
+
+        if (PropostaItemPregao.objects.filter(participante=vencedor).aggregate(total=Sum('valor_item_lote'))['total'] + form.cleaned_data.get('valor')) > lote.get_total_lance_ganhador():
+            messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador.')
+            return HttpResponseRedirect(u'/base/informar_valor_final_item_lote/%s/%s/' % (item.id, pregao.id))
+
+
+        PropostaItemPregao.objects.filter(participante=vencedor, item=item).update(valor_item_lote=form.cleaned_data.get('valor'))
 
         messages.success(request, u'Valor cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
@@ -3256,10 +3277,21 @@ def remover_participante_pregao(request, participante_id):
 @login_required()
 def editar_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+    solicitacao = pregao.solicitacao
     title = u'Editar %s' % pregao.modalidade
     form = PregaoForm(request.POST or None, instance=pregao, solicitacao=pregao.solicitacao)
     if form.is_valid():
         form.save()
+        if not solicitacao.processo and form.cleaned_data.get('num_processo'):
+            novo_processo = Processo()
+            novo_processo.pessoa_cadastro = request.user
+            novo_processo.numero = form.cleaned_data.get('num_processo')
+            novo_processo.objeto = solicitacao.objeto
+            novo_processo.tipo = Processo.TIPO_MEMORANDO
+            novo_processo.setor_origem = request.user.pessoafisica.setor
+            novo_processo.save()
+            solicitacao.processo = novo_processo
+            solicitacao.save()
         messages.success(request, u'Licitação editada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_pregoes/')
 
@@ -3348,7 +3380,7 @@ def lista_materiais(request, solicitacao_id):
     data_emissao = datetime.date.today()
 
     pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao)
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False)
     total = itens.aggregate(Sum('total'))['total__sum']
 
 
@@ -3587,6 +3619,12 @@ def ata_sessao(request, pregao_id):
     total_geral = Decimal()
     resultado_pregao = u''
     resultado = collections.OrderedDict(sorted(tabela.items()))
+
+    if pregao.criterio.nome == u'Por Item':
+        tipo = u'Itens'
+    else:
+        tipo = u'Lotes'
+
     for result in resultado.items():
         if result[1]['total'] != 0:
             result[0]
@@ -3595,7 +3633,7 @@ def ata_sessao(request, pregao_id):
                 lista.append(item.item)
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos itens %s, no valor total de R$ %s, ' % (result[0], lista, format_money(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s, ' % (result[0], tipo, lista, format_money(result[1]['total']))
             total_geral = total_geral + result[1]['total']
 
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
@@ -3705,10 +3743,7 @@ def ata_sessao(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = 3
 
-    if pregao.criterio.nome == u'Por Item':
-        tipo = u'Itens'
-    else:
-        tipo = u'Lotes'
+
     p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % tipo)
 
     p = document.add_paragraph()
@@ -3728,7 +3763,7 @@ def ata_sessao(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = 3
 
-    p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, foi declarada pelo Pregoeiro e equipe, a vencedora do certame, a empresa:')
+    p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, foi declarada pelo Pregoeiro e equipe, a vencedora do certame, a empresa: ')
 
 
     p.add_run(resultado_pregao)
@@ -3910,7 +3945,7 @@ def remover_membro_comissao(request, comissao_id):
         MembroComissaoLicitacao.objects.filter(comissao=comissao, membro=form.cleaned_data.get('membro')).delete()
         messages.success(request, u'Membro removido com sucesso.')
         return HttpResponseRedirect(u'/admin/base/comissaolicitacao/')
-    return render(request, 'comissao_licitacaos.html', locals(), RequestContext(request))
+    return render(request, 'comissao_licitacao.html', locals(), RequestContext(request))
 
 @login_required()
 def editar_membro_comissao(request, membro_id):
@@ -3923,3 +3958,22 @@ def editar_membro_comissao(request, membro_id):
         messages.success(request, u'Membro editado com sucesso.')
         return HttpResponseRedirect(u'/admin/base/comissaolicitacao/')
     return render(request, 'comissao_licitacao.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_valor_final(request, item_id, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    title=u'Editar Valor Final - %s' % item
+    valor = item.get_valor_item_lote()
+    form = ValorFinalItemLoteForm(request.POST or None, initial=dict(valor=valor))
+    if form.is_valid():
+        lote = ItemLote.objects.filter(item=item)[0].lote
+
+        if (PropostaItemPregao.objects.filter(participante=lote.get_empresa_vencedora()).exclude(item=item).aggregate(total=Sum('valor_item_lote'))['total'] + form.cleaned_data.get('valor')) > lote.get_total_lance_ganhador():
+            messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador.')
+            return HttpResponseRedirect(u'/base/editar_valor_final/%s/%s/' % (item_id, pregao.id))
+
+        PropostaItemPregao.objects.filter(item=item, participante=lote.get_empresa_vencedora()).update(valor_item_lote=form.cleaned_data.get('valor'))
+        messages.success(request, u'Valor editado com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
