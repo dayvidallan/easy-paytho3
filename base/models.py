@@ -428,11 +428,13 @@ class ItemSolicitacaoLicitacao(models.Model):
 
 
     def get_valor_unitario_proposto(self):
-        lote = ItemLote.objects.filter(item=self)[0].lote
-        vencedor = lote.get_vencedor().participante
-
-        if PropostaItemPregao.objects.filter(item=self, participante=vencedor).exists():
-            return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
+        if ItemLote.objects.filter(item=self).exists():
+            lote = ItemLote.objects.filter(item=self)[0].lote
+            if lote.get_vencedor():
+                vencedor = lote.get_vencedor().participante
+            if vencedor:
+                if PropostaItemPregao.objects.filter(item=self, participante=vencedor).exists():
+                    return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
         return False
 
 

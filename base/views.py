@@ -2064,7 +2064,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
             texto =  texto + unicode(dados)
 
             if eh_lote:
-                texto = texto + u'''<table><tr><td>Lote</td><td>Itens do Lote<td>Valor Total</td></tr>'''
+                texto = texto + u'''<table><tr><td>Lote</td><td>Itens do Lote</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Total</td></tr>'''
             else:
                 texto = texto + u'''<table><tr><td>Item</td><td>Descrição</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Unit.</td><td>Valor Total</td></tr>'''
 
