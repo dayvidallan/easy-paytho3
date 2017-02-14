@@ -437,6 +437,19 @@ class ItemSolicitacaoLicitacao(models.Model):
                         return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
         return False
 
+    def get_valor_total_proposto(self):
+        if ItemLote.objects.filter(item=self).exists():
+            lote = ItemLote.objects.filter(item=self)[0].lote
+            if lote.get_vencedor():
+                vencedor = lote.get_vencedor().participante
+                if vencedor:
+                    total=0
+                    for item in PropostaItemPregao.objects.filter(item=self, participante=vencedor):
+                        total = total + (item.valor * item.item.quantidade)
+                        return total
+        return False
+
+
 
     def ganhou_com_valor_acima(self):
         vencedor = self.get_vencedor()
@@ -1171,6 +1184,15 @@ class LanceItemRodadaPregao(models.Model):
             return u'%s %%' % self.valor
         else:
             return 'R$ %s' % format_money(self.valor)
+
+    def get_reducao_empresa(self):
+        if not self.declinio:
+            lance = self.valor
+
+            if PropostaItemPregao.objects.filter(participante=self.participante, item=self.item).exists():
+                valor = PropostaItemPregao.objects.filter(participante=self.participante, item=self.item)[0].valor
+                return Decimal(100 - ((lance * 100) / valor)).quantize(Decimal(10) ** -2)
+        return 0
 
 
 class PessoaFisica(models.Model):

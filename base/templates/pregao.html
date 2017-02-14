@@ -601,8 +601,9 @@
                                                     <tr>
                                                         <th>Item</th>
                                                         <th>Quantidade</th>
-                                                        <th>Valor Médio</th>
+                                                        <th>Valor Máximo</th>
                                                         <th>Valor Unitário Proposto</th>
+                                                        <th>Valor Total Proposto</th>
                                                         <th>Valor Final</th>
                                                         <th>Opções</th>
 
@@ -615,6 +616,7 @@
                                                             <td>{{ item.quantidade }}</td>
                                                             <td>{{ item.valor_medio }}</td>
                                                             <td>{{ item.get_valor_unitario_proposto }}</td>
+                                                            <td>{{ item.get_valor_total_proposto }}</td>
                                                             <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }} {% if item.get_valor_item_lote %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/">(Editar)</a>{% endif %}</td>
                                                             <td>
                                                                 {% if not item.get_valor_item_lote %}

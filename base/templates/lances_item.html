@@ -71,7 +71,7 @@
                                     <tbody>
                                         {% for item in itens_do_lote %}
                                             <tr>
-                                                <td>{{ item }}</td>
+                                                <td>{{ item }} - {{ item.material.nome|truncatechars:100}}</td>
                                                 <td>{{ item.quantidade }}</td>
                                                 <td>{{ item.valor_medio }}</td>
                                             </tr>
@@ -284,6 +284,7 @@
                             {% else %}
                                 <th width="20%">Valor</th>
                             {% endif %}
+                            <th>% de Redução</th>
                             <th width="40%">Fornecedor</th>
                         </tr>
                     </thead>
@@ -306,6 +307,7 @@
                                             {% endif %}
                                        {% endif %}
                                    </td>
+                                   <td>{{ lance.get_reducao_empresa }}</td>
                                    <td>{{ lance.participante }}</td>
                                </tr>
                             {% endfor %}

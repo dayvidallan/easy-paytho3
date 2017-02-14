@@ -2742,21 +2742,23 @@ def informar_valor_final_item_lote(request, item_id, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     lote =ItemLote.objects.filter(item=item)[0].lote
+    ids_itens_do_lote = ItemLote.objects.filter(lote=lote).values_list('item', flat=True)
     vencedor = lote.get_empresa_vencedora()
-    title=u'Informar Valor do %s - %s' % (item , lote)
+    title=u'Informar Valor Unitário Final do %s - %s' % (item , lote)
     form = ValorFinalItemLoteForm(request.POST or None)
     if form.is_valid():
-        if form.cleaned_data.get('valor') > item.get_valor_unitario_proposto() or form.cleaned_data.get('valor') > item.valor_medio:
-            messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto nem do que o valor medio.')
+        if form.cleaned_data.get('valor') > item.get_valor_total_proposto() or form.cleaned_data.get('valor') > item.valor_medio:
+            messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto nem do que o valor máximo do item.')
             return HttpResponseRedirect(u'/base/informar_valor_final_item_lote/%s/%s/' % (item.id, pregao.id))
 
 
-        if (PropostaItemPregao.objects.filter(participante=vencedor).aggregate(total=Sum('valor_item_lote'))['total'] + form.cleaned_data.get('valor')) > lote.get_total_lance_ganhador():
+        valor = PropostaItemPregao.objects.filter(participante=vencedor, item__in=ids_itens_do_lote).aggregate(total=Sum('valor_item_lote'))['total'] or 0
+        if (valor + form.cleaned_data.get('valor')) > lote.get_total_lance_ganhador():
             messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador.')
             return HttpResponseRedirect(u'/base/informar_valor_final_item_lote/%s/%s/' % (item.id, pregao.id))
 
-
-        PropostaItemPregao.objects.filter(participante=vencedor, item=item).update(valor_item_lote=form.cleaned_data.get('valor'))
+        valor_final = form.cleaned_data.get('valor') * item.quantidade
+        PropostaItemPregao.objects.filter(participante=vencedor, item=item).update(valor_item_lote=valor_final)
 
         messages.success(request, u'Valor cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
@@ -3966,17 +3968,23 @@ def editar_membro_comissao(request, membro_id):
 def editar_valor_final(request, item_id, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    title=u'Editar Valor Final - %s' % item
-    valor = item.get_valor_item_lote()
+    title=u'Editar Valor Unitário Final - %s' % item
+    valor = item.get_valor_item_lote() / item.quantidade
     form = ValorFinalItemLoteForm(request.POST or None, initial=dict(valor=valor))
     if form.is_valid():
         lote = ItemLote.objects.filter(item=item)[0].lote
 
-        if (PropostaItemPregao.objects.filter(participante=lote.get_empresa_vencedora()).exclude(item=item).aggregate(total=Sum('valor_item_lote'))['total'] + form.cleaned_data.get('valor')) > lote.get_total_lance_ganhador():
+        if form.cleaned_data.get('valor') > item.get_valor_total_proposto() or form.cleaned_data.get('valor') > item.valor_medio:
+            messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto nem do que o valor máximo do item.')
+            return HttpResponseRedirect(u'/base/editar_valor_final/%s/%s/' % (item.id, pregao.id))
+
+        valor = PropostaItemPregao.objects.filter(participante=lote.get_empresa_vencedora()).exclude(item=item).aggregate(total=Sum('valor_item_lote'))['total'] or 0
+        if (valor + form.cleaned_data.get('valor')) > lote.get_total_lance_ganhador():
             messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador.')
             return HttpResponseRedirect(u'/base/editar_valor_final/%s/%s/' % (item_id, pregao.id))
 
-        PropostaItemPregao.objects.filter(item=item, participante=lote.get_empresa_vencedora()).update(valor_item_lote=form.cleaned_data.get('valor'))
+        valor_final = form.cleaned_data.get('valor') * item.quantidade
+        PropostaItemPregao.objects.filter(item=item, participante=lote.get_empresa_vencedora()).update(valor_item_lote=valor_final)
         messages.success(request, u'Valor editado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
