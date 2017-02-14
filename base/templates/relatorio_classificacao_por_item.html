@@ -62,26 +62,6 @@ ul{
                 {% endblock %}
                 {% if eh_lote %}
                     <h2>Lote: {{ key }}</h2>
-
-
-
-                    <table border="0" align="center" width="55%" cellpadding="5" cellspacing="5">
-                        <font size="2">
-                        <tr><td>Composição do Lote</td></tr>
-
-                            {% for num, item in itens.items %}
-                                {% for it in item %}
-                                    {% if key == num %}
-                                        <tr><td>{{  it }}</td></tr>
-                                    {% endif %}
-                                {% endfor %}
-
-                            {% endfor %}
-                        </font>
-                    </table>
-
-
-
                 {% else %}
                     <h2>Item: {{ key }}</h2>
                 {% endif %}
