@@ -688,8 +688,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     def tem_item_anterior(self):
         if self.item > 1:
             anterior = self.item - 1
-            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio == CriterioPregao.LOTE
-
+            eh_lote = Pregao.objects.filter(solicitacao=self.solicitacao)[0].criterio.id == CriterioPregao.LOTE
             if eh_lote:
                 if ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao, eh_lote=True).exists():
                     return ItemSolicitacaoLicitacao.objects.filter(item=anterior, solicitacao=self.solicitacao, eh_lote=True)[0].id
@@ -725,7 +724,9 @@ class ItemSolicitacaoLicitacao(models.Model):
             if PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora()).exists():
                 return PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora())[0]
 
-    def gerar_resultado(self):
+    def gerar_resultado(self, apaga=False):
+        if apaga:
+            ResultadoItemPregao.objects.filter(item=self).delete()
         if ResultadoItemPregao.objects.filter(item=self).exists():
             return
         ids_participantes = []

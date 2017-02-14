@@ -16,8 +16,14 @@
                     {% endif %}
                     {% if item.tem_proximo_item %}
                         <a href="/base/avancar_proximo_item/{{ item.id }}/" class="btn btn-warning">Próximo Item</a>
+                        {% if item.tem_resultado %}
+                            <a href="/base/gerar_resultado_item_pregao/{{item.id}}/"  class="btn btn-success">Recriar Resultado</a>
+                        {% endif %}
                         <a href="/base/pregao/{{ item.get_licitacao.id }}/#classificacao" class="btn btn-default">Voltar para o Pregão</a>
                     {% elif item.ativo %}
+                        {% if item.tem_resultado %}
+                            <a href="/base/gerar_resultado_item_pregao/{{item.id}}/"  class="btn btn-success">Recriar Resultado</a>
+                        {% endif %}
                         <a href="/base/avancar_proximo_item/{{ item.id }}/?ultimo=True/" class="btn btn-warning">Finalizar Lances</a>
 
                     {% else %}

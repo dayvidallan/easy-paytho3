@@ -3988,3 +3988,10 @@ def editar_valor_final(request, item_id, pregao_id):
         messages.success(request, u'Valor editado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+def gerar_resultado_item_pregao(request, item_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    item.gerar_resultado(apaga=True)
+    messages.success(request, u'Resultado do item gerado com sucesso.')
+    return HttpResponseRedirect(u'/base/lances_item/%s/' % item_id)
