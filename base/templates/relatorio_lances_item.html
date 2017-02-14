@@ -65,22 +65,11 @@ ul{
                   </h1>
 
                 {% endblock %}
-                <h2>Item {{ key }}</h2>
+
                 {% if eh_lote %}
-                    {% for num, item in itens.items %}
-                            <table border="0" align="center" width="55%" cellpadding="5" cellspacing="5">
-                                <font size="2">
-
-                                {% for it in item %}
-                                    {% if num == key %}
-                                        <tr><td>{{ it }}</td></tr>
-                                    {% endif %}
-                                {% endfor %}
-                                    </font>
-                            </table>
-
-                    {% endfor %}
-
+                    <h2>Lote {{ key }}</h2>
+                {% else %}
+                    <h2>Item {{ key }}</h2>
                 {% endif %}
                 {%  for num_rodada, lances_item in lances.items  %}
                     <h2>Rodada: {{ num_rodada }}</h2>
