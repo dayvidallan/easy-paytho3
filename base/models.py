@@ -726,7 +726,8 @@ class ItemSolicitacaoLicitacao(models.Model):
                 return PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora())[0]
 
     def gerar_resultado(self):
-        ResultadoItemPregao.objects.filter(item=self).delete()
+        if ResultadoItemPregao.objects.filter(item=self).exists():
+            return
         ids_participantes = []
         finalistas = []
         if self.eh_ativo():
