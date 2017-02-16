@@ -615,6 +615,11 @@ class ItemSolicitacaoLicitacao(models.Model):
             for item in lances_da_rodada:
                 if item.participante.me_epp and item.valor <= limite_lance and LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count():
                     return item.participante
+
+            propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, desistencia=False, desclassificado=False)
+            for proposta in propostas:
+                if proposta.participante.me_epp and proposta.valor <= limite_lance:
+                    return proposta.participante
         return False
 
     def get_podem_dar_lance(self):

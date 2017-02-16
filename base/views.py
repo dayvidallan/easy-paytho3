@@ -93,8 +93,16 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
+
+
+def logout(request):
+    messages.error(request, u'Usuário não vinculado à um setor. Procure o administrador do sistema.')
+    return HttpResponseRedirect(u'/admin/logout/')
+
 @login_required()
 def index(request):
+    if not request.user.pessoafisica.setor:
+        logout(request)
     eh_ordenador_despesa = False
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
@@ -2681,7 +2689,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     data_emissao = datetime.date.today()
 
     pedidos = PedidoItem.objects.filter(solicitacao=solicitacao)
-    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.LOTE
+    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio.id == CriterioPregao.LOTE
 
     tabela = {}
 

@@ -720,39 +720,43 @@
 
         </div>
         <div id="homologacao" class="tab-pane">
-            {% if pregao.eh_pregao %}
+            {% if pregao.tem_resultado %}
+                {% if pregao.eh_pregao %}
+                    <fieldset>
+                        <legend>Adjudicação</legend>
+                        {% if not pregao.data_adjudicacao %}
+                            <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
+                        {% else %}
+                            <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
+                            <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
+                        {% endif %}
+                    </fieldset>
+
+                {% endif %}
+                <br>
                 <fieldset>
-                    <legend>Adjudicação</legend>
-                    {% if not pregao.data_adjudicacao %}
-                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
-                    {% else %}
-                        <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
-                        <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
+                    <legend>Homologação</legend>
+                    {% if not pregao.data_adjudicacao and not pregao.eh_pregao and not pregao.pode_homologar %}
+                        <a href="/base/liberar_licitacao_homologacao/{{ pregao.pk }}/" class="btn btn-success">Liberar Homologação</a>
                     {% endif %}
-                </fieldset>
-
-            {% endif %}
-            <br>
-            <fieldset>
-                <legend>Homologação</legend>
-                {% if not pregao.data_adjudicacao and not pregao.eh_pregao and not pregao.pode_homologar %}
-                    <a href="/base/liberar_licitacao_homologacao/{{ pregao.pk }}/" class="btn btn-success">Liberar Homologação</a>
-                {% endif %}
-                {% if pregao.arquivo_homologacao %}
-                    {% if pregao.eh_pregao %}
-                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação</a>
+                    {% if pregao.arquivo_homologacao %}
+                        {% if pregao.eh_pregao %}
+                            <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação</a>
+                        {% else %}
+                            <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação e Adjudicação</a>
+                        {% endif%}
+                    <br><br>
+                    Ordenador de Despesa: {{ pregao.ordenador_despesa }}
+                    {% elif pregao.data_adjudicacao %}
+                        <p class="alert alert-info">Aguardando a Homologação pelo ordenador de despesas.</p>
                     {% else %}
-                        <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação e Adjudicação</a>
-                    {% endif%}
-                <br><br>
-                Ordenador de Despesa: {{ pregao.ordenador_despesa }}
-                {% elif pregao.data_adjudicacao %}
-                    <p class="alert alert-info">Aguardando a Homologação pelo ordenador de despesas.</p>
-                {% else %}
-                    <p class="alert alert-info">Aguardando Adjudicação.</p>
-                {% endif %}
+                        <p class="alert alert-info">Aguardando Adjudicação.</p>
+                    {% endif %}
 
-            </fieldset>
+                </fieldset>
+            {% else %}
+                <p class="alert alert-warning">A classificação deste pregão ainda não foi gerada.</p>
+            {% endif %}
 
 
         </div>

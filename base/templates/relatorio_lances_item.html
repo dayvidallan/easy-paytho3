@@ -30,6 +30,13 @@ ul{
      @page {
             size: a4;
             margin: 1.5cm;
+            @frame header {
+                -pdf-frame-content: headerblock;
+                top: 0cm;
+                margin-left: 9cm;
+                margin-right: 1cm;
+                height: 1.3cm;
+            }
             @frame footer {
                 -pdf-frame-content: footerblock;
                 bottom: 0cm;
@@ -51,67 +58,68 @@ ul{
 
 
 {% block content %}
+    <h1 class="page-header">
+        {% include "cabecalho.html" %}
+        <center>
+            <font size="4">Lista de Lances por Item - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font>
+        </center>
+    </h1>
+    <center>
+        <div id="headerblock" align="right">
 
-<center>
-    {% for key, lances in resultado.items %}
-            {% if lances %}
-                {% block content_title %}
-                    <br>
-                  <h1 class="page-header">
-                    {% include "cabecalho.html" %}
-                    <center>
-                        <font size="4">Lista de Lances por Item - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font>
-                    </center>
-                  </h1>
+        </div>
+        {% for key, lances in resultado.items %}
 
-                {% endblock %}
+                {% if lances %}
+                    {% block content_title %}
+                        <br>
 
-                {% if eh_lote %}
-                    <h2>Lote {{ key }}</h2>
-                {% else %}
-                    <h2>Item {{ key }}</h2>
-                {% endif %}
-                {%  for num_rodada, lances_item in lances.items  %}
-                    <h2>Rodada: {{ num_rodada }}</h2>
 
-                    <table border="1" width="95%" cellpadding="5" cellspacing="5">
-                        <thead>
-                            <tr>
-                                <th width="15%">Lance</th>
-                                <th>Valor</th>
-                                <th>Fornecedor</th>
+                    {% endblock %}
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {%  for lance in lances_item.lances %}
+                    {% if eh_lote %}
+                        <h2>Lote {{ key }}</h2>
+                    {% else %}
+                        <h2>Item {{ key }}</h2>
+                    {% endif %}
+                    {%  for num_rodada, lances_item in lances.items  %}
+                        <h2>Rodada: {{ num_rodada }}</h2>
+
+                        <table border="1" width="95%" cellpadding="5" cellspacing="5">
+                            <thead>
                                 <tr>
-                                    <td>{{ forloop.counter }}°</td>
-                                    <td>
-                                        {% if lance.declinio %}
-                                            <font color="red">Declinado</font>
-                                        {% else %}
-                                            {{ lance.valor|format_money }}
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ lance.participante }}{% if lance.ganhou_desempate %} <font color="red"><br>*Beneficiado pela lei da microempresa{% endif%}</td>
+                                    <th width="15%">Lance</th>
+                                    <th>Valor</th>
+                                    <th>Fornecedor</th>
+
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endfor %}
-                {% if not forloop.last %}
-                    <pdf:nextpage />
+                            </thead>
+                            <tbody>
+                                {%  for lance in lances_item.lances %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}°</td>
+                                        <td>
+                                            {% if lance.declinio %}
+                                                <font color="red">Declinado</font>
+                                            {% else %}
+                                                {{ lance.valor|format_money }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ lance.participante }}{% if lance.ganhou_desempate %} <font color="red"><br>*Beneficiado pela lei da microempresa{% endif%}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endfor %}
+
                 {% endif %}
-            {% endif %}
-    {% endfor %}
-</center>
+        {% endfor %}
+    </center>
 
 
-<div id="footerblock" align="right">
-   Página <pdf:pagenumber> de <pdf:pagecount>
-</div>
-
+    <div id="footerblock" align="right">
+       Página <pdf:pagenumber> de <pdf:pagecount>
+    </div>
 
 
 {% endblock %}
