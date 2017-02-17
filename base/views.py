@@ -603,7 +603,7 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
 
 def baixar_editais(request):
     hoje = datetime.date.today()
-    pregoes = Pregao.objects.all()
+    pregoes = Pregao.objects.all().order_by('-data_abertura')
     form = BaixarEditaisForm(request.POST or None)
     if form.is_valid():
         pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
