@@ -2016,6 +2016,23 @@ def relatorio_lances_item(request, pregao_id):
 @login_required()
 def relatorio_ata_registro_preco(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+
+
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
+
+    municipio = None
+    if get_config():
+        municipio = get_config().municipio
+
+
+
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     tabela = {}
     total = {}
@@ -2044,58 +2061,414 @@ def relatorio_ata_registro_preco(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     texto = u''
+    from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+    from docx import Document
+    from docx.shared import Inches, Pt
 
-    for key, lances in resultado.items():
+    document = Document()
+    table = document.add_table(rows=1, cols=2)
+    hdr_cells = table.rows[0].cells
 
-        if lances['lance']:
-            fornecedor = get_object_or_404(ParticipantePregao, pk=key)
 
-            dados = u'''<br><br>
-              <table>
-                <tr>
-                    <td colspan=2>%s</td>
-                </tr>
-                <tr>
-                    <td colspan=2>Endereço: %s</td>
-                </tr>
-                <tr>
-                    <td colspan=2>CPF/CNPJ: %s</td>
-                </tr>
+    style2 = document.styles['Normal']
+    font = style2.font
+    font.name = 'Arial'
+    font.size = Pt(6)
 
-                <tr>
-                    <td>Representante Legal: %s</td>
-                    <td>CPF: %s</td>
-                </tr>
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(11)
 
-            </table>
-            <br><br>
-            ''' % (fornecedor.fornecedor.razao_social, fornecedor.fornecedor.endereco, fornecedor.fornecedor.cnpj, fornecedor.nome_representante, fornecedor.cpf_representante)
 
-            texto =  texto + unicode(dados)
+    paragraph = hdr_cells[0].paragraphs[0]
+    run = paragraph.add_run()
+    run.add_picture(logo, width=Inches(1.75))
 
-            if eh_lote:
-                texto = texto + u'''<table><tr><td>Lote</td><td>Itens do Lote</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Total</td></tr>'''
-            else:
-                texto = texto + u'''<table><tr><td>Item</td><td>Descrição</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Unit.</td><td>Valor Total</td></tr>'''
+    paragraph2 = hdr_cells[1].paragraphs[0]
+    paragraph2.style = document.styles['Normal']
+    hdr_cells[1].text =  u'%s' % (configuracao.nome)
 
-            for lance in lances['lance']:
-                total = lance.get_vencedor().valor * lance.quantidade
-                if eh_lote:
+
+
+    contrato = Contrato.objects.get(pregao=pregao)
+    document.add_paragraph()
+    p = document.add_paragraph(u'ATA DE REGISTRO DE PREÇOS – %s' % contrato.numero)
+
+    titulo_pregao = u'sdasd'
+    texto = u'''
+    No dia %s, o(a) %s, inscrito no CNPJ/MF sob o nº PREEENCHER, localizado no endereço %s, representado neste ato por seu por seu Prefeito o(a) Sr(a) %s, nos termos da Lei nº 10.520/2002 e de modo subsidiário, da Lei nº 8.666/93 e Decreto Municipal nº 046/2010, conforme a classificação da proposta apresentada no %s, homologado em %s, resolve registrar o preço oferecido pela empresa, conforme os seguintes termos:
+    ''' % (pregao.data_abertura.strftime('%d/%m/%y'), configuracao.municipio.nome, configuracao.endereco, configuracao.ordenador_despesa.nome, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
+
+    #document.add_paragraph(texto)
+    p = document.add_paragraph()
+    p.alignment = 3
+
+    p.add_run(texto)
+
+
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+    fornecedores = list()
+    if eh_lote:
+        for item in resultado.items():
+            if len(item[1]['lance']) > 0:
+                participante = get_object_or_404(ParticipantePregao, id=item[0])
+                fornecedor = participante.fornecedor
+                fornecedores.append(fornecedor)
+                p = document.add_paragraph()
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                p.add_run(u'%s' % fornecedor).bold = True
+                itens = len(item[1]['lance'])
+
+                table = document.add_table(rows=itens, cols=6)
+                hdr_cells = table.rows[0].cells
+                hdr_cells[0].text = u'Lote / Item'
+                hdr_cells[1].text = u'Objeto'
+                hdr_cells[2].text = u'Marca/Modelo'
+                hdr_cells[3].text = u'Unidade/Qtd'
+                hdr_cells[4].text = u'Preço Unitário (R$)'
+                hdr_cells[5].text = u'Preço Total (R$)'
+                total_geral = 0
+                for lance in item[1]['lance']:
+
+
+
                     conteudo = u''
                     for componente in lance.get_itens_do_lote():
-                        conteudo += '%s<br>' % componente.material.nome
-                    marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
+                        total = lance.get_vencedor().valor * componente.quantidade
+                        total_geral += total
+                        marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
 
-                    texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, conteudo, marca, componente.unidade, lance.quantidade, format_money(total))
-                else:
-                    texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.material.nome, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
+                        row_cells = table.add_row().cells
+                        row_cells[0].text = u'Lote %s / %s' % (lance.item, componente)
+                        row_cells[1].text = u'%s' % componente.material.nome
+                        row_cells[2].text = u'%s' % (marca)
+                        row_cells[3].text = u'%s / %s' % (componente.unidade, componente.quantidade)
+                        row_cells[4].text = u'%s' % lance.get_vencedor().valor
+                        row_cells[5].text = u'%s' % format_money(total)
+                row_cells = table.add_row().cells
+                row_cells[0].text = u'Total'
+                row_cells[5].text = format_money(total_geral)
+                p = document.add_paragraph()
 
-            texto = texto + u'</table>'
+
+    else:
+        for item in resultado.items():
+            if len(item[1]['lance']) > 0:
+                participante = get_object_or_404(ParticipantePregao, id=item[0])
+                fornecedor = participante.fornecedor
+                fornecedores.append(fornecedor)
+                p = document.add_paragraph()
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                p.add_run(u'%s' % fornecedor).bold = True
+                itens = len(item[1]['lance'])
+
+                table = document.add_table(rows=itens, cols=6)
+                hdr_cells = table.rows[0].cells
+                hdr_cells[0].text = u'Item'
+                hdr_cells[1].text = u'Objeto'
+                hdr_cells[2].text = u'Marca/Modelo'
+                hdr_cells[3].text = u'Unidade/Qtd'
+                hdr_cells[4].text = u'Preço Unitário (R$)'
+                hdr_cells[5].text = u'Preço Total (R$)'
+                total_geral = 0
+                for lance in item[1]['lance']:
+
+                    total = lance.quantidade * lance.get_vencedor().valor
+                    total_geral += total
+                    marca = PropostaItemPregao.objects.filter(item=lance, participante=lance.get_vencedor().participante)[0].marca
+
+                    row_cells = table.add_row().cells
+                    row_cells[0].text = u'%s' % (lance.item)
+                    row_cells[1].text = u'%s' % lance.material.nome
+                    row_cells[2].text = u'%s' % (marca)
+                    row_cells[3].text = u'%s / %s' % (lance.unidade, lance.quantidade)
+                    row_cells[4].text = u'%s' % lance.get_vencedor().valor
+                    row_cells[5].text = u'%s' % format_money(total)
+                row_cells = table.add_row().cells
+                row_cells[0].text = u'Total'
+                row_cells[5].text = format_money(total_geral)
+                p = document.add_paragraph()
 
 
-    response = HttpResponse(texto, content_type='application/vnd.ms-word')
-    response['Content-Disposition'] = 'attachment; filename=Ata_registro_preco_pregao_%s.doc' % pregao.id
+    texto = u'''1 – DO OBJETO
+
+    1.1 – %s, conforme quantidades estimadas e especificações técnicas do Edital do %s supracitado.
+
+    2 – DA VALIDADE DOS PREÇOS
+
+    2.1 – Este Registro de Preços tem validade de até 12 (DOZE) MESES, contados da data da sua assinatura, incluídas eventuais prorrogações, com eficácia legal após a publicação no DIÁRIO OFICIAL e demais meios, conforme exigido na legislação aplicável.
+
+    2.2 – Durante o prazo de validade desta Ata de Registro de Preço, o(a) %s não será obrigado a firmar as contratações que dela poderão advir, facultando-se a realização de licitação específica para a aquisição pretendida, sendo assegurado ao beneficiário do registro preferência no fornecimento em igualdade de condições.
+
+    3 – DAS DISPOSIÇÕES FINAIS
+
+    3.1 – Integram esta ARP, o edital do Pregão supracitado e seus anexos, e a(s) proposta(s) da(s) empresa(s), classificada(s) no respectivo certame.
+
+    3.2 – Os casos omissos serão resolvidos de acordo com a pelas normas constantes nas Leis n.º 8.666/93 e 10.520/02, no que couber.
+
+    3.3 – Fica eleito o Foro da Comarca Local, para dirimir as dúvidas ou controvérsias resultantes da interpretação deste Contrato, renunciando a qualquer outro por mais privilegiado que seja.
+
+    ''' % (pregao.solicitacao.objeto, pregao.modalidade, configuracao.municipio)
+
+    p = document.add_paragraph()
+    p.alignment = 3
+
+    p.add_run(texto)
+
+
+    texto = u'%s, %s' % (configuracao.municipio, datetime.datetime.now().date().strftime('%d/%m/%y'))
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+    p.add_run(texto)
+
+
+    document.add_paragraph()
+    texto = u'%s' % (configuracao.ordenador_despesa.nome)
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    p.add_run(texto)
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(configuracao.nome)
+    document.add_paragraph()
+    for fornecedor in fornecedores:
+        nome_responsavel = ParticipantePregao.objects.filter(fornecedor=fornecedor, pregao=pregao)[0].nome_representante
+        texto = u'%s' % (nome_responsavel)
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        p.add_run(texto)
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(fornecedor.razao_social)
+        document.add_paragraph()
+
+
+
+#
+# for lance in lances['lance']:
+#                 total = lance.get_vencedor().valor * lance.quantidade
+#                 if eh_lote:
+#                     conteudo = u''
+#                     for componente in lance.get_itens_do_lote():
+#                         conteudo += '%s<br>' % componente.material.nome
+#                     marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
+#
+#                     texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, conteudo, marca, componente.unidade, lance.quantidade, format_money(total))
+#                 else:
+#                     texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.material.nome, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
+#
+#             texto = texto + u'</table>'
+
+    #
+    # p = document.add_paragraph(u'Na sequência, solicitou dos licitantes presentes a declaração de cumprimento dos requisitos de habilitação e dos documentos para credenciamento dos licitantes presentes:')
+    #
+    # table = document.add_table(rows=1, cols=2)
+    # hdr_cells = table.rows[0].cells
+    # hdr_cells[0].text = 'Empresa'
+    # hdr_cells[1].text = 'Representante'
+    #
+    #
+    #
+    # for item in ParticipantePregao.objects.filter(pregao=pregao):
+    #     me = u'Não Compareceu'
+    #     if item.nome_representante:
+    #         me = item.nome_representante
+    #
+    #     row_cells = table.add_row().cells
+    #     row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+    #     row_cells[1].text = u'%s' % me
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #
+    # p = document.add_paragraph(u'Finalizado o credenciamento foram recebidos os envelopes contendo as propostas de preços e a documentação de habilitação (envelopes nº 01 e 02) das mãos dos representantes credenciados.')
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DO REGISTRO DO PREGÃO').bold = True
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = 3
+    #
+    # p.add_run(u'Ato contínuo, foram abertos os Envelopes contendo as Propostas e, com a colaboração dos membros da Equipe de Apoio, o Pregoeiro examinou a compatibilidade do objeto, prazos e condições de fornecimento ou de execução, com aqueles definidos no Edital, tendo selecionados todos os licitantes para participarem da Fase de Lances em razão dos preços propostos estarem em conformidade  com as exigências do edital.')
+    #
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DOS LANCES').bold = True
+    #
+    # p = document.add_paragraph()
+    # p.alignment = 3
+    #
+    #
+    # p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % tipo)
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DA HABILITAÇÃO').bold = True
+    #
+    # p = document.add_paragraph()
+    # p.alignment = 3
+    #
+    # p.add_run(u'Em seguida, foi analisada a aceitabilidade da proposta detentora do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.')
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DO RESULTADO').bold = True
+    #
+    # p = document.add_paragraph()
+    # p.alignment = 3
+    #
+    # p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, foi declarada pelo Pregoeiro e equipe, a vencedora do certame, a empresa: ')
+    #
+    #
+    # p.add_run(resultado_pregao)
+    #
+    # p = document.add_paragraph()
+    # p.alignment = 3
+    # p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s, respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), tipo))
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
+    #
+    #
+    # for item in ocorrencias:
+    #     p = document.add_paragraph()
+    #     p.alignment = 3
+    #     p.add_run(item)
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DO ENCERRAMENTO').bold = True
+    #
+    # p = document.add_paragraph()
+    # p.alignment = 3
+    # p.add_run(u'O Pregoeiro, após encerramento desta fase, concedeu aos proponentes vistas ao processo e a todos os documentos. Franqueada a palavra, para observações, questionamentos e/ou interposição de recursos, caso alguém assim desejasse, como nenhum dos proponentes manifestou intenção de recorrer, pelo que renunciam, desde logo, em caráter irrevogável e irretratável, ao direito de interposição de recurso. Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes.')
+    #
+    #
+    #
+    # for item in membros:
+    #
+    #     texto = item.split(',')
+    #     p = document.add_paragraph()
+    #     p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+    #     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     p.add_run(texto[0])
+    #     p = document.add_paragraph()
+    #     p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+    #     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     p.add_run(u'Matrícula %s' % texto[1])
+    #     p = document.add_paragraph()
+    #     p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+    #     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     p.add_run(texto[2])
+    #
+    #
+    # table = document.add_table(rows=1, cols=4)
+    # hdr_cells = table.rows[0].cells
+    # hdr_cells[0].text = u'CNPJ/CPF'
+    # hdr_cells[1].text = u'Razão Social'
+    # hdr_cells[2].text = u'ME/EPP'
+    # hdr_cells[3].text = u'Representante'
+    #
+    # for item in ParticipantePregao.objects.filter(pregao=pregao):
+    #     me = u'Não '
+    #     if item.me_epp:
+    #         me = u'SIm'
+    #
+    #     repre = u'Não Compareceu'
+    #     if item.nome_representante:
+    #         repre = item.nome_representante
+    #
+    #     row_cells = table.add_row().cells
+    #     row_cells[0].text = u'%s' % item.fornecedor.cnpj
+    #     row_cells[1].text = u'%s' % item.fornecedor.razao_social
+    #     row_cells[2].text = u'%s' % me
+    #     row_cells[3].text = u'%s' % repre
+
+
+    document.add_page_break()
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/ata_sessao_%s.docx' % pregao.id)
+    document.save(caminho_arquivo)
+
+
+
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
     return response
+
+    # for key, lances in resultado.items():
+    #
+    #     if lances['lance']:
+    #         fornecedor = get_object_or_404(ParticipantePregao, pk=key)
+    #
+    #         dados = u'''<br><br>
+    #           <table>
+    #             <tr>
+    #                 <td colspan=2>%s</td>
+    #             </tr>
+    #             <tr>
+    #                 <td colspan=2>Endereço: %s</td>
+    #             </tr>
+    #             <tr>
+    #                 <td colspan=2>CPF/CNPJ: %s</td>
+    #             </tr>
+    #
+    #             <tr>
+    #                 <td>Representante Legal: %s</td>
+    #                 <td>CPF: %s</td>
+    #             </tr>
+    #
+    #         </table>
+    #         <br><br>
+    #         ''' % (fornecedor.fornecedor.razao_social, fornecedor.fornecedor.endereco, fornecedor.fornecedor.cnpj, fornecedor.nome_representante, fornecedor.cpf_representante)
+    #
+    #         texto =  texto + unicode(dados)
+    #
+    #         if eh_lote:
+    #             texto = texto + u'''<table><tr><td>Lote</td><td>Itens do Lote</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Total</td></tr>'''
+    #         else:
+    #             texto = texto + u'''<table><tr><td>Item</td><td>Descrição</td><td>Marca</td><td>Unidade</td><td>Quantidade</td><td>Valor Unit.</td><td>Valor Total</td></tr>'''
+    #
+    #         for lance in lances['lance']:
+    #             total = lance.get_vencedor().valor * lance.quantidade
+    #             if eh_lote:
+    #                 conteudo = u''
+    #                 for componente in lance.get_itens_do_lote():
+    #                     conteudo += '%s<br>' % componente.material.nome
+    #                 marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
+    #
+    #                 texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, conteudo, marca, componente.unidade, lance.quantidade, format_money(total))
+    #             else:
+    #                 texto = texto + u'<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (lance.item, lance.material.nome, lance.get_vencedor().marca, lance.unidade, lance.quantidade, format_money(lance.get_vencedor().valor), format_money(total))
+    #
+    #         texto = texto + u'</table>'
+    #
+    #
+    # response = HttpResponse(texto, content_type='application/vnd.ms-word')
+    # response['Content-Disposition'] = 'attachment; filename=Ata_registro_preco_pregao_%s.doc' % pregao.id
+    # return response
 
 
 
@@ -3549,8 +3922,7 @@ def registrar_ocorrencia_pregao(request, pregao_id):
 @login_required()
 def ata_sessao(request, pregao_id):
 
-    import tempfile
-    import zipfile
+
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
     configuracao = None

@@ -239,6 +239,18 @@ class TipoUnidadeAdmin(NewModelAdmin):
 
 admin.site.register(TipoUnidade, TipoUnidadeAdmin)
 
+class ContratoAdmin(NewModelAdmin):
+    form = ContratoForm
+    list_display = ('numero',)
+    ordering = ('numero',)
+
+    def response_change(self, request, obj):
+        self.message_user(request, u'Contrato alterado com sucesso.')
+        return HttpResponseRedirect('/base/visualizar_contrato/%s/' % str(obj.pk))
+
+
+admin.site.register(Contrato, ContratoAdmin)
+
 class MaterialConsumoAdmin(NewModelAdmin):
     list_display = ('codigo', 'nome',)
     ordering = ('nome',)

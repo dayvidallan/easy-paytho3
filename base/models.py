@@ -912,6 +912,8 @@ class Pregao(models.Model):
 
     def __unicode__(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
+    def get_titulo(self):
+        return u'%s N° %s' % (self.modalidade, self.num_pregao)
 
     def tem_download(self):
         return LogDownloadArquivo.objects.filter(arquivo__pregao=self).exists()

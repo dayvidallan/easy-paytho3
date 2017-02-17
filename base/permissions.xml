@@ -18,6 +18,14 @@
                     <permission>pode_gerenciar_contrato</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>contrato</name>
+                <permissions>
+                    <permission>add_contrato</permission>
+                    <permission>change_contrato</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
