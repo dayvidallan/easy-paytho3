@@ -51,9 +51,9 @@
                             <thead>
                                 <tr>
                                     {% if buscou %}
-                                        <th colspan="6">{{lote}}</th>
+                                        <th colspan="7">{{lote}}</th>
                                     {% else %}
-                                        <th colspan="5">{{lote}}</th>
+                                        <th colspan="6">{{lote}}</th>
                                     {% endif %}
                                 </tr>
                                 <tr>
@@ -74,7 +74,7 @@
                                 {% for resultado in lote.get_itens_do_lote %}
                                     <tr>
                                         <td>{{ resultado }}</td>
-                                        <td>{{ resultado.item.material|truncatechars:500 }}</td>
+                                        <td>{{ resultado.material|truncatechars:500 }}</td>
                                         <td>{{ resultado.get_marca_item_lote|default_if_none:"-" }}</td>
                                         <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
                                         <td>{{ resultado.get_valor_item_lote }}</td>
@@ -88,7 +88,7 @@
                                 {% endfor%}
                                 {% if buscou %}
                                     <tr>
-                                       <td  colspan="5">&nbsp;</td>
+                                       <td  colspan="6">&nbsp;</td>
                                        <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
                                     </tr>
                                 {% endif %}
