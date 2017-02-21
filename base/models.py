@@ -204,9 +204,9 @@ class SolicitacaoLicitacao(models.Model):
         (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
     )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
-    objeto = models.CharField(u'Descrição do Objeto', max_length=1500)
-    objetivo = models.CharField(u'Objetivo', max_length=1500)
-    justificativa = models.CharField(u'Justificativa', max_length=1500)
+    objeto = models.TextField(u'Descrição do Objeto')
+    objetivo = models.TextField(u'Objetivo')
+    justificativa = models.TextField(u'Justificativa')
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
     tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=LICITACAO)
     tipo_aquisicao = models.CharField(u'Tipo de Aquisição', max_length=50, choices=TIPO_AQUISICAO_CHOICES, default=TIPO_AQUISICAO_LICITACAO)
