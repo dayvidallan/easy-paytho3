@@ -606,7 +606,11 @@ def baixar_editais(request):
     pregoes = Pregao.objects.all().order_by('-data_abertura')
     form = BaixarEditaisForm(request.POST or None)
     if form.is_valid():
-        pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
+        if form.cleaned_data.get('modalidade'):
+            pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
+        if form.cleaned_data.get('numero'):
+            pregoes = pregoes.filter(num_pregao=form.cleaned_data.get('numero'))
+
     return render(request, 'baixar_editais.html', locals(), RequestContext(request))
 
 @login_required()
@@ -2959,6 +2963,7 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
         else:
             resultados = solicitacao.get_resultado(vencedor=form.cleaned_data.get('vencedor'))
         fornecedor = form.cleaned_data.get('vencedor')
+        
         if 'quantidades' in request.POST:
             fornecedor = request.POST.get('fornecedor')
             participante = ParticipantePregao.objects.get(id=fornecedor)
@@ -2978,10 +2983,11 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
                             ids.append(id_do_item.id)
                 resultados = resultados.filter(id__in=ids)
 
+
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
-                        if valor_pedido > resultados[idx].get_quantidade_disponivel():
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
                             messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
                             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
             else:
@@ -2989,7 +2995,7 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
-                        if valor_pedido > resultados[idx].item.get_quantidade_disponivel():
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).item.get_quantidade_disponivel():
                             messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
                             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
 
@@ -2999,11 +3005,11 @@ def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitac
                     novo_pedido = PedidoItem()
                     novo_pedido.solicitacao = nova_solicitacao
                     if eh_lote:
-                        novo_pedido.item = resultados[idx]
+                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
                         novo_pedido.proposta = resultados[idx].get_proposta_item_lote()
                     else:
-                        novo_pedido.item = resultados[idx].item
-                        novo_pedido.resultado = resultados[idx]
+                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx]).item
+                        novo_pedido.resultado = resultados.get(id=request.POST.getlist('id')[idx])
                     novo_pedido.quantidade = valor_pedido
                     novo_pedido.setor = setor
                     novo_pedido.pedido_por = request.user

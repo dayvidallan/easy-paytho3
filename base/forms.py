@@ -634,7 +634,8 @@ class UploadTermoHomologacaoForm(forms.ModelForm):
 
 
 class BaixarEditaisForm(forms.Form):
-    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade')
+    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+    numero = forms.CharField(label=u'Filtrar por Número do Pregão', required=False)
 
 
 class HistoricoPregaoForm(forms.ModelForm):
