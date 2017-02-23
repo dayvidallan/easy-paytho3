@@ -14,7 +14,7 @@
     </div>
     <br><br>
 
-    {%  if contrato.anexocontrato_set.exists %}
+    {%  if ata.anexoataregistropreco_set.exists %}
         <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
 
-                    {%  for item in contrato.anexocontrato_set.all %}
+                    {%  for item in ata.anexoataregistropreco_set.all %}
 
                         <tr>
                             <td>{{ item.nome }}</td>

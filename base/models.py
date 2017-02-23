@@ -348,7 +348,14 @@ class SolicitacaoLicitacao(models.Model):
     def get_resultado(self, vencedor=None):
         id_item = list()
         vencedores = list()
-        resultados = ResultadoItemPregao.objects.filter(item__solicitacao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('item', 'ordem')
+
+        if self.eh_lote():
+
+
+            resultados = ResultadoItemPregao.objects.filter(item__solicitacao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('item', 'ordem')
+
+        else:
+            resultados = ResultadoItemPregao.objects.filter(item__solicitacao=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('item', 'ordem')
 
         for resultado in resultados:
             if resultado.item.id not in id_item:
@@ -457,6 +464,11 @@ class ItemSolicitacaoLicitacao(models.Model):
         return False
 
 
+    def get_item_tipo_contrato(self):
+        if ItemAtaRegistroPreco.objects.filter(item=self).exists():
+            return ItemAtaRegistroPreco.objects.filter(item=self)[0]
+        elif ItemContrato.objects.filter(item=self).exists():
+            return ItemContrato.objects.filter(item=self)[0]
 
     def ganhou_com_valor_acima(self):
         vencedor = self.get_vencedor()
@@ -730,6 +742,11 @@ class ItemSolicitacaoLicitacao(models.Model):
             if PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora()).exists():
                 return PropostaItemPregao.objects.filter(item=self, participante=lote.get_empresa_vencedora())[0].valor_item_lote
 
+    def get_valor_unitario_final(self):
+        if self.get_valor_item_lote():
+            return self.get_valor_item_lote() / self.quantidade
+        return
+
     def get_proposta_item_lote(self):
         if ItemLote.objects.filter(item=self).exists():
             lote = ItemLote.objects.filter(item=self)[0].lote
@@ -992,7 +1009,7 @@ class Pregao(models.Model):
         return HistoricoPregao.objects.filter(pregao=self).exists()
 
     def get_valor_total(self):
-        eh_lote = self.criterio == CriterioPregao.LOTE
+        eh_lote = self.criterio.id == CriterioPregao.LOTE
         if eh_lote:
             itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
         else:
