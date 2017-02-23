@@ -261,7 +261,7 @@
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
                 <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
             {% endif %}
-            {% if perms.base.pode_gerenciar_contrato and contrato and recebida_no_setor and not solicitacao.contrato_set.exists %}
+            {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.contrato_set.exists %}
                 <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
              {% endif %}
 
