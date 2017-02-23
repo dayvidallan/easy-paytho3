@@ -144,6 +144,51 @@ urlpatterns = [
     url(r'^editar_membro_comissao/(?P<membro_id>\d+)/$', views.editar_membro_comissao, name='editar_membro_comissao'),
 
 
+
+
+    url(r'^novo_pedido_compra_contrato/(?P<contrato_id>\d+)/$', views.novo_pedido_compra_contrato, name='novo_pedido_compra_contrato'),
+    url(r'^novo_pedido_compra_arp/(?P<ata_id>\d+)/$', views.novo_pedido_compra_arp, name='novo_pedido_compra_arp'),
+
+
+
+    url(r'^informar_quantidades_do_pedido_contrato/(?P<contrato_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_contrato, name='informar_quantidades_do_pedido_contrato'),
+
+
+    url(r'^informar_quantidades_do_pedido_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_arp, name='informar_quantidades_do_pedido_arp'),
+    url(r'^cadastrar_ata_registro_preco/(?P<solicitacao_id>\d+)/$', views.cadastrar_ata_registro_preco, name='cadastrar_ata_registro_preco'),
+
+
+    url(r'^visualizar_ata_registro_preco/(?P<ata_id>\d+)/$', views.visualizar_ata_registro_preco, name='visualizar_ata_registro_preco'),
+
+
+    url(r'^liberar_solicitacao_ata/(?P<ata_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_ata, name='liberar_solicitacao_ata'),
+
+
+
+
+    url(r'^cadastrar_anexo_arp/(?P<ata_id>\d+)/$', views.cadastrar_anexo_arp, name='cadastrar_anexo_arp'),
+    url(r'^editar_anexo_arp/(?P<item_id>\d+)/$', views.editar_anexo_arp, name='editar_anexo_arp'),
+
+
+
+
+    url(r'^apagar_anexo_arp/(?P<item_id>\d+)/$', views.apagar_anexo_arp, name='apagar_anexo_arp'),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),
     url(r'^apagar_item/(?P<item_id>\d+)/$', views.apagar_item, name='apagar_item'),
     url(r'^editar_valor_final/(?P<item_id>\d+)/(?P<pregao_id>\d+)/$', views.editar_valor_final, name='editar_valor_final'),

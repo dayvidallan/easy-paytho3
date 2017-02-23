@@ -331,7 +331,9 @@ class SolicitacaoLicitacao(models.Model):
         return self.get_pregao().tipo.id == TipoPregao.DESCONTO
 
     def eh_lote(self):
-        return self.get_pregao().criterio.id == CriterioPregao.LOTE
+        if self.get_pregao():
+            return self.get_pregao().criterio.id == CriterioPregao.LOTE
+        return False
 
     def tem_pregao_cadastrado(self):
         return Pregao.objects.filter(solicitacao=self).exists()
@@ -380,6 +382,11 @@ class SolicitacaoLicitacao(models.Model):
         if Contrato.objects.filter(solicitacao=self).exists():
             contrato = Contrato.objects.filter(solicitacao=self)[0]
             return AnexoContrato.objects.filter(contrato=contrato)
+        return False
+
+    def get_contrato(self):
+        if Contrato.objects.filter(solicitacao=self).exists():
+            return Contrato.objects.filter(solicitacao=self)[0]
         return False
 
 
@@ -1493,6 +1500,24 @@ class AnexoContrato(models.Model):
     def __unicode__(self):
         return '%s - %s' % (self.nome, self.contrato)
 
+
+
+class AnexoAtaRegistroPreco(models.Model):
+    ata = models.ForeignKey('base.AtaRegistroPreco')
+    nome = models.CharField(u'Nome', max_length=500)
+    data = models.DateField(u'Data')
+    arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
+    cadastrado_por = models.ForeignKey(User)
+    cadastrado_em = models.DateTimeField(u'Cadastrado em')
+    publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
+
+    class Meta:
+        verbose_name = u'Anexo da ARP'
+        verbose_name_plural = u'Anexos da ARP'
+
+    def __unicode__(self):
+        return '%s - %s' % (self.nome, self.ata)
+
 class LogDownloadArquivo(models.Model):
     PARTICIPAR = u'Participar da Licitação'
     CONSULTA = u'Apenas Consulta'
@@ -1662,6 +1687,33 @@ class OrdemCompra(models.Model):
         verbose_name = u'Ordem de Compra'
         verbose_name_plural = u'Ordens de Compra'
 
+class AtaRegistroPreco(models.Model):
+    numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
+    valor = models.DecimalField(decimal_places=2,max_digits=12)
+    data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
+    data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    pregao = models.ForeignKey(Pregao)
+    concluido = models.BooleanField(default=False)
+    suspenso = models.BooleanField(default=False)
+    cancelado = models.BooleanField(default=False)
+    motivo_cancelamento = models.TextField(blank=True)
+    dh_cancelamento = models.DateTimeField(blank=True, null=True)
+    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+
+    def __unicode__(self):
+        return 'ARP N° %s' % (self.numero)
+
+    def get_situacao(self):
+        if self.concluido:
+            return u'Concluído'
+        elif self.suspenso:
+            return u'Suspenso'
+        elif self.cancelado:
+            return u'Cancelado'
+        else:
+            return u'Ativo'
+
 
 class Contrato(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
@@ -1670,7 +1722,7 @@ class Contrato(models.Model):
     data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
     continuado = models.BooleanField(default=False)
     solicitacao = models.ForeignKey(SolicitacaoLicitacao)
-    pregao = models.ForeignKey(Pregao)
+    pregao = models.ForeignKey(Pregao, null=True)
     concluido = models.BooleanField(default=False)
     suspenso = models.BooleanField(default=False)
     cancelado = models.BooleanField(default=False)
@@ -1726,3 +1778,113 @@ class Aditivo(models.Model):
     de_valor = models.BooleanField(verbose_name=u'Aditivo de Valor', default=False)
     de_fiscal = models.BooleanField(verbose_name=u'Aditivo de Fiscal', default=False)
 
+
+class ItemContrato(models.Model):
+    contrato = models.ForeignKey(Contrato)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao)
+    participante = models.ForeignKey(ParticipantePregao)
+    marca = models.CharField(u'Marca', max_length=200, null=True)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
+    quantidade = models.IntegerField(u'Quantidade')
+
+    class Meta:
+        ordering = ['item__item']
+        verbose_name = u'Item do Contrato'
+        verbose_name_plural = u'Itens do Contrato'
+
+    def get_quantidade_disponivel(self):
+        usuario = tl.get_user()
+        if usuario.groups.filter(name=u'Gerente').exists():
+            pedidos = PedidoContrato.objects.filter(item=self, ativo=True)
+            if pedidos.exists():
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            else:
+                return self.quantidade
+
+        else:
+
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+                pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+                if pedidos.exists():
+                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                else:
+                    return valor_total
+        return 0
+
+
+class PedidoContrato(models.Model):
+    contrato = models.ForeignKey(Contrato)
+    item = models.ForeignKey(ItemContrato)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    quantidade = models.IntegerField(u'Quantidade')
+    setor = models.ForeignKey(Setor)
+    pedido_por = models.ForeignKey(User)
+    pedido_em = models.DateTimeField(u'Pedido em')
+    ativo = models.BooleanField(u'Ativo', default=True)
+
+    class Meta:
+        verbose_name = u'Pedido do Contrato'
+        verbose_name_plural = u'Pedidos do Contrato'
+
+
+    def get_total(self):
+        return self.quantidade * self.item.valor
+
+
+
+
+
+class ItemAtaRegistroPreco(models.Model):
+    ata = models.ForeignKey(AtaRegistroPreco)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao)
+    participante = models.ForeignKey(ParticipantePregao)
+    marca = models.CharField(u'Marca', max_length=200, null=True)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
+    quantidade = models.IntegerField(u'Quantidade')
+
+    class Meta:
+        ordering = ['item__item']
+        verbose_name = u'Item da ARP'
+        verbose_name_plural = u'Itens da ARP'
+
+    def get_quantidade_disponivel(self):
+        usuario = tl.get_user()
+        if usuario.groups.filter(name=u'Gerente').exists():
+            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True)
+            if pedidos.exists():
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            else:
+                return self.quantidade
+
+        else:
+
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+                if pedidos.exists():
+                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                else:
+                    return valor_total
+        return 0
+
+
+
+
+class PedidoAtaRegistroPreco(models.Model):
+    ata = models.ForeignKey(AtaRegistroPreco)
+    item = models.ForeignKey(ItemAtaRegistroPreco)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    quantidade = models.IntegerField(u'Quantidade')
+    setor = models.ForeignKey(Setor)
+    pedido_por = models.ForeignKey(User)
+    pedido_em = models.DateTimeField(u'Pedido em')
+    ativo = models.BooleanField(u'Ativo', default=True)
+
+    class Meta:
+        verbose_name = u'Pedido da ARP'
+        verbose_name_plural = u'Pedidos da ARP'
+
+
+    def get_total(self):
+        return self.quantidade * self.item.valor

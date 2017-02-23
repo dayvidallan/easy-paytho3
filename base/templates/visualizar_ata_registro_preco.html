@@ -166,12 +166,9 @@
 
 {% block content %}
     <div class="pull-right">
-        {% if not contrato.data_fim %}
+        {% if not ata.data_fim %}
             <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
         {% endif %}
-        <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
-
-
 
 
     </div>
@@ -185,7 +182,6 @@
                 <th>Objeto</th>
                 <th>Data da Assinatura do Contrato</th>
                 <th>Vigência</th>
-                <th>Caráter Continuado</th>
                 <th>Situação</th>
                 <th>Opções</th>
             </tr>
@@ -193,20 +189,18 @@
         <tbody>
 
             <tr>
-                <td>{{ contrato.solicitacao.num_memorando }}</td>
-                <td>{{ contrato.solicitacao.processo|default_if_none:"-" }}</td>
-                <td>{{ contrato.solicitacao.objeto }}</td>
-                <td>{{ contrato.data_inicio }}</td>
-                <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
-                <td>{{ contrato.get_carater_continuado}}</td>
+                <td>{{ ata.solicitacao.num_memorando }}</td>
+                <td>{{ ata.solicitacao.processo|default_if_none:"-" }}</td>
+                <td>{{ ata.solicitacao.objeto }}</td>
+                <td>{{ ata.data_inicio }}</td>
+                <td>{{ ata.data_fim|default_if_none:"-" }}</td>
 
-                <td>{{ contrato.get_situacao }}</td>
+                <td>{{ ata.get_situacao }}</td>
                 <td>
-                    {% if not contrato.solicitacao.liberada_compra %}
-                        <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success btn-sm">Liberar Solicitação</a>
+                    {% if not ata.solicitacao.liberada_compra %}
+                        <a href="/base/liberar_solicitacao_ata/{{ata.id}}/1/" class="btn btn-success btn-sm">Liberar Solicitação</a>
                     {% else %}
-                        <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger btn-sm">Suspender Solicitação</a>
-
+                            <a href="/base/liberar_solicitacao_ata/{{ata.id}}/2/" class="btn btn-danger btn-sm">Cancelar Solicitação</a>
                     {% endif %}
                 </td>
 
@@ -223,9 +217,7 @@
             <li class="active">
                 <a data-toggle="tab" href="#itens">Itens</a>
             </li>
-            <li>
-                <a href="#aditivos">Aditivos</a>
-            </li>
+
             <li>
                 <a href="#anexos">Anexos</a>
             </li>
@@ -258,7 +250,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for opcao in contrato.itemcontrato_set.all %}
+                                        {% for opcao in ata.itemataregistropreco_set.all %}
                                             <tr>
                                                 <td>{{ opcao.item }}</td>
                                                 <td>{{ opcao.item.material|truncatechars:500 }}</td>
@@ -280,40 +272,11 @@
             </table>
 
         </div>
-        <div id="aditivos" class="tab-pane">
 
-        {% if contrato.aditivo_set.exists %}
-            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                    <thead>
-
-                        <tr>
-                            <th>Número</th>
-                            <th>Data Início</th>
-                            <th>Data Fim</th>
-
-
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in contrato.aditivo_set.all %}
-                            <tr>
-                                <td>{{ item.ordem }}</td>
-                                <td>{{ item.data_inicio }}</td>
-                                <td>{{ item.data_fim }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-        {% else %}
-
-            <p class="alert alert-warning">Nenhum aditivo cadastrado.</p>
-        {% endif %}
-        </div>
         <div id="anexos" class="tab-pane">
 
             <div class="pull-right">
-                <a class="btn btn-primary" href="/base/cadastrar_anexo_contrato/{{contrato.id}}/">Cadastrar Anexo</a>
+                <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
 
             </div>
             <br><br>
@@ -335,16 +298,16 @@
                     <tbody>
 
                         <tr>
-                            <td>Modelo de Contrato</td>
+                            <td>Modelo de Ata de Registro de Preço</td>
                             <td> - </td>
-                            <td><a href="">Ver arquivo</a></td>
+                            <td><a href="/base/relatorio_ata_registro_preco/{{ ata.pregao.pk }}/">Ver arquivo</a></td>
                             <td><font color="red">Não</font></td>
                             <td>Gerado Automaticamente Pelo Sistema</td>
                             <td>-</td>
                             <td>-</td>
                         </tr>
 
-                        {%  for item in contrato.anexocontrato_set.all %}
+                        {%  for item in ata.anexoataregistropreco_set.all %}
 
                             <tr>
                                 <td>{{ item.nome }}</td>
@@ -361,8 +324,8 @@
                                 <td>{{ item.cadastrado_em }}</td>
                                 <td>
                                     {% if item.cadastrado_por == request.user %}
-                                        <a href="/base/editar_anexo_contrato/{{ item.id}}/" class="btn btn-sm btn-info">Editar</a>
-                                        <a href="/base/apagar_anexo_contrato/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
+                                        <a href="/base/editar_anexo_arp/{{ item.id}}/" class="btn btn-sm btn-info">Editar</a>
+                                        <a href="/base/apagar_anexo_arp/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
                                     {% endif %}
                                 </td>
                             </tr>

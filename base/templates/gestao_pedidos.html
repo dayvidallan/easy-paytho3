@@ -190,19 +190,19 @@
     <div class="tab-content">
         <div id="contratos" class="tab-pane in active">
             {%  if contratos.exists %}
-                {%  for solicitacao in contratos %}
-                    {% if solicitacao.eh_lote %}
+                {%  for contrato in contratos %}
+                    {% if contrato.solicitacao.eh_lote %}
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th><a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">Contrato - {{ solicitacao.get_pregao.modalidade }}: {{ solicitacao.get_pregao.num_pregao }} {% if solicitacao.processo %}- Processo: {{solicitacao.processo}}{% endif %}</a></th>
+                                    <th><a data-toggle="collapse" data-target="#demo{{contrato.id}}">{{ contrato }}</a></th>
                                 </tr>
                             </thead>
                             <tbody>
 
                                 <tr>
                                     <td>
-                                        <div id="demo{{solicitacao.id}}" class="collapse in">
+                                        <div id="demo{{contrato.id}}" class="collapse in">
                                             {% for lote in solicitacao.get_lotes %}
 
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
@@ -252,18 +252,18 @@
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th><a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">Contrato - {{ solicitacao.get_pregao.modalidade }}: {{ solicitacao.get_pregao.num_pregao }} {% if solicitacao.processo %}- Processo: {{solicitacao.processo}}{% endif %}</a></th>
+                                    <th><a data-toggle="collapse" data-target="#demo{{contrato.id}}">{{ contrato }}</a></th>
                                 </tr>
                             </thead>
                             <tbody>
 
                                 <tr>
                                     <td>
-                                        <div id="demo{{solicitacao.id}}" class="collapse">
+                                        <div id="demo{{contrato.id}}" class="collapse">
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <td colspan="6" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></td>
+                                                        <td colspan="6" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a></td>
 
                                                     </tr>
                                                     <tr>
@@ -278,14 +278,14 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for resultado in solicitacao.get_resultado %}
+                                                    {% for opcao in contrato.itemcontrato_set.all %}
                                                         <tr>
-                                                            <td>{{ resultado.item }}</td>
-                                                            <td>{{ resultado.item.material }}</td>
-                                                            <td>{{ resultado.marca|default_if_none:"-" }}</td>
-                                                            <td>{{ resultado.participante }}</td>
-                                                            <td>{{ resultado.valor }}</td>
-                                                            <td>{{ resultado.item.get_quantidade_disponivel }}</td>
+                                                            <td>{{ opcao.item }}</td>
+                                                            <td>{{ opcao.item.material }}</td>
+                                                            <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                            <td>{{ opcao.participante }}</td>
+                                                            <td>{{ opcao.valor }}</td>
+                                                            <td>{{ opcao.get_quantidade_disponivel }}</td>
 
 
                                                         </tr>
@@ -308,19 +308,19 @@
 
 
         {%  if atas.exists %}
-            {%  for solicitacao in atas %}
-                {% if solicitacao.eh_lote %}
+            {%  for ata in atas %}
+                {% if ata.solicitacao.eh_lote %}
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
-                                <th><a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">{{ solicitacao.get_pregao.modalidade }}: {{ solicitacao.get_pregao.num_pregao }} {% if solicitacao.processo %}- Processo: {{solicitacao.processo}}{% endif %}</a></th>
+                                <th><a data-toggle="collapse" data-target="#demo{{ata.id}}">{{ ata }}</a></th>
                             </tr>
                         </thead>
                         <tbody>
 
                             <tr>
                                 <td>
-                                    <div id="demo{{solicitacao.id}}" class="collapse in">
+                                    <div id="demo{{ata.id}}" class="collapse in">
                                         <div class="pull-right">
 
                                         </div>
@@ -330,7 +330,7 @@
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <td colspan="6" align="right"><a class="btn btn-success"  href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a></td>
+                                                            <td colspan="6" align="right"><a class="btn btn-success"  href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a></td>
                                                         </tr>
                                                         <tr>
                                                             <th colspan="6">{{lote}}</th>
@@ -378,19 +378,19 @@
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
-                                <th><a data-toggle="collapse" data-target="#demo{{solicitacao.id}}">{{ solicitacao.get_pregao.modalidade }}: {{ solicitacao.get_pregao.num_pregao }} {% if solicitacao.processo %}- Processo: {{solicitacao.processo}} {% endif %}</a></th>
+                                <th><a data-toggle="collapse" data-target="#demo{{ata.id}}">{{ ata }}</a></th>
                             </tr>
                         </thead>
                         <tbody>
 
                             <tr>
                                 <td>
-                                    <div id="demo{{solicitacao.id}}" class="collapse">
+                                    <div id="demo{{ata.id}}" class="collapse">
                                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                             <thead>
                                                 <tr>
                                                     <td colspan="6" align="right">
-                                                        <a class="btn btn-success" href="/base/novo_pedido_compra/{{ solicitacao.pk }}/">Novo Pedido</a>
+                                                        <a class="btn btn-success" href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
                                                         <a class="btn btn-default" href="/base/documentos_atas/{{ solicitacao.pk }}/">Documentos</a>
                                                     </td>
 
@@ -407,18 +407,18 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for resultado in solicitacao.get_resultado %}
-                                                    <tr>
-                                                        <td>{{ resultado.item }}</td>
-                                                        <td>{{ resultado.item.material }}</td>
-                                                        <td>{{ resultado.marca|default_if_none:"-" }}</td>
-                                                        <td>{{ resultado.participante }}</td>
-                                                        <td>{{ resultado.valor }}</td>
-                                                        <td>{{ resultado.item.get_quantidade_disponivel }}</td>
+                                                {% for opcao in ata.itemataregistropreco_set.all %}
+                                                        <tr>
+                                                            <td>{{ opcao.item }}</td>
+                                                            <td>{{ opcao.item.material }}</td>
+                                                            <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                            <td>{{ opcao.participante }}</td>
+                                                            <td>{{ opcao.valor }}</td>
+                                                            <td>{{ opcao.get_quantidade_disponivel }}</td>
 
 
-                                                    </tr>
-                                                {% endfor %}
+                                                        </tr>
+                                                    {% endfor %}
                                             </tbody>
                                         </table>
                                     </div>

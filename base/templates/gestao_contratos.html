@@ -208,8 +208,8 @@
                     {% for item in contratos %}
                         <tr>
                             <td>{{ item.numero }}</td>
-                            <td>{{ item.pregao.solicitacao.processo|default_if_none:"-" }}</td>
-                            <td>{{ item.pregao.solicitacao.objeto }}</td>
+                            <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
+                            <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
                             <td>{{ item.get_carater_continuado }}</td>
@@ -218,7 +218,7 @@
                             <td>
                                 <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info">Visualizar</a>
                                 {% if request.user.pessoafisica.setor.secretaria == item.solicitacao.setor_origem.secretaria %}
-                                    <a href="/admin/base/contrato/{{item.id}}/change/" class="btn btn-info">Editar</a>
+                                    <a href="/admin/base/contrato/{{item.id}}/change/" class="btn btn-default">Editar</a>
                                 {% endif %}
                             </td>
 
@@ -254,14 +254,14 @@
                     {% for item in atas %}
                         <tr>
                             <td>{{ item.numero }}</td>
-                            <td>{{ item.pregao.solicitacao.processo|default_if_none:"-" }}</td>
-                            <td>{{ item.pregao.solicitacao.objeto }}</td>
+                            <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
+                            <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
-                            <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
+                            <td>{{ item.data_fim|default_if_none:"-" }}</td>
                             <td>R$ {{ item.valor }}</td>
                             <td>{{ item.get_situacao }}</td>
                             <td>
-                                <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info">Visualizar</a>
+                                <a href="/base/visualizar_ata_registro_preco/{{item.id}}/" class="btn btn-info">Visualizar</a>
                                 {% if request.user.pessoafisica.setor.secretaria == item.solicitacao.setor_origem.secretaria %}
                                     <a href="/admin/base/contrato/{{item.id}}/change/" class="btn btn-default">Editar</a>
                                 {% endif %}

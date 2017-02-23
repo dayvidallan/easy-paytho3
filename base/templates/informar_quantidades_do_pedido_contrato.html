@@ -1,0 +1,151 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{nova_solicitacao.id}}/">{{ nova_solicitacao}}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?vencedor=" + escape( $('#'+campo.id).val());
+
+        }
+
+
+	</script>
+{% endblock %}
+
+{% block content %}
+         <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="miolo">
+                        <div class="row-fluid">
+                            <div class="col-xs-4">
+
+                                {{ form|bootstrap }}
+                            </div>
+
+                            <div class="col-xs-6">
+                                <br>
+                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+
+                            </div>
+                        </div>
+                     </div>
+             </div>
+        </form>
+
+
+            {% if solicitacao.eh_lote %}
+                {% for lote in resultados %}
+                    <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" id="fornecedor" name="fornecedor" value="{{fornecedor.id}}">
+                        <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    {% if buscou %}
+                                        <th colspan="7">{{lote}}</th>
+                                    {% else %}
+                                        <th colspan="6">{{lote}}</th>
+                                    {% endif %}
+                                </tr>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Material</th>
+                                    <th>Marca</th>
+                                    <th>Empresa</th>
+                                    <th>Valor</th>
+                                    <th>Quantidade Disponível</th>
+                                    {% if buscou %}
+                                        <th>Quantidade Solicitada</th>
+                                    {% endif %}
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for resultado in lote.get_itens_do_lote %}
+                                    <tr>
+                                        <td>{{ resultado }}</td>
+                                        <td>{{ resultado.material|truncatechars:500 }}</td>
+                                        <td>{{ resultado.get_marca_item_lote|default_if_none:"-" }}</td>
+                                        <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
+                                        <td>{{ resultado.get_valor_item_lote }}</td>
+                                        <td>{{ resultado.get_quantidade_disponivel }}</td>
+                                        {% if buscou %}
+                                            <td><input name="quantidades" value="0">
+                                                <input name="id" type='hidden' value="{{resultado.id}}">
+                                            </td>
+                                        {% endif %}
+
+
+                                    </tr>
+                                {% endfor%}
+                                {% if buscou %}
+                                    <tr>
+                                       <td  colspan="6">&nbsp;</td>
+                                       <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </form>
+                {% endfor %}
+
+
+            {% else %}
+                <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="fornecedor" name="fornecedor" value="{{fornecedor.id}}">
+                    <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Material</th>
+                                <th>Marca</th>
+                                <th>Empresa</th>
+                                <th>Valor</th>
+                                <th>Quantidade Disponível</th>
+                                {% if buscou %}
+                                    <th>Quantidade Solicitada</th>
+                                {% endif %}
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for resultado in resultados %}
+                                <tr>
+                                    <td>{{ resultado.item }}</td>
+                                    <td>{{ resultado.item.material|truncatechars:500 }}</td>
+                                    <td>{{ resultado.marca }}</td>
+                                    <td>{{ resultado.participante }}</td>
+                                    <td>{{ resultado.valor }}</td>
+                                    <td>{{ resultado.get_quantidade_disponivel }}</td>
+                                    {% if buscou %}
+                                        <td><input name="quantidades" value="0"></td>
+                                        <input name="id" type='hidden' value="{{resultado.id}}">
+                                    {% endif %}
+
+                                </tr>
+                            {% endfor %}
+                            {% if buscou %}
+                                <tr>
+                                   <td  colspan="6">&nbsp;</td>
+                                   <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </form>
+            {% endif %}
+
+
+
+{% endblock %}

@@ -549,8 +549,15 @@ def itens_solicitacao(request, solicitacao_id):
     title=u'%s' % (solicitacao)
     setor_do_usuario = request.user.pessoafisica.setor
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
-    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
-    eh_lote = pedidos.filter(proposta__isnull=False).exists()
+    eh_lote = False
+    contrato = False
+    if PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
+        contrato = True
+    elif PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
+
+    eh_lote = solicitacao.eh_lote()
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria)
     ja_aprovou = ja_registrou_preco.filter(aprovado=True).exists()
     recebida_no_setor = False
@@ -1280,23 +1287,76 @@ def cadastrar_anexo_contrato(request, contrato_id):
 
     return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
 
+
+
 @login_required()
-def cadastrar_contrato(request, solicitacao_id):
+def cadastrar_ata_registro_preco(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
 
-    if not pregao.eh_ata_registro_preco:
-        title=u'Cadastrar Contrato'
-    else:
-        title=u'Cadastrar Ata de Registro de Preço'
+    title=u'Cadastrar Ata de Registro de Preço'
 
-    form = ContratoForm(request.POST or None, request.FILES or None)
+    form = AtaRegistroPrecoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         o = form.save(False)
         o.solicitacao = solicitacao
         o.pregao = pregao
         o.valor = pregao.get_valor_total()
         o.save()
+
+        for resultado in solicitacao.get_resultado():
+            novo_item = ItemAtaRegistroPreco()
+            novo_item.ata = o
+            novo_item.item = resultado.item
+            novo_item.marca = resultado.marca
+            novo_item.participante = resultado.participante
+            novo_item.valor = resultado.valor
+            novo_item.quantidade = resultado.item.quantidade
+            novo_item.save()
+        messages.success(request, u'Ata de Registro de Preço cadastrada com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % o.id)
+    return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_contrato(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    pregao = solicitacao.get_pregao()
+
+
+    title=u'Cadastrar Contrato'
+
+
+    form = ContratoForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.solicitacao = solicitacao
+        if pregao:
+            o.pregao = pregao
+            o.valor = pregao.get_valor_total()
+        o.save()
+
+        if pregao:
+            for resultado in solicitacao.get_resultado():
+                novo_item = ItemContrato()
+                novo_item.contrato = o
+                novo_item.item = resultado.item
+                novo_item.marca = resultado.marca
+                novo_item.participante = resultado.participante
+                novo_item.valor = resultado.valor
+                novo_item.quantidade = resultado.item.quantidade
+                novo_item.save()
+        else:
+            for resultado in PedidoContrato.objects.filter(solicitacao=solicitacao):
+                novo_item = ItemContrato()
+                novo_item.contrato = o
+                novo_item.item = resultado.item.item
+                novo_item.marca = resultado.item.marca
+                novo_item.participante = resultado.item.participante
+                novo_item.valor = resultado.item.valor
+                novo_item.quantidade = resultado.quantidade
+                novo_item.save()
+
+
         messages.success(request, u'Cadastrado realizado com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
 
@@ -2859,12 +2919,10 @@ def gestao_pedidos(request):
     setor = request.user.pessoafisica.setor
     title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
     meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
-    pregoes_finalizados = Pregao.objects.filter(solicitacao__in=meus_pedidos)
-    atas_finalizadas = pregoes_finalizados.filter(eh_ata_registro_preco=True)
-    contratos_finalizados = pregoes_finalizados.filter(eh_ata_registro_preco=False)
-    atas = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=atas_finalizadas.values_list('solicitacao', flat=True))
-    contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
 
+    atas = AtaRegistroPreco.objects.filter(solicitacao__liberada_compra=True, solicitacao__in=meus_pedidos)
+    #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
+    contratos = Contrato.objects.filter(solicitacao__liberada_compra=True, solicitacao__in=meus_pedidos)
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
 
 @login_required()
@@ -2874,8 +2932,8 @@ def gestao_contratos(request):
     solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
     atas_finalizadas = Pregao.objects.filter(eh_ata_registro_preco=True, solicitacao__in=solicitacoes.values_list('id', flat=True))
     contratos_finalizados = Pregao.objects.filter(eh_ata_registro_preco=False, solicitacao__in=solicitacoes.values_list('id', flat=True))
-    atas = Contrato.objects.filter(solicitacao__in=atas_finalizadas.values_list('solicitacao', flat=True))
-    contratos = Contrato.objects.filter(solicitacao__in=contratos_finalizados.values_list('solicitacao', flat=True))
+    atas = AtaRegistroPreco.objects.all()
+    contratos = Contrato.objects.all()
 
     return render(request, 'gestao_contratos.html', locals(), RequestContext(request))
 
@@ -2935,6 +2993,255 @@ def novo_pedido_compra(request, solicitacao_id):
 
         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))
     return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
+
+
+
+@login_required()
+def novo_pedido_compra_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+    title=u'Novo Pedido de Compra - %s' % contrato
+    form = NovoPedidoCompraForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.tipo = SolicitacaoLicitacao.COMPRA
+        o.setor_origem = request.user.pessoafisica.setor
+        o.setor_atual = request.user.pessoafisica.setor
+        o.data_cadastro = datetime.datetime.now()
+        o.cadastrado_por = request.user
+        o.save()
+
+        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, o.id))
+    return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
+
+@login_required()
+def novo_pedido_compra_arp(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    title=u'Novo Pedido de Compra - %s' % ata
+    form = NovoPedidoCompraForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.tipo = SolicitacaoLicitacao.COMPRA
+        o.setor_origem = request.user.pessoafisica.setor
+        o.setor_atual = request.user.pessoafisica.setor
+        o.data_cadastro = datetime.datetime.now()
+        o.cadastrado_por = request.user
+        o.save()
+
+        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, o.id))
+    return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
+
+
+
+
+@login_required()
+def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
+    setor = request.user.pessoafisica.setor
+    solicitacao_atual = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    itens_ata = ata.itemataregistropreco_set.all()
+    solicitacao = ata.solicitacao
+    title=u'Pedido de Compra - %s' % ata
+    participantes = ParticipantePregao.objects.filter(id__in=itens_ata.values_list('participante', flat=True))
+    form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
+    eh_lote = solicitacao.eh_lote()
+    if eh_lote:
+        resultados = solicitacao.get_lotes()
+    else:
+        resultados = itens_ata
+    buscou = False
+
+    if form.is_valid():
+        buscou = True
+        if eh_lote:
+            ids = list()
+            for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
+                registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+                if registro.participante == form.cleaned_data.get('vencedor'):
+                    ids.append(registro.item.id)
+            resultados = resultados.filter(id__in=ids)
+        else:
+            resultados = itens_ata.filter(participante=form.cleaned_data.get('vencedor'))
+
+
+        fornecedor = form.cleaned_data.get('vencedor')
+
+
+        if 'quantidades' in request.POST:
+
+            fornecedor = request.POST.get('fornecedor')
+            participante = ParticipantePregao.objects.get(id=fornecedor)
+
+            if eh_lote and '0' in request.POST.getlist('quantidades'):
+                messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
+                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
+
+
+            if eh_lote:
+                ids = list()
+                resultados = solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False)
+                for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
+                    registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+                    if registro.participante == participante:
+                        for id_do_item in registro.item.get_itens_do_lote():
+                            ids.append(id_do_item.id)
+                resultados = resultados.filter(id__in=ids)
+
+
+                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    valor_pedido = int(valor)
+                    if valor_pedido > 0:
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
+                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
+            else:
+                resultados = itens_ata.filter(participante=participante)
+                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    valor_pedido = int(valor)
+
+                    if valor_pedido > 0:
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
+
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                valor_pedido = int(valor)
+                if valor_pedido > 0:
+                    novo_pedido = PedidoAtaRegistroPreco()
+                    novo_pedido.ata = ata
+                    novo_pedido.solicitacao = solicitacao_atual
+                    novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+
+                    novo_pedido.quantidade = valor_pedido
+                    novo_pedido.setor = setor
+                    novo_pedido.pedido_por = request.user
+                    novo_pedido.pedido_em = datetime.datetime.now()
+                    novo_pedido.save()
+
+            messages.success(request, u'Pedido cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_atual.id)
+    return render(request, 'informar_quantidades_do_pedido_contrato.html', locals(), RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required()
+def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id):
+    setor = request.user.pessoafisica.setor
+    solicitacao_atual = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+    itens_contrato = contrato.itemcontrato_set.all()
+    solicitacao = contrato.solicitacao
+    title=u'Pedido de Compra - %s' % contrato
+    participantes = ParticipantePregao.objects.filter(id__in=itens_contrato.values_list('participante', flat=True))
+    form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
+    eh_lote = solicitacao.eh_lote()
+    if eh_lote:
+        resultados = solicitacao.get_lotes()
+    else:
+        resultados = itens_contrato
+    buscou = False
+
+    if form.is_valid():
+        buscou = True
+        if eh_lote:
+            ids = list()
+            for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
+                registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+                if registro.participante == form.cleaned_data.get('vencedor'):
+                    ids.append(registro.item.id)
+            resultados = resultados.filter(id__in=ids)
+        else:
+            resultados = itens_contrato.filter(participante=form.cleaned_data.get('vencedor'))
+
+
+        fornecedor = form.cleaned_data.get('vencedor')
+
+
+        if 'quantidades' in request.POST:
+
+            fornecedor = request.POST.get('fornecedor')
+            participante = ParticipantePregao.objects.get(id=fornecedor)
+
+            if eh_lote and '0' in request.POST.getlist('quantidades'):
+                messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
+                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+
+
+            if eh_lote:
+                ids = list()
+                resultados = solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False)
+                for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
+                    registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+                    if registro.participante == participante:
+                        for id_do_item in registro.item.get_itens_do_lote():
+                            ids.append(id_do_item.id)
+                resultados = resultados.filter(id__in=ids)
+
+
+                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    valor_pedido = int(valor)
+                    if valor_pedido > 0:
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
+                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+            else:
+                resultados = itens_contrato.filter(participante=participante)
+                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    valor_pedido = int(valor)
+
+                    if valor_pedido > 0:
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                valor_pedido = int(valor)
+                if valor_pedido > 0:
+                    novo_pedido = PedidoContrato()
+                    novo_pedido.contrato = contrato
+                    novo_pedido.solicitacao = solicitacao_atual
+                    novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+
+                    novo_pedido.quantidade = valor_pedido
+                    novo_pedido.setor = setor
+                    novo_pedido.pedido_por = request.user
+                    novo_pedido.pedido_em = datetime.datetime.now()
+                    novo_pedido.save()
+
+            messages.success(request, u'Pedido cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_atual.id)
+    return render(request, 'informar_quantidades_do_pedido_contrato.html', locals(), RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @login_required()
 def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitacao):
@@ -3048,6 +3355,55 @@ def editar_anexo_contrato(request, item_id):
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
 
     return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+
+
+
+
+@login_required()
+def cadastrar_anexo_arp(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    title=u'Cadastrar Anexo - %s' % ata
+    form = AnexoARPForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.ata = ata
+        o.cadastrado_por = request.user
+        o.cadastrado_em = datetime.datetime.now()
+        o.save()
+        messages.success(request, u'Anexo cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/#anexos' % ata.id)
+
+    return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+
+@login_required()
+def apagar_anexo_arp(request, item_id):
+    anexo = get_object_or_404(AnexoAtaRegistroPreco, pk=item_id)
+    ata = anexo.ata
+    anexo.delete()
+    messages.success(request, u'Anexo removido com sucesso.')
+    return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/#anexos' % ata.id)
+
+@login_required()
+def editar_anexo_arp(request, item_id):
+    anexo = get_object_or_404(AnexoAtaRegistroPreco, pk=item_id)
+    ata = anexo.ata
+    title=u'Editar Anexo - %s' % ata
+    form = AnexoContratoForm(request.POST or None, request.FILES or None, instance=anexo)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Anexo cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/#anexos' % ata.id)
+
+    return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+
+
+
+
+
+
+
+
+
 
 
 @login_required()
@@ -3388,9 +3744,15 @@ def termo_homologacao(request, pregao_id):
 def visualizar_contrato(request, solicitacao_id):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
     title = u'Contrato %s' % contrato.numero
-    eh_ata = contrato.pregao.eh_ata_registro_preco
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
+
+@login_required()
+def visualizar_ata_registro_preco(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    title = u'Ata de Registro de Preço N° %s' % ata.numero
+
+    return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
 @login_required()
 def liberar_solicitacao_contrato(request, solicitacao_id, origem):
@@ -3405,6 +3767,20 @@ def liberar_solicitacao_contrato(request, solicitacao_id, origem):
     contrato.solicitacao.save()
     contrato.save()
     return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
+
+@login_required()
+def liberar_solicitacao_ata(request, ata_id, origem):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+
+    if origem == u'1':
+        ata.solicitacao.liberada_compra = True
+        ata.suspenso = False
+    elif origem == u'2':
+        ata.solicitacao.liberada_compra = False
+        ata.suspenso = True
+    ata.solicitacao.save()
+    ata.save()
+    return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
 
 @login_required()
 def definir_vigencia_contrato(request, contrato_id):

@@ -43,11 +43,11 @@
              {% if perms.base.pode_abrir_processo and  solicitacao.processo %}
                 <a href="/base/ver_processo/{{solicitacao.processo.id}}/" class="btn btn-info">Capa do Processo</a>
              {% endif %}
-             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.contrato_set.exists and solicitacao.get_pregao  and solicitacao.get_pregao.data_homologacao %}
+             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and  solicitacao.get_pregao  and solicitacao.get_pregao.data_homologacao %}
                 {% if solicitacao.get_pregao.eh_ata_registro_preco %}
-                    <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Ata de Registro de Preço</a>
+                    <a href="/base/cadastrar_ata_registro_preco/{{solicitacao.id}}/" class="btn btn-success">Criar Ata de Registro de Preço</a>
 
-                {% else %}
+                {% elif not solicitacao.contrato_set.exists %}
                     <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
                 {% endif %}
              {% endif %}
@@ -261,6 +261,9 @@
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
                 <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
             {% endif %}
+            {% if perms.base.pode_gerenciar_contrato and contrato and recebida_no_setor and not solicitacao.contrato_set.exists %}
+                <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
+             {% endif %}
 
             <a class="btn btn-default" href="/base/lista_documentos/{{ solicitacao.pk }}/">Documentos</a>
         </div>
@@ -321,11 +324,11 @@
 
                         {% else %}
                             <tr>
-                                <td>{{ pedido.resultado.item }}</td>
-                                <td>{{ pedido.resultado.item.material }}</td>
-                                <td>{{ pedido.resultado.marca }}</td>
-                                <td>{{ pedido.resultado.participante }}</td>
-                                <td>{{ pedido.resultado.valor }}</td>
+                                <td>{{ pedido.item.item }}</td>
+                                <td>{{ pedido.item.item.material }}</td>
+                                <td>{{ pedido.item.marca }}</td>
+                                <td>{{ pedido.item.participante }}</td>
+                                <td>{{ pedido.item.valor }}</td>
                                 <td>{{ pedido.quantidade }}</td>
 
                             </tr>
