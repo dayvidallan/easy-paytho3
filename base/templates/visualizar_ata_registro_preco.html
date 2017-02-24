@@ -238,7 +238,7 @@
    </div>
    <div class="tab-content">
         <div id="itens" class="tab-pane in active">
-            {% if ata.adesao and request.user == ata.solicitacao.cadastrado_por and solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.librada_compra %}
+            {% if ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra %}
                 <div class="pull-right">
                     <a class="btn btn-primary" href="/base/adicionar_item_adesao_arp/{{ata.id}}/">Adicionar Item</a>
 
@@ -361,7 +361,7 @@
                         <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
 
                     </div>
-                {% elif ata.adesao and request.user == ata.solicitacao.cadastrado_por and solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.librada_compra %}
+                {% elif ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra %}
                     <div class="pull-right">
                         <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
 
