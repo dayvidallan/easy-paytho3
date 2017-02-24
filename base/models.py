@@ -396,6 +396,20 @@ class SolicitacaoLicitacao(models.Model):
             return Contrato.objects.filter(solicitacao=self)[0]
         return False
 
+    def get_valor_total(self):
+        total = 0
+        if PedidoAtaRegistroPreco.objects.filter(solicitacao=self).exists():
+            for pedido in PedidoAtaRegistroPreco.objects.filter(solicitacao=self):
+                total += pedido.item.valor * pedido.quantidade
+            return total
+        else:
+            for pedido in PedidoContrato.objects.filter(solicitacao=self):
+                total += pedido.item.valor * pedido.quantidade
+            return total
+
+        return total
+
+
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -637,7 +651,8 @@ class ItemSolicitacaoLicitacao(models.Model):
 
             propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, desistencia=False, desclassificado=False)
             for proposta in propostas:
-                if proposta.participante.me_epp and proposta.valor <= limite_lance:
+                
+                if proposta.participante.me_epp and proposta.valor <= limite_lance and (LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count()):
                     return proposta.participante
         return False
 
@@ -1875,7 +1890,6 @@ class ItemAtaRegistroPreco(models.Model):
                 return self.quantidade
 
         else:
-
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
                 pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
@@ -1883,6 +1897,7 @@ class ItemAtaRegistroPreco(models.Model):
                     return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
                 else:
                     return valor_total
+
         return 0
 
 

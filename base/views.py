@@ -1345,6 +1345,8 @@ def cadastrar_contrato(request, solicitacao_id):
         if pregao:
             o.pregao = pregao
             o.valor = pregao.get_valor_total()
+        else:
+            o.valor = solicitacao.get_valor_total()
         o.save()
 
         if pregao:
@@ -2181,9 +2183,9 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
 
 
-    contrato = Contrato.objects.get(pregao=pregao)
+    ata = AtaRegistroPreco.objects.get(pregao=pregao)
     document.add_paragraph()
-    p = document.add_paragraph(u'ATA DE REGISTRO DE PREÇOS – %s' % contrato.numero)
+    p = document.add_paragraph(u'ATA DE REGISTRO DE PREÇOS – %s' % ata.numero)
 
     titulo_pregao = u'sdasd'
     texto = u'''
@@ -3447,8 +3449,12 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
 
-    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao)
-    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio.id == CriterioPregao.LOTE
+    if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao)
+    else:
+        pedidos = PedidoContrato.objects.filter(contrato__solicitacao=solicitacao)
+
+    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.item.solicitacao)[0].criterio.id == CriterioPregao.LOTE
 
     tabela = {}
 
@@ -3461,19 +3467,19 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
             chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
             tabela[chave]['pedidos'].append(pedido)
             valor = tabela[chave]['total']
-            valor = valor + (pedido.item.get_valor_item_lote()*pedido.quantidade)
+            valor = valor + (pedido.item.valor*pedido.quantidade)
             tabela[chave]['total'] = valor
 
     else:
         for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+            chave = u'%s' % pedido.item.item.get_vencedor().participante.fornecedor
             tabela[chave] = dict(pedidos = list(), total = 0)
 
         for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+            chave = u'%s' % pedido.item.item.get_vencedor().participante.fornecedor
             tabela[chave]['pedidos'].append(pedido)
             valor = tabela[chave]['total']
-            valor = valor + (pedido.resultado.valor*pedido.quantidade)
+            valor = valor + (pedido.item.valor*pedido.quantidade)
             tabela[chave]['total'] = valor
 
 

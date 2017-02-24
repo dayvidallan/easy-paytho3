@@ -72,19 +72,19 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    <td>{{ pedido.item }}</td>
-                                    <td>{{ pedido.item.material }}</td>
+                                    <td>{{ pedido.item.item }}</td>
+                                    <td>{{ pedido.item.item.material }}</td>
                                     {% if not eh_lote %}
-                                        <td>{{ pedido.resultado.marca}}</td>
-                                        <td>{{ pedido.item.unidade}}</td>
+                                        <td>{{ pedido.item.marca}}</td>
+                                        <td>{{ pedido.item.item.unidade}}</td>
                                     {% endif %}
 
                                     <td>{{ pedido.quantidade }}</td>
 
                                     {% if not eh_lote %}
-                                        <td>R$ {{ pedido.resultado.valor|format_money  }}</td>
+                                        <td>R$ {{ pedido.item.valor|format_money  }}</td>
                                     {% else %}
-                                        <td>R$ {{ pedido.item.get_valor_item_lote|format_money  }}</td>
+                                        <td>R$ {{ pedido.item.valor|format_money  }}</td>
                                     {% endif %}
                                     <td>R$ {{ pedido.get_total|format_money  }}</td>
 
