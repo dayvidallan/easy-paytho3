@@ -2951,6 +2951,8 @@ def gestao_pedidos(request):
     atas = AtaRegistroPreco.objects.filter(liberada_compra=True)
     #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
     contratos = Contrato.objects.filter(liberada_compra=True)
+
+    pode_editar = request.user.groups.filter(name=u'Gerente')
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
 
 @login_required()
@@ -4303,11 +4305,10 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
 
 
 @login_required()
-def documentos_atas(request, solicitacao_id):
-    ata = AtaRegistroPreco.objects.filter(solicitacao=solicitacao_id)
+def documentos_atas(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
 
-    if ata.exists():
-        ata = ata.latest('id')
+
     title= u'Documentos - %s' % ata
     return render(request, 'documentos_atas.html', locals(), RequestContext(request))
 
@@ -4879,6 +4880,15 @@ def adicionar_item_adesao_arp(request, ata_id):
         o.save()
         messages.success(request, u'Item da ata cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
+    return render(request, 'adicionar_item_adesao_arp.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_material_arp(request, ata_id):
+    title = u'Cadastrar Material'
+    form = MaterialConsumoForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Item da ata cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/adicionar_item_adesao_arp/%s/' % ata_id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
-
-

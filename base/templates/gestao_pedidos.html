@@ -195,7 +195,7 @@
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th><a data-toggle="collapse" data-target="#demoa{{contrato.id}}">{{ contrato }}</a></th>
+                                    <th><a data-toggle="collapse" data-target="#demoa{{contrato.id}}">{{ contrato }}</a> <a href="/base/visualizar_contrato/{{contrato.id}}/">(ver contrato)</a></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -252,7 +252,7 @@
                         <table class="table table-bordered table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th><a data-toggle="collapse" data-target="#demob{{contrato.id}}">{{ contrato }}</a></th>
+                                    <th><a data-toggle="collapse" data-target="#demob{{contrato.id}}">{{ contrato }}</a> <a href="/base/visualizar_contrato/{{contrato.id}}/">(ver contrato)</a></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -313,7 +313,7 @@
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
-                                <th><a data-toggle="collapse" data-target="#democ{{ata.id}}">{{ ata }}</a></th>
+                                <th><a data-toggle="collapse" data-target="#democ{{ata.id}}">{{ ata }}</a><a href="/base/visualizar_ata_registro_preco/{{ata.id}}/">(ver ata)</a></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -374,7 +374,7 @@
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
-                                <th><a data-toggle="collapse" data-target="#demod{{ata.id}}">{{ ata }}</a></th>
+                                <th><a data-toggle="collapse" data-target="#demod{{ata.id}}">{{ ata }}</a> <a href="/base/visualizar_ata_registro_preco/{{ata.id}}/">(ver ata)</a></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -387,7 +387,7 @@
                                                 <tr>
                                                     <td colspan="6" align="right">
                                                         <a class="btn btn-success" href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
-                                                        <a class="btn btn-default" href="/base/documentos_atas/{{ ata.solicitacao.pk }}/">Documentos</a>
+                                                        <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
                                                     </td>
 
                                                 </tr>
