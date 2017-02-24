@@ -569,7 +569,7 @@ def itens_solicitacao(request, solicitacao_id):
     elif solicitacao.setor_atual == setor_do_usuario:
         if itens.exists() and solicitacao.tipo == SolicitacaoLicitacao.LICITACAO:
             recebida_no_setor = True
-        elif solicitacao.tipo == SolicitacaoLicitacao.COMPRA:
+        elif solicitacao.tipo == SolicitacaoLicitacao.COMPRA or solicitacao.tipo == SolicitacaoLicitacao.ADESAO_ARP:
             recebida_no_setor = True
 
     return render(request, 'itens_solicitacao.html', locals(), RequestContext(request))
@@ -4860,8 +4860,24 @@ def aderir_arp(request):
     title=u'Aderir à ARP'
     form = AderirARPForm(request.POST or None)
     if form.is_valid():
+
+
+        nova_solicitacao = SolicitacaoLicitacao()
+        nova_solicitacao.num_memorando = form.cleaned_data.get('num_memorando')
+        nova_solicitacao.objeto = form.cleaned_data.get('objeto')
+        nova_solicitacao.objetivo = form.cleaned_data.get('objetivo')
+        nova_solicitacao.justificativa = form.cleaned_data.get('justificativa')
+        nova_solicitacao.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_ADESAO_ARP
+        nova_solicitacao.tipo = SolicitacaoLicitacao.ADESAO_ARP
+        nova_solicitacao.setor_origem = request.user.pessoafisica.setor
+        nova_solicitacao.setor_atual = request.user.pessoafisica.setor
+        nova_solicitacao.data_cadastro = datetime.datetime.now()
+        nova_solicitacao.cadastrado_por = request.user
+        nova_solicitacao.save()
+
         o = form.save(False)
         o.adesao = True
+        o.solicitacao = nova_solicitacao
         o.secretaria = request.user.pessoafisica.setor.secretaria
         o.save()
         messages.success(request, u'Ata cadastrada com sucesso.')

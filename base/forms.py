@@ -707,9 +707,14 @@ class ComissaoLicitacaoForm(forms.ModelForm):
 
 
 class AderirARPForm(forms.ModelForm):
+    num_memorando = forms.CharField(label=u'Número do Memorando',required=True)
+    objetivo = forms.CharField(label=u'Objetivo', widget=forms.Textarea(), required=True)
+    justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea(), required=True)
+    numero = forms.CharField(label=u'Número da ARP',required=True)
+
     class Meta:
         model = AtaRegistroPreco
-        fields = ('numero', 'orgao_origem', 'num_oficio', 'objeto', 'data_inicio', 'data_fim',)
+        fields = ('num_memorando', 'objeto', 'objetivo', 'justificativa', 'numero', 'orgao_origem', 'num_oficio',  'data_inicio', 'data_fim',)
 
     def __init__(self, *args, **kwargs):
         super(AderirARPForm, self).__init__(*args, **kwargs)

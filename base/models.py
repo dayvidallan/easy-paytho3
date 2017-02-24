@@ -186,7 +186,7 @@ class SolicitacaoLicitacao(models.Model):
 
     COMPRA = u'Compra'
     LICITACAO = u'Licitação'
-
+    ADESAO_ARP = u'Adesão à ARP'
     TIPO_CHOICES = (
         (COMPRA, COMPRA),
         (LICITACAO, LICITACAO),
@@ -197,6 +197,7 @@ class SolicitacaoLicitacao(models.Model):
     TIPO_AQUISICAO_DISPENSA = u'Dispensa'
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
     TIPO_AQUISICAO_COMPRA = u'Compra'
+    TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
 
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
@@ -251,6 +252,8 @@ class SolicitacaoLicitacao(models.Model):
                     return int(ultimo.item) + 1
                 return u'1'
 
+    def get_ata(self):
+        return AtaRegistroPreco.objects.filter(solicitacao=self)[0]
 
     def eh_dispensa(self):
         return self.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]

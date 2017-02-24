@@ -177,14 +177,13 @@
    <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
         <thead>
             <tr>
+
+                <th>Nº da Solicitação</th>
+                <th>Nº Processo</th>
+                <th>Objeto</th>
                 {% if ata.adesao %}
                     <th>Nº do Ofício</th>
                     <th>Órgão de Origem</th>
-                    <th>Objeto</th>
-                {% else %}
-                    <th>Nº da Solicitação</th>
-                    <th>Nº Processo</th>
-                    <th>Objeto</th>
                 {% endif %}
                 <th>Início da Vigência</th>
                 <th>Término da Vigência</th>
@@ -195,14 +194,14 @@
         <tbody>
 
             <tr>
+
+                <td>{{ ata.solicitacao.num_memorando }}</td>
+                <td>{{ ata.solicitacao.processo|default_if_none:"-" }}</td>
+                <td>{{ ata.solicitacao.objeto }}</td>
                 {% if ata.adesao %}
                     <td>{{ ata.num_oficio }}</td>
                     <td>{{ ata.orgao_origem|default_if_none:"-" }}</td>
-                    <td>{{ ata.objeto }}</td>
-                {% else %}
-                    <td>{{ ata.solicitacao.num_memorando }}</td>
-                    <td>{{ ata.solicitacao.processo|default_if_none:"-" }}</td>
-                    <td>{{ ata.solicitacao.objeto }}</td>
+
                 {% endif %}
 
                 <td>{{ ata.data_inicio }}</td>
@@ -239,7 +238,7 @@
    </div>
    <div class="tab-content">
         <div id="itens" class="tab-pane in active">
-            {% if pode_gerenciar and ata.adesao %}
+            {% if ata.adesao and request.user == ata.solicitacao.cadastrado_por and solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.librada_compra %}
                 <div class="pull-right">
                     <a class="btn btn-primary" href="/base/adicionar_item_adesao_arp/{{ata.id}}/">Adicionar Item</a>
 
@@ -356,10 +355,18 @@
 
         <div id="anexos" class="tab-pane">
             {% if pode_gerenciar %}
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
 
-                </div>
+                {% if not ata.adesao %}
+                    <div class="pull-right">
+                        <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
+
+                    </div>
+                {% elif ata.adesao and request.user == ata.solicitacao.cadastrado_por and solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.librada_compra %}
+                    <div class="pull-right">
+                        <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
+
+                    </div>
+                {% endif %}
             {% endif %}
             <br><br>
 
