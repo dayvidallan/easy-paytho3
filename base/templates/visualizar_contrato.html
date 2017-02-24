@@ -166,11 +166,12 @@
 
 {% block content %}
     <div class="pull-right">
-        {% if not contrato.data_fim %}
-            <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
+        {% if pode_gerenciar %}
+            {% if not contrato.data_fim %}
+                <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
+            {% endif %}
+            <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
         {% endif %}
-        <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
-
 
 
 
@@ -202,11 +203,13 @@
 
                 <td>{{ contrato.get_situacao }}</td>
                 <td>
-                    {% if not contrato.solicitacao.liberada_compra %}
-                        <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success btn-sm">Liberar Solicitação</a>
-                    {% else %}
-                        <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger btn-sm">Suspender Solicitação</a>
+                    {% if pode_gerenciar %}
+                        {% if not contrato.liberada_compra %}
+                            <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success btn-sm">Liberar Solicitação</a>
+                        {% else %}
+                            <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger btn-sm">Suspender Solicitação</a>
 
+                        {% endif %}
                     {% endif %}
                 </td>
 
@@ -362,12 +365,13 @@
         {% endif %}
         </div>
         <div id="anexos" class="tab-pane">
+            {% if pode_gerenciar %}
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="/base/cadastrar_anexo_contrato/{{contrato.id}}/">Cadastrar Anexo</a>
 
-            <div class="pull-right">
-                <a class="btn btn-primary" href="/base/cadastrar_anexo_contrato/{{contrato.id}}/">Cadastrar Anexo</a>
-
-            </div>
-            <br><br>
+                </div>
+                <br><br>
+            {% endif %}
 
 
 

@@ -405,10 +405,19 @@
                                             <tbody>
                                                 {% for opcao in ata.itemataregistropreco_set.all %}
                                                         <tr>
-                                                            <td>{{ opcao.item }}</td>
-                                                            <td>{{ opcao.item.material }}</td>
+                                                            {% if ata.adesao %}
+                                                                <td>{{ forloop.counter }}</td>
+                                                                <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                            {% else %}
+                                                                <td>{{ opcao.item }}</td>
+                                                                <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                            {% endif %}
                                                             <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                            <td>{{ opcao.participante }}</td>
+                                                            {% if ata.adesao %}
+                                                                <td>{{ opcao.fornecedor }}</td>
+                                                            {% else %}
+                                                                <td>{{ opcao.participante }}</td>
+                                                            {% endif %}
                                                             <td>{{ opcao.valor }}</td>
                                                             <td>{{ opcao.get_quantidade_disponivel }}</td>
 

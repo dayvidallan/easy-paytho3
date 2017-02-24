@@ -573,6 +573,14 @@ class FiltraVencedorPedidoForm(forms.Form):
         self.fields['vencedor'].queryset = ParticipantePregao.objects.filter(id__in=self.participantes)
 
 
+
+class FiltraFornecedorPedidoForm(forms.Form):
+    vencedor = forms.ModelChoiceField(Fornecedor.objects, required=False, label=u'Fornecedor')
+    def __init__(self, *args, **kwargs):
+        self.participantes = kwargs.pop('participantes', None)
+        super(FiltraFornecedorPedidoForm, self).__init__(*args, **kwargs)
+        self.fields['vencedor'].queryset = Fornecedor.objects.filter(id__in=self.participantes)
+
 class ValorFinalItemLoteForm(forms.Form):
     valor = forms.DecimalField(label=u'Valor')
 
@@ -696,3 +704,22 @@ class ComissaoLicitacaoForm(forms.ModelForm):
     class Meta:
         model = ComissaoLicitacao
         fields = ('nome', )
+
+
+class AderirARPForm(forms.ModelForm):
+    class Meta:
+        model = AtaRegistroPreco
+        fields = ('numero', 'orgao_origem', 'num_oficio', 'objeto', 'data_inicio', 'data_fim',)
+
+    def __init__(self, *args, **kwargs):
+        super(AderirARPForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+
+
+class AdicionarItemAtaForm(forms.ModelForm):
+    material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
+    fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
+    class Meta:
+        model = ItemAtaRegistroPreco
+        fields = ('material', 'fornecedor', 'marca', 'quantidade', 'valor', )

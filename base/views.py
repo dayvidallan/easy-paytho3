@@ -2948,9 +2948,9 @@ def gestao_pedidos(request):
     title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
     meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
 
-    atas = AtaRegistroPreco.objects.filter(solicitacao__liberada_compra=True, solicitacao__in=meus_pedidos)
+    atas = AtaRegistroPreco.objects.filter(liberada_compra=True)
     #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
-    contratos = Contrato.objects.filter(solicitacao__liberada_compra=True, solicitacao__in=meus_pedidos)
+    contratos = Contrato.objects.filter(liberada_compra=True)
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
 
 @login_required()
@@ -3054,8 +3054,11 @@ def novo_pedido_compra_arp(request, ata_id):
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
         o.save()
+        if ata.adesao:
+            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_adesao_arp/%s/%s/' % (ata_id, o.id))
 
-        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, o.id))
+        else:
+            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, o.id))
     return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
 
 
@@ -3156,6 +3159,61 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
     return render(request, 'informar_quantidades_do_pedido_contrato.html', locals(), RequestContext(request))
 
 
+@login_required()
+def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
+    setor = request.user.pessoafisica.setor
+    solicitacao_atual = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    itens_ata = ata.itemataregistropreco_set.all()
+    solicitacao = ata.solicitacao
+    title=u'Pedido de Compra - %s' % ata
+    participantes = Fornecedor.objects.filter(id__in=itens_ata.values_list('fornecedor', flat=True))
+    form = FiltraFornecedorPedidoForm(request.POST or None, participantes=participantes)
+    resultados = itens_ata
+    buscou = False
+
+    if form.is_valid():
+        buscou = True
+        resultados = itens_ata.filter(fornecedor=form.cleaned_data.get('vencedor'))
+
+
+        fornecedor = form.cleaned_data.get('vencedor')
+
+
+        if 'quantidades' in request.POST:
+
+            fornecedor = request.POST.get('fornecedor')
+            participante = Fornecedor.objects.get(id=fornecedor)
+
+
+            resultados = itens_ata.filter(fornecedor=participante)
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                valor_pedido = int(valor)
+
+                if valor_pedido > 0:
+                    if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                        messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
+
+
+
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                valor_pedido = int(valor)
+                if valor_pedido > 0:
+                    novo_pedido = PedidoAtaRegistroPreco()
+                    novo_pedido.ata = ata
+                    novo_pedido.solicitacao = solicitacao_atual
+                    novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+
+                    novo_pedido.quantidade = valor_pedido
+                    novo_pedido.setor = setor
+                    novo_pedido.pedido_por = request.user
+                    novo_pedido.pedido_em = datetime.datetime.now()
+                    novo_pedido.save()
+
+            messages.success(request, u'Pedido cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_atual.id)
+    return render(request, 'informar_quantidades_do_pedido_contrato.html', locals(), RequestContext(request))
 
 
 
@@ -3774,6 +3832,7 @@ def termo_homologacao(request, pregao_id):
 def visualizar_contrato(request, solicitacao_id):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
     title = u'Contrato %s' % contrato.numero
+    pode_gerenciar = request.user.groups.filter(name='Gerente')
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
@@ -3781,6 +3840,11 @@ def visualizar_contrato(request, solicitacao_id):
 def visualizar_ata_registro_preco(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
     title = u'Ata de Registro de Preço N° %s' % ata.numero
+    if not ata.adesao:
+        pode_gerenciar = request.user.groups.filter(name='Gerente')
+    else:
+        pode_gerenciar = request.user.groups.filter(name='Gerente') or ata.secretaria == request.user.pessoafisica.setor.secretaria
+    eh_gerente = request.user.groups.filter(name='Gerente')
 
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
@@ -3789,12 +3853,12 @@ def liberar_solicitacao_contrato(request, solicitacao_id, origem):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
 
     if origem == u'1':
-        contrato.solicitacao.liberada_compra = True
+        contrato.liberada_compra = True
         contrato.suspenso = False
     elif origem == u'2':
-        contrato.solicitacao.liberada_compra = False
+        contrato.liberada_compra = False
         contrato.suspenso = True
-    contrato.solicitacao.save()
+
     contrato.save()
     return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
 
@@ -3803,12 +3867,11 @@ def liberar_solicitacao_ata(request, ata_id, origem):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
 
     if origem == u'1':
-        ata.solicitacao.liberada_compra = True
+        ata.liberada_compra = True
         ata.suspenso = False
     elif origem == u'2':
-        ata.solicitacao.liberada_compra = False
+        ata.liberada_compra = False
         ata.suspenso = True
-    ata.solicitacao.save()
     ata.save()
     return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
 
@@ -4782,9 +4845,40 @@ def editar_valor_final(request, item_id, pregao_id):
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
-
+@login_required()
 def gerar_resultado_item_pregao(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     item.gerar_resultado(apaga=True)
     messages.success(request, u'Resultado do item gerado com sucesso.')
     return HttpResponseRedirect(u'/base/lances_item/%s/' % item_id)
+
+
+
+@login_required()
+def aderir_arp(request):
+    title=u'Aderir à ARP'
+    form = AderirARPForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.adesao = True
+        o.secretaria = request.user.pessoafisica.setor.secretaria
+        o.save()
+        messages.success(request, u'Ata cadastrada com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % o.id)
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+@login_required()
+def adicionar_item_adesao_arp(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    title = u'Adicionar Item = %s' % ata
+    form = AdicionarItemAtaForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.ata = ata
+        o.save()
+        messages.success(request, u'Item da ata cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+

@@ -227,7 +227,7 @@ class SolicitacaoLicitacao(models.Model):
     arquivo_parecer_minuta = models.FileField(u'Arquivo com o Parecer', null=True, blank=True, upload_to=u'upload/minutas/')
     prazo_aberto = models.NullBooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
     processo = models.ForeignKey(Processo, null=True)
-    liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
+
 
     def __unicode__(self):
         return u'Solicitação N°: %s' % self.num_memorando
@@ -651,7 +651,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
             propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, desistencia=False, desclassificado=False)
             for proposta in propostas:
-                
+
                 if proposta.participante.me_epp and proposta.valor <= limite_lance and (LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count()):
                     return proposta.participante
         return False
@@ -1721,17 +1721,23 @@ class OrdemCompra(models.Model):
 
 class AtaRegistroPreco(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
-    valor = models.DecimalField(decimal_places=2,max_digits=12)
+    valor = models.DecimalField(decimal_places=2,max_digits=12, null=True)
     data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
     data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
-    pregao = models.ForeignKey(Pregao)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True)
+    pregao = models.ForeignKey(Pregao, null=True)
+    secretaria = models.ForeignKey(Secretaria, null=True)
+    adesao = models.BooleanField(u'Adesão', default=False)
     concluido = models.BooleanField(default=False)
     suspenso = models.BooleanField(default=False)
     cancelado = models.BooleanField(default=False)
     motivo_cancelamento = models.TextField(blank=True)
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
     usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+    orgao_origem = models.CharField(u'Órgão de Origem', null=True, max_length=100)
+    num_oficio = models.CharField(u'Número do Ofício', null=True, max_length=100)
+    objeto = models.TextField(u'Objeto', null=True)
+    liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
 
     def __unicode__(self):
         return 'ARP N° %s' % (self.numero)
@@ -1761,6 +1767,7 @@ class Contrato(models.Model):
     motivo_cancelamento = models.TextField(blank=True)
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
     usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+    liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
 
     def __unicode__(self):
         return 'Contrato N° %s' % (self.numero)
@@ -1869,11 +1876,13 @@ class PedidoContrato(models.Model):
 
 class ItemAtaRegistroPreco(models.Model):
     ata = models.ForeignKey(AtaRegistroPreco)
-    item = models.ForeignKey(ItemSolicitacaoLicitacao)
-    participante = models.ForeignKey(ParticipantePregao)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
+    participante = models.ForeignKey(ParticipantePregao, null=True)
+    fornecedor = models.ForeignKey(Fornecedor, null=True)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     quantidade = models.IntegerField(u'Quantidade')
+    material = models.ForeignKey('base.MaterialConsumo', null=True)
 
     class Meta:
         ordering = ['item__item']
@@ -1890,13 +1899,23 @@ class ItemAtaRegistroPreco(models.Model):
                 return self.quantidade
 
         else:
-            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+
+            if not self.ata.adesao:
+                if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                    valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+                    pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+                    if pedidos.exists():
+                        return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                    else:
+                        return valor_total
+            else:
+
                 pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
                 if pedidos.exists():
-                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                    return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
                 else:
-                    return valor_total
+                    return self.quantidade
+                
 
         return 0
 

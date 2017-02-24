@@ -122,10 +122,19 @@
                         <tbody>
                             {% for resultado in resultados %}
                                 <tr>
-                                    <td>{{ resultado.item }}</td>
-                                    <td>{{ resultado.item.material|truncatechars:500 }}</td>
+                                    {% if ata.adesao %}
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ resultado.material|truncatechars:500 }}</td>
+                                    {% else %}
+                                        <td>{{ resultado.item }}</td>
+                                        <td>{{ resultado.item.material|truncatechars:500 }}</td>
+                                    {% endif %}
                                     <td>{{ resultado.marca }}</td>
-                                    <td>{{ resultado.participante }}</td>
+                                    {% if ata.adesao %}
+                                        <td>{{ resultado.fornecedor }}</td>
+                                    {% else %}
+                                        <td>{{ resultado.participante }}</td>
+                                    {% endif %}
                                     <td>{{ resultado.valor }}</td>
                                     <td>{{ resultado.get_quantidade_disponivel }}</td>
                                     {% if buscou %}
