@@ -1013,73 +1013,7 @@ def planilha_propostas(request, solicitacao_id):
     os.unlink(salvou)
     return response
 
-    # import ipdb; ipdb.set_trace()
-    # wb = load_workbook(filename = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xlsx'))
-    #
-    # wb = load_workbook(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xlsx'))
-    # sheet = wb.get_sheet_by_name('Sheet1')
-    # print sheet
-    # #
-    # # import ipdb; ipdb.set_trace()
-    # # stimulusTimes = [1, 2, 3]
-    # # reactionTimes = [2.3, 5.1, 7.0]
-    # #
-    # # for i in range(len(stimulusTimes)):
-    # #     sheet['A' + str(i + 6)].value = stimulusTimes[i]
-    # #     sheet['B' + str(i + 6)].value = reactionTimes[i]
-    # #
-    # # wb.save(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xlsx'))
-    #
-    #
-    #
-    #
-    #
-    #
-    # return
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    # import xlwt
-    # response = HttpResponse(content_type='application/ms-excel')
-    # response['Content-Disposition'] = 'attachment; filename=Proposta_%s.xls' % pregao.num_pregao
-    # wb = xlwt.Workbook(encoding='utf-8')
-    # ws = wb.add_sheet("Sheet1")
-    # row_num = 0
-    #
-    # columns = [
-    #     (u"Item"),
-    #     (u"Material"),
-    #     (u"Unidade"),
-    #     (u"Quantidade"),
-    #     (u"Marca"),
-    #     (u"Valor"),
-    # ]
-    #
-    # for col_num in xrange(len(columns)):
-    #     ws.write(row_num, col_num, columns[col_num])
-    #
-    # for obj in itens:
-    #     row_num += 1
-    #     row = [
-    #         obj.item,
-    #         obj.material.nome,
-    #         obj.unidade.nome,
-    #         obj.quantidade,
-    #         '',
-    #         '',
-    #     ]
-    #     for col_num in xrange(len(row)):
-    #         ws.write(row_num, col_num, row[col_num])
-    #
-    # wb.save(response)
-    # return response
+
 
 @login_required()
 def remover_participante(request, proposta_id, situacao):
@@ -1374,15 +1308,29 @@ def cadastrar_contrato(request, solicitacao_id):
                     novo_item.save()
         else:
 
-            for resultado in PedidoContrato.objects.filter(solicitacao=solicitacao):
-                novo_item = ItemContrato()
-                novo_item.contrato = o
-                novo_item.item = resultado.item.item
-                novo_item.marca = resultado.item.marca
-                novo_item.participante = resultado.item.participante
-                novo_item.valor = resultado.item.valor
-                novo_item.quantidade = resultado.quantidade
-                novo_item.save()
+
+
+
+            if PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
+                for resultado in PedidoContrato.objects.filter(solicitacao=solicitacao):
+                    novo_item = ItemContrato()
+                    novo_item.contrato = o
+                    novo_item.item = resultado.item.item
+                    novo_item.marca = resultado.item.marca
+                    novo_item.participante = resultado.item.participante
+                    novo_item.valor = resultado.item.valor
+                    novo_item.quantidade = resultado.quantidade
+                    novo_item.save()
+            elif PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+                for resultado in PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao):
+                    novo_item = ItemContrato()
+                    novo_item.contrato = o
+                    novo_item.item = resultado.item.item
+                    novo_item.marca = resultado.item.marca
+                    novo_item.participante = resultado.item.participante
+                    novo_item.valor = resultado.item.valor
+                    novo_item.quantidade = resultado.quantidade
+                    novo_item.save()
 
 
         messages.success(request, u'Cadastrado realizado com sucesso.')
@@ -2948,9 +2896,9 @@ def gestao_pedidos(request):
     title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
     meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
 
-    atas = AtaRegistroPreco.objects.filter(liberada_compra=True)
+    atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
     #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
-    contratos = Contrato.objects.filter(liberada_compra=True)
+    contratos = Contrato.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
 
     pode_editar = request.user.groups.filter(name=u'Gerente')
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
@@ -3496,6 +3444,7 @@ def editar_anexo_arp(request, item_id):
 def gerar_pedido_fornecedores(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
+
     configuracao = None
     logo = None
     if get_config():
@@ -3509,42 +3458,34 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
 
-    if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
-        pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao)
-    else:
-        pedidos = PedidoContrato.objects.filter(contrato__solicitacao=solicitacao)
+    eh_lote = False
 
-    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.item.solicitacao)[0].criterio.id == CriterioPregao.LOTE
+    if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
+    elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
+
+
 
     tabela = {}
 
-    if eh_lote:
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
-            tabela[chave] = dict(pedidos = list(), total = 0)
 
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
-            tabela[chave]['pedidos'].append(pedido)
-            valor = tabela[chave]['total']
-            valor = valor + (pedido.item.valor*pedido.quantidade)
-            tabela[chave]['total'] = valor
+    for pedido in pedidos:
+        chave = u'%s' % pedido.item.participante.fornecedor
+        tabela[chave] = dict(pedidos = list(), total = 0)
 
-    else:
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.item.get_vencedor().participante.fornecedor
-            tabela[chave] = dict(pedidos = list(), total = 0)
-
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.item.get_vencedor().participante.fornecedor
-            tabela[chave]['pedidos'].append(pedido)
-            valor = tabela[chave]['total']
-            valor = valor + (pedido.item.valor*pedido.quantidade)
-            tabela[chave]['total'] = valor
+    for pedido in pedidos:
+        chave = u'%s' % pedido.item.participante.fornecedor
+        tabela[chave]['pedidos'].append(pedido)
+        valor = tabela[chave]['total']
+        valor = valor + (pedido.item.valor*pedido.quantidade)
+        tabela[chave]['total'] = valor
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
+
+   
     data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
 
     template = get_template('gerar_pedido_fornecedores.html')

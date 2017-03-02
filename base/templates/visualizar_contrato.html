@@ -170,7 +170,7 @@
             {% if not contrato.data_fim %}
                 <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
             {% endif %}
-            <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
+
         {% endif %}
 
 
@@ -335,6 +335,12 @@
 
         </div>
         <div id="aditivos" class="tab-pane">
+            {% if pode_gerenciar %}
+                <div class="pull-right">
+                    <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
+                </div>
+                <br><br>
+            {% endif %}
 
         {% if contrato.aditivo_set.exists %}
             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
