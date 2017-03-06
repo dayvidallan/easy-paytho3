@@ -604,7 +604,8 @@
                                                         <th>Valor Máximo</th>
                                                         <th>Valor Unitário Proposto</th>
                                                         <th>Valor Total Proposto</th>
-                                                        <th>Valor Final</th>
+                                                        <th>Valor Unitário Final</th>
+                                                        <th>Valor Total Final</th>
                                                         <th>Opções</th>
 
                                                     </tr>
@@ -617,7 +618,8 @@
                                                             <td>{{ item.valor_medio }}</td>
                                                             <td>{{ item.get_valor_unitario_proposto }}</td>
                                                             <td>{{ item.get_valor_total_proposto }}</td>
-                                                            <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }} {% if item.get_valor_item_lote %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/">(Editar)</a>{% endif %}</td>
+                                                            <td>{{ item.get_valor_unitario_final|default_if_none:"não informado" }} {% if item.get_valor_unitario_final %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/">(Editar)</a>{% endif %}</td>
+                                                            <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }} </td>
                                                             <td>
                                                                 {% if not item.get_valor_item_lote %}
                                                                     <a href="/base/informar_valor_final_item_lote/{{item.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>

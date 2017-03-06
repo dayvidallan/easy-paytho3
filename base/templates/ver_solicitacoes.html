@@ -158,10 +158,11 @@
 {% block content %}
 
     {% if perms.base.pode_cadastrar_solicitacao %}
-         <div class="pull-right">
-            <a class="btn btn-success" href="/base/cadastrar_solicitacao/">Cadastrar Solicitação</a>
-            <br><br>
-         </div>
+    <div class="pull-right">
+        <a class="btn btn-success" href="/base/cadastrar_solicitacao/">Cadastrar Solicitação</a>
+        <a class="btn btn-default" href="/base/aderir_arp/">Aderir à ARP</a>
+        <br><br>
+    </div>
     {% endif %}
     <div>
         <ul class="nav nav-tabs">

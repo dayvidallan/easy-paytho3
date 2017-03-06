@@ -344,6 +344,18 @@ class AnexoContratoForm(forms.ModelForm):
         if self.instance.pk:
             self.fields['arquivo'].required = False
 
+
+class AnexoARPForm(forms.ModelForm):
+    class Meta:
+        model = AnexoAtaRegistroPreco
+        fields = ['nome', 'data', 'arquivo', 'publico']
+
+    def __init__(self, *args, **kwargs):
+        super(AnexoARPForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}
+        if self.instance.pk:
+            self.fields['arquivo'].required = False
+
 class LogDownloadArquivoForm(forms.ModelForm):
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
@@ -513,6 +525,17 @@ class EditarPedidoForm(forms.ModelForm):
         fields = ('quantidade', )
 
 
+class AtaRegistroPrecoForm(forms.ModelForm):
+    class Meta:
+        model = AtaRegistroPreco
+        fields = ('numero', 'data_inicio', 'data_fim')
+
+    def __init__(self, *args, **kwargs):
+        super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+
+
 class ContratoForm(forms.ModelForm):
     class Meta:
         model = Contrato
@@ -547,11 +570,16 @@ class FiltraVencedorPedidoForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.participantes = kwargs.pop('participantes', None)
         super(FiltraVencedorPedidoForm, self).__init__(*args, **kwargs)
-        id = list()
-        for item in self.participantes:
-            id.append(item.participante.id)
-        self.fields['vencedor'].queryset = ParticipantePregao.objects.filter(id__in=id)
+        self.fields['vencedor'].queryset = ParticipantePregao.objects.filter(id__in=self.participantes)
 
+
+
+class FiltraFornecedorPedidoForm(forms.Form):
+    vencedor = forms.ModelChoiceField(Fornecedor.objects, required=False, label=u'Fornecedor')
+    def __init__(self, *args, **kwargs):
+        self.participantes = kwargs.pop('participantes', None)
+        super(FiltraFornecedorPedidoForm, self).__init__(*args, **kwargs)
+        self.fields['vencedor'].queryset = Fornecedor.objects.filter(id__in=self.participantes)
 
 class ValorFinalItemLoteForm(forms.Form):
     valor = forms.DecimalField(label=u'Valor')
@@ -676,3 +704,27 @@ class ComissaoLicitacaoForm(forms.ModelForm):
     class Meta:
         model = ComissaoLicitacao
         fields = ('nome', )
+
+
+class AderirARPForm(forms.ModelForm):
+    num_memorando = forms.CharField(label=u'Número do Memorando',required=True)
+    objetivo = forms.CharField(label=u'Objetivo', widget=forms.Textarea(), required=True)
+    justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea(), required=True)
+    numero = forms.CharField(label=u'Número da ARP',required=True)
+
+    class Meta:
+        model = AtaRegistroPreco
+        fields = ('num_memorando', 'objeto', 'objetivo', 'justificativa', 'numero', 'orgao_origem', 'num_oficio',  'data_inicio', 'data_fim',)
+
+    def __init__(self, *args, **kwargs):
+        super(AderirARPForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+
+
+class AdicionarItemAtaForm(forms.ModelForm):
+    material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
+    fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
+    class Meta:
+        model = ItemAtaRegistroPreco
+        fields = ('material', 'fornecedor', 'marca', 'quantidade', 'valor', )

@@ -57,10 +57,10 @@ ul{
                             <tr>
                                 <th>Item</th>
                                 <th width="60%">Especificação</th>
-                                {% if not eh_lote %}
-                                    <th>Marca</th>
-                                    <th>Unidade</th>
-                                {% endif %}
+
+                                <th>Marca</th>
+                                <th>Unidade</th>
+
 
                                 <th>Quantidade</th>
                                 <th>Valor Unit.</th>
@@ -72,20 +72,22 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    <td>{{ pedido.item }}</td>
-                                    <td>{{ pedido.item.material }}</td>
-                                    {% if not eh_lote %}
-                                        <td>{{ pedido.resultado.marca}}</td>
-                                        <td>{{ pedido.item.unidade}}</td>
+                                    {% if pedido.ata.adesao %}
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ pedido.item.material|truncatechars:500 }}</td>
+                                    {% else %}
+                                        <td>{{ pedido.item.item }}</td>
+                                        <td>{{ pedido.item.item.material|truncatechars:500 }}</td>
                                     {% endif %}
+                                    <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
+
+
+                                    <td>{{ pedido.item.item.unidade}}</td>
+
 
                                     <td>{{ pedido.quantidade }}</td>
 
-                                    {% if not eh_lote %}
-                                        <td>R$ {{ pedido.resultado.valor|format_money  }}</td>
-                                    {% else %}
-                                        <td>R$ {{ pedido.item.get_valor_item_lote|format_money  }}</td>
-                                    {% endif %}
+                                    <td>R$ {{ pedido.item.valor|format_money  }}</td>
                                     <td>R$ {{ pedido.get_total|format_money  }}</td>
 
 

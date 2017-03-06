@@ -103,20 +103,22 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    <td>{{ pedido.item }}</td>
-                                    <td>{{ pedido.item.material }}</td>
-                                    {% if not eh_lote %}
-                                        <td>{{ pedido.resultado.marca}}</td>
-                                        <td>{{ pedido.item.unidade}}</td>
+                                    {% if pedido.ata.adesao %}
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ pedido.item.material|truncatechars:500 }}</td>
+                                    {% else %}
+                                        <td>{{ pedido.item.item }}</td>
+                                        <td>{{ pedido.item.item.material|truncatechars:500 }}</td>
                                     {% endif %}
+                                    <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
+
+
+                                    <td>{{ pedido.item.item.unidade}}</td>
+
 
                                     <td>{{ pedido.quantidade }}</td>
 
-                                    {% if not eh_lote %}
-                                        <td>R$ {{ pedido.resultado.valor|format_money  }}</td>
-                                    {% else %}
-                                        <td>R$ {{ pedido.item.get_valor_item_lote|format_money  }}</td>
-                                    {% endif %}
+                                    <td>R$ {{ pedido.item.valor|format_money  }}</td>
                                     <td>R$ {{ pedido.get_total|format_money  }}</td>
 
 
@@ -138,8 +140,15 @@ ul{
     <table border="1" width="100%" cellpadding="5" cellspacing="5" align="center">
         <thead>
             <tr>
-                <th width="60%">Referente ao Processo N°</th><td>{{ solicitacao.processo }}</td>
-                <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
+                <th width="60%">Referente ao Processo N°</th><td>{{ solicitacao.processo|default_if_none:"não informado" }}</td>
+                {% if pregao %}
+                    <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
+                {% elif contrato %}
+                        <th>Contrato N °</th><td>{{ contrato.numero }}</td>
+                {% elif ata %}
+                    <th>Ata N °</th><td>{{ ata.numero }}</td>
+                {% endif %}
+
             </tr>
 
             <tr>

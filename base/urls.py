@@ -133,7 +133,7 @@ urlpatterns = [
 
 
     url(r'^apagar_anexo_contrato/(?P<item_id>\d+)/$', views.apagar_anexo_contrato, name='apagar_anexo_contrato'),
-    url(r'^documentos_atas/(?P<solicitacao_id>\d+)/$', views.documentos_atas, name='documentos_atas'),
+    url(r'^documentos_atas/(?P<ata_id>\d+)/$', views.documentos_atas, name='documentos_atas'),
     url(r'^rejeitar_pesquisa/(?P<item_pesquisa_id>\d+)/$', views.rejeitar_pesquisa, name='rejeitar_pesquisa'),
     url(r'^cadastrar_contrato/(?P<solicitacao_id>\d+)/$', views.cadastrar_contrato, name='cadastrar_contrato'),
     url(r'^relatorio_lista_download_licitacao/(?P<pregao_id>\d+)/$', views.relatorio_lista_download_licitacao, name='relatorio_lista_download_licitacao'),
@@ -142,6 +142,44 @@ urlpatterns = [
     url(r'^adicionar_membro_comissao/(?P<comissao_id>\d+)/$', views.adicionar_membro_comissao, name='adicionar_membro_comissao'),
     url(r'^remover_membro_comissao/(?P<comissao_id>\d+)/$', views.remover_membro_comissao, name='remover_membro_comissao'),
     url(r'^editar_membro_comissao/(?P<membro_id>\d+)/$', views.editar_membro_comissao, name='editar_membro_comissao'),
+
+
+
+
+
+
+    url(r'^novo_pedido_compra_contrato/(?P<contrato_id>\d+)/$', views.novo_pedido_compra_contrato, name='novo_pedido_compra_contrato'),
+    url(r'^novo_pedido_compra_arp/(?P<ata_id>\d+)/$', views.novo_pedido_compra_arp, name='novo_pedido_compra_arp'),
+
+
+
+    url(r'^informar_quantidades_do_pedido_contrato/(?P<contrato_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_contrato, name='informar_quantidades_do_pedido_contrato'),
+
+
+    url(r'^informar_quantidades_do_pedido_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_arp, name='informar_quantidades_do_pedido_arp'),
+    url(r'^cadastrar_ata_registro_preco/(?P<solicitacao_id>\d+)/$', views.cadastrar_ata_registro_preco, name='cadastrar_ata_registro_preco'),
+
+
+    url(r'^visualizar_ata_registro_preco/(?P<ata_id>\d+)/$', views.visualizar_ata_registro_preco, name='visualizar_ata_registro_preco'),
+
+
+    url(r'^liberar_solicitacao_ata/(?P<ata_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_ata, name='liberar_solicitacao_ata'),
+
+
+
+
+    url(r'^cadastrar_anexo_arp/(?P<ata_id>\d+)/$', views.cadastrar_anexo_arp, name='cadastrar_anexo_arp'),
+    url(r'^editar_anexo_arp/(?P<item_id>\d+)/$', views.editar_anexo_arp, name='editar_anexo_arp'),
+
+    url(r'^cadastrar_material_arp/(?P<ata_id>\d+)/$', views.cadastrar_material_arp, name='cadastrar_material_arp'),
+
+
+    url(r'^apagar_anexo_arp/(?P<item_id>\d+)/$', views.apagar_anexo_arp, name='apagar_anexo_arp'),
+    url(r'^aderir_arp/$', views.aderir_arp, name='aderir_arp'),
+    url(r'^adicionar_item_adesao_arp/(?P<ata_id>\d+)/$', views.adicionar_item_adesao_arp, name='adicionar_item_adesao_arp'),
+    url(r'^informar_quantidades_do_pedido_adesao_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_adesao_arp, name='informar_quantidades_do_pedido_adesao_arp'),
+
+
 
 
     url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),
