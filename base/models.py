@@ -1845,13 +1845,11 @@ class ItemContrato(models.Model):
 
         else:
 
-            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
-                pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
-                if pedidos.exists():
-                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-                else:
-                    return valor_total
+            pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+            if pedidos.exists():
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            else:
+                return self.quantidade
         return 0
 
 

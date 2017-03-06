@@ -77,7 +77,7 @@ ul{
                                         <td>{{ pedido.item.material|truncatechars:500 }}</td>
                                     {% else %}
                                         <td>{{ pedido.item.item }}</td>
-                                        <td>{{ pedido.item.material|truncatechars:500 }}</td>
+                                        <td>{{ pedido.item.item.material|truncatechars:500 }}</td>
                                     {% endif %}
                                     <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
 

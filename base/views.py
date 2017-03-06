@@ -3598,8 +3598,10 @@ def ver_ordem_compra(request, solicitacao_id):
     for pedido in pedidos:
         if pedido.item.participante:
             chave = u'%s' % pedido.item.participante.fornecedor
+            fornecedor = pedido.item.participante.fornecedor
         else:
             chave = u'%s' % pedido.item.fornecedor
+            fornecedor = pedido.item.fornecedor
         tabela[chave] = dict(pedidos = list(), total = 0)
 
     for pedido in pedidos:
