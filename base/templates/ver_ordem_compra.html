@@ -141,7 +141,14 @@ ul{
         <thead>
             <tr>
                 <th width="60%">Referente ao Processo N°</th><td>{{ solicitacao.processo|default_if_none:"não informado" }}</td>
-                <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
+                {% if pregao %}
+                    <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
+                {% elif contrato %}
+                        <th>Contrato N °</th><td>{{ contrato.numero }}</td>
+                {% elif ata %}
+                    <th>Ata N °</th><td>{{ ata.numero }}</td>
+                {% endif %}
+
             </tr>
 
             <tr>

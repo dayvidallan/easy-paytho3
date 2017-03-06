@@ -1850,6 +1850,7 @@ class ItemContrato(models.Model):
                 return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
             else:
                 return self.quantidade
+
         return 0
 
 

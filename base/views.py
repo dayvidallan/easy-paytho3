@@ -3583,13 +3583,15 @@ def ver_ordem_compra(request, solicitacao_id):
     eh_lote = False
 
     tabela = {}
-
+    pregao = contrato = ata = None
+    pregao = solicitacao.get_pregao()
 
     if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
+        ata = get_object_or_404(AtaRegistroPreco, pk=pedidos[0].ata.id)
     elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
-
+        contrato = get_object_or_404(Contrato, pk=pedidos[0].contrato.id)
 
 
     tabela = {}
@@ -3643,7 +3645,7 @@ def ver_ordem_compra(request, solicitacao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'solicitacao': solicitacao, 'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    data = {'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 
