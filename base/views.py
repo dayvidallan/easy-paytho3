@@ -3471,11 +3471,17 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
 
 
     for pedido in pedidos:
-        chave = u'%s' % pedido.item.participante.fornecedor
+        if pedido.item.participante:
+            chave = u'%s' % pedido.item.participante.fornecedor
+        else:
+            chave = u'%s' % pedido.item.fornecedor
         tabela[chave] = dict(pedidos = list(), total = 0)
 
     for pedido in pedidos:
-        chave = u'%s' % pedido.item.participante.fornecedor
+        if pedido.item.participante:
+            chave = u'%s' % pedido.item.participante.fornecedor
+        else:
+            chave = u'%s' % pedido.item.fornecedor
         tabela[chave]['pedidos'].append(pedido)
         valor = tabela[chave]['total']
         valor = valor + (pedido.item.valor*pedido.quantidade)
@@ -3485,7 +3491,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-   
+
     data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
 
     template = get_template('gerar_pedido_fornecedores.html')
@@ -3572,37 +3578,65 @@ def ver_ordem_compra(request, solicitacao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
-    pedidos = PedidoItem.objects.filter(solicitacao=solicitacao).order_by('item')
-    pregao = pedidos[0].item.solicitacao.get_pregao()
-    eh_lote = Pregao.objects.filter(solicitacao=pedidos[0].item.solicitacao)[0].criterio == CriterioPregao.LOTE
+
+
+    eh_lote = False
 
     tabela = {}
 
-    if eh_lote:
-        fornecedor = pedidos[0].item.get_empresa_item_lote().fornecedor
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
-            tabela[chave] = dict(pedidos = list(), total = 0)
 
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
-            tabela[chave]['pedidos'].append(pedido)
-            valor = tabela[chave]['total']
-            valor = valor + (pedido.item.get_valor_item_lote()*pedido.quantidade)
-            tabela[chave]['total'] = valor
+    if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
+    elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
 
-    else:
-        fornecedor = pedidos[0].item.get_vencedor().participante.fornecedor
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
-            tabela[chave] = dict(pedidos = list(), total = 0)
 
-        for pedido in pedidos:
-            chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
-            tabela[chave]['pedidos'].append(pedido)
-            valor = tabela[chave]['total']
-            valor = valor + (pedido.resultado.valor*pedido.quantidade)
-            tabela[chave]['total'] = valor
+
+    tabela = {}
+
+
+    for pedido in pedidos:
+        if pedido.item.participante:
+            chave = u'%s' % pedido.item.participante.fornecedor
+        else:
+            chave = u'%s' % pedido.item.fornecedor
+        tabela[chave] = dict(pedidos = list(), total = 0)
+
+    for pedido in pedidos:
+        if pedido.item.participante:
+            chave = u'%s' % pedido.item.participante.fornecedor
+        else:
+            chave = u'%s' % pedido.item.fornecedor
+        tabela[chave]['pedidos'].append(pedido)
+        valor = tabela[chave]['total']
+        valor = valor + (pedido.item.valor*pedido.quantidade)
+        tabela[chave]['total'] = valor
+
+    # if eh_lote:
+    #     fornecedor = pedidos[0].item.get_empresa_item_lote().fornecedor
+    #     for pedido in pedidos:
+    #         chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
+    #         tabela[chave] = dict(pedidos = list(), total = 0)
+    #
+    #     for pedido in pedidos:
+    #         chave = u'%s' % pedido.item.get_empresa_item_lote().fornecedor
+    #         tabela[chave]['pedidos'].append(pedido)
+    #         valor = tabela[chave]['total']
+    #         valor = valor + (pedido.item.get_valor_item_lote()*pedido.quantidade)
+    #         tabela[chave]['total'] = valor
+    #
+    # else:
+    #     fornecedor = pedidos[0].item.get_vencedor().participante.fornecedor
+    #     for pedido in pedidos:
+    #         chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+    #         tabela[chave] = dict(pedidos = list(), total = 0)
+    #
+    #     for pedido in pedidos:
+    #         chave = u'%s' % pedido.item.get_vencedor().participante.fornecedor
+    #         tabela[chave]['pedidos'].append(pedido)
+    #         valor = tabela[chave]['total']
+    #         valor = valor + (pedido.resultado.valor*pedido.quantidade)
+    #         tabela[chave]['total'] = valor
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
