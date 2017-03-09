@@ -616,7 +616,7 @@ def baixar_editais(request):
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
         if form.cleaned_data.get('numero'):
-            pregoes = pregoes.filter(num_pregao=form.cleaned_data.get('numero'))
+            pregoes = pregoes.filter(num_pregao__icontains=form.cleaned_data.get('numero'))
 
     return render(request, 'baixar_editais.html', locals(), RequestContext(request))
 
