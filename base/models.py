@@ -1458,7 +1458,7 @@ class ItemPesquisaMercadologica(models.Model):
 
     def save(self):
         super(ItemPesquisaMercadologica, self).save()
-        registros = ItemPesquisaMercadologica.objects.filter(item=self.item)
+        registros = ItemPesquisaMercadologica.objects.filter(item=self.item, rejeitado_por__isnull=True)
         if registros:
             total_registros = registros.count()
             soma = registros.aggregate(Sum('valor_maximo'))
