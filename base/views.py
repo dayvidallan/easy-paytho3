@@ -1677,8 +1677,8 @@ def importar_itens(request, solicitacao_id):
                         novo_item.solicitacao = solicitacao
                         novo_item.item = solicitacao.get_proximo_item()
 
-                        if MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0)).exists():
-                            material = MaterialConsumo.objects.filter(nome=sheet.cell_value(row, 0))[0]
+                        if MaterialConsumo.objects.filter(nome=especificacao).exists():
+                            material = MaterialConsumo.objects.filter(nome=especificacao)[0]
                         else:
                             material = MaterialConsumo()
                             if MaterialConsumo.objects.exists():
