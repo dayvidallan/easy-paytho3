@@ -317,7 +317,7 @@ class SolicitacaoLicitacao(models.Model):
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self).exists()
 
     def tem_pedidos_outras_secretarias(self):
-        return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).exists()
+        return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).count() > 1
 
     def tem_pedidos_pendentes(self):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()

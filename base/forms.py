@@ -284,26 +284,6 @@ class PesquisaMercadologicaForm(forms.ModelForm):
             if not self.cleaned_data.get('razao_social'):
                 self.add_error('razao_social', u'Este campo é obrigatório')
 
-            if not self.cleaned_data.get('cnpj'):
-                self.add_error('cnpj', u'Este campo é obrigatório')
-
-            if not self.cleaned_data.get('telefone'):
-                self.add_error('telefone', u'Este campo é obrigatório')
-
-            if not self.cleaned_data.get('email'):
-                self.add_error('email', u'Este campo é obrigatório')
-
-            if not self.cleaned_data.get('nome_representante'):
-                self.add_error('nome_representante', u'Este campo é obrigatório')
-
-            if not self.cleaned_data.get('cpf_representante'):
-                self.add_error('cpf_representante', u'Este campo é obrigatório')
-
-            if not self.cleaned_data.get('rg_representante'):
-                self.add_error('rg_representante', u'Este campo é obrigatório')
-
-            if not self.cleaned_data.get('endereco_representante'):
-                self.add_error('endereco_representante', u'Este campo é obrigatório')
 
 
 

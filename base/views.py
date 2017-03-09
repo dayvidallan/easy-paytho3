@@ -2669,10 +2669,10 @@ def imprimir_capa_processo(request, processo_id):
     c.drawString(32*mm, ALTURA - 88*mm, u'Data: %s' % processo.data_cadastro.strftime('%d/%m/%Y'))
     #c.drawString(110*mm, ALTURA - 88*mm, u'Campus: %s' % processo.uo.setor.sigla)
     #c.drawString(32*mm, ALTURA - 95*mm, u'Interessado: %s' % processo.pessoa_interessada.nome[:55] + (processo.pessoa_interessada.nome[55:] and '...'))
-    c.drawString(32*mm, ALTURA - 102*mm, u'Origem: %s' % (processo.setor_origem))
+    c.drawString(32*mm, ALTURA - 96*mm, u'Origem: %s' % (processo.setor_origem))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
     L = simpleSplit('Objeto: %s' % processo.objeto,'Helvetica',12,150 * mm)
-    y = ALTURA - 116*mm
+    y = ALTURA - 104*mm
     for t in L:
         c.drawString(32*mm,y,t)
         y -= 5*mm
@@ -4918,8 +4918,9 @@ def solicitar_pedidos_novamente(request, solicitacao_id, secretaria_id):
 
     else:
         for item in ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id):
-            item.item.quantidade -= item.quantidade
-            item.item.save()
+            if item.aprovado:
+                item.item.quantidade -= item.quantidade
+                item.item.save()
 
         ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id).delete()
         messages.success(request, u'Os pedidos serão solicitados novamente às secretarias.')
