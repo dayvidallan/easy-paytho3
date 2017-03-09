@@ -220,6 +220,10 @@ class ItemSolicitacaoLicitacaoForm(forms.ModelForm):
         model = ItemSolicitacaoLicitacao
         exclude = ['solicitacao', 'item', 'total', 'valor_medio', 'situacao', 'obs']
 
+class EditarItemSolicitacaoLicitacaoForm(forms.ModelForm):
+    class Meta:
+        model = ItemSolicitacaoLicitacao
+        exclude = ['material', 'solicitacao', 'item', 'total', 'valor_medio', 'situacao', 'obs', 'ativo', 'eh_lote']
 
 class RejeitarSolicitacaoForm(forms.ModelForm):
     obs_negacao = forms.CharField(label=u'Justificativa da Negação', widget=forms.Textarea)

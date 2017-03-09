@@ -94,7 +94,7 @@
                        <tr>
                            <td>{{ documento.nome }}</td>
                            <td>{{ documento.cadastrado_em }}</td>
-                           <td>{{ documento.cadastrado_por }}</td>
+                           <td>{{ documento.cadastrado_por.pessoafisica.nome }}</td>
                            <td><a class="btn btn-info btn-sm" href="/media/{{documento.documento}}">Ver Documento</a></td>
                            <td>
                                {% if documento.cadastrado_por == request.user %}

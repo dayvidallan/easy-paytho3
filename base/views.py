@@ -4887,3 +4887,16 @@ def cadastrar_material_arp(request, ata_id):
         messages.success(request, u'Item da ata cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/adicionar_item_adesao_arp/%s/' % ata_id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+@login_required()
+def editar_item(request, item_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    title=u'Editar Item'
+    form = EditarItemSolicitacaoLicitacaoForm(request.POST or None, instance=item)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Item editado com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % item.solicitacao.id)
+
+    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))

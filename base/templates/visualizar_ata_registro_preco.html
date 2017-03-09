@@ -411,7 +411,7 @@
                                         <font color="red">Não</font>
                                     {% endif%}
                                 </td>
-                                <td>{{ item.cadastrado_por }}</td>
+                                <td>{{ item.cadastrado_por.pessoafisica.nome }}</td>
                                 <td>{{ item.cadastrado_em }}</td>
                                 <td>
                                     {% if item.cadastrado_por == request.user %}

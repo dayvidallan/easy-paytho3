@@ -142,6 +142,7 @@ urlpatterns = [
     url(r'^adicionar_membro_comissao/(?P<comissao_id>\d+)/$', views.adicionar_membro_comissao, name='adicionar_membro_comissao'),
     url(r'^remover_membro_comissao/(?P<comissao_id>\d+)/$', views.remover_membro_comissao, name='remover_membro_comissao'),
     url(r'^editar_membro_comissao/(?P<membro_id>\d+)/$', views.editar_membro_comissao, name='editar_membro_comissao'),
+    url(r'^editar_item/(?P<item_id>\d+)/$', views.editar_item, name='editar_item'),
 
 
 
