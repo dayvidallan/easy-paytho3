@@ -628,7 +628,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return RodadaPregao.objects.filter(item=self, pregao=self.get_licitacao(), atual=True)[0]
 
     def get_valor_medio_pesquisa(self):
-        registros = ItemPesquisaMercadologica.objects.filter(item=self)
+        registros = ItemPesquisaMercadologica.objects.filter(item=self, rejeitado_por__isnull=True)
         if registros.exists():
             total_registros = registros.count()
             soma = registros.aggregate(Sum('valor_maximo'))
@@ -636,7 +636,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return None
 
     def get_valor_medio_envio_pesquisa(self):
-        registros = ItemPesquisaMercadologica.objects.filter(item=self).exclude(pesquisa__arquivo__isnull=True).exclude(pesquisa__arquivo="")
+        registros = ItemPesquisaMercadologica.objects.filter(item=self, rejeitado_por__isnull=True).exclude(pesquisa__arquivo__isnull=True).exclude(pesquisa__arquivo="")
         if registros.exists():
             total_registros = registros.count()
             soma = registros.aggregate(Sum('valor_maximo'))
