@@ -4908,3 +4908,10 @@ def editar_item(request, item_id):
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % item.solicitacao.id)
 
         return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def solicitar_pedidos_novamente(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao).exclude(secretaria=request.user.pessoafisica.setor.secretaria).delete()
+    messages.success(request, u'Os pedidos serão solicitados novamente às secretarias.')
+    return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)

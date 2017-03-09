@@ -61,6 +61,9 @@
 
                         {% if solicitacao.tem_pedidos_outras_secretarias and solicitacao.tem_pedidos_pendentes %}
                             <a class="btn btn-info" href="/base/avaliar_pedidos/{{ solicitacao.pk }}/">Avaliar Pedidos</a>
+                        {% elif solicitacao.tem_pedidos_outras_secretarias %}
+                            <a class="btn btn-info" href="/base/solicitar_pedidos_novamente/{{ solicitacao.pk }}/">Solicitar Pedidos Novamente</a>
+
                         {% endif %}
 
                     {% endif %}
@@ -70,7 +73,7 @@
                         {% else %}
                             <a class="btn btn-info" href="/base/informar_quantidades/{{ solicitacao.pk }}/">Editar Quantidade de Itens</a>
                         {% endif %}
-                   {% endif %}
+                    {% endif %}
                 {% endif %}
              {% endif %}
              {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
