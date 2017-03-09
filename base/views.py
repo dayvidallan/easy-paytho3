@@ -4910,8 +4910,17 @@ def editar_item(request, item_id):
         return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
 
 @login_required()
-def solicitar_pedidos_novamente(request, solicitacao_id):
+def solicitar_pedidos_novamente(request, solicitacao_id, secretaria_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao).exclude(secretaria=request.user.pessoafisica.setor.secretaria).delete()
-    messages.success(request, u'Os pedidos serão solicitados novamente às secretarias.')
-    return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+    if solicitacao.setor_origem.secretaria.id == int(secretaria_id):
+        messages.error(request, u'Edite as quantidades na própria solicitação.')
+        return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % solicitacao_id)
+
+    else:
+        for item in ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id):
+            item.item.quantidade -= item.quantidade
+            item.item.save()
+
+        ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id).delete()
+        messages.success(request, u'Os pedidos serão solicitados novamente às secretarias.')
+        return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % solicitacao_id)

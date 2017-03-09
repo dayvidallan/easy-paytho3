@@ -59,11 +59,8 @@
                         <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
                         <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
 
-                        {% if solicitacao.tem_pedidos_outras_secretarias and solicitacao.tem_pedidos_pendentes %}
-                            <a class="btn btn-info" href="/base/avaliar_pedidos/{{ solicitacao.pk }}/">Avaliar Pedidos</a>
-                        {% elif solicitacao.tem_pedidos_outras_secretarias %}
-                            <a class="btn btn-info" href="/base/solicitar_pedidos_novamente/{{ solicitacao.pk }}/">Solicitar Pedidos Novamente</a>
-
+                        {% if solicitacao.tem_pedidos_outras_secretarias %}
+                            <a class="btn btn-info" href="/base/avaliar_pedidos/{{ solicitacao.pk }}/">Outros Pedidos</a>
                         {% endif %}
 
                     {% endif %}

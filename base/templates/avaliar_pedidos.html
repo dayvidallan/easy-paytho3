@@ -31,9 +31,17 @@
              </div>
         </form>
         {% for key, pedidos in resultado.items %}
+            <br>
+            <div class="pull-right">
+                {% if pode_avaliar and pedidos.pendente %}
+                    <a href="/base/aprovar_todos_pedidos_secretaria/{{solicitacao.id}}/{{key}}/" class="btn btn-success btn-sm">Aprovar Todos</a>
+
+                {% endif %}
+                <a href="/base/solicitar_pedidos_novamente/{{solicitacao.id}}/{{key}}/" class="btn btn-info btn-sm">Solicitar Pedidos Novamente</a>
 
 
-            <h3>{{ pedidos.nome }}{% if pode_avaliar and pedidos.pendente %} <a href="/base/aprovar_todos_pedidos_secretaria/{{solicitacao.id}}/{{key}}/" class="btn btn-success btn-sm">Aprovar Todos</a>{% endif %}</h3>
+           </div>
+            <h3>{{ pedidos.nome }}</h3>
 
 
             <table class="table table-bordered table-condensed table-striped">

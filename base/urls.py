@@ -144,7 +144,7 @@ urlpatterns = [
     url(r'^editar_membro_comissao/(?P<membro_id>\d+)/$', views.editar_membro_comissao, name='editar_membro_comissao'),
     url(r'^editar_item/(?P<item_id>\d+)/$', views.editar_item, name='editar_item'),
 
-    url(r'^solicitar_pedidos_novamente/(?P<solicitacao_id>\d+)/$', views.solicitar_pedidos_novamente, name='solicitar_pedidos_novamente'),
+    url(r'^solicitar_pedidos_novamente/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.solicitar_pedidos_novamente, name='solicitar_pedidos_novamente'),
 
 
 
