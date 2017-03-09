@@ -1634,7 +1634,7 @@ class ItemQuantidadeSecretaria(models.Model):
 
 
 class MaterialConsumo(models.Model):
-    nome = models.TextField(u'Nome',  unique=True)
+    nome = models.TextField(u'Nome')
     observacao = models.CharField(u'Observação', max_length=500, null=True, blank=True)
     codigo = models.CharField(u"Código", max_length=6, blank=True)
 
