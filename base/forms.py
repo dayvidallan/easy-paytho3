@@ -221,9 +221,15 @@ class ItemSolicitacaoLicitacaoForm(forms.ModelForm):
         exclude = ['solicitacao', 'item', 'total', 'valor_medio', 'situacao', 'obs']
 
 class EditarItemSolicitacaoLicitacaoForm(forms.ModelForm):
+    unidade = forms.ModelChoiceField(TipoUnidade.objects, label=u'Unidade')
     class Meta:
-        model = ItemSolicitacaoLicitacao
-        exclude = ['material', 'solicitacao', 'item', 'total', 'valor_medio', 'situacao', 'obs', 'ativo', 'eh_lote']
+        model = ItemQuantidadeSecretaria
+        fields = ['quantidade']
+
+    def __init__(self, *args, **kwargs):
+        self.unidade = kwargs.pop('unidade', None)
+        super(EditarItemSolicitacaoLicitacaoForm, self).__init__(*args, **kwargs)
+        self.fields['unidade'].initial = self.unidade.id
 
 class RejeitarSolicitacaoForm(forms.ModelForm):
     obs_negacao = forms.CharField(label=u'Justificativa da Negação', widget=forms.Textarea)

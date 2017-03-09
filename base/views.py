@@ -4893,10 +4893,18 @@ def cadastrar_material_arp(request, ata_id):
 def editar_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     title=u'Editar Item'
-    form = EditarItemSolicitacaoLicitacaoForm(request.POST or None, instance=item)
-    if form.is_valid():
-        form.save()
-        messages.success(request, u'Item editado com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % item.solicitacao.id)
+    pedido = ItemQuantidadeSecretaria.objects.filter(item=item, secretaria=request.user.pessoafisica.setor.secretaria)
 
-    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+    if pedido.exists():
+        form = EditarItemSolicitacaoLicitacaoForm(request.POST or None, instance=pedido[0], unidade=item.unidade)
+        valor_original = pedido[0].quantidade
+        if form.is_valid():
+            o = form.save()
+            item.unidade = form.cleaned_data.get('unidade')
+            item.quantidade = item.quantidade - valor_original + form.cleaned_data.get('quantidade')
+
+            item.save()
+            messages.success(request, u'Item editado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % item.solicitacao.id)
+
+        return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
