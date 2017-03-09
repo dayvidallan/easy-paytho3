@@ -30,10 +30,10 @@
                         <tr>
                             <td>{{ mov.setor_origem }}</td>
                             <td>{{ mov.data_envio|date:'d/m/Y H:i' }}</td>
-                            <td>{{ mov.enviado_por }}</td>
+                            <td>{{ mov.enviado_por.pessoafisica.nome }}</td>
                             <td>{{ mov.setor_destino|default_if_none:'-' }}</td>
                             <td>{{ mov.data_recebimento|date:'d/m/Y H:i' }}</td>
-                            <td>{{ mov.recebido_por|default_if_none:'-' }}</td>
+                            <td>{{ mov.recebido_por.pessoafisica.nome|default_if_none:'-' }}</td>
                             <td>{{ mov.obs|default_if_none:'-' }}</td>
                         </tr>
                     {% endfor %}
