@@ -489,7 +489,7 @@ class ConfiguracaoForm(forms.ModelForm):
 
     class Meta:
         model = Configuracao
-        fields = ('nome', 'cnpj', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo', 'ordenador_despesa')
+        fields = ('nome', 'cnpj', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo', 'ordenador_despesa', 'cpf_ordenador_despesa')
 
     def __init__(self, *args, **kwargs):
         super(ConfiguracaoForm, self).__init__(*args, **kwargs)
