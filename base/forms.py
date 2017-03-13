@@ -15,7 +15,7 @@ class CadastraParticipantePregaoForm(forms.ModelForm):
 
     class Meta:
         model = ParticipantePregao
-        fields = ['fornecedor','nome_representante','cpf_representante', 'sem_representante', 'obs_ausencia_participante', 'me_epp']
+        fields = ['fornecedor','nome_representante','rg_representante', 'cpf_representante', 'sem_representante', 'obs_ausencia_participante', 'me_epp']
 
 
     class Media:
@@ -91,13 +91,12 @@ class PessoaFisicaForm(forms.ModelForm):
         if not self.request.user.is_superuser:
             self.fields['setor'].queryset = Setor.objects.filter(secretaria=self.request.user.pessoafisica.setor.secretaria)
 
-        if self.edicao:
-            del self.fields['grupo']
-            del self.fields['setor']
+        if self.instance.pk:
 
-        if self.edicao:
             if self.instance.municipio:
                 self.fields['estado'].initial = self.instance.municipio.estado
+
+            self.fields['grupo'].initial = self.instance.user.groups.all()[0]
 
     def clean(self):
         if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf')).exists() and not self.edicao:
@@ -490,7 +489,7 @@ class ConfiguracaoForm(forms.ModelForm):
 
     class Meta:
         model = Configuracao
-        fields = ('nome', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo', 'ordenador_despesa')
+        fields = ('nome', 'cnpj', 'endereco', 'estado', 'municipio', 'email', 'telefones', 'logo', 'ordenador_despesa')
 
     def __init__(self, *args, **kwargs):
         super(ConfiguracaoForm, self).__init__(*args, **kwargs)

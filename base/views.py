@@ -2137,8 +2137,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     titulo_pregao = u'sdasd'
     texto = u'''
-    No dia %s, o(a) %s, inscrito no CNPJ/MF sob o nº PREEENCHER, localizado no endereço %s, representado neste ato por seu por seu Prefeito o(a) Sr(a) %s, nos termos da Lei nº 10.520/2002 e de modo subsidiário, da Lei nº 8.666/93 e Decreto Municipal nº 046/2010, conforme a classificação da proposta apresentada no %s, homologado em %s, resolve registrar o preço oferecido pela empresa, conforme os seguintes termos:
-    ''' % (pregao.data_abertura.strftime('%d/%m/%y'), configuracao.municipio.nome, configuracao.endereco, configuracao.ordenador_despesa.nome, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
+    No dia %s, o(a) %s, inscrito no CNPJ/MF sob o nº %s, localizado no endereço %s, representado neste ato por seu Prefeito, o(a) Sr(a) %s, nos termos da Lei nº 10.520/2002 e de modo subsidiário, da Lei nº 8.666/93 e Decreto Municipal nº 046/2010, conforme a classificação da proposta apresentada no %s, homologado em %s, resolve registrar o preço oferecido pela empresa, conforme os seguintes termos:
+    ''' % (pregao.data_abertura.strftime('%d/%m/%y'), configuracao.nome, configuracao.cnpj, configuracao.endereco, configuracao.ordenador_despesa.nome, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()
@@ -2159,6 +2159,38 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
                 p.add_run(u'%s' % fornecedor).bold = True
                 itens = len(item[1]['lance'])
+
+
+
+                table = document.add_table(rows=6, cols=2)
+
+                hdr_cells = table.rows[0].cells
+                hdr_cells[0].text = u'Empresa: %s' % fornecedor
+                a, b = hdr_cells[:2]
+                a.merge(b)
+
+                hdr_cells = table.rows[1].cells
+                hdr_cells[0].text = u'CNPJ: %s' % fornecedor.cnpj
+                hdr_cells[1].text = u'Telefones: %s' % fornecedor.telefones
+
+                hdr_cells = table.rows[2].cells
+                hdr_cells[0].text = u'Endereço: %s' % fornecedor.endereco
+                a, b = hdr_cells[:2]
+                a.merge(b)
+
+                hdr_cells = table.rows[3].cells
+                hdr_cells[0].text = u'Representante Legal: %s' % participante.nome_representante
+                a, b = hdr_cells[:2]
+                a.merge(b)
+
+                hdr_cells = table.rows[4].cells
+                hdr_cells[0].text = u'RG: %s' % participante.rg_representante
+                hdr_cells[1].text = u'CPF: %s' % participante.cpf_representante
+
+
+                hdr_cells = table.rows[5].cells
+                hdr_cells[0].text = u'Email: %s' % fornecedor.email
+                p = document.add_paragraph()
 
                 table = document.add_table(rows=itens, cols=6)
                 hdr_cells = table.rows[0].cells
@@ -2200,7 +2232,38 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 fornecedores.append(fornecedor)
                 p = document.add_paragraph()
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                p.add_run(u'%s' % fornecedor).bold = True
+
+                table = document.add_table(rows=6, cols=2)
+
+                hdr_cells = table.rows[0].cells
+                hdr_cells[0].text = u'Empresa: %s' % fornecedor
+                a, b = hdr_cells[:2]
+                a.merge(b)
+
+                hdr_cells = table.rows[1].cells
+                hdr_cells[0].text = u'CNPJ: %s' % fornecedor.cnpj
+                hdr_cells[1].text = u'Telefones: %s' % fornecedor.telefones
+
+                hdr_cells = table.rows[2].cells
+                hdr_cells[0].text = u'Endereço: %s' % fornecedor.endereco
+                a, b = hdr_cells[:2]
+                a.merge(b)
+
+                hdr_cells = table.rows[3].cells
+                hdr_cells[0].text = u'Representante Legal: %s' % participante.nome_representante
+                a, b = hdr_cells[:2]
+                a.merge(b)
+
+                hdr_cells = table.rows[4].cells
+                hdr_cells[0].text = u'RG: %s' % participante.rg_representante
+                hdr_cells[1].text = u'CPF: %s' % participante.cpf_representante
+
+
+                hdr_cells = table.rows[5].cells
+                hdr_cells[0].text = u'Email: %s' % fornecedor.email
+                p = document.add_paragraph()
+
+
                 itens = len(item[1]['lance'])
 
                 table = document.add_table(rows=itens, cols=6)
@@ -2241,13 +2304,38 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     2.2 – Durante o prazo de validade desta Ata de Registro de Preço, o(a) %s não será obrigado a firmar as contratações que dela poderão advir, facultando-se a realização de licitação específica para a aquisição pretendida, sendo assegurado ao beneficiário do registro preferência no fornecimento em igualdade de condições.
 
-    3 – DAS DISPOSIÇÕES FINAIS
+    3 – DA UTILIZAÇÃO DA ATA DE REGISTRO DE PREÇOS POR ÓRGÃO OU ENTIDADES NÃO PARTICIPANTES
 
-    3.1 – Integram esta ARP, o edital do Pregão supracitado e seus anexos, e a(s) proposta(s) da(s) empresa(s), classificada(s) no respectivo certame.
+    3.1 - A Ata de Registro de Preços, durante sua vigência, poderá ser utilizada por qualquer órgão ou entidade da Administração Pública Municipal, Estadual ou Federal, não-participante do certame licitatório, também denominado carona, mediante prévia consulta junto a CPL, órgão gerenciador da ARP que indicará possíveis fornecedores e respectivos preços, obedecida a ordem de classificação e observadas as seguintes regras:
 
-    3.2 – Os casos omissos serão resolvidos de acordo com a pelas normas constantes nas Leis n.º 8.666/93 e 10.520/02, no que couber.
+    I - prévia consulta ao órgão gerenciador da ARP; e
 
-    3.3 – Fica eleito o Foro da Comarca Local, para dirimir as dúvidas ou controvérsias resultantes da interpretação deste Contrato, renunciando a qualquer outro por mais privilegiado que seja.
+    II - observância da quantidade licitada do objeto constante da Ata e sua compatibilidade com a expectativa de compra, no exercício, pelo órgão carona, para que não ocorra fracionamento.
+
+    § 1º. Caberá ao fornecedor beneficiário da Ata de Registro de Preços, observadas as condições nela estabelecidas, optar pela aceitação ou não do fornecimento, independentemente dos quantitativos registrados em Ata, desde que este fornecimento não prejudique as obrigações anteriormente assumidas.
+
+    § 2º. As aquisições ou contratações adicionais a que se refere este artigo não poderão exceder, por órgão ou entidade, a 100%% (cem por cento) dos quantitativos registrados na Ata de Registro de Preços.
+
+    § 3º.  o quantitativo decorrente das adesões à ata de registro de preços não poderá exceder, na totalidade, ao quíntuplo do quantitativo de cada item registrado na ata de registro de preços para o órgão gerenciador e órgãos participantes, independente do número de órgãos não participantes que aderirem. 
+
+    § 4º. Órgão ou entidade que não participar de todos os lotes do registro de preços, observadas as disposições deste artigo, poderá ser carona nos demais lotes do mesmo registro de preços.
+
+    § 5º. Poderão igualmente utilizar-se da ARP, como carona, mediante prévia consulta ao órgão gerenciador, desde que observadas as condições estabelecidas neste artigo:
+
+    I - outros entes da Administração Pública; e
+
+    II - entidades privadas.
+
+    § 6º Observado o disposto nos §§ 12 e 13 do art. 9º, as contratações dos caronas poderão ser aditadas em quantidades, na forma permitida no art. 65, da Lei Federal nº 8.666, de 1993, se a respectiva Ata não tiver sido aditada.
+
+
+    4 – DAS DISPOSIÇÕES FINAIS
+
+    4.1 – Integram esta ARP, o edital do Pregão supracitado e seus anexos, e a(s) proposta(s) da(s) empresa(s), classificada(s) no respectivo certame.
+
+    4.2 – Os casos omissos serão resolvidos de acordo com a pelas normas constantes nas Leis n.º 8.666/93 e 10.520/02, no que couber.
+
+    4.3 – Fica eleito o Foro da Comarca Local, para dirimir as dúvidas ou controvérsias resultantes da interpretação deste Contrato, renunciando a qualquer outro por mais privilegiado que seja.
 
     ''' % (pregao.solicitacao.objeto, pregao.modalidade, configuracao.municipio)
 

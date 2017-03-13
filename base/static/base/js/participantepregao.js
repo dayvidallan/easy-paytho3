@@ -3,11 +3,13 @@
         $("#id_obs_ausencia_participante").parent().parent().show();
         $("#id_nome_representante").parent().parent().hide();
         $("#id_cpf_representante").parent().parent().hide();
+        $("#id_rg_representante").parent().parent().hide();
 
     } else {
         $("#id_obs_ausencia_participante").parent().parent().hide();
         $("#id_nome_representante").parent().parent().show();
         $("#id_cpf_representante").parent().parent().show();
+        $("#id_rg_representante").parent().parent().show();
 
     }
 

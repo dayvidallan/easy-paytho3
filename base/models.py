@@ -1101,6 +1101,7 @@ class ParticipantePregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
     fornecedor = models.ForeignKey(Fornecedor, verbose_name=u'Fornecedor')
     nome_representante = models.CharField(u'Nome do Representante', max_length=255, null=True, blank=True)
+    rg_representante = models.CharField(u'RG do Representante', max_length=255, null=True, blank=True)
     cpf_representante = models.CharField(u'CPF do Representante', max_length=255, null=True, blank=True)
     obs_ausencia_participante = models.CharField(u'Motivo da Ausência do Representante', max_length=1500, null=True, blank=True)
     me_epp = models.BooleanField(u'Micro Empresa/Empresa de Peq.Porte')
@@ -1666,6 +1667,7 @@ class Configuracao(models.Model):
     telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
     logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
     ordenador_despesa = models.ForeignKey(PessoaFisica, verbose_name=u'Ordenador de Despesa', null=True)
+    cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
 
 
     class Meta:
