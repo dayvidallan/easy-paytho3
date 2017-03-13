@@ -4,4 +4,16 @@
 .DS_Store
 .DS_Store?
 ._*
+media/upload/documentos_solicitacao/*
+media/upload/extratos/*
+media/upload/homologacoes/*
+media/upload/logo/*
+media/upload/minutas/*
+media/upload/ordens_compra/*
+media/upload/pedidos/*
+media/upload/pesquisas/*
+media/upload/pregao/*
+media/upload/propostas/*
+media/upload/resultados/*
+
 
