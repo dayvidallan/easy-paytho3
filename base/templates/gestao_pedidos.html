@@ -263,13 +263,14 @@
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <td colspan="6" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a></td>
+                                                        <td colspan="7" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a></td>
 
                                                     </tr>
                                                     <tr>
                                                         <th>Item</th>
                                                         <th>Material</th>
                                                         <th>Marca</th>
+                                                        <th>Unidade</th>
                                                         <th>Empresa</th>
                                                         <th>Valor</th>
                                                         <th>Quantidade Disponível</th>
@@ -280,13 +281,23 @@
                                                 <tbody>
                                                     {% for opcao in contrato.itemcontrato_set.all %}
                                                         <tr>
-                                                            <td>{{ opcao.item }}</td>
-                                                            <td>{{ opcao.item.material }}</td>
-                                                            <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                            <td>{{ opcao.participante }}</td>
-                                                            <td>{{ opcao.valor }}</td>
-                                                            <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                            {% if opcao.item %}
+                                                                <td>{{ opcao.item }}</td>
+                                                                <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                            {% else %}
+                                                                <td>{{ forloop.counter }}</td>
+                                                                <td>{{ opcao.material|truncatechars:500 }}</td>
 
+                                                            {% endif %}
+                                                            <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                            <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                                                            {% if opcao.participante %}
+                                                                <td>{{ opcao.participante }}</td>
+                                                            {% else %}
+                                                                <td>{{ opcao.fornecedor }}</td>
+                                                            {% endif %}
+                                                            <td>{{ opcao.valor|format_money }}</td>
+                                                            <td>{{ opcao.quantidade }}</td>
 
                                                         </tr>
                                                     {% endfor %}

@@ -716,4 +716,4 @@ class AdicionarItemAtaForm(forms.ModelForm):
     fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
     class Meta:
         model = ItemAtaRegistroPreco
-        fields = ('material', 'fornecedor', 'marca', 'quantidade', 'valor', )
+        fields = ('material', 'fornecedor', 'marca', 'unidade', 'quantidade', 'valor', )

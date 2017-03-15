@@ -311,6 +311,7 @@
                                                 <th>Item</th>
                                                 <th>Material</th>
                                                 <th>Marca</th>
+                                                <th>Unidade</th>
                                                 <th>Empresa</th>
                                                 <th>Valor</th>
                                                 <th>Quantidade Inicial</th>
@@ -330,6 +331,7 @@
                                                         <td>{{ opcao.item.material|truncatechars:500 }}</td>
                                                     {% endif %}
                                                     <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                    <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                                                     {% if ata.adesao %}
                                                         <td>{{ opcao.fornecedor }}</td>
                                                     {% else %}
@@ -361,7 +363,7 @@
                         <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
 
                     </div>
-                {% elif ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra %}
+                {% elif ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor  %}
                     <div class="pull-right">
                         <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
 
@@ -371,14 +373,14 @@
             <br><br>
 
 
-
-            <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+            {% if not ata.adesao or ata.anexoataregistropreco_set.exists %}
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
                     <thead>
                         <tr>
                             <th>Nome</th>
                             <th width="10%">Data</th>
                             <th>Arquivo</th>
-                            <td>Documento Público</td>
+                            <th>Documento Público</th>
                             <th>Cadastrado Por</th>
                             <th>Cadastrado Em</th>
                             <th>Opções</th>
@@ -423,6 +425,9 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum anexo.</p>
+            {% endif %}
 
 
         </div>
