@@ -4646,7 +4646,7 @@ def ata_sessao(request, pregao_id):
             membros.append(texto)
 
         portaria = pregao.comissao.nome
-        tipo = u'%s por %s' % (pregao.tipo, pregao.criterio)
+        tipo = u'%s %s' % (pregao.tipo, pregao.criterio)
 
 
 
@@ -4681,9 +4681,9 @@ def ata_sessao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     if pregao.criterio.nome == u'Por Item':
-        tipo = u'Itens'
+        nome_tipo = u'Itens'
     else:
-        tipo = u'Lotes'
+        nome_tipo = u'Lotes'
 
     for result in resultado.items():
         if result[1]['total'] != 0:
@@ -4693,7 +4693,7 @@ def ata_sessao(request, pregao_id):
                 lista.append(item.item)
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s, ' % (result[0], tipo, lista, format_money(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s, ' % (result[0], nome_tipo, lista, format_money(result[1]['total']))
             total_geral = total_geral + result[1]['total']
 
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
@@ -4747,6 +4747,7 @@ def ata_sessao(request, pregao_id):
     comissao = u', '.join(comissao)
     texto = u'''
     Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
+    Antes da abertura da sessão, realizou-se o credenciamento do (os) representante (es), feito a partir da apresentação da cédula de identidade ou documento equivalente, e procuração por instrumento público ou particular com firma reconhecida em cartório (documentos do outorgante, poderão ser conferidos na habilitação), atos esses documentados conforme listagem do (os) presente (es), que foram numeradas e juntadas aos autos às fls
     ''' % (pregao.hora_abertura, pregao.data_abertura.strftime('%d/%m/%y'), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
 
     #document.add_paragraph(texto)
@@ -4754,12 +4755,12 @@ def ata_sessao(request, pregao_id):
     p.alignment = 3
     p.add_run(texto)
 
-
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'DO CREDENCIAMENTO').bold = True
-
-    p = document.add_paragraph(u'Na sequência, solicitou dos licitantes presentes a declaração de cumprimento dos requisitos de habilitação e dos documentos para credenciamento dos licitantes presentes:')
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DO CREDENCIAMENTO').bold = True
+    #
+    # p = document.add_paragraph(u'Na sequência, solicitou dos licitantes presentes a declaração de cumprimento dos requisitos de habilitação e dos documentos para credenciamento dos licitantes presentes:')
 
     table = document.add_table(rows=1, cols=2)
     hdr_cells = table.rows[0].cells
@@ -4781,18 +4782,42 @@ def ata_sessao(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    p = document.add_paragraph(u'Finalizado o credenciamento foram recebidos os envelopes contendo as propostas de preços e a documentação de habilitação (envelopes nº 01 e 02) das mãos dos representantes credenciados.')
 
 
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'DO REGISTRO DO PREGÃO').bold = True
+    texto = u'''
+    Aberta a sessão, o Sr. Pregoeiro deu início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:
+
+    a) Objetivos do Pregão;
+    b) Ordenação dos trabalhos;
+    c) Forma e ordem em que os licitantes pediriam a palavra;
+    d) Vedação a intervenções fora da ordem definida;
+    e) Forma como serão feitos os lances;
+    f) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;
+    g) Pedido para que não se retirasse (em) antes do término, em face à possibilidade de repregoar;
+    h) As penalidades previstas no art. 70 da lei no 10.520/2002 com a correção de redação do texto da lei, conforme exposto no subitem 2.8.2.2;
+    i)           Observou o pregoeiro que ele e a comissão de apoio têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e
+    j)           Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).
+
+    Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es).
+    Em seguida passou-se à abertura do (os) envelope (es) da (as) proposta (as) observando-se os seguintes passos:
+    Abertura;
+    Conferência do conteúdo; e
+    Numeração.
+    Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final.
+    Dando continuidade procedeu-se à análise da (as) proposta (as), quando foi verificado se cada proposta atendia aos requisitos do edital, quanto ao objeto, prazo de entrega, garantia. Como resultado da análise foi (ram) classificada a (as) empresa (as) que atenderam todos os requisitos do edital e seus anexos.
+    '''
+    p = document.add_paragraph(texto)
 
 
-    p = document.add_paragraph()
-    p.alignment = 3
-
-    p.add_run(u'Ato contínuo, foram abertos os Envelopes contendo as Propostas e, com a colaboração dos membros da Equipe de Apoio, o Pregoeiro examinou a compatibilidade do objeto, prazos e condições de fornecimento ou de execução, com aqueles definidos no Edital, tendo selecionados todos os licitantes para participarem da Fase de Lances em razão dos preços propostos estarem em conformidade  com as exigências do edital.')
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'DO REGISTRO DO PREGÃO').bold = True
+    #
+    #
+    # p = document.add_paragraph()
+    # p.alignment = 3
+    #
+    # p.add_run(u'Ato contínuo, foram abertos os Envelopes contendo as Propostas e, com a colaboração dos membros da Equipe de Apoio, o Pregoeiro examinou a compatibilidade do objeto, prazos e condições de fornecimento ou de execução, com aqueles definidos no Edital, tendo selecionados todos os licitantes para participarem da Fase de Lances em razão dos preços propostos estarem em conformidade  com as exigências do edital.')
 
 
 
@@ -4803,8 +4828,12 @@ def ata_sessao(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = 3
 
+    if tipo == u'Itens':
+        nome_tipo = u'item(ns)'
+    else:
+        nome_tipo = u'lote(s)'
 
-    p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % tipo)
+    p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % nome_tipo)
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -4813,7 +4842,7 @@ def ata_sessao(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = 3
 
-    p.add_run(u'Em seguida, foi analisada a aceitabilidade da proposta detentora do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.')
+    p.add_run(u'Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.')
 
 
     p = document.add_paragraph()
@@ -4823,7 +4852,7 @@ def ata_sessao(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = 3
 
-    p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, foi declarada pelo Pregoeiro e equipe, a vencedora do certame, a empresa: ')
+    p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Pregoeiro e equipe declararam como vencedora(s) do certame, a(s) empresa(s): ')
 
 
     p.add_run(resultado_pregao)
@@ -4862,11 +4891,11 @@ def ata_sessao(request, pregao_id):
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.add_run(texto[0])
         p = document.add_paragraph()
-        p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.line_spacing_rule = WD_LINE_SPACING.SINGLE
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.add_run(u'Matrícula %s' % texto[1])
         p = document.add_paragraph()
-        p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.line_spacing_rule = WD_LINE_SPACING.SINGLE
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.add_run(texto[2])
 
