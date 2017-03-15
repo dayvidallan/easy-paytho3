@@ -1886,7 +1886,6 @@ def relatorio_economia(request, pregao_id):
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
-    print resultado
 
     data = {'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 

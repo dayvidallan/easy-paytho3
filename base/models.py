@@ -482,6 +482,15 @@ class ItemSolicitacaoLicitacao(models.Model):
                         return total
         return False
 
+    def get_valor_medio_total(self):
+        return self.valor_medio*self.quantidade
+
+    def get_valor_final_total(self):
+        valor = self.get_vencedor()
+        if valor:
+            valor = valor.valor
+            return valor * self.quantidade
+        return 0
 
     def get_item_tipo_contrato(self):
         if ItemAtaRegistroPreco.objects.filter(item=self).exists():
