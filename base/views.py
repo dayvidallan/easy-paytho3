@@ -620,6 +620,27 @@ def baixar_editais(request):
 
     return render(request, 'baixar_editais.html', locals(), RequestContext(request))
 
+def baixar_atas(request):
+    hoje = datetime.date.today()
+    atas = AtaRegistroPreco.objects.all().order_by('-numero')
+    form = BaixarAtasForm(request.POST or None)
+    if form.is_valid():
+        if form.cleaned_data.get('numero'):
+            atas = atas.filter(numero__icontains=form.cleaned_data.get('numero'))
+
+    return render(request, 'baixar_atas.html', locals(), RequestContext(request))
+
+
+def baixar_contratos(request):
+    hoje = datetime.date.today()
+    contratos = Contrato.objects.all().order_by('-numero')
+    form = BaixarContratoForm(request.POST or None)
+    if form.is_valid():
+        if form.cleaned_data.get('numero'):
+            contratos = contratos.filter(numero__icontains=form.cleaned_data.get('numero'))
+
+    return render(request, 'baixar_contratos.html', locals(), RequestContext(request))
+
 @login_required()
 def ver_solicitacoes(request):
     title=u'Lista de Solicitações'

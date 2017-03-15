@@ -43,8 +43,8 @@
              {% if perms.base.pode_abrir_processo and  solicitacao.processo %}
                 <a href="/base/ver_processo/{{solicitacao.processo.id}}/" class="btn btn-info">Capa do Processo</a>
              {% endif %}
-             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and  solicitacao.get_pregao  and solicitacao.get_pregao.data_homologacao %}
-                {% if solicitacao.get_pregao.eh_ata_registro_preco %}
+             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and  solicitacao.get_pregao and solicitacao.get_pregao.data_homologacao %}
+                {% if solicitacao.get_pregao.eh_ata_registro_preco and not solicitacao.get_ata %}
                     <a href="/base/cadastrar_ata_registro_preco/{{solicitacao.id}}/" class="btn btn-success">Criar Ata de Registro de Preço</a>
 
                 {% elif not solicitacao.contrato_set.exists %}
@@ -359,16 +359,16 @@
                     <tbody>
                         {% for pedido in pedidos %}
 
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ pedido.item.material }}</td>
-                                <td>{{ pedido.item.marca }}</td>
-                                <td>{{ pedido.item.fornecedor }}</td>
-                                <td>{{ pedido.item.valor }}</td>
-                                <td>{{ pedido.quantidade }}</td>
+                                <tr>
+                                    <td>{{ pedido.item }}</td>
+                                    <td>{{ pedido.item.item.material }}</td>
+                                    <td>{{ pedido.item.marca }}</td>
+                                    <td>{{ pedido.item.participante }}</td>
+                                    <td>{{ pedido.item.valor }}</td>
+                                    <td>{{ pedido.quantidade }}</td>
 
-                            </tr>
-
+                                </tr>
+                            {% endif %}
                         {% endfor %}
 
 

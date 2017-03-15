@@ -1,0 +1,82 @@
+{% extends super_template|default:"admin/base_publica.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block content %}
+
+    <br><h3>Atas de Registro de Preços</h3><br>
+    <form action="." method="POST" class="form-horizontal">
+        {% csrf_token %}
+         <div class="miolo">
+             <div class="row-fluid">
+                 <div class="col-xs-6">
+                 <table cellspacing="10" cellpadding="10" width="60%">
+                     <tr>
+
+                         <td> {{ form.numero|bootstrap }}</td>
+                         <td width="5%">&nbsp;</td>
+                        <td>
+                            <div class="col-xs-6">
+                                <br>
+                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+
+                            </div>
+                        </td>
+                     </tr>
+
+                 </table>
+                <div>
+             </div>
+
+
+
+
+            </div>
+
+
+            </div>
+         </div>
+    </form>
+    {%  if atas.exists %}
+
+        {%  for ata in atas %}
+
+            <table class="table table-bordered table-condensed table-striped">
+                <tr>
+                    <th colspan="2"><b> Ata de Registro de Preço N°{{ ata.numero }}</b></th>
+                </tr>
+                <tr>
+                    <th><b>Período de Vigência</b></th>
+                    <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
+                </tr>
+
+                {% if ata.anexoataregistropreco_set.all %}
+                    <tr>
+                        <th><b>Arquivos</b></th>
+                        <td>
+                            {% for arquivo in ata.get_arquivos_publicos %}
+                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+                            {% endfor %}
+                            {% if ata.get_contrato %}
+                                {% for arquivo in ata.get_contrato.get_arquivos_publicos %}
+                                    <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+
+        {% endfor %}
+    {% else %}
+        <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
+    {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
