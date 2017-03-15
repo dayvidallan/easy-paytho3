@@ -253,7 +253,9 @@ class SolicitacaoLicitacao(models.Model):
                 return u'1'
 
     def get_ata(self):
-        return AtaRegistroPreco.objects.filter(solicitacao=self)[0]
+        if AtaRegistroPreco.objects.filter(solicitacao=self).exists():
+            return AtaRegistroPreco.objects.filter(solicitacao=self)[0]
+        return False
 
     def eh_dispensa(self):
         return self.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]
@@ -1758,6 +1760,13 @@ class AtaRegistroPreco(models.Model):
         else:
             return u'Ativo'
 
+    def get_arquivos_publicos(self):
+        return AnexoAtaRegistroPreco.objects.filter(ata=self, publico=True)
+
+    def get_contrato(self):
+        if Contrato.objects.filter(solicitacao=self.solicitacao).exists():
+            return Contrato.objects.filter(solicitacao=self.solicitacao)[0]
+        return False
 
 class Contrato(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)

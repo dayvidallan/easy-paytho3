@@ -167,7 +167,8 @@ urlpatterns = [
     url(r'^liberar_solicitacao_ata/(?P<ata_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_ata, name='liberar_solicitacao_ata'),
 
 
-
+    url(r'^baixar_atas/$', views.baixar_atas, name='baixar_atas'),
+    url(r'^baixar_contratos/$', views.baixar_contratos, name='baixar_contratos'),
 
     url(r'^cadastrar_anexo_arp/(?P<ata_id>\d+)/$', views.cadastrar_anexo_arp, name='cadastrar_anexo_arp'),
     url(r'^editar_anexo_arp/(?P<item_id>\d+)/$', views.editar_anexo_arp, name='editar_anexo_arp'),

@@ -665,6 +665,11 @@ class BaixarEditaisForm(forms.Form):
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     numero = forms.CharField(label=u'Filtrar por Número do Pregão', required=False)
 
+class BaixarAtasForm(forms.Form):
+    numero = forms.CharField(label=u'Filtrar por Número da Ata', required=False)
+
+class BaixarContratoForm(forms.Form):
+    numero = forms.CharField(label=u'Filtrar por Número do Contrato', required=False)
 
 class HistoricoPregaoForm(forms.ModelForm):
     obs = forms.CharField(label=u'Descrição da Ocorrência', widget=forms.Textarea, required=True)
