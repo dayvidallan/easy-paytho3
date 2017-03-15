@@ -625,6 +625,8 @@ class ItemSolicitacaoLicitacao(models.Model):
         else:
             return None
 
+    def get_economizado(self):
+        return (self.valor_medio - self.get_vencedor().valor) * self.quantidade
 
     def get_rodada_atual(self):
         return RodadaPregao.objects.filter(item=self, pregao=self.get_licitacao(), atual=True)[0]
@@ -710,9 +712,6 @@ class ItemSolicitacaoLicitacao(models.Model):
         if ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
             return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
         return None
-
-
-
 
     def pode_gerar_resultado(self):
         return LanceItemRodadaPregao.objects.filter(item=self).exists() or PropostaItemPregao.objects.filter(item=self).exists()

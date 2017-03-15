@@ -1834,6 +1834,75 @@ def relatorio_resultado_final(request, pregao_id):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
+
+@login_required()
+def relatorio_economia(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    tabela = {}
+    total = {}
+
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO)
+    chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
+    for num in chaves:
+        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        chave = u'%s' % fornecedor
+        tabela[chave] = dict(lance = list(), total = 0, total_previsto=0, total_final=0)
+
+    for item in itens_pregao.order_by('item'):
+        if item.get_vencedor():
+            chave = u'%s' % item.get_vencedor().participante.fornecedor
+            tabela[chave]['lance'].append(item)
+            valor = tabela[chave]['total']
+            valor = valor + item.get_total_lance_ganhador()
+            tabela[chave]['total'] = valor
+
+
+            valor = tabela[chave]['total_previsto']
+            valor = valor + (item.valor_medio*item.quantidade)
+            tabela[chave]['total_previsto'] = valor
+
+            valor = tabela[chave]['total_final']
+            valor = valor + item.get_economizado()
+            tabela[chave]['total_final'] = valor
+
+
+
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+    print resultado
+
+    data = {'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+
+    template = get_template('relatorio_economia.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 @login_required()
 def relatorio_resultado_final_por_vencedor(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
