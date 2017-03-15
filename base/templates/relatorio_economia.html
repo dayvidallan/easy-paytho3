@@ -102,11 +102,11 @@ ul{
                             <tr>
                                 <th width="7%">Item</th>
                                 <th>Material</th>
-                                <th>Marca</th>
-                                <th>Quantidade</th>
-                                <th>Desconto</th>
-                                <th>Valor Previsto</th>
-                                <th>Valor Final</th>
+                                <th width="20%">Marca</th>
+
+                                <th width="11%">Desconto</th>
+                                <th width="15%">Valor Previsto</th>
+                                <th width="15%">Valor Final</th>
                                 <th width="15%">Valor Economizado</th>
 
 
@@ -119,16 +119,15 @@ ul{
                                     <td>{{ item.item }}</td>
                                     <td>{{ item.material}}</td>
                                     <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
-                                    <td>{{ item.quantidade }}</td>
                                     <td>{{ item.get_reducao_total }}</td>
-                                    <td>{{ item.valor_medio }}</td>
-                                    <td>{{ item.get_vencedor.valor }}</td>
-                                    <td>{{ item.get_economizado }}</td>
+                                    <td>{{ item.get_valor_medio_total|format_money }}</td>
+                                    <td>{{ item.get_valor_final_total|format_money }}</td>
+                                    <td>{{ item.get_economizado|format_money }}</td>
 
 
                                 </tr>
                             {% endfor %}
-                            <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total_previsto|format_money  }}</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td><td><b>R$ {{ lances.total_final|format_money  }}</b></td></tr>
+                            <tr><td colspan="4" align="right"><b>Total</b></td><td><b>R$ {{ lances.total_previsto|format_money  }}</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td><td><b>R$ {{ lances.total_final|format_money  }}</b></td></tr>
 
                         </tbody>
                     </table>
