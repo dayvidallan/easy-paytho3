@@ -72,7 +72,7 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    {% if pedido.ata.adesao %}
+                                    {% if not pedido.item.item %}
                                         <td>{{ forloop.counter }}</td>
                                         <td>{{ pedido.item.material|truncatechars:500 }}</td>
                                     {% else %}
@@ -81,8 +81,12 @@ ul{
                                     {% endif %}
                                     <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
 
+                                    {% if not pedido.item.item %}
+                                        <td>{{ pedido.item.unidade }}</td>
+                                    {% else %}
+                                        <td>{{ pedido.item.item.unidade}}</td>
+                                    {% endif %}
 
-                                    <td>{{ pedido.item.item.unidade}}</td>
 
 
                                     <td>{{ pedido.quantidade }}</td>

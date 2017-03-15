@@ -295,50 +295,87 @@
                 </tr>
             </thead>
         </table>
+        {% if solicitacao.tipo_aquisicao == solicitacao.TIPO_AQUISICAO_COMPRA %}
+            {% if pedidos.exists %}
+                <br>
+                <h3>Itens do Pedido</h3>
+                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Material</th>
+                            <th>Marca</th>
+                            <th>Empresa</th>
+                            <th>Valor</th>
+                            <th>Quantidade Solicitada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                            {% if eh_lote %}
+                                <tr>
+                                    <td>{{ pedido.item }}</td>
+                                    <td>{{ pedido.item.material }}</td>
+                                    <td>{{ pedido.item.get_marca_item_lote }}</td>
+                                    <td>{{ pedido.item.get_empresa_item_lote }}</td>
+                                    <td>{{ pedido.item.get_valor_item_lote }}</td>
+                                    <td>{{ pedido.quantidade }}</td>
 
-        {% if pedidos.exists %}
-            <br>
-            <h3>Itens do Pedido</h3>
-            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Material</th>
-                        <th>Marca</th>
-                        <th>Empresa</th>
-                        <th>Valor</th>
-                        <th>Quantidade Solicitada</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pedido in pedidos %}
-                        {% if eh_lote %}
+                                </tr>
+
+                            {% else %}
+                                <tr>
+                                    <td>{{ pedido.item.item }}</td>
+                                    <td>{{ pedido.item.item.material }}</td>
+                                    <td>{{ pedido.item.marca }}</td>
+                                    <td>{{ pedido.item.participante }}</td>
+                                    <td>{{ pedido.item.valor }}</td>
+                                    <td>{{ pedido.quantidade }}</td>
+
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+
+
+                    </tbody>
+               </table>
+
+            {% endif %}
+        {% elif solicitacao.tipo_aquisicao == solicitacao.TIPO_AQUISICAO_ADESAO_ARP %}
+            {% if pedidos.exists %}
+                <br>
+                <h3>Itens do Pedido</h3>
+                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Material</th>
+                            <th>Marca</th>
+                            <th>Empresa</th>
+                            <th>Valor</th>
+                            <th>Quantidade Solicitada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+
                             <tr>
-                                <td>{{ pedido.item }}</td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>{{ pedido.item.material }}</td>
-                                <td>{{ pedido.item.get_marca_item_lote }}</td>
-                                <td>{{ pedido.item.get_empresa_item_lote }}</td>
-                                <td>{{ pedido.item.get_valor_item_lote }}</td>
-                                <td>{{ pedido.quantidade }}</td>
-
-                            </tr>
-
-                        {% else %}
-                            <tr>
-                                <td>{{ pedido.item.item }}</td>
-                                <td>{{ pedido.item.item.material }}</td>
                                 <td>{{ pedido.item.marca }}</td>
-                                <td>{{ pedido.item.participante }}</td>
+                                <td>{{ pedido.item.fornecedor }}</td>
                                 <td>{{ pedido.item.valor }}</td>
                                 <td>{{ pedido.quantidade }}</td>
 
                             </tr>
-                        {% endif %}
-                    {% endfor %}
+
+                        {% endfor %}
 
 
-                </tbody>
-           </table>
+                    </tbody>
+               </table>
+
+            {% endif %}
 
         {% endif %}
 

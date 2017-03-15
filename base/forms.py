@@ -523,6 +523,11 @@ class AtaRegistroPrecoForm(forms.ModelForm):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        ultima = AtaRegistroPreco.objects.latest('id')
+        if ultima.numero:
+            lista = ultima.numero.split('/')
+            if len(lista) > 1:
+                self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
 
 class ContratoForm(forms.ModelForm):
@@ -534,6 +539,12 @@ class ContratoForm(forms.ModelForm):
         super(ContratoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        ultima = Contrato.objects.latest('id')
+        if ultima.numero:
+            lista = ultima.numero.split('/')
+            if len(lista) > 1:
+                self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+
 
 class NovoPedidoCompraForm(forms.ModelForm):
     class Meta:
@@ -716,4 +727,4 @@ class AdicionarItemAtaForm(forms.ModelForm):
     fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
     class Meta:
         model = ItemAtaRegistroPreco
-        fields = ('material', 'fornecedor', 'marca', 'quantidade', 'valor', )
+        fields = ('material', 'fornecedor', 'marca', 'unidade', 'quantidade', 'valor', )

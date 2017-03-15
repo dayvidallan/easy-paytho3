@@ -1826,11 +1826,14 @@ class Aditivo(models.Model):
 
 class ItemContrato(models.Model):
     contrato = models.ForeignKey(Contrato)
-    item = models.ForeignKey(ItemSolicitacaoLicitacao)
-    participante = models.ForeignKey(ParticipantePregao)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
+    participante = models.ForeignKey(ParticipantePregao, null=True)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     quantidade = models.IntegerField(u'Quantidade')
+    fornecedor = models.ForeignKey(Fornecedor, null=True)
+    material = models.ForeignKey('base.MaterialConsumo', null=True)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
 
     class Meta:
         ordering = ['item__item']
@@ -1888,6 +1891,7 @@ class ItemAtaRegistroPreco(models.Model):
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     quantidade = models.IntegerField(u'Quantidade')
     material = models.ForeignKey('base.MaterialConsumo', null=True)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
 
     class Meta:
         ordering = ['item__item']

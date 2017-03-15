@@ -90,7 +90,7 @@
                                 {% endfor%}
                                 {% if buscou %}
                                     <tr>
-                                       <td  colspan="6">&nbsp;</td>
+                                       <td  colspan="7">&nbsp;</td>
                                        <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
                                     </tr>
                                 {% endif %}
@@ -110,6 +110,7 @@
                                 <th>Item</th>
                                 <th>Material</th>
                                 <th>Marca</th>
+                                <th>Unidade</th>
                                 <th>Empresa</th>
                                 <th>Valor</th>
                                 <th>Quantidade Disponível</th>
@@ -122,7 +123,7 @@
                         <tbody>
                             {% for resultado in resultados %}
                                 <tr>
-                                    {% if ata.adesao %}
+                                    {% if not origem_pregao%}
                                         <td>{{ forloop.counter }}</td>
                                         <td>{{ resultado.material|truncatechars:500 }}</td>
                                     {% else %}
@@ -130,7 +131,8 @@
                                         <td>{{ resultado.item.material|truncatechars:500 }}</td>
                                     {% endif %}
                                     <td>{{ resultado.marca }}</td>
-                                    {% if ata.adesao %}
+                                    <td>{{ resultado.unidade|default_if_none:"-" }}</td>
+                                    {% if not origem_pregao %}
                                         <td>{{ resultado.fornecedor }}</td>
                                     {% else %}
                                         <td>{{ resultado.participante }}</td>
@@ -146,7 +148,7 @@
                             {% endfor %}
                             {% if buscou %}
                                 <tr>
-                                   <td  colspan="6">&nbsp;</td>
+                                   <td  colspan="7">&nbsp;</td>
                                    <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
                                 </tr>
                             {% endif %}

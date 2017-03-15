@@ -1291,45 +1291,61 @@ def cadastrar_contrato(request, solicitacao_id):
                         novo_item = ItemContrato()
                         novo_item.contrato = o
                         novo_item.item = item
+                        novo_item.material = item.material
                         novo_item.marca = item.get_marca_item_lote()
                         novo_item.participante = lote.get_vencedor().participante
+                        novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
                         novo_item.valor = item.get_valor_unitario_final()
                         novo_item.quantidade = item.quantidade
+                        novo_item.unidade = item.unidade
                         novo_item.save()
             else:
                 for resultado in solicitacao.get_resultado():
                     novo_item = ItemContrato()
                     novo_item.contrato = o
                     novo_item.item = resultado.item
+                    novo_item.material = resultado.material
                     novo_item.marca = resultado.marca
                     novo_item.participante = resultado.participante
+                    novo_item.fornecedor = resultado.participante.fornecedor
                     novo_item.valor = resultado.valor
                     novo_item.quantidade = resultado.item.quantidade
+                    novo_item.unidade = resultado.unidade
                     novo_item.save()
         else:
-
-
 
 
             if PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
                 for resultado in PedidoContrato.objects.filter(solicitacao=solicitacao):
                     novo_item = ItemContrato()
                     novo_item.contrato = o
-                    novo_item.item = resultado.item.item
+                    if resultado.item.item:
+                        novo_item.item = resultado.item.item
+                    novo_item.material = resultado.item.material
                     novo_item.marca = resultado.item.marca
-                    novo_item.participante = resultado.item.participante
+                    if resultado.item.participante:
+                        novo_item.participante = resultado.item.participante
+                    novo_item.fornecedor = resultado.item.fornecedor
                     novo_item.valor = resultado.item.valor
                     novo_item.quantidade = resultado.quantidade
+                    novo_item.unidade = resultado.item.unidade
                     novo_item.save()
+
             elif PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
                 for resultado in PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao):
                     novo_item = ItemContrato()
                     novo_item.contrato = o
-                    novo_item.item = resultado.item.item
+                    if resultado.item.item:
+                        novo_item.item = resultado.item.item
+                    novo_item.material = resultado.item.material
+
                     novo_item.marca = resultado.item.marca
-                    novo_item.participante = resultado.item.participante
+                    if resultado.item.participante:
+                        novo_item.participante = resultado.item.participante
+                    novo_item.fornecedor = resultado.item.fornecedor
                     novo_item.valor = resultado.item.valor
                     novo_item.quantidade = resultado.quantidade
+                    novo_item.unidade = resultado.item.unidade
                     novo_item.save()
 
 
@@ -2192,7 +2208,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells[0].text = u'Email: %s' % fornecedor.email
                 p = document.add_paragraph()
 
-                table = document.add_table(rows=itens, cols=6)
+                table = document.add_table(rows=itens+1, cols=6)
                 hdr_cells = table.rows[0].cells
                 hdr_cells[0].text = u'Lote / Item'
                 hdr_cells[1].text = u'Objeto'
@@ -2201,9 +2217,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells[4].text = u'Preço Unitário (R$)'
                 hdr_cells[5].text = u'Preço Total (R$)'
                 total_geral = 0
+                contador = 1
                 for lance in item[1]['lance']:
-
-
 
                     conteudo = u''
                     for componente in lance.get_itens_do_lote():
@@ -2211,13 +2226,14 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         total_geral += total
                         marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
 
-                        row_cells = table.add_row().cells
+                        row_cells = table.rows[contador].cells
                         row_cells[0].text = u'Lote %s / %s' % (lance.item, componente)
                         row_cells[1].text = u'%s' % componente.material.nome
                         row_cells[2].text = u'%s' % (marca)
                         row_cells[3].text = u'%s / %s' % (componente.unidade, componente.quantidade)
                         row_cells[4].text = u'%s' % lance.get_vencedor().valor
                         row_cells[5].text = u'%s' % format_money(total)
+                        contador += 1
                 row_cells = table.add_row().cells
                 row_cells[0].text = u'Total'
                 row_cells[5].text = format_money(total_geral)
@@ -2266,7 +2282,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
                 itens = len(item[1]['lance'])
 
-                table = document.add_table(rows=itens, cols=6)
+                table = document.add_table(rows=itens+1, cols=6)
                 hdr_cells = table.rows[0].cells
                 hdr_cells[0].text = u'Item'
                 hdr_cells[1].text = u'Objeto'
@@ -2275,19 +2291,22 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells[4].text = u'Preço Unitário (R$)'
                 hdr_cells[5].text = u'Preço Total (R$)'
                 total_geral = 0
+                contador = 1
                 for lance in item[1]['lance']:
 
-                    total = lance.quantidade * lance.get_vencedor().valor
-                    total_geral += total
-                    marca = PropostaItemPregao.objects.filter(item=lance, participante=lance.get_vencedor().participante)[0].marca
+                    if lance.get_vencedor().participante.fornecedor == fornecedor:
+                        total = lance.quantidade * lance.get_vencedor().valor
+                        total_geral += total
+                        marca = PropostaItemPregao.objects.filter(item=lance, participante=lance.get_vencedor().participante)[0].marca
 
-                    row_cells = table.add_row().cells
-                    row_cells[0].text = u'%s' % (lance.item)
-                    row_cells[1].text = u'%s' % lance.material.nome
-                    row_cells[2].text = u'%s' % (marca)
-                    row_cells[3].text = u'%s / %s' % (lance.unidade, lance.quantidade)
-                    row_cells[4].text = u'%s' % lance.get_vencedor().valor
-                    row_cells[5].text = u'%s' % format_money(total)
+                        row_cells = table.rows[contador].cells
+                        row_cells[0].text = u'%s' % (lance.item)
+                        row_cells[1].text = u'%s' % lance.material.nome
+                        row_cells[2].text = u'%s' % (marca)
+                        row_cells[3].text = u'%s / %s' % (lance.unidade, lance.quantidade)
+                        row_cells[4].text = u'%s' % lance.get_vencedor().valor
+                        row_cells[5].text = u'%s' % format_money(total)
+                        contador += 1
                 row_cells = table.add_row().cells
                 row_cells[0].text = u'Total'
                 row_cells[5].text = format_money(total_geral)
@@ -3051,6 +3070,7 @@ def novo_pedido_compra(request, solicitacao_id):
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
+        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_ADESAO_ARP
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
@@ -3070,6 +3090,7 @@ def novo_pedido_compra_contrato(request, contrato_id):
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
+        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_ADESAO_ARP
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
@@ -3264,8 +3285,14 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
     itens_contrato = contrato.itemcontrato_set.all()
     solicitacao = contrato.solicitacao
     title=u'Pedido de Compra - %s' % contrato
-    participantes = ParticipantePregao.objects.filter(id__in=itens_contrato.values_list('participante', flat=True))
-    form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
+    origem_pregao = contrato.solicitacao.get_pregao()
+    if origem_pregao:
+        participantes = ParticipantePregao.objects.filter(id__in=itens_contrato.values_list('participante', flat=True))
+        form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
+    else:
+        participantes = Fornecedor.objects.filter(id__in=itens_contrato.values_list('fornecedor', flat=True))
+        form = FiltraFornecedorPedidoForm(request.POST or None, participantes=participantes)
+
     eh_lote = solicitacao.eh_lote()
     if eh_lote:
         resultados = solicitacao.get_lotes()
@@ -3283,7 +3310,10 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                     ids.append(registro.item.id)
             resultados = resultados.filter(id__in=ids)
         else:
-            resultados = itens_contrato.filter(participante=form.cleaned_data.get('vencedor'))
+            if origem_pregao:
+                resultados = itens_contrato.filter(participante=form.cleaned_data.get('vencedor'))
+            else:
+                resultados = itens_contrato.filter(fornecedor=form.cleaned_data.get('vencedor'))
 
 
         fornecedor = form.cleaned_data.get('vencedor')
@@ -3292,7 +3322,11 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
         if 'quantidades' in request.POST:
 
             fornecedor = request.POST.get('fornecedor')
-            participante = ParticipantePregao.objects.get(id=fornecedor)
+            if origem_pregao:
+                participante = ParticipantePregao.objects.get(id=fornecedor)
+            else:
+                participante = Fornecedor.objects.get(id=fornecedor)
+
 
             if eh_lote and '0' in request.POST.getlist('quantidades'):
                 messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
@@ -3317,7 +3351,10 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                             messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
                             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
             else:
-                resultados = itens_contrato.filter(participante=participante)
+                if origem_pregao:
+                    resultados = itens_contrato.filter(participante=participante)
+                else:
+                    resultados = itens_contrato.filter(fornecedor=participante)
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     valor_pedido = int(valor)
 
@@ -3752,6 +3789,12 @@ def ver_ordem_compra(request, solicitacao_id):
 def ver_ordem_compra_dispensa(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
 
     destino_arquivo = u'upload/ordens_compra/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
@@ -3775,7 +3818,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     for item in itens:
         total += item.get_total()
 
-    data = {'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor,  'data_emissao': data_emissao, 'ordem': ordem}
+    data = {'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
 
