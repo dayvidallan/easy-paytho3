@@ -58,6 +58,10 @@ urlpatterns = [
     url(r'^suspender_pregao/(?P<pregao_id>\d+)/$', views.suspender_pregao, name='suspender_pregao'),
     url(r'^prazo_pesquisa_mercadologica/(?P<solicitacao_id>\d+)/$', views.prazo_pesquisa_mercadologica, name='prazo_pesquisa_mercadologica'),
     url(r'^resultado_alterar_todos/(?P<pregao_id>\d+)/(?P<participante_id>\d+)/(?P<situacao>\d+)/$', views.resultado_alterar_todos, name='resultado_alterar_todos'),
+    url(r'^relatorio_economia/(?P<pregao_id>\d+)/$', views.relatorio_economia, name='relatorio_economia'),
+
+
+
     url(r'^modelo_memorando/(?P<solicitacao_id>\d+)/$', views.modelo_memorando, name='modelo_memorando'),
     url(r'^receber_solicitacao/(?P<solicitacao_id>\d+)/$', views.receber_solicitacao, name='receber_solicitacao'),
     url(r'^ver_movimentacao/(?P<solicitacao_id>\d+)/$', views.ver_movimentacao, name='ver_movimentacao'),

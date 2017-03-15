@@ -57,7 +57,7 @@ ul{
                         <br>
                       <h1 class="page-header">
                         {% include "cabecalho.html" %}
-                        <center><font size="4">Classificação Final - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+                        <center><font size="4">Relatório de Economia Alcançada - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
                       </h1>
 
                     {% endblock %}
@@ -103,15 +103,12 @@ ul{
                                 <th width="7%">Item</th>
                                 <th>Material</th>
                                 <th>Marca</th>
-                                <th>Unidade</th>
-                                <th width="15%">Quantidade</th>
-                                {% if eh_maior_desconto %}
-                                    <th width="20%">Valor Médio</th>
-                                    <th width="20%">Desconto</th>
-                                {% else %}
-                                    <th width="20%">Valor Unit.</th>
-                                    <th width="20%">Total</th>
-                                {% endif %}
+                                <th>Quantidade</th>
+                                <th>Desconto</th>
+                                <th>Valor Previsto</th>
+                                <th>Valor Final</th>
+                                <th width="15%">Valor Economizado</th>
+
 
                             </tr>
                         </thead>
@@ -122,22 +119,17 @@ ul{
                                     <td>{{ item.item }}</td>
                                     <td>{{ item.material}}</td>
                                     <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
-                                    <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>
-                                    {% if eh_maior_desconto %}
-                                        <td>R$ {{ item.valor_medio|format_money }}</td>
-                                        <td>{{ item.get_vencedor.get_valor }}</td>
-                                    {% else %}
-                                        <td>{{ item.get_vencedor.get_valor }}</td>
-                                        <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
-                                   {% endif %}
+                                    <td>{{ item.get_reducao_total }}</td>
+                                    <td>{{ item.valor_medio }}</td>
+                                    <td>{{ item.get_vencedor.valor }}</td>
+                                    <td>{{ item.get_economizado }}</td>
 
 
                                 </tr>
                             {% endfor %}
-                            {% if not eh_maior_desconto %}
-                                <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
-                            {% endif %}
+                            <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total_previsto|format_money  }}</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td><td><b>R$ {{ lances.total_final|format_money  }}</b></td></tr>
+
                         </tbody>
                     </table>
                 {% endif %}
