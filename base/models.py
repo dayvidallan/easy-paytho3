@@ -973,6 +973,14 @@ class Pregao(models.Model):
     def eh_ativo(self):
         return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
 
+    def get_situacao(self):
+        if self.data_homologacao:
+            return u'Homologada'
+        elif self.data_adjudicacao:
+            return u'Adjudicada'
+        else:
+            return self.situacao
+
     def tem_empate_ficto(self):
         pregao = self
         if pregao.eh_pregao():
@@ -1024,6 +1032,11 @@ class Pregao(models.Model):
     def get_contrato(self):
         if Contrato.objects.filter(pregao=self).exists():
             return Contrato.objects.filter(pregao=self)[0]
+        return False
+
+    def get_arp(self):
+        if AtaRegistroPreco.objects.filter(pregao=self).exists():
+            return AtaRegistroPreco.objects.filter(pregao=self)[0]
         return False
 
     def tem_item_sem_lote(self):

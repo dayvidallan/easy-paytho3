@@ -67,21 +67,26 @@
                     <th><b>Local</b></th>
                     <td>{{ pregao.local }}</td>
                 </tr>
-                {% if pregao.anexopregao_set.all %}
-                    <tr>
-                        <th><b>Arquivos</b></th>
-                        <td>
-                            {% for arquivo in pregao.get_arquivos_publicos %}
-                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+
+                <tr>
+                    <th><b>Arquivos</b></th>
+                    <td>
+                        {% for arquivo in pregao.get_arquivos_publicos %}
+                            <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+                        {% endfor %}
+                        {% if pregao.get_contrato %}
+                            {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
+                                <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
                             {% endfor %}
-                            {% if pregao.get_contrato %}
-                                {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
-                                    <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
-                                {% endfor %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endif %}
+                        {% endif %}
+                        {% if pregao.get_arp %}
+                            {% for arquivo in pregao.get_arp.get_arquivos_publicos %}
+                                <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+
             </table>
 
         {% endfor %}
