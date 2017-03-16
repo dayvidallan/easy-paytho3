@@ -40,7 +40,7 @@
                     <th>Pregão</th>
                     <th>Memorando</th>
                     <th>Objeto</th>
-                    <th>Período</th>
+                    <th>Situação</th>
                     <th>Abertura das Propostas</th>
                     <th>Responsável</th>
                     <th>Opções</th>
@@ -55,7 +55,7 @@
                        <td>{{ pregao.num_pregao }}</td>
                        <td>{{ pregao.solicitacao.num_memorando }}</td>
                        <td>{{ pregao.solicitacao.objeto }}</td>
-                       <td>{{ pregao.data_inicio }} à {{pregao.data_termino}}</td>
+                       <td>{{ pregao.get_situacao }}</td>
                        <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
                        <td>{{ pregao.responsavel}}</td>
                        <td>

@@ -49,19 +49,39 @@ ul{
 
 {% block content %}
 <center>
+
     {% for key, lances in resultado.items %}
-            {% if lances %}
+            {% if lances.lance %}
 
 
-                    {% block content_title %}
-                        <br>
-                      <h1 class="page-header">
+                {% block content_title %}
+                    <br>
+                    <h1 class="page-header">
                         {% include "cabecalho.html" %}
                         <center><font size="4">Relatório de Economia Alcançada - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
-                      </h1>
+                    </h1>
 
-                    {% endblock %}
 
+                {% endblock %}
+
+
+
+                {% if forloop.first %}
+
+                    <table border="1" align="center" width="95%" cellpadding="5" cellspacing="5">
+                        <tr>
+                            <th colspan="4"><font size="6">Demonstrativo Final</font></th>
+                        </tr>
+                        <tr>
+                            <td>Total Previsto: <b>R$ {{ total_previsto_geral|format_money }}</b></td>
+                            <td>Total Final: <b>R$ {{ total_final_geral|format_money }}</b></td>
+                            <td>Total Desconto: <b>R$ {{ total_desconto_geral }}</b></td>
+                            <td>Total Economizado: <b>R$ {{ total_economizado_geral|format_money }}</b></td>
+                        </tr>
+                    </table>
+                    <br><br>
+
+                {% endif %}
                 <h2>Fornecedor: {{ key }}</h2>
                 {% if eh_lote %}
                     <table border="1" width="100%" cellpadding="5" cellspacing="5">
@@ -104,9 +124,10 @@ ul{
                                 <th>Material</th>
                                 <th width="20%">Marca</th>
 
-                                <th width="11%">Desconto</th>
+
                                 <th width="15%">Valor Previsto</th>
                                 <th width="15%">Valor Final</th>
+                                <th width="11%">Desconto</th>
                                 <th width="15%">Valor Economizado</th>
 
 
@@ -119,15 +140,15 @@ ul{
                                     <td>{{ item.item }}</td>
                                     <td>{{ item.material}}</td>
                                     <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
-                                    <td>{{ item.get_reducao_total }}</td>
                                     <td>{{ item.get_valor_medio_total|format_money }}</td>
                                     <td>{{ item.get_valor_final_total|format_money }}</td>
+                                    <td>{{ item.get_reducao_total }}</td>
                                     <td>{{ item.get_economizado|format_money }}</td>
 
 
                                 </tr>
                             {% endfor %}
-                            <tr><td colspan="4" align="right"><b>Total</b></td><td><b>R$ {{ lances.total_previsto|format_money  }}</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td><td><b>R$ {{ lances.total_final|format_money  }}</b></td></tr>
+                            <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ lances.total_previsto|format_money  }}</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td><td><b>{{ lances.total_desconto_porcento  }}</b></td><td><b>R$ {{ lances.total_final|format_money  }}</b></td></tr>
 
                         </tbody>
                     </table>
@@ -135,8 +156,10 @@ ul{
                 {% if not forloop.last %}
                     <pdf:nextpage />
                 {% endif %}
+
             {% endif %}
     {% endfor %}
+
 </center>
 
 

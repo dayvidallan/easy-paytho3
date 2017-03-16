@@ -529,7 +529,7 @@ def ver_fornecedores(request, fornecedor_id=None):
 @login_required()
 def ver_pregoes(request):
     title=u'Licitações'
-    pregoes = Pregao.objects.all()
+    pregoes = Pregao.objects.all().order_by('num_pregao')
     eh_ordenador_despesa = False
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
@@ -1864,7 +1864,13 @@ def relatorio_economia(request, pregao_id):
     for num in chaves:
         fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
         chave = u'%s' % fornecedor
-        tabela[chave] = dict(lance = list(), total = 0, total_previsto=0, total_final=0)
+        tabela[chave] = dict(lance = list(), total = 0, total_previsto=0, total_final=0, total_desconto_porcento=0)
+
+
+    total_previsto_geral = 0
+    total_final_geral = 0
+    total_desconto_geral = 0
+    total_economizado_geral = 0
 
     for item in itens_pregao.order_by('item'):
         if item.get_vencedor():
@@ -1875,9 +1881,11 @@ def relatorio_economia(request, pregao_id):
             tabela[chave]['total'] = valor
 
 
+
             valor = tabela[chave]['total_previsto']
             valor = valor + (item.valor_medio*item.quantidade)
             tabela[chave]['total_previsto'] = valor
+
 
             valor = tabela[chave]['total_final']
             valor = valor + item.get_economizado()
@@ -1885,9 +1893,29 @@ def relatorio_economia(request, pregao_id):
 
 
 
+            reducao = tabela[chave]['total_final'] / tabela[chave]['total_previsto']
+            ajuste= 1-reducao
+            tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+
+
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    for result in resultado.items():
+        if not result[1]['lance']:
+            chave = result[0]
+            del resultado[chave]
+        else:
+            total_previsto_geral = total_previsto_geral + result[1]['total_previsto']
+            total_final_geral = total_final_geral + result[1]['total']
+            total_economizado_geral = total_economizado_geral + result[1]['total_final']
+
+
+    reducao = total_final_geral / total_previsto_geral
+    ajuste= 1-reducao
+    total_desconto_geral = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+
+    mostrou=False
+    data = {'mostrou': mostrou, 'total_previsto_geral':total_previsto_geral, 'total_final_geral': total_final_geral, 'total_desconto_geral':total_desconto_geral, 'total_economizado_geral':total_economizado_geral, 'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_economia.html')
 
@@ -5122,6 +5150,11 @@ def adicionar_item_adesao_arp(request, ata_id):
         o = form.save(False)
         o.ata = ata
         o.save()
+        total = 0
+        for item in ItemAtaRegistroPreco.objects.filter(ata=ata):
+            total = total + (item.valor * item.quantidade)
+        ata.valor = total
+        ata.save()
         messages.success(request, u'Item da ata cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
     return render(request, 'adicionar_item_adesao_arp.html', locals(), RequestContext(request))
