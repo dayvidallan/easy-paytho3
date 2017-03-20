@@ -6,7 +6,7 @@ from base.models import *
 from django.contrib.admin.widgets import AdminDateWidget
 from dal import autocomplete
 from django.contrib.auth.models import Group
-
+from localflavor.br.forms import BRCNPJField
 class CadastraParticipantePregaoForm(forms.ModelForm):
     sem_representante = forms.BooleanField(label=u'Representante Ausente', initial=False, required=False)
     obs_ausencia_participante = forms.CharField(label=u'Motivo da Ausência do Representante', widget=forms.Textarea, required=False)
@@ -355,7 +355,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
       required=False
     )
     cpf = utils.CpfFormField(label=u'CPF', required=True)
-
+    cnpj = BRCNPJField(label=u'CNPJ')
     class Meta:
         model = LogDownloadArquivo
         fields = ['cnpj', 'nome','responsavel', 'cpf', 'email', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']

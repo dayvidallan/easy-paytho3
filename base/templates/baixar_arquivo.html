@@ -3,7 +3,7 @@
 {% load bootstrap %}
 
 {% block content %}
-
+		<p class="alert alert-info">Os dados informados serão utilizados para a notificação dos interessados sobre inclusões e alterações de documentos no portal da transparência.</p>
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
              <div class="miolo">
@@ -12,12 +12,11 @@
                         {{ form|bootstrap }}
                     </div>
 		        </div>
-                <div class="form-group form-row">
-                    <div>
-                        <div class="controls">
-                            <button type="submit" class="btn btn-primary">Cadastrar</button>
-                        </div>
-                    </div>
+
+				<div class="controls">
+					<button type="submit" class="btn btn-primary">Cadastrar</button>
+				</div>
+                <br>
                 </div>
              </div>
         </form>
