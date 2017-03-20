@@ -954,6 +954,7 @@ class Pregao(models.Model):
     data_adjudicacao = models.DateField(u'Data da Adjudicação', null=True)
     data_homologacao = models.DateField(u'Data da Homologação', null=True)
     data_revogacao = models.DateField(u'Data da Revogação', null=True)
+    data_suspensao = models.DateField(u'Data da Suspensão', null=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True)
     eh_ata_registro_preco = models.BooleanField(u'Ata de Registro de Preço?', default=True)
     arquivo_homologacao = models.FileField(u'Termo de Homologação', null=True, upload_to=upload_path_termo_homologacao)
@@ -967,7 +968,7 @@ class Pregao(models.Model):
 
     def __unicode__(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
-    
+
     def get_titulo(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
 
@@ -984,6 +985,8 @@ class Pregao(models.Model):
             return u'Adjudicado em %s' % self.data_adjudicacao.strftime('%d/%m/%y')
         elif self.situacao == self.REVOGADO:
             return u'Revogado em %s' % self.data_revogacao.strftime('%d/%m/%y')
+        elif self.situacao == self.SUSPENSO:
+            return u'Suspenso em %s' % self.data_revogacao.strftime('%d/%m/%y')
         else:
             return self.situacao
 
