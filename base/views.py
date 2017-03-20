@@ -538,7 +538,10 @@ def ver_pregoes(request):
 
     if form.is_valid():
 
-        pregoes = pregoes.filter(Q(solicitacao__processo__numero=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando=form.cleaned_data.get('info')))
+        pregoes = pregoes.filter(Q(solicitacao__processo__numero=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando=form.cleaned_data.get('info')) | Q(num_pregao=form.cleaned_data.get('info')) )
+
+    if request.GET.get('situacao'):
+        pregoes = pregoes.filter(situacao=request.GET.get('situacao'))
     return render(request, 'ver_pregoes.html', locals(), RequestContext(request))
 
 @login_required()

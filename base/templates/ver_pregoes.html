@@ -7,6 +7,14 @@
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?situacao=" + escape( $('#'+campo.id).val());
+
+        }
+	</script>
+{% endblock %}
 {% block content %}
     {% if form %}
         <fieldset>
