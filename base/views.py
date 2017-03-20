@@ -5144,7 +5144,7 @@ def aderir_arp(request):
 @login_required()
 def adicionar_item_adesao_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    title = u'Adicionar Item = %s' % ata
+    title = u'Adicionar Item - %s' % ata
     form = AdicionarItemAtaForm(request.POST or None)
     if form.is_valid():
         o = form.save(False)
@@ -5207,3 +5207,23 @@ def solicitar_pedidos_novamente(request, solicitacao_id, secretaria_id):
         ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao_id, secretaria=secretaria_id).delete()
         messages.success(request, u'Os pedidos serão solicitados novamente às secretarias.')
         return HttpResponseRedirect(u'/base/avaliar_pedidos/%s/' % solicitacao_id)
+
+
+@login_required()
+def revogar_pregao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    title = u'Revogar pregão - %s' % pregao
+    form = RevogarPregaoForm(request.POST or None, instance=pregao)
+    if form.is_valid():
+        o = form.save(False)
+        o.situacao = Pregao.REVOGADO
+        o.save()
+        historico = HistoricoPregao()
+        historico.pregao = pregao
+        historico.data = datetime.datetime.now()
+        historico.obs = u'Pregão revogado.'
+        historico.save()
+
+        messages.success(request, u'Pregão revogado com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
