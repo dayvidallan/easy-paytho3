@@ -59,6 +59,7 @@ urlpatterns = [
     url(r'^prazo_pesquisa_mercadologica/(?P<solicitacao_id>\d+)/$', views.prazo_pesquisa_mercadologica, name='prazo_pesquisa_mercadologica'),
     url(r'^resultado_alterar_todos/(?P<pregao_id>\d+)/(?P<participante_id>\d+)/(?P<situacao>\d+)/$', views.resultado_alterar_todos, name='resultado_alterar_todos'),
     url(r'^relatorio_economia/(?P<pregao_id>\d+)/$', views.relatorio_economia, name='relatorio_economia'),
+    url(r'^revogar_pregao/(?P<pregao_id>\d+)/$', views.revogar_pregao, name='revogar_pregao'),
 
 
 

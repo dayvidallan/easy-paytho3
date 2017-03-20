@@ -733,3 +733,13 @@ class AdicionarItemAtaForm(forms.ModelForm):
     class Meta:
         model = ItemAtaRegistroPreco
         fields = ('material', 'fornecedor', 'marca', 'unidade', 'quantidade', 'valor', )
+
+
+class RevogarPregaoForm(forms.ModelForm):
+    class Meta:
+        model = Pregao
+        fields = ('data_revogacao',)
+
+    def __init__(self, *args, **kwargs):
+        super(RevogarPregaoForm, self).__init__(*args, **kwargs)
+        self.fields['data_revogacao'].widget.attrs = {'class': 'vDateField'}
