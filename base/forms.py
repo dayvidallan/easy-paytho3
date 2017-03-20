@@ -355,7 +355,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
       required=False
     )
     cpf = utils.CpfFormField(label=u'CPF', required=True)
-    cnpj = BRCNPJField(label=u'CNPJ')
+    cnpj = BRCNPJField(label=u'CNPJ', help_text=u'Informe apenas números.')
     class Meta:
         model = LogDownloadArquivo
         fields = ['cnpj', 'nome','responsavel', 'cpf', 'email', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']
