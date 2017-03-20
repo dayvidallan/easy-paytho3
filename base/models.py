@@ -986,7 +986,7 @@ class Pregao(models.Model):
         elif self.situacao == self.REVOGADO:
             return u'Revogado em %s' % self.data_revogacao.strftime('%d/%m/%y')
         elif self.situacao == self.SUSPENSO:
-            return u'Suspenso em %s' % self.data_revogacao.strftime('%d/%m/%y')
+            return u'Suspenso em %s' % self.data_suspensao.strftime('%d/%m/%y')
         else:
             return self.situacao
 
