@@ -1379,8 +1379,10 @@ def cadastrar_contrato(request, solicitacao_id):
     return render(request, 'cadastrar_contrato.html', locals(), RequestContext(request))
 
 def baixar_arquivo(request, arquivo_id):
-    title=u'Baixar Arquivo'
+
     arquivo = get_object_or_404(AnexoPregao, pk=arquivo_id)
+    title=u'Portal da Transparência'
+    subtitulo = u'Baixar Arquivo:  \'%s\' - %s' % (arquivo.nome, arquivo.pregao)
     form = LogDownloadArquivoForm(request.POST or None)
     if form.is_valid():
         o = form.save(False)

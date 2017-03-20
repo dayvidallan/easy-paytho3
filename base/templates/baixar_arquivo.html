@@ -3,6 +3,8 @@
 {% load bootstrap %}
 
 {% block content %}
+
+		<h3>{{ subtitulo }}</h3>
 		<p class="alert alert-info">Os dados informados serão utilizados para a notificação dos interessados sobre inclusões e alterações de documentos no portal da transparência.</p>
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
