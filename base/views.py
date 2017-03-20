@@ -1537,11 +1537,12 @@ def suspender_pregao(request, pregao_id):
     form = RemoverParticipanteForm(request.POST or None)
     if form.is_valid():
         registro = HistoricoPregao()
-        registro.data =datetime.datetime.now()
+        registro.data = datetime.datetime.now()
         registro.obs = form.cleaned_data.get('motivo')
         registro.pregao = pregao
         registro.save()
         pregao.situacao = Pregao.SUSPENSO
+        pregao.data_suspensao = datetime.datetime.now().date()
         pregao.save()
 
         messages.success(request, u'Pregão suspenso com sucesso.')
