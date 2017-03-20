@@ -984,9 +984,17 @@ class Pregao(models.Model):
         elif self.data_adjudicacao:
             return u'Adjudicado em %s' % self.data_adjudicacao.strftime('%d/%m/%y')
         elif self.situacao == self.REVOGADO:
-            return u'Revogado em %s' % self.data_revogacao.strftime('%d/%m/%y')
+            if self.data_revogacao:
+                return u'Revogado em %s' % self.data_revogacao.strftime('%d/%m/%y')
+            else:
+                return u'Revogado'
+
         elif self.situacao == self.SUSPENSO:
-            return u'Suspenso em %s' % self.data_suspensao.strftime('%d/%m/%y')
+            if self.data_suspensao:
+                return u'Suspenso em %s' % self.data_suspensao.strftime('%d/%m/%y')
+            else:
+                return u'Suspenso'
+
         else:
             return self.situacao
 
