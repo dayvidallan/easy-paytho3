@@ -460,7 +460,8 @@ class AbrirProcessoForm(forms.ModelForm):
         self.fields['objeto'].initial = self.solicitacao.objeto
 
 class BuscarSolicitacaoForm(forms.Form):
-    info = forms.CharField(label=u'Digite o número do processo ou do memorando', required=False)
+    info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES, widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
 
 class MaterialConsumoForm(forms.ModelForm):
     class Meta:
