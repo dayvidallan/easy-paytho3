@@ -23,9 +23,7 @@ from django.utils.encoding import force_unicode
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from localflavor.br.forms import BRCPFField
-from random import choice
-from django.views.decorators.csrf import csrf_exempt
-from operator import or_
+
 
 phone_digits_re = re.compile(r'^(\d{2})[-\.]?(\d{4,5})[-\.]?(\d{4})$')
 
