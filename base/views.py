@@ -3231,6 +3231,7 @@ def novo_pedido_compra_arp(request, ata_id):
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
+        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_ADESAO_ARP
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
@@ -4862,10 +4863,12 @@ def ata_sessao(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = 3
 
-    if tipo == u'Itens':
+
+    if pregao.criterio.nome == u'Por Item':
         nome_tipo = u'item(ns)'
     else:
         nome_tipo = u'lote(s)'
+
 
     p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % nome_tipo)
 
