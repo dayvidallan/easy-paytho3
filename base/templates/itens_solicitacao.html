@@ -360,10 +360,10 @@
                         {% for pedido in pedidos %}
 
                             <tr>
-                                <td>{{ pedido.item }}</td>
-                                <td>{{ pedido.item.item.material }}</td>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ pedido.item.material }}</td>
                                 <td>{{ pedido.item.marca }}</td>
-                                <td>{{ pedido.item.participante }}</td>
+                                <td>{{ pedido.item.fornecedor }}</td>
                                 <td>{{ pedido.item.valor }}</td>
                                 <td>{{ pedido.quantidade }}</td>
 

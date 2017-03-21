@@ -103,17 +103,13 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    {% if pedido.ata.adesao %}
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ pedido.item.material|truncatechars:500 }}</td>
-                                    {% else %}
-                                        <td>{{ pedido.item.item }}</td>
-                                        <td>{{ pedido.item.item.material|truncatechars:500 }}</td>
-                                    {% endif %}
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ pedido.item.material|truncatechars:500 }}</td>
+
                                     <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
 
 
-                                    <td>{{ pedido.item.item.unidade}}</td>
+                                    <td>{{ pedido.item.unidade}}</td>
 
 
                                     <td>{{ pedido.quantidade }}</td>
