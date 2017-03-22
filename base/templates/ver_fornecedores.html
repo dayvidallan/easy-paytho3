@@ -56,6 +56,7 @@
                            <td>{{ fornecedor.get_dados_bancarios|safe }}</td>
                            <td>
                                <a class="btn btn-default btn-sm" href="/base/editar_fornecedor/{{fornecedor.id}}/">Editar</a>
+                               <a class="btn btn-info btn-sm" href="/base/imprimir_fornecedor/{{fornecedor.id}}/" target="_blank">Imprimir</a>
                            </td>
                        </tr>
                     {% endfor %}

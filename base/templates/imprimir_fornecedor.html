@@ -1,0 +1,93 @@
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4;
+            margin: 1.0cm;
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+
+{% block content %}
+<center>
+        {% block content_title %}
+
+        <h1 class="page-header">
+            {% include "cabecalho.html" %}
+        </h1>
+        <center><h2>Dados do Fornecedor</h2></center>
+        <table border="0" width="95%" cellpadding="5" cellspacing="5">
+            <thead>
+                <tr>
+                    <th>Razão Social</th><td colspan="3" align="left">{{ fornecedor.razao_social }}</td>
+
+                </tr>
+                <tr>
+                     <th>CPF/CNPJ</th><td  colspan="3" align="left">{{ fornecedor.cnpj }}</td>
+
+
+                </tr>
+                <tr>
+                    <th>Endereço</th><td colspan="3" align="left">{{ fornecedor.endereco }}</td>
+                </tr>
+                <tr>
+                    <th>Telefones</th><td align="left">{{ fornecedor.telefones }}</td>
+                    <th>Email</th><td align="left">{{ fornecedor.email }}</td>
+                </tr>
+                <tr>
+                    <th>Dados Bancários</th>
+                    <td colspan="3" align="left">
+                        {% if fornecedor.banco %}
+                            {{ fornecedor.banco}} / Agência: {{ fornecedor.agencia}} / Conta: {{ fornecedor.conta }}
+                        {% else %}
+                            Não Informado.
+                        {% endif%}
+                    </td>
+
+                </tr>
+                <tr>
+                    <td colspan="4" align="center"><br><br><br>Emitido em: {{ data_emissao }}</td>
+                </tr>
+            </thead>
+        </table>
+
+        {% endblock %}
+
+
+
+{% endblock %}
+
+
+
