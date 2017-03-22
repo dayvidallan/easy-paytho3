@@ -1272,6 +1272,8 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                     novo_item.valor = item.get_valor_unitario_final()
                     novo_item.quantidade = item.quantidade
                     novo_item.unidade = item.unidade
+                    novo_item.material = item.material
+                    novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
                     novo_item.save()
 
         else:
@@ -1284,7 +1286,11 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                 novo_item.valor = resultado.valor
                 novo_item.quantidade = resultado.item.quantidade
                 novo_item.unidade = resultado.item.unidade
+                novo_item.material = resultado.item.material
+                novo_item.fornecedor = resultado.participante.fornecedor
                 novo_item.save()
+
+
         messages.success(request, u'Ata de Registro de Preço cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % o.id)
     return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))

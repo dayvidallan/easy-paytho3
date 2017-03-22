@@ -361,9 +361,21 @@
 
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ pedido.item.material }}</td>
+                                <td>
+                                    {% if pedido.item.material %}
+                                        {{ pedido.item.material }}
+                                    {% else %}
+                                        {{ pedido.item.item.material }}
+                                    {% endif %}
+
+                                </td>
                                 <td>{{ pedido.item.marca }}</td>
-                                <td>{{ pedido.item.fornecedor }}</td>
+                                <td>{% if pedido.item.fornecedor %}
+                                        {{ pedido.item.fornecedor }}
+                                    {% else %}
+                                        {{ pedido.item.participante.fornecedor }}
+                                    {% endif %}
+                                </td>
                                 <td>{{ pedido.item.valor }}</td>
                                 <td>{{ pedido.quantidade }}</td>
 
