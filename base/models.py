@@ -824,9 +824,12 @@ class ItemSolicitacaoLicitacao(models.Model):
 
                 else:
                     if eh_lote:
-                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=True).order_by('valor')
+                        propostas = PropostaItemPregao.objects.filter(item=self, item__eh_lote=True).order_by('valor')
                     else:
-                        propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, item__eh_lote=False).order_by('valor')
+                        propostas = PropostaItemPregao.objects.filter(item=self, item__eh_lote=False).order_by('valor')
+
+
+
                     for lance in propostas:
                         if lance.participante.id not in ids_participantes:
                             valor_registrado = lance.valor
@@ -837,6 +840,7 @@ class ItemSolicitacaoLicitacao(models.Model):
                             ids_participantes.append(lance.participante.id)
                             finalistas.append((lance, valor_registrado))
                     ordenado =  sorted(finalistas, key=lambda x:x[1])
+
                     for idx, opcao in enumerate(ordenado, 1):
                         novo_resultado = ResultadoItemPregao()
                         novo_resultado.item = self
@@ -844,7 +848,10 @@ class ItemSolicitacaoLicitacao(models.Model):
                         novo_resultado.valor = opcao[1]
                         novo_resultado.marca = opcao[0].marca
                         novo_resultado.ordem = idx
-                        novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                        if opcao[1] <= self.valor_medio:
+                            novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                        else:
+                            novo_resultado.situacao = ResultadoItemPregao.DESCLASSIFICADO
                         novo_resultado.save()
 
                     for resultado in ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('valor'):
