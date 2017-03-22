@@ -517,7 +517,7 @@ def lances_item(request, item_id):
 @login_required()
 def ver_fornecedores(request, fornecedor_id=None):
     title=u'Lista de Fornecedores'
-    fornecedores = Fornecedor.objects.all()
+    fornecedores = Fornecedor.objects.all().order_by('razao_social')
     exibe_popup = False
 
     if fornecedor_id:
@@ -1271,6 +1271,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                     novo_item.participante = lote.get_vencedor().participante
                     novo_item.valor = item.get_valor_unitario_final()
                     novo_item.quantidade = item.quantidade
+                    novo_item.unidade = item.unidade
                     novo_item.save()
 
         else:
@@ -1282,6 +1283,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                 novo_item.participante = resultado.participante
                 novo_item.valor = resultado.valor
                 novo_item.quantidade = resultado.item.quantidade
+                novo_item.unidade = resultado.item.unidade
                 novo_item.save()
         messages.success(request, u'Ata de Registro de Preço cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % o.id)
@@ -3258,6 +3260,7 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
     participantes = ParticipantePregao.objects.filter(id__in=itens_ata.values_list('participante', flat=True))
     form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
     eh_lote = solicitacao.eh_lote()
+    origem_pregao = ata.solicitacao.get_pregao()
     if eh_lote:
         resultados = solicitacao.get_lotes()
     else:
@@ -5236,3 +5239,36 @@ def revogar_pregao(request, pregao_id):
         messages.success(request, u'Pregão revogado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def imprimir_fornecedor(request, fornecedor_id):
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    title = u'Dados do Fornecedor - %s' % fornecedor
+    configuracao = None
+    logo = None
+    if get_config():
+        configuracao = get_config()
+        if get_config().logo:
+            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+
+    destino_arquivo = u'upload/ordens_compra/%s.pdf' % fornecedor_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    data = {'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo, 'data_emissao': data_emissao}
+
+    template = get_template('imprimir_fornecedor.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+

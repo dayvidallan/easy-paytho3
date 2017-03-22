@@ -213,7 +213,7 @@
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
                             <td>{{ item.get_carater_continuado }}</td>
-                            <td>R$ {{ item.valor }}</td>
+                            <td>R$ {{ item.valor|format_money }}</td>
                             <td>{{ item.get_situacao }}</td>
                             <td>
                                 <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info">Visualizar</a>
@@ -260,7 +260,7 @@
                             <td>{{ item.data_fim|default_if_none:"-" }}</td>
                             <td>
                                 {% if item.valor %}
-                                    R$ {{ item.valor }}
+                                    R$ {{ item.valor|format_money }}
                                 {% else %}
                                     -
                                 {% endif %}

@@ -123,7 +123,7 @@
                         <tbody>
                             {% for resultado in resultados %}
                                 <tr>
-                                    {% if not origem_pregao%}
+                                    {% if not origem_pregao %}
                                         <td>{{ forloop.counter }}</td>
                                         <td>{{ resultado.material|truncatechars:500 }}</td>
                                     {% else %}

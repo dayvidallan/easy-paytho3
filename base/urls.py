@@ -60,6 +60,7 @@ urlpatterns = [
     url(r'^resultado_alterar_todos/(?P<pregao_id>\d+)/(?P<participante_id>\d+)/(?P<situacao>\d+)/$', views.resultado_alterar_todos, name='resultado_alterar_todos'),
     url(r'^relatorio_economia/(?P<pregao_id>\d+)/$', views.relatorio_economia, name='relatorio_economia'),
     url(r'^revogar_pregao/(?P<pregao_id>\d+)/$', views.revogar_pregao, name='revogar_pregao'),
+    url(r'^imprimir_fornecedor/(?P<fornecedor_id>\d+)/$', views.imprimir_fornecedor, name='imprimir_fornecedor'),
 
 
 
