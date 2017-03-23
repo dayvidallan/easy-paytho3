@@ -3,10 +3,10 @@
 {% block content %}
 
     {% if tem_solicitacao %}
-        <a href="/base/itens_solicitacao/{{ tem_solicitacao.solicitacao.id }}/"><p class="alert alert-warning">Existem Solicitações de Licitação Pendentes.</p></a>
+        <a href="/base/itens_solicitacao/{{ tem_solicitacao.solicitacao.id }}/"><p class="alert alert-warning">Existe uma solicitação pendente de recebimento pela sua secretaria.</p></a>
     {% endif %}
     {% if tem_preencher_itens %}
-        <a href="/base/itens_solicitacao/{{ tem_preencher_itens.id }}/"><p class="alert alert-info">Existem solicitações aguardando sua secretaria informar as quantidades dos itens.</p></a>
+        <a href="/base/itens_solicitacao/{{ tem_preencher_itens.id }}/"><p class="alert alert-info">Existe uma solicitação aguardando sua secretaria informar as quantidades dos itens para serem licitados.</p></a>
     {% endif %}
 
     {% if request.user.is_superuser %}
