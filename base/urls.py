@@ -95,6 +95,7 @@ urlpatterns = [
     url(r'^gestao_pedidos/$', views.gestao_pedidos, name='gestao_pedidos'),
     url(r'^gestao_contratos/$', views.gestao_contratos, name='gestao_contratos'),
     url(r'^ver_ordem_compra_dispensa/(?P<solicitacao_id>\d+)/$', views.ver_ordem_compra_dispensa, name='ver_ordem_compra_dispensa'),
+    url(r'^excluir_solicitacao_pedido/(?P<solicitacao_id>\d+)/$', views.excluir_solicitacao_pedido, name='excluir_solicitacao_pedido'),
 
 
 

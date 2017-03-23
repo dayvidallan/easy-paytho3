@@ -256,6 +256,7 @@
 
             {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra %}
                 <a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a>
+                <a href="/base/excluir_solicitacao_pedido/{{solicitacao.id}}/" class="btn btn-danger">Excluir Solicitação</a>
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_pedidos_compra and not solicitacao.tem_ordem_compra %}
                 <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
                 <a href="/base/cancelar_pedido_compra/{{solicitacao.id}}/" class="btn btn-danger">Cancelar Pedido</a>

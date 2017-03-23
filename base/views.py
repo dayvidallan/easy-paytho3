@@ -5278,3 +5278,13 @@ def imprimir_fornecedor(request, fornecedor_id):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
+@login_required()
+def excluir_solicitacao_pedido(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).delete()
+    PedidoContrato.objects.filter(solicitacao=solicitacao).delete()
+    ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).delete()
+    solicitacao.delete()
+
+    messages.success(request, u'Solicitação excluída com sucesso.')
+    return HttpResponseRedirect(u'/base/ver_solicitacoes/')
