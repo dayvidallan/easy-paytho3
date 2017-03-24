@@ -31,7 +31,9 @@ LARGURA = 210*mm
 ALTURA = 297*mm
 
 
-def get_config():
+def get_config(secretaria=None):
+    if secretaria:
+        return secretaria
     if Configuracao.objects.exists():
         return Configuracao.objects.latest('id')
     return False
@@ -1808,12 +1810,10 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
 @login_required()
 def relatorio_resultado_final(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
@@ -1852,12 +1852,10 @@ def relatorio_resultado_final(request, pregao_id):
 @login_required()
 def relatorio_economia(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
 
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
@@ -1947,12 +1945,10 @@ def relatorio_economia(request, pregao_id):
 @login_required()
 def relatorio_resultado_final_por_vencedor(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
 
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
@@ -2012,12 +2008,10 @@ def relatorio_lista_participantes(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     participantes = ParticipantePregao.objects.filter(pregao=pregao)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     data = {'participantes': participantes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
@@ -2037,12 +2031,10 @@ def relatorio_lista_participantes(request, pregao_id):
 @login_required()
 def relatorio_classificacao_por_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
@@ -2102,12 +2094,10 @@ def relatorio_ocorrencias(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     registros = HistoricoPregao.objects.filter(pregao=pregao)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     data = {'registros': registros, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
@@ -2129,12 +2119,10 @@ def relatorio_ocorrencias(request, pregao_id):
 @login_required()
 def relatorio_lances_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
@@ -2206,13 +2194,10 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
 
 
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
-
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     municipio = None
     if get_config():
@@ -2983,12 +2968,10 @@ def criar_lote(request, pregao_id):
 @login_required()
 def extrato_inicial(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
@@ -3017,12 +3000,10 @@ def extrato_inicial(request, pregao_id):
 @login_required()
 def termo_adjudicacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
@@ -3703,12 +3684,10 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
 
-    configuracao = None
+    configuracao = get_config(solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/pedidos/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pedidos')):
@@ -3823,12 +3802,10 @@ def gerar_ordem_compra(request, solicitacao_id):
 def ver_ordem_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
-    configuracao = None
+    configuracao = get_config(solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/ordens_compra/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
@@ -3922,12 +3899,10 @@ def ver_ordem_compra(request, solicitacao_id):
 def ver_ordem_compra_dispensa(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
-    configuracao = None
+    configuracao = get_config(solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/ordens_compra/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
@@ -4005,12 +3980,10 @@ def registrar_homologacao(request, pregao_id):
 @login_required()
 def termo_homologacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
@@ -4472,12 +4445,10 @@ def gerar_resultado_licitacao(request, pregao_id):
 def lista_materiais(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
-    configuracao = None
+    configuracao = get_config(solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos')):
@@ -4510,12 +4481,10 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     secretaria = get_object_or_404(Secretaria, pk=secretaria_id)
 
-    configuracao = None
+    configuracao = get_config(solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % solicitacao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos')):
@@ -4575,12 +4544,10 @@ def rejeitar_pesquisa(request, item_pesquisa_id):
 def relatorio_lista_download_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % pregao.id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos')):
@@ -4644,12 +4611,10 @@ def ata_sessao(request, pregao_id):
 
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-    configuracao = None
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
 
     municipio = None
@@ -5250,12 +5215,10 @@ def revogar_pregao(request, pregao_id):
 def imprimir_fornecedor(request, fornecedor_id):
     fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
     title = u'Dados do Fornecedor - %s' % fornecedor
-    configuracao = None
+    configuracao = get_config()
     logo = None
-    if get_config():
-        configuracao = get_config()
-        if get_config().logo:
-            logo = os.path.join(settings.MEDIA_ROOT, get_config().logo.name)
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     destino_arquivo = u'upload/ordens_compra/%s.pdf' % fornecedor_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra')):
