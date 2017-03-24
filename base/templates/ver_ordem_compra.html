@@ -124,12 +124,19 @@ ul{
 
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ pedido.item.material|truncatechars:500 }}</td>
+                                    {% if pedido.item.item.material %}
+                                        <td>{{ pedido.item.item.material|truncatechars:500 }}</td>
+                                    {% else %}
+                                        <td>{{ pedido.item.material|truncatechars:500 }}</td>
+                                    {% endif %}
 
                                     <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
 
-
-                                    <td>{{ pedido.item.unidade}}</td>
+                                    {% if pedido.item.item.unidade %}
+                                        <td>{{ pedido.item.item.unidade }}</td>
+                                    {% else %}
+                                        <td>{{ pedido.item.unidade }}</td>
+                                    {% endif %}
 
 
                                     <td>{{ pedido.quantidade }}</td>
@@ -239,7 +246,7 @@ ul{
             <br><br>
 
             _______________________________________________________________<br><br>
-            Secretário Municipal de {{configuracao.municipio }}
+            Secretário
         </div>
     </div>
 
