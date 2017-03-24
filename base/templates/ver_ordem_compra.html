@@ -50,25 +50,45 @@ ul{
         <table border="0" width="90%" cellpadding="5" cellspacing="5">
             <thead>
                 <tr>
-                    <th>N° da Ordem</th><td>{{ ordem.numero }}</td>
-                    <th>Data</th><td>{{ ordem.data }}</td>
-                </tr>
-                <tr>
-                    <th>Fornecedor</th><td>{{ fornecedor.razao_social }}</td>
-                    <th>CPF/CNPJ</th><td>{{ fornecedor.cnpj }}</td>
-                </tr>
-                <tr>
-                    <th>Endereço</th><td colspan="3">{{ fornecedor.endereco }}</td>
+                    <td align="left" width="25%">Órgão Solicitante</td>
+                    <td align="left"><b>{{ configuracao.nome }}</b></td>
 
                 </tr>
                 <tr>
-                    <th>Dados Bancários</th>
-                    <td colspan="3">
-                        {% if fornecedor.banco %}
-                            {{ fornecedor.banco}} / Agência: {{ fornecedor.agencia}} / Conta: {{ fornecedor.conta }}
-                        {% else %}
-                            Não Informado.
-                        {% endif%}
+                    <td align="left" width="25%">Assunto</td>
+                    <td align="left"><b>{{ ordem.solicitacao.objetivo }}</b></td>
+
+                </tr>
+                <tr>
+                    <td align="left" width="25%">Destinado</td>
+                    <td align="left"><b>{{ ordem.solicitacao.objeto }}</b></td>
+
+                </tr>
+                <tr>
+                    <td align="left" width="25%">Nome do Fornecedor</td>
+                    <td align="left"><b>{{ fornecedor.razao_social }}</b></td>
+
+                </tr>
+                <tr>
+                    <td align="left" width="25%">Endereço</td>
+                    <td align="left"><b>{{ fornecedor.endereco }}</b></td>
+
+                </tr>
+                <tr>
+                    <td align="left" width="25%">CNPJ</td>
+                    <td align="left"><b>{{ fornecedor.cnpj }}</b></td>
+                </tr>
+
+                <tr>
+                    <td align="left" width="25%">Dados Bancários</td>
+                    <td align="left">
+                        <b>
+                            {% if fornecedor.banco %}
+                                {{ fornecedor.banco}} / Agência: {{ fornecedor.agencia}} / Conta: {{ fornecedor.conta }}
+                            {% else %}
+                                Não Informado.
+                            {% endif%}
+                        </b>
                     </td>
 
                 </tr>
