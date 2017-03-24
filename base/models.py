@@ -41,7 +41,14 @@ class User(AbstractUser):
 class Secretaria(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
     sigla = models.CharField(u'Sigla', max_length=20, null=True, blank=True)
-    responsavel = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável', null=True, blank=True)
+    responsavel = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável', null=True, blank=True, related_name=u'secretaria_responsavel')
+    endereco = models.CharField(u'Endereço', max_length=2000, null=True)
+    email = models.CharField(u'Email', max_length=200, null=True)
+    telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
+    logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True)
+    cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
+    cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
 
     def __unicode__(self):
         return self.nome
