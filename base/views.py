@@ -1338,13 +1338,13 @@ def cadastrar_contrato(request, solicitacao_id):
                     novo_item = ItemContrato()
                     novo_item.contrato = o
                     novo_item.item = resultado.item
-                    novo_item.material = resultado.material
+                    novo_item.material = resultado.item.material
                     novo_item.marca = resultado.marca
                     novo_item.participante = resultado.participante
                     novo_item.fornecedor = resultado.participante.fornecedor
                     novo_item.valor = resultado.valor
                     novo_item.quantidade = resultado.item.quantidade
-                    novo_item.unidade = resultado.unidade
+                    novo_item.unidade = resultado.item.unidade
                     novo_item.save()
         else:
 
