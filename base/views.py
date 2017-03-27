@@ -32,7 +32,7 @@ ALTURA = 297*mm
 
 
 def get_config(secretaria=None):
-    if secretaria:
+    if secretaria and secretaria.logo:
         return secretaria
     if Configuracao.objects.exists():
         return Configuracao.objects.latest('id')
@@ -5251,3 +5251,28 @@ def excluir_solicitacao_pedido(request, solicitacao_id):
 
     messages.success(request, u'Solicitação excluída com sucesso.')
     return HttpResponseRedirect(u'/base/ver_solicitacoes/')
+
+
+@login_required()
+def ver_variaveis_configuracao(request):
+    title = u'Listar Variáveis de Configuração'
+    config = None
+    if Configuracao.objects.exists():
+        config = Configuracao.objects.latest('id')
+    return render(request, 'ver_variaveis_configuracao.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_variaveis_configuracao(request):
+    title = u'Cadastar/Editar Variáveis de Configuração'
+    if not Configuracao.objects.exists():
+        config = Configuracao()
+    else:
+        config = Configuracao.objects.latest('id')
+
+    form = ConfiguracaoForm(request.POST or None, request.FILES or None, instance=config)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Variáveis de configuração com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_variaveis_configuracao/')
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
