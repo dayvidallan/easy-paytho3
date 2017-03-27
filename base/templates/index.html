@@ -6,7 +6,9 @@
         <a href="/base/itens_solicitacao/{{ tem_solicitacao.solicitacao.id }}/"><p class="alert alert-warning">Existe uma solicitação pendente de recebimento pela sua secretaria.</p></a>
     {% endif %}
     {% if tem_preencher_itens %}
-        <a href="/base/itens_solicitacao/{{ tem_preencher_itens.id }}/"><p class="alert alert-info">Existe uma solicitação aguardando sua secretaria informar as quantidades dos itens para serem licitados.</p></a>
+        {% for item in tem_preencher_itens %}
+            <a href="/base/itens_solicitacao/{{ item.id }}/"><p class="alert alert-info">Existe uma solicitação aguardando sua secretaria informar as quantidades dos itens para serem licitados.</p></a>
+        {% endfor %}
     {% endif %}
 
     {% if request.user.is_superuser %}
