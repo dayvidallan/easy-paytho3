@@ -59,9 +59,9 @@
             <thead>
                 <tr>
                     {% if not item.eh_lote %}
-                        <th colspan="3"><font size="4">Item {{ item.item }} - Pregão: {{ item.get_licitacao }}</font> - Situação: {{ item.situacao }}<br>Especificação: {{ item.material.nome|truncatechars:170 }}</th>
+                        <th colspan="3"><font size="4">Item {{ item.item }} - {{ item.get_licitacao }}</font> - Situação: {{ item.situacao }}<br>Especificação: {{ item.material.nome|truncatechars:170 }}</th>
                     {% else %}
-                        <th colspan="3"><font size="4">Lote {{ item.item }} - Pregão: {{ item.get_licitacao }}</font> - Situação: {{ item.situacao }}<br>
+                        <th colspan="3"><font size="4">Lote {{ item.item }} - {{ item.get_licitacao }}</font> - Situação: {{ item.situacao }}<br>
                             <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">Ver Itens do Lote</button>
 
                             <div id="demo" class="collapse">
@@ -113,6 +113,7 @@
                     {% endif %}
                     <td>
                         {% if item.eh_ativo and item.ativo %}
+                            <a href="/base/ver_pesquisa_mercadologica/{{ item.id }}/" class="btn btn-info btn-sm" target="_blank">Ver Cotação</a>
                             <a href="/base/encerrar_itempregao/{{ item.id }}/1/1/" class="btn btn-warning btn-sm">Deserto</a>
                             <a href="/base/encerrar_itempregao/{{ item.id }}/2/1/" class="btn btn-danger btn-sm">Fracassado</a>
                         {% endif %}

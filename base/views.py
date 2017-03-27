@@ -2892,7 +2892,8 @@ def imprimir_capa_processo(request, processo_id):
     c.drawString(32*mm, ALTURA - 88*mm, u'Data: %s' % processo.data_cadastro.strftime('%d/%m/%Y'))
     #c.drawString(110*mm, ALTURA - 88*mm, u'Campus: %s' % processo.uo.setor.sigla)
     #c.drawString(32*mm, ALTURA - 95*mm, u'Interessado: %s' % processo.pessoa_interessada.nome[:55] + (processo.pessoa_interessada.nome[55:] and '...'))
-    c.drawString(32*mm, ALTURA - 96*mm, u'Origem: %s' % (processo.setor_origem))
+    c.drawString(32*mm, ALTURA - 96*mm, u'Secretaria de Origem: %s (%s)' % (processo.setor_origem.secretaria.nome, processo.secretaria.setor_origem.sigla))
+    c.drawString(32*mm, ALTURA - 96*mm, u'Setor de Origem: %s (%s)' % (processo.setor_origem.nome, processo.setor_origem.sigla))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
     L = simpleSplit('Objeto: %s' % processo.objeto,'Helvetica',12,150 * mm)
     y = ALTURA - 104*mm

@@ -1688,7 +1688,8 @@ class ItemQuantidadeSecretaria(models.Model):
     avaliado_por = models.ForeignKey(User, related_name=u'pedido_avaliado_por', null=True)
 
     def get_total(self):
-        return self.quantidade * self.item.valor_medio
+        valor = self.item.valor_medio or 0
+        return self.quantidade * valor
 
 
 
