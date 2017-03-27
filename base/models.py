@@ -325,8 +325,7 @@ class SolicitacaoLicitacao(models.Model):
     def tem_item_cadastrado(self):
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self).exists()
 
-    def tem_pedidos_outras_secretarias(self):
-        return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).count() > 1
+
 
     def tem_pedidos_pendentes(self):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()
@@ -510,6 +509,9 @@ class ItemSolicitacaoLicitacao(models.Model):
         if vencedor and vencedor.valor > self.valor_medio:
             return True
         return False
+
+    def tem_pedidos_outras_secretarias(self):
+        return ItemQuantidadeSecretaria.objects.filter(item=self).count() > 1
 
     def get_id_lote(self):
         return ItemLote.objects.filter(item=self)[0].lote.item

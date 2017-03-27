@@ -210,7 +210,7 @@
                                         <a href="/base/editar_item/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
                                         <a href="/base/apagar_item/{{item.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                     {% endif %}
-                                    {% if solicitacao.interessados and solicitacao.tem_pedidos_outras_secretarias %}
+                                    {% if solicitacao.interessados and item.tem_pedidos_outras_secretarias %}
                                         <a href="/base/ver_pedidos_secretaria/{{item.id}}/" class="btn btn-default btn-sm">Pedidos das Secretarias</a>
                                     {% endif %}
 
