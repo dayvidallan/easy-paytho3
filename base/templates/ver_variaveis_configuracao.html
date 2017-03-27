@@ -1,0 +1,57 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load pagination_tags %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">Variáveis de Configuração<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+        <div class="pull-right">
+            {% if config %}
+                <a class="btn btn-info" href="/base/cadastrar_variaveis_configuracao/">Editar Fornecedor</a>
+            {% else %}
+                <a class="btn btn-success" href="/base/cadastrar_variaveis_configuracao/">Cadastrar Fornecedor</a>
+            {% endif %}
+        </div>
+        <br><br>
+
+
+        {% if config %}
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CNPJ</th>
+                        <th>Endereço</th>
+                        <th>Município</th>
+                        <th>Telefones</th>
+                        <th>Email</th>
+                        <th>Logo</th>
+                        <th>Ordenador de Despesa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   <tr>
+                       <td>{{ config.nome }}</td>
+                       <td>{{ config.cnpj }}</td>
+                       <td>{{ config.endereco }}</td>
+                       <td>{{ config.municipio }}</td>
+                       <td>{{ config.telefones }}</td>
+                       <td>{{ config.email }}</td>
+                       <td>{{ config.logo }}</td>
+                       <td>{{ config.ordenador_despesa }} - {{ config.cpf_ordenador_despesa }}</td>
+                   </tr>
+
+                </tbody>
+            </table>
+        {% else %}
+
+            <p class="alert alert-warning">Nenhuma variável cadastrada.</p>
+        {% endif %}
+
+{% endblock %}
