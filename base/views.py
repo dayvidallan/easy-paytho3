@@ -2898,8 +2898,8 @@ def imprimir_capa_processo(request, processo_id):
     c.drawString(32*mm, ALTURA - 104*mm, u'Setor de Origem: %s' % (processo.setor_origem))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
     from django.template.defaultfilters import truncatechars
-    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 500),'Helvetica',12,160 * mm)
-    y = ALTURA - 114*mm
+    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 500),'Helvetica',12,155 * mm)
+    y = ALTURA - 111*mm
     for t in L:
         c.drawString(32*mm,y,t)
         y -= 5*mm
