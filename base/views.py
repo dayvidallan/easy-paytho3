@@ -1630,7 +1630,7 @@ def cadastrar_minuta(request, solicitacao_id):
 @login_required()
 def avalia_minuta(request, solicitacao_id, tipo):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Avaliar Minuta -  %s' % solicitacao
+    title=u'Avaliar Minuta/Emitir Parecer -  %s' % solicitacao
     form = ObsForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         if tipo == u'1':

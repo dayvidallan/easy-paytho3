@@ -94,9 +94,13 @@
                 <a class="btn btn-success" href="/base/cadastrar_minuta/{{solicitacao.id}}/">Cadastrar Minuta</a>
              {% endif %}
 
-             {% if perms.base.pode_avaliar_minuta and recebida_no_setor and not solicitacao.data_avaliacao_minuta and solicitacao.arquivo_minuta %}
-                <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Aprovar Minuta</a>
-                <a class="btn btn-danger" href="/base/avalia_minuta/{{ solicitacao.pk }}/2/">Reprovar Minuta</a>
+             {% if perms.base.pode_avaliar_minuta and recebida_no_setor and not solicitacao.data_avaliacao_minuta  %}
+                {% if solicitacao.arquivo_minuta %}
+                    <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Aprovar Minuta</a>
+                    <a class="btn btn-danger" href="/base/avalia_minuta/{{ solicitacao.pk }}/2/">Reprovar Minuta</a>
+                {% else %}
+                    <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Emitir Parecer</a>
+                {% endif %}
              {% endif %}
              {% if perms.base.pode_abrir_processo and not solicitacao.processo and recebida_no_setor %}
                 <a class="btn btn-success" href="/base/abrir_processo_para_solicitacao/{{ solicitacao.pk }}/">Abrir Processo</a>
