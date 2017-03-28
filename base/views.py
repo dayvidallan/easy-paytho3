@@ -999,7 +999,7 @@ def planilha_propostas(request, solicitacao_id):
     # workbook.save(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor_teste.xls'))
     from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
     from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
-
+    import xlwt
     nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor')
     file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls')
     rb = open_workbook(file_path,formatting_info=True)
@@ -1019,9 +1019,11 @@ def planilha_propostas(request, solicitacao_id):
         # print "cell.xf_index is", cell.xf_index
         # fmt = rb.xf_list[cell.xf_index]
         # print "type(fmt) is", type(fmt)
+        style = xlwt.XFStyle()
+        style.alignment.wrap = 1
 
         w_sheet.write(row_index, 0, item.item)
-        w_sheet.write(row_index, 1, item.material.nome)
+        w_sheet.write(row_index, 1, item.material.nome, style)
         w_sheet.write(row_index, 2, item.unidade.nome)
         w_sheet.write(row_index, 3, item.quantidade)
         w_sheet.write(row_index, 4, item.valor_medio)
@@ -4504,7 +4506,7 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
             if item.item.valor_medio:
                 total += item.quantidade * item.item.valor_medio
 
-    data = {'itens': itens, 'solicitacao': solicitacao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
+    data = {'secretaria': secretaria, 'itens': itens, 'solicitacao': solicitacao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
 
     template = get_template('lista_materiais_por_secretaria.html')
 
@@ -4747,13 +4749,13 @@ def ata_sessao(request, pregao_id):
 
 
 
-    hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
     hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, configuracao.municipio)
 
     document.add_paragraph()
-    p = document.add_paragraph(u'Ata de ')
+    p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'%s' % pregao).bold = True
+    p.add_run(u'Ata de %s' % pregao).bold = True
 
 
 
@@ -4884,7 +4886,7 @@ def ata_sessao(request, pregao_id):
 
     for item in ocorrencias:
         p = document.add_paragraph()
-        p.alignment = 3
+        #p.alignment = 3
         p.add_run(item)
 
 
@@ -4902,15 +4904,15 @@ def ata_sessao(request, pregao_id):
 
         texto = item.split(',')
         p = document.add_paragraph()
-        p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        #p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.add_run(texto[0])
         p = document.add_paragraph()
-        p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p.add_run(u'Matrícula %s' % texto[1])
+        p.add_run(u'Matrícula: %s' % texto[1])
         p = document.add_paragraph()
-        p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.add_run(texto[2])
 
