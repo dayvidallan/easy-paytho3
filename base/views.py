@@ -116,7 +116,8 @@ def index(request):
     if SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False, setor_atual=F('setor_origem')).exists():
         for item in SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False):
             if not ItemQuantidadeSecretaria.objects.filter(solicitacao=item, secretaria=request.user.pessoafisica.setor.secretaria).exists():
-                tem_preencher_itens.append(item)
+                if not item in tem_preencher_itens:
+                    tem_preencher_itens.append(item)
                 continue
 
 
@@ -1792,13 +1793,14 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                     if item!= u'Item' or especificacao != u'Material' or unidade != u'Unidade' or marca != u'Marca' or valor!=u'Valor Unitario':
                         raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Material, Unidade e Marca e Valor Unitario.')
                 else:
-                    if item and especificacao and unidade and marca and valor:
+                    if item and especificacao and unidade and valor:
                         item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, item=int(sheet.cell_value(row, 0)))
                         novo_preco = ItemPesquisaMercadologica()
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
                         novo_preco.valor_maximo = valor
-                        novo_preco.marca = marca
+                        if marca:
+                            novo_preco.marca = marca
                         novo_preco.save()
 
 
@@ -2892,11 +2894,12 @@ def imprimir_capa_processo(request, processo_id):
     c.drawString(32*mm, ALTURA - 88*mm, u'Data: %s' % processo.data_cadastro.strftime('%d/%m/%Y'))
     #c.drawString(110*mm, ALTURA - 88*mm, u'Campus: %s' % processo.uo.setor.sigla)
     #c.drawString(32*mm, ALTURA - 95*mm, u'Interessado: %s' % processo.pessoa_interessada.nome[:55] + (processo.pessoa_interessada.nome[55:] and '...'))
-    c.drawString(32*mm, ALTURA - 96*mm, u'Secretaria de Origem: %s (%s)' % (processo.setor_origem.secretaria.nome, processo.setor_origem.secretaria.sigla))
-    c.drawString(32*mm, ALTURA - 96*mm, u'Setor de Origem: %s (%s)' % (processo.setor_origem.nome, processo.setor_origem.sigla))
+    c.drawString(32*mm, ALTURA - 96*mm, u'Secretaria de Origem: %s' % (processo.setor_origem.secretaria))
+    c.drawString(32*mm, ALTURA - 104*mm, u'Setor de Origem: %s' % (processo.setor_origem))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
-    L = simpleSplit('Objeto: %s' % processo.objeto,'Helvetica',12,150 * mm)
-    y = ALTURA - 104*mm
+    from django.template.defaultfilters import truncatechars
+    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 500),'Helvetica',12,160 * mm)
+    y = ALTURA - 114*mm
     for t in L:
         c.drawString(32*mm,y,t)
         y -= 5*mm

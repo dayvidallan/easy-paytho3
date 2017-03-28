@@ -1,6 +1,7 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
+{% load app_filters %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
@@ -60,7 +61,7 @@
                                     <a href="/media/{{ pesquisa.pesquisa.arquivo }}" class="btn btn-default btn-sm" target="_blank">Visualizar</a>
 
                                 {% endif %}
-                                {% if pesquisa.ativo %}
+                                {% if pesquisa.ativo and perms.base.pode_cadastrar_solicitacao %}
                                     <a href="/base/rejeitar_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Rejeitar</a>
                                 {% endif %}
                             </td>
@@ -68,11 +69,11 @@
                     {% endfor %}
                     <tr>
                         <th colspan="2"><b>Valor Médio - Informado</b></th>
-                        <td><font color="blue"><b>{{ item.get_valor_medio_pesquisa|default_if_none:'-' }}</b></font></td>
+                        <td><font color="blue"><b>{{ item.get_valor_medio_pesquisa|format_money|default_if_none:'-' }}</b></font></td>
                     </tr>
                     <tr>
                         <th colspan="2"><b>Valor Médio - Envio de Proposta</b></th>
-                        <td><font color="blue"><b>{{ item.get_valor_medio_envio_pesquisa|default_if_none:'-' }}</b></font></td>
+                        <td><font color="blue"><b>{{ item.get_valor_medio_envio_pesquisa|format_money|default_if_none:'-' }}</b></font></td>
                     </tr>
                 </tbody>
             </table>
