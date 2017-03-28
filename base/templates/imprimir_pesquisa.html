@@ -132,7 +132,7 @@ ul{
                 <tr>
                     <td>{{ item.item.item }}</td>
                     <td>{{ item.item.material }}</td>
-                    <td>{{ item.marca }}</td>
+                    <td>{{ item.marca|default_if_none:"-" }}</td>
                     <td>{{ item.item.quantidade }}</td>
                     <td align="right">R$ {{ item.valor_maximo|format_money }}</td>
                     <td align="right">R$ {{ item.get_total|format_money }}</td>

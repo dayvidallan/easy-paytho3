@@ -47,7 +47,7 @@
                                     <b>{{ pesquisa.pesquisa.razao_social }}</b>
                                 {% endif %}
                             </td>
-                            <td>{{ pesquisa.marca }}</td>
+                            <td>{{ pesquisa.marca|default_if_none:"-" }}</td>
                             <td>{{ pesquisa.valor_maximo }}</td>
                             <td>
                                 {% if pesquisa.ativo %}
