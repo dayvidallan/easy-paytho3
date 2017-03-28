@@ -99,7 +99,7 @@
                     <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Aprovar Minuta</a>
                     <a class="btn btn-danger" href="/base/avalia_minuta/{{ solicitacao.pk }}/2/">Reprovar Minuta</a>
                 {% else %}
-                    <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Emitir Parecer</a>
+                    <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Emitir Termo</a>
                 {% endif %}
              {% endif %}
              {% if perms.base.pode_abrir_processo and not solicitacao.processo and recebida_no_setor %}
