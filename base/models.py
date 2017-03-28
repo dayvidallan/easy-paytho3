@@ -1504,7 +1504,7 @@ class PesquisaMercadologica(models.Model):
 class ItemPesquisaMercadologica(models.Model):
     pesquisa = models.ForeignKey(PesquisaMercadologica, verbose_name=u'Pesquisa')
     item = models.ForeignKey(ItemSolicitacaoLicitacao)
-    marca = models.CharField(u'Marca', max_length=255)
+    marca = models.CharField(u'Marca', max_length=255, null=True, blank=True)
     valor_maximo = models.DecimalField(u'Valor Máximo', max_digits=10, decimal_places=2, null=True, blank=True)
     ativo = models.BooleanField(u'Ativo', default=True)
     motivo_rejeicao = models.CharField(u'Motivo da Rejeição', max_length=1000, null=True, blank=True)

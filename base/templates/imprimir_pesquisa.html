@@ -31,8 +31,8 @@ ul{
             @frame content_frame {
 				    {% block content_frame %}
     				top: 20;
-    				left: 20;
-    				right: 20;
+    				left: 10;
+    				right: 10;
     				bottom: 60;
     				{% endblock %}
     			}
@@ -40,8 +40,8 @@ ul{
             @frame footer {
                 -pdf-frame-content: footerContent;
                 bottom: 0.5cm;
-                left: 0.5cm;
-                right: 0.5cm;
+                left: 0.2cm;
+                right: 0.2cm;
                 height: 1.8cm;
             }
      }
@@ -87,7 +87,7 @@ ul{
 {% endblock %}
 
 {% block content %}
-    {% block conteudo_laudo %}
+
     <h3><b>Dados do Fornecedor</b></h3>
     <table border="0" width="100%" cellpadding="5" cellspacing="5">
       <tr>
@@ -100,9 +100,9 @@ ul{
 
       </tr>
       <tr>
+        <td width="70%">Email: {{ pesquisa.email }}</td>
+        <td width="30%">Telefone: {{ pesquisa.telefone }}</td>
 
-        <td width="70%">Telefone: {{ pesquisa.telefone }}</td>
-        <td width="30%">Email: {{ pesquisa.email }}</td>
 
       </tr>
       <tr>
@@ -118,14 +118,14 @@ ul{
     </table>
 
     <h3><b>Itens da Proposta</b></h3>
-    <table border="1" cellpadding="10" cellspacing="10">
+    <table border="1" width="100%" cellpadding="5" cellspacing="5">
         <thead>
-            <th>Item</th>
-            <th>Material</th>
-            <th>Marca</th>
-            <th>Quantidade</th>
-            <th>Valor Unitário Máximo</th>
-            <th>Total</th>
+            <th width="5%">Item</th>
+            <th width="40%">Material</th>
+            <th width="10%">Marca</th>
+            <th width="11%">Quantidade</th>
+            <th width="12%">Valor Unitário</th>
+            <th width="15%">Total</th>
         </thead>
         <tbody>
             {% for item in pesquisa.get_itens %}
@@ -139,7 +139,7 @@ ul{
                 </tr>
             {% endfor %}
             <tr>
-                <td colspan="5" align="right">Total</td>
+                <td colspan="5" align="right"><b>Total</b></td>
                 <td align="right">R$ {{ pesquisa.get_total|format_money }}</td>
             </tr>
         </tbody>
@@ -163,7 +163,7 @@ ul{
 
     <center>-------------------------------------------------------------------------------------<br>
     Assinatura do Responsável</center>
-    {% endblock %}
+
 
 {% endblock %}
 
