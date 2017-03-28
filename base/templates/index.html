@@ -1,16 +1,18 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% block content %}
-
+    <br>
     {% if tem_solicitacao %}
         <a href="/base/itens_solicitacao/{{ tem_solicitacao.solicitacao.id }}/"><p class="alert alert-warning">Existe uma solicitação pendente de recebimento pela sua secretaria.</p></a>
     {% endif %}
     {% if tem_preencher_itens %}
+        <fieldset><legend>Alertas</legend></fieldset>
         {% for item in tem_preencher_itens %}
-            <a href="/base/itens_solicitacao/{{ item.id }}/"><p class="alert alert-info">Existe uma solicitação aguardando sua secretaria informar as quantidades dos itens para serem licitados.</p></a>
+            <a href="/base/itens_solicitacao/{{ item.id }}/"><p class="alert alert-info">A <b>solicitação {{ item.num_memorando }}</b> está aguardando sua secretaria informar as quantidades dos itens para serem licitados.</p></a>
         {% endfor %}
     {% endif %}
 
+    <fieldset><legend>Menu Inicial</legend></fieldset>
     {% if request.user.is_superuser %}
         <a href="/administracao/">
             <div class="col-lg-2 col-md-4">
