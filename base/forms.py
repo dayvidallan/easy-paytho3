@@ -296,6 +296,22 @@ class DesclassificaParticipantePregao(forms.ModelForm):
 class RemoverParticipanteForm(forms.Form):
     motivo = forms.CharField(label=u'Motivo', required=True, widget=forms.Textarea)
 
+class SuspenderPregaoForm(forms.Form):
+    motivo = forms.CharField(label=u'Motivo', required=True, widget=forms.Textarea)
+    sine_die = forms.BooleanField(label=u'Sine die', required=False)
+    data_retorno = forms.DateField(label=u'Data de Retorno', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(SuspenderPregaoForm, self).__init__(*args, **kwargs)
+        self.fields['data_retorno'].widget.attrs = {'class': 'vDateField'}
+
+    def clean(self):
+        if not self.cleaned_data.get('sine_die') and not self.cleaned_data.get('data_retorno'):
+            self.add_error('data_retorno', u'Informe a data de retorno')
+
+    class Media:
+        js = ['/static/base/js/suspenderpregao.js']
+
 class ResultadoObsForm(forms.ModelForm):
     observacoes = forms.CharField(label=u'Observações', widget=forms.Textarea)
     class Meta:
