@@ -978,6 +978,8 @@ class Pregao(models.Model):
     arquivo_homologacao = models.FileField(u'Termo de Homologação', null=True, upload_to=upload_path_termo_homologacao)
     pode_homologar = models.BooleanField(u'Pode Homologar', default=False)
     comissao = models.ForeignKey('base.ComissaoLicitacao', verbose_name=u'Comissão de Licitação', null=True )
+    data_retorno = models.DateField(u'Data do Retorno', null=True)
+    sine_die = models.NullBooleanField(u'Sine Die', null=True)
 
 
     class Meta:
@@ -1008,10 +1010,18 @@ class Pregao(models.Model):
                 return u'Revogado'
 
         elif self.situacao == self.SUSPENSO:
+
             if self.data_suspensao:
-                return u'Suspenso em %s' % self.data_suspensao.strftime('%d/%m/%y')
+                texto = u'Suspenso em %s' % self.data_suspensao.strftime('%d/%m/%y')
             else:
-                return u'Suspenso'
+                texto = u'Suspenso'
+
+            if self.sine_die:
+                texto += u' - Sine die'
+            elif self.data_retorno:
+                texto += u' Retorno em %s' % self.data_retorno.strftime('%d/%m/%y')
+
+            return texto
 
         else:
             return self.situacao

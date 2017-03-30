@@ -61,7 +61,7 @@
                                     <a href="/media/{{ pesquisa.pesquisa.arquivo }}" class="btn btn-default btn-sm" target="_blank">Visualizar</a>
 
                                 {% endif %}
-                                {% if pesquisa.ativo and perms.base.pode_cadastrar_solicitacao %}
+                                {% if pesquisa.ativo and pesquisa.solicitacao.prazo_aberto %}
                                     <a href="/base/rejeitar_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Rejeitar</a>
                                 {% endif %}
                             </td>

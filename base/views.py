@@ -1549,7 +1549,7 @@ def suspender_pregao(request, pregao_id):
         messages.success(request, u'Pregão retomado com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    form = RemoverParticipanteForm(request.POST or None)
+    form = SuspenderPregaoForm(request.POST or None)
     if form.is_valid():
         registro = HistoricoPregao()
         registro.data = datetime.datetime.now()
@@ -1558,6 +1558,10 @@ def suspender_pregao(request, pregao_id):
         registro.save()
         pregao.situacao = Pregao.SUSPENSO
         pregao.data_suspensao = datetime.datetime.now().date()
+        if form.cleaned_data.get('sine_die'):
+            pregao.sine_die = True
+        else:
+            pregao.data_retorno = form.cleaned_data.get('data_retorno')
         pregao.save()
 
         messages.success(request, u'Pregão suspenso com sucesso.')
