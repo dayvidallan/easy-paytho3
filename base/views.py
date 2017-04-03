@@ -4468,7 +4468,11 @@ def lista_materiais(request, solicitacao_id):
 
     pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False)
-    total = itens.aggregate(Sum('total'))['total__sum']
+    total = 0
+    if pode_ver_preco:
+        for item in itens:
+            if item.valor_medio:
+                total += item.quantidade * item.valor_medio
 
 
     data = {'solicitacao': solicitacao,'itens': itens, 'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}

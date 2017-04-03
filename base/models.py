@@ -859,10 +859,11 @@ class ItemSolicitacaoLicitacao(models.Model):
                         novo_resultado.valor = opcao[1]
                         novo_resultado.marca = opcao[0].marca
                         novo_resultado.ordem = idx
-                        if opcao[1] <= self.valor_medio:
-                            novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
-                        else:
+
+                        if opcao[1] > self.valor_medio or PropostaItemPregao.objects.filter(participante=opcao[0].participante, item=self, desclassificado=True).exists() or PropostaItemPregao.objects.filter(participante=opcao[0].participante, item=self, desistencia=True).exists():
                             novo_resultado.situacao = ResultadoItemPregao.DESCLASSIFICADO
+                        else:
+                            novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
                         novo_resultado.save()
 
                     for resultado in ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('valor'):
@@ -1222,7 +1223,8 @@ class PropostaItemPregao(models.Model):
         return u'%s - %s' % (self.item, self.participante)
 
     def get_situacao_valor(self):
-        valor_maximo = self.item.valor_medio
+
+        valor_maximo = PropostaItemPregao.objects.filter(item=self.item).order_by('valor')[0].valor
         if valor_maximo:
             if self.valor > valor_maximo + (10*valor_maximo)/100:
                 return u'<font color="green"><b>Acima dos 10%</b></font>'

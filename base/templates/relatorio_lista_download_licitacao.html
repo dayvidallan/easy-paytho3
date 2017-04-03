@@ -69,20 +69,15 @@ ul{
 
     <table border="1" cellpadding="10" cellspacing="10">
         <thead>
-            <th>Arquivo</th>
-            <th>Empresa</th>
-            <th>Responsável</th>
-            <th>Baixado Em</th>
-
+            <th width="35%">Arquivo</th>
+            <th width="65%">Empresa</th>
         </thead>
         <tbody>
             {% for item in itens %}
                 <tr>
-                    <td>{{ item.arquivo }}</td>
-                    <td>{{ item.nome }}  <br>CNPJ: {{ item.cnpj }} <br>Telefone: {{ item.telefone }} <br>Email: {{ item.email }}</td>
-                    <td>{{ item.responsavel }} <br>CPF: {{ item.cpf }}</td>
-                    <td>{{ item.baixado_em }}</td>
-
+                    <td>{{ item.arquivo }}<br><b>Acesso em:</b> {{ item.baixado_em }}</td>
+                    <td width="75%">{{ item.nome }}  <br>CNPJ: {{ item.cnpj }} <br>Telefone: {{ item.telefone }} <br>Email: {{ item.email }}
+                    <br>Responsável: {{ item.responsavel }} <br>CPF: {{ item.cpf }}</td>
                 </tr>
 
             {% endfor %}
