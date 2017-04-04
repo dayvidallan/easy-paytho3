@@ -328,6 +328,13 @@ class SolicitacaoLicitacao(models.Model):
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self).exists()
 
 
+    def reorganiza_itens(self):
+        contador = 1
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self).order_by('id'):
+            item.item = contador
+            item.save()
+            contador += 1
+
 
     def tem_pedidos_pendentes(self):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()

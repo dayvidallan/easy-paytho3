@@ -753,7 +753,7 @@ def cadastrar_material(request, solicitacao_id):
     form = MaterialConsumoForm(request.POST or None)
     if form.is_valid():
         form.save()
-        messages.success(request, u'Material com sucesso.')
+        messages.success(request, u'Material %s cadastrado com sucesso.' % form.instance)
         return HttpResponseRedirect(u'/base/cadastrar_item_solicitacao/%s/' % solicitacao_id)
 
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
@@ -4595,6 +4595,7 @@ def apagar_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     solicitacao = item.solicitacao
     item.delete()
+    solicitacao.reorganiza_itens()
     messages.success(request, u'Item apagado com sucesso.')
     return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
