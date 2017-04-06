@@ -116,7 +116,7 @@
             {% endif %}
              <a class="btn btn-default" href="/base/lista_documentos/{{ solicitacao.pk }}/">Documentos</a>
              {% if solicitacao.prazo_aberto and perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{url}}base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
+                <br><br><b>Link para a pesquisa:</b> <input type="text" size="40" id="link_pesquisa" name="link_pesquisa" value="{{url}}/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/"><input type="button" class=" btn btn-sm btn-default" value="Copiar" onclick="copyToClipboard('link_pesquisa')">
             {% endif %}
 
 

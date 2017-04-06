@@ -556,7 +556,7 @@ def ver_pregoes(request):
 def itens_solicitacao(request, solicitacao_id):
     config = get_config_geral()
     if config:
-        url = config.URL
+        url = config.url
 
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'%s' % (solicitacao)
