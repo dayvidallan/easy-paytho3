@@ -554,7 +554,9 @@ def ver_pregoes(request):
 
 @login_required()
 def itens_solicitacao(request, solicitacao_id):
-    url = settings.URL
+    config = get_config_geral()
+    if config:
+        url = config.url
 
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'%s' % (solicitacao)
@@ -4089,15 +4091,17 @@ def visualizar_ata_registro_preco(request, ata_id):
         chave = '%s' % num['setor__secretaria__nome']
         tabela[chave] = materiais
         for item in pedidos.filter(setor__secretaria__nome=chave):
-            nome = u'Fornecedor: %s' % (item.item.fornecedor.razao_social)
-            materiais[nome] = dict(pedidos=list())
+            if item.item.fornecedor:
+                nome = u'Fornecedor: %s' % (item.item.fornecedor.razao_social)
+                materiais[nome] = dict(pedidos=list())
 
     for pedido in pedidos:
-        nome = u'Fornecedor: %s' % (pedido.item.fornecedor.razao_social)
-        materiais[nome]['pedidos'].append(pedido)
+        if pedido.item.fornecedor:
+            nome = u'Fornecedor: %s' % (pedido.item.fornecedor.razao_social)
+            materiais[nome]['pedidos'].append(pedido)
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
-    
+
 
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
