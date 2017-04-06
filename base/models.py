@@ -1747,6 +1747,7 @@ class Configuracao(models.Model):
     ordenador_despesa = models.ForeignKey(PessoaFisica, verbose_name=u'Ordenador de Despesa', null=True)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
     cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
+    url = models.CharField(u'URL de Acesso', max_length=500, null=True)
 
 
     class Meta:
