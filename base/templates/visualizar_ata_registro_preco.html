@@ -380,7 +380,13 @@
                                     {% for pedido, teste in pedidos.items %}
                                         {% for pedido in teste %}
                                             <tr>
-                                                <td>{{ pedido.item.material }}</td>
+                                                <td>
+                                                    {% if pedido.item.material %}
+                                                        {{ pedido.item.material }}
+                                                    {% else %}
+                                                        {{ pedido.item.item.material }}
+                                                    {% endif %}
+                                                </td>
                                                 <td>{{ pedido.quantidade }}</td>
                                                 <td>{{ pedido.get_saldo_atual }}</td>
                                                 <td><a href="/base/itens_solicitacao/{{ pedido.solicitacao.id}}/" class="btn btn-info btn-sm ">Visualizar</a></td>
