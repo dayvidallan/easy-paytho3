@@ -2013,7 +2013,22 @@ class ItemAtaRegistroPreco(models.Model):
 
         return 0
 
+    def get_saldo_atual_secretaria(self, setor):
+        if not self.ata.adesao:
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=setor.secretaria).exists():
+                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=setor.secretaria)[0].quantidade
+                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=setor)
+                if pedidos.exists():
+                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                else:
+                    return valor_total
+        else:
 
+            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=setor)
+            if pedidos.exists():
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            else:
+                return self.quantidade
 
 
 class PedidoAtaRegistroPreco(models.Model):
@@ -2033,3 +2048,6 @@ class PedidoAtaRegistroPreco(models.Model):
 
     def get_total(self):
         return self.quantidade * self.item.valor
+
+    def get_saldo_atual(self):
+        return self.item.get_saldo_atual_secretaria(self.setor)

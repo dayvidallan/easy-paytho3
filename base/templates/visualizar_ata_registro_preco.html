@@ -229,6 +229,9 @@
             <li class="active">
                 <a data-toggle="tab" href="#itens">Itens</a>
             </li>
+            <li>
+                <a href="#pedidos">Pedidos</a>
+            </li>
 
             <li>
                 <a href="#anexos">Anexos</a>
@@ -355,6 +358,48 @@
 
         </div>
 
+        <div id="pedidos" class="tab-pane">
+            {% if pedidos.exists %}
+
+                {% for secretaria, empresa in resultado.items %}
+                        <h3>{{ secretaria }}</h3>
+                        {% for material, pedidos in empresa.items %}
+                            <br><h4><b>{{ material }}</b></h4>
+
+                            <table class="table table-bordered table-condensed table-striped">
+                                <thead>
+                                    <tr><th colspan="4">Pedidos</th></tr>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantidade Pedida</th>
+                                        <th>Saldo Atual da Secretaria</th>
+                                        <th>Opções</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pedido, teste in pedidos.items %}
+                                        {% for pedido in teste %}
+                                            <tr>
+                                                <td>{{ pedido.item.material }}</td>
+                                                <td>{{ pedido.quantidade }}</td>
+                                                <td>{{ pedido.get_saldo_atual }}</td>
+                                                <td><a href="/base/itens_solicitacao/{{ pedido.solicitacao.id}}/" class="btn btn-info btn-sm ">Visualizar</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                 </tbody>
+                            </table>
+
+                        {% endfor %}
+
+                {% endfor %}
+
+
+
+            {% else %}
+                <p class="alert alert-warning">Nenhum pedido.</p>
+            {% endif %}
+        </div>
         <div id="anexos" class="tab-pane">
             {% if pode_gerenciar %}
 
