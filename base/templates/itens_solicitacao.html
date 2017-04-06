@@ -54,7 +54,7 @@
 
              {% if perms.base.pode_cadastrar_solicitacao %}
                 {% if solicitacao.situacao == solicitacao.CADASTRADO %}
-                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
+                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado and not solicitacao.prazo_aberto %}
 
                         <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
                         <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
@@ -217,16 +217,14 @@
                                     {% if solicitacao.interessados and item.tem_pedidos_outras_secretarias %}
                                         <a href="/base/ver_pedidos_secretaria/{{item.id}}/" class="btn btn-default btn-sm">Pedidos das Secretarias</a>
                                     {% endif %}
-
-                                {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
+                                {% endif %}
+                                {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
                                     {% if  not solicitacao.eh_dispensa %}
                                         <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
                                     {% endif %}
                                     {% if item.tem_pesquisa_registrada %}
                                         <a href="/ver_pesquisa_mercadologica/{{item.id}}/" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
                                     {% endif %}
-                                {% else %}
-                                    -
                                 {% endif %}
 
 

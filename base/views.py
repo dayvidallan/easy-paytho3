@@ -38,6 +38,11 @@ def get_config(secretaria=None):
         return Configuracao.objects.latest('id')
     return False
 
+def get_config_geral():
+    if Configuracao.objects.exists():
+        return Configuracao.objects.latest('id')
+    return False
+
 class SecretariaAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
@@ -2208,8 +2213,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     municipio = None
-    if get_config():
-        municipio = get_config().municipio
+    if get_config_geral():
+        municipio = get_config_geral().municipio
 
 
 
@@ -2904,7 +2909,7 @@ def imprimir_capa_processo(request, processo_id):
     c.drawString(32*mm, ALTURA - 104*mm, u'Setor de Origem: %s' % (processo.setor_origem))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
     from django.template.defaultfilters import truncatechars
-    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 500),'Helvetica',12,155 * mm)
+    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 285),'Helvetica',12,155 * mm)
     y = ALTURA - 111*mm
     for t in L:
         c.drawString(32*mm,y,t)
@@ -4073,6 +4078,26 @@ def visualizar_ata_registro_preco(request, ata_id):
     else:
         pode_gerenciar = request.user.groups.filter(name='Gerente') or ata.secretaria == request.user.pessoafisica.setor.secretaria
     eh_gerente = request.user.groups.filter(name='Gerente')
+    pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('item__material', 'setor')
+    tabela  = {}
+
+
+
+    materiais  = dict()
+    secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
+    for num in secretarias:
+        chave = '%s' % num['setor__secretaria__nome']
+        tabela[chave] = materiais
+        for item in pedidos.filter(setor__secretaria__nome=chave):
+            nome = u'Fornecedor: %s' % (item.item.fornecedor.razao_social)
+            materiais[nome] = dict(pedidos=list())
+
+    for pedido in pedidos:
+        nome = u'Fornecedor: %s' % (pedido.item.fornecedor.razao_social)
+        materiais[nome]['pedidos'].append(pedido)
+
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+    
 
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
@@ -4173,8 +4198,8 @@ def memorando(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
     municipio = None
-    if get_config():
-        municipio = get_config().municipio
+    if get_config_geral():
+        municipio = get_config_geral().municipio
 
     itens = []
     quantidades = []
@@ -4248,8 +4273,8 @@ def termo_referencia(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
     municipio = None
-    if get_config():
-        municipio = get_config().municipio
+    if get_config_geral():
+        municipio = get_config_geral().municipio
 
     itens = []
     quantidades = []
@@ -4633,8 +4658,8 @@ def ata_sessao(request, pregao_id):
 
 
     municipio = None
-    if get_config():
-        municipio = get_config().municipio
+    if get_config_geral():
+        municipio = get_config_geral().municipio
 
     participantes = []
     ocorrencias = []
