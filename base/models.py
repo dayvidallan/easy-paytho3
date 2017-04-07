@@ -901,25 +901,25 @@ class ItemSolicitacaoLicitacao(models.Model):
     def tem_pesquisa_registrada(self):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
 
-    def get_quantidade_disponivel(self):
-        usuario = tl.get_user()
-        if usuario.groups.filter(name=u'Gerente').exists():
-            pedidos = PedidoItem.objects.filter(item=self, ativo=True)
-            if pedidos.exists():
-                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-            else:
-                return self.quantidade
-
-        else:
-
-            if ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
-                pedidos = PedidoItem.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
-                if pedidos.exists():
-                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-                else:
-                    return valor_total
-        return 0
+    # def get_quantidade_disponivel(self):
+    #     usuario = tl.get_user()
+    #     if usuario.groups.filter(name=u'Gerente').exists():
+    #         pedidos = PedidoItem.objects.filter(item=self, ativo=True)
+    #         if pedidos.exists():
+    #             return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+    #         else:
+    #             return self.quantidade
+    #
+    #     else:
+    #
+    #         if ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+    #             valor_total = ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+    #             pedidos = PedidoItem.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+    #             if pedidos.exists():
+    #                 return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+    #             else:
+    #                 return valor_total
+    #     return 0
 
 
     def get_empresa_item_lote(self):
@@ -1937,7 +1937,7 @@ class ItemContrato(models.Model):
 
         else:
 
-            pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+            pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
             if pedidos.exists():
                 return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
             else:
@@ -1998,18 +1998,19 @@ class ItemAtaRegistroPreco(models.Model):
             if not self.ata.adesao:
                 if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                     valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
-                    pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+                    pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
                     if pedidos.exists():
                         return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
                     else:
                         return valor_total
             else:
 
-                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
+                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
                 if pedidos.exists():
                     return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
                 else:
                     return self.quantidade
+
 
 
         return 0
@@ -2018,14 +2019,14 @@ class ItemAtaRegistroPreco(models.Model):
         if not self.ata.adesao:
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=setor.secretaria).exists():
                 valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=setor.secretaria)[0].quantidade
-                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=setor)
+                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=setor.secretaria)
                 if pedidos.exists():
                     return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
                 else:
                     return valor_total
         else:
 
-            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor=setor)
+            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=setor.secretaria)
             if pedidos.exists():
                 return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
             else:
