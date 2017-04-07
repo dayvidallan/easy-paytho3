@@ -1430,10 +1430,9 @@ class MembroComissaoLicitacao(models.Model):
     PREGOEIRO = u'Pregoeiro'
     MEMBRO_EQUIPE = u'Membro da Equipe do Pregão'
     PRESIDENTE = u'Presidente'
-    MEMBRO_CPL = u'Membro da CPL'
+    #MEMBRO_CPL = u'Membro da CPL'
     FUNCAO_CHOICES = (
         (APOIO, APOIO),
-        (MEMBRO_CPL, MEMBRO_CPL),
         (MEMBRO_EQUIPE, MEMBRO_EQUIPE),
         (PREGOEIRO, PREGOEIRO),
         (PRESIDENTE, PRESIDENTE),
@@ -1441,7 +1440,7 @@ class MembroComissaoLicitacao(models.Model):
     comissao = models.ForeignKey(ComissaoLicitacao)
     membro = models.ForeignKey(PessoaFisica)
     matricula = models.CharField(u'Matrícula', max_length=100)
-    funcao = models.CharField(u'Função', max_length=100, choices=FUNCAO_CHOICES, default=MEMBRO_CPL)
+    funcao = models.CharField(u'Função', max_length=100, choices=FUNCAO_CHOICES, default=APOIO)
 
     def __unicode__(self):
         return self.nome
