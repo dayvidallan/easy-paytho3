@@ -13,7 +13,8 @@
 {% endif %}
 {% block content %}
 
-     <form action="." method="post" class="form-horizontal">
+
+    <form action="." method="post" class="form-horizontal" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
             {% csrf_token %}
              <div class="miolo">
                     <table class="table table-bordered table-condensed table-striped">
@@ -37,7 +38,7 @@
 
 
                         {% endfor %}
-                        <tr><td colspan="5"><br><br></b><b>Validade da Proposta (em dias): <input type="text" name="validade" id="validade"></b></td><td></td></tr>
+                        <tr><td colspan="5"><br><br></b><b>Validade da Proposta (em dias): <input type="text" name="validade" id="validade" required></b></td><td></td></tr>
                         </tbody>
                     </table>
 
@@ -45,7 +46,7 @@
 
 
                         <div class="controls">
-                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+                            <button type="submit" class="btn btn-primary" >Cadastrar</button>
                         </div>
 
              </div>
