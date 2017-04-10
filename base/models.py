@@ -1501,7 +1501,7 @@ class PesquisaMercadologica(models.Model):
     cpf_representante = models.CharField(u'CPF do Representante Legal', max_length=255, null=True,blank=True)
     rg_representante = models.CharField(u'RG do Representante Legal', max_length=255, null=True,blank=True)
     endereco_representante = models.CharField(u'Endereço do Representante Legal', max_length=255, null=True,blank=True)
-    validade_proposta = models.IntegerField(u'Dias de Validade da Proposta', null=True,blank=True)
+    validade_proposta = models.CharField(u'Dias de Validade da Proposta', max_length=200, null=True,blank=True)
     cadastrada_em = models.DateTimeField(u'Data de Envio da Proposta', null=True,blank=True)
     arquivo = models.FileField(u'Arquivo da Proposta', upload_to=u'upload/pesquisas/', null=True,blank=True)
     numero_ata = models.CharField(u'Número da Ata', max_length=255, null=True, blank=True)
