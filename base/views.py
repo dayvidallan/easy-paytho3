@@ -4792,7 +4792,7 @@ def ata_sessao(request, pregao_id):
 
 
     #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
-    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, configuracao.municipio)
+    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
 
     document.add_paragraph()
     p = document.add_paragraph()
