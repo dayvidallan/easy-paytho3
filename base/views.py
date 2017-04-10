@@ -896,8 +896,7 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
                 novo_preco.marca = request.POST.getlist('marcas')[idx-1]
                 novo_preco.save()
         if request.POST.get('validade'):
-            numero = request.POST.get('validade').split(' ')
-            pesquisa.validade_proposta = int(numero[0])
+            pesquisa.validade_proposta = request.POST.get('validade')
             pesquisa.save()
             messages.success(request, u'Valores cadastrados com sucesso.')
             return HttpResponseRedirect(u'/base/upload_pesquisa_mercadologica/%s/' % pesquisa.id)
