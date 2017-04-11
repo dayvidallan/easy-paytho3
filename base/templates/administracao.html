@@ -7,157 +7,178 @@
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 {% block content %}
-    <div class="row">
-        <fieldset>
-            <div>
-                 <a href="/admin/base/pessoafisica/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-warning">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Usuários</strong></div>
-                                    </div>
+    <fieldset>
+        <legend>Usuários, Grupos e Configuraçãoes</legend>
+        <div>
+             <a href="/admin/base/pessoafisica/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-user fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Usuários</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
-                <a href="/base/gerenciar_grupos/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Grupos do Usuário</strong></div>
-                                    </div>
+                </div>
+            </a>
+            <a href="/base/gerenciar_grupos/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-group fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Grupos do Usuário</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
-                 <a href="/admin/base/secretaria/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-danger">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Secretarias</strong></div>
-                                    </div>
+                </div>
+            </a>
+            <a href="/base/ver_variaveis_configuracao/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-gear fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Variáveis de Configuração</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
-                <a href="/admin/base/setor/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Setores</strong></div>
-                                    </div>
+                </div>
+            </a>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Cadastros</legend>
+
+         <div>
+             <a href="/admin/base/secretaria/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-edit fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Secretarias</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
+                </div>
+            </a>
+            <a href="/admin/base/setor/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-edit fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Setores</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
 
 
-                <a href="/ver_fornecedores/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-success">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Fornecedores</strong></div>
-                                    </div>
+            <a href="/ver_fornecedores/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-edit fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Fornecedores</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
-            </div>
-        </fieldset>
-        <fieldset>
-            <div>
-                <a href="/admin/base/materialconsumo/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-danger">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Materiais de Consumo</strong></div>
-                                    </div>
+                </div>
+            </a>
+            <a href="/admin/base/materialconsumo/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-edit fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Materiais de Consumo</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
-                <a href="/admin/base/tipounidade/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Tipos de Unidade</strong></div>
-                                    </div>
+                </div>
+            </a>
+            <a href="/admin/base/tipounidade/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-edit fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Tipos de Unidade</strong></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
-                <a href="/base/ver_variaveis_configuracao/">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ num_membros }}</div>
-                                        <div><strong>Variáveis de Configuração</strong></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+                </div>
+            </a>
+         </div>
+    </fieldset>
+    <fieldset>
+        <legend>Registros</legend>
 
-            </div>
-         </fieldset>
-    </div>
-
-
+         <div>
+             <a href="/admin/base/ordemcompra/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-tasks fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Ordens de Compra</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </fieldset>
 
 
 {% endblock %}

@@ -3142,12 +3142,16 @@ def gestao_pedidos(request):
 @login_required()
 def gestao_contratos(request):
     setor = request.user.pessoafisica.setor
-    title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
-    solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
-    atas_finalizadas = Pregao.objects.filter(eh_ata_registro_preco=True, solicitacao__in=solicitacoes.values_list('id', flat=True))
-    contratos_finalizados = Pregao.objects.filter(eh_ata_registro_preco=False, solicitacao__in=solicitacoes.values_list('id', flat=True))
-    atas = AtaRegistroPreco.objects.all()
-    contratos = Contrato.objects.all()
+    if request.user.groups.filter(name=u'Gerente'):
+        title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
+        solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
+        atas_finalizadas = Pregao.objects.filter(eh_ata_registro_preco=True, solicitacao__in=solicitacoes.values_list('id', flat=True))
+        contratos_finalizados = Pregao.objects.filter(eh_ata_registro_preco=False, solicitacao__in=solicitacoes.values_list('id', flat=True))
+        atas = AtaRegistroPreco.objects.all()
+        contratos = Contrato.objects.all()
+
+    else:
+        return HttpResponseRedirect(u'/')
 
     return render(request, 'gestao_contratos.html', locals(), RequestContext(request))
 
