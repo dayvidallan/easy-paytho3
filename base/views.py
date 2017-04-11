@@ -4590,6 +4590,22 @@ def rejeitar_pesquisa(request, item_pesquisa_id):
         return HttpResponseRedirect(u'/base/ver_pesquisa_mercadologica/%s/' % item.item.id)
     return render(request, 'rejeitar_pesquisa.html', locals(), RequestContext(request))
 
+@login_required()
+def excluir_item_pesquisa(request, item_pesquisa_id):
+    item = get_object_or_404(ItemPesquisaMercadologica, pk=item_pesquisa_id)
+    id = item.item.id
+    item.delete()
+    messages.success(request, u'Proposta pelo item excluída com sucesso.')
+    return HttpResponseRedirect(u'/base/ver_pesquisa_mercadologica/%s/' % id)
+
+@login_required()
+def excluir_pesquisa(request, pesquisa_id):
+    item = get_object_or_404(PesquisaMercadologica, pk=pesquisa_id)
+    solicitacao = item.solicitacao
+    ItemPesquisaMercadologica.objects.filter(pesquisa=item).delete()
+    item.delete()
+    messages.success(request, u'Proposta excluída com sucesso.')
+    return HttpResponseRedirect(u'/base/ver_pesquisas/%s/' % solicitacao.id)
 
 @login_required()
 def relatorio_lista_download_licitacao(request, pregao_id):
@@ -5328,3 +5344,11 @@ def cadastrar_variaveis_configuracao(request):
         messages.success(request, u'Variáveis de configuração com sucesso.')
         return HttpResponseRedirect(u'/base/ver_variaveis_configuracao/')
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+@login_required()
+def ver_pesquisas(request, solicitacao_id):
+    title = u'Ver Pesquisas'
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    pesquisas = PesquisaMercadologica.objects.filter(solicitacao=solicitacao)
+    return render(request, 'ver_pesquisas.html', locals(), RequestContext(request))

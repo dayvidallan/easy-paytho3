@@ -1,0 +1,61 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">{{solicitacao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+        <div class="pull-right">
+            <a class="btn btn-info" href="/base/itens_solicitacao/{{solicitacao.id}}/">Voltar</a>
+
+        </div>
+
+        {% if pesquisas.exists %}
+            <h3>Valores das Pesquisas</h3>
+            <table border="2" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <th>Fornecedor/Ata</th>
+                    <th>Origem</th>
+                    <th>Proposta</th>
+                    <th>Opções</th>
+                </thead>
+                <tbody>
+                    {% for pesquisa in pesquisas %}
+                        <tr>
+                            <td>
+                                {% if pesquisa.origem == pesquisa.ATA_PRECO %}
+                                    Ata N°{{ pesquisa.razao_social }} / {{ pesquisa.orgao_gerenciador_ata }} - Vigência: {{ pesquisa.vigencia_ata }}
+                                {% else %}
+                                    {{ pesquisa.razao_social }} - CNPJ: {{ pesquisa.cnpj }}
+                                {% endif %}
+                            </td>
+                            <td>{{ pesquisa.origem }}</td>
+
+                            <td>
+                                {% if pesquisa.arquivo %}
+                                    <a href="/media/{{ pesquisa.pesquisa.arquivo }}" class="btn btn-default btn-sm" target="_blank">Visualizar</a>
+
+                                {% endif %}
+
+                            </td>
+                            <td>
+                                {% if pesquisa.solicitacao.prazo_aberto %}
+                                    <a href="/base/excluir_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Excluir Proposta</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">Nenhuma proposta cadastrada.</p>
+        {% endif %}
+
+
+
+{% endblock %}
