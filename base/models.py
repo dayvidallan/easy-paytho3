@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 from django.contrib.auth.models import AbstractUser
-from django.db import models
+from django.db import models, transaction
 from newadmin.utils import CepModelField
 from decimal import Decimal
 from django.db.models import Sum
@@ -1787,7 +1787,7 @@ class DotacaoOrcamentaria(models.Model):
         return 'Dotação: Programa %s - Elemento de Despesa: %s' % (self.programa_num, self.elemento_despesa_num)
 
 class OrdemCompra(models.Model):
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
     numero = models.CharField(u'Número da Ordem', max_length=200)
     data = models.DateField(u'Data')
     projeto_atividade_num = models.CharField(u'Número do Projeto de Atividade', max_length=200, null=True, blank=True)
@@ -1802,6 +1802,16 @@ class OrdemCompra(models.Model):
     class Meta:
         verbose_name = u'Ordem de Compra'
         verbose_name_plural = u'Ordens de Compra'
+
+
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        solicitacao = self.solicitacao
+        PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).delete()
+        PedidoContrato.objects.filter(solicitacao=solicitacao).delete()
+        ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).delete()
+        super(OrdemCompra, self).delete(*args, **kwargs)
+        solicitacao.delete()
 
 class AtaRegistroPreco(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)

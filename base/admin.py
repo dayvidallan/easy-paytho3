@@ -290,3 +290,10 @@ class ConfiguracaoAdmin(NewModelAdmin):
     list_filter = ('nome',)
 
 admin.site.register(Configuracao, ConfiguracaoAdmin)
+
+class OrdemCompraAdmin(NewModelAdmin):
+    list_display = ('numero', 'solicitacao',  'data')
+    ordering = ('numero',)
+
+
+admin.site.register(OrdemCompra, OrdemCompraAdmin)
