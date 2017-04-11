@@ -142,6 +142,11 @@ urlpatterns = [
     url(r'^apagar_anexo_contrato/(?P<item_id>\d+)/$', views.apagar_anexo_contrato, name='apagar_anexo_contrato'),
     url(r'^documentos_atas/(?P<ata_id>\d+)/$', views.documentos_atas, name='documentos_atas'),
     url(r'^rejeitar_pesquisa/(?P<item_pesquisa_id>\d+)/$', views.rejeitar_pesquisa, name='rejeitar_pesquisa'),
+    url(r'^excluir_item_pesquisa/(?P<item_pesquisa_id>\d+)/$', views.excluir_item_pesquisa, name='excluir_item_pesquisa'),
+    url(r'^ver_pesquisas/(?P<solicitacao_id>\d+)/$', views.ver_pesquisas, name='ver_pesquisas'),
+    url(r'^excluir_pesquisa/(?P<pesquisa_id>\d+)/$', views.excluir_pesquisa, name='excluir_pesquisa'),
+
+
     url(r'^cadastrar_contrato/(?P<solicitacao_id>\d+)/$', views.cadastrar_contrato, name='cadastrar_contrato'),
     url(r'^relatorio_lista_download_licitacao/(?P<pregao_id>\d+)/$', views.relatorio_lista_download_licitacao, name='relatorio_lista_download_licitacao'),
     url(r'^registrar_ocorrencia_pregao/(?P<pregao_id>\d+)/$', views.registrar_ocorrencia_pregao, name='registrar_ocorrencia_pregao'),

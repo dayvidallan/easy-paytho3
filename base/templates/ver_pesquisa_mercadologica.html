@@ -35,6 +35,7 @@
                     <th>Valor Máximo</th>
                     <th>Situação</th>
                     <th>Proposta</th>
+                    <th>Opções</th>
                 </thead>
                 <tbody>
                     {% for pesquisa in pesquisas %}
@@ -61,7 +62,11 @@
                                     <a href="/media/{{ pesquisa.pesquisa.arquivo }}" class="btn btn-default btn-sm" target="_blank">Visualizar</a>
 
                                 {% endif %}
-                                {% if pesquisa.ativo and pesquisa.solicitacao.prazo_aberto %}
+
+                            </td>
+                            <td>
+                                {% if pesquisa.ativo and pesquisa.item.solicitacao.prazo_aberto %}
+                                    <a href="/base/excluir_item_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Excluir</a>
                                     <a href="/base/rejeitar_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Rejeitar</a>
                                 {% endif %}
                             </td>
