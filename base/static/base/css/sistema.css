@@ -1449,3 +1449,49 @@ footer section#content-footer p {
 
 }
 
+
+
+.action-bar li {
+    float: left;
+    list-style: none;
+    margin: 0 0 5px 5px;
+}
+    details .action-bar li,
+    .box-info .action-bar li {
+        margin: 5px 5px 0 0;
+    }
+    td .action-bar li {
+        margin: 0 5px 5px 0;
+    }
+    td .action-bar li:only-child {
+        margin: 0;
+    }
+    .box-telefone .action-bar li {
+        margin: 0 0 5px 5px;
+    }
+.action-bar > li > ul {
+    background: #eee;
+    border-radius: 5px;
+    box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.2);
+    display: none;
+    margin: 0 0 0 5px;
+    max-width: 160px;
+    min-width: 120px;
+    padding: 0;
+    position: absolute;
+    z-index: 5;
+}
+.action-bar ul a {
+    background: transparent;
+    border: 0 none;
+    border-radius: 0px;
+    box-shadow: 0px 0px 0px;
+    color: #333;
+    display: inline-block;
+    font-size: 100%;
+    height: auto;
+    line-height: 1.2em;
+    padding: 6px 8%;
+    white-space: inherit;
+    width: 100%;
+}

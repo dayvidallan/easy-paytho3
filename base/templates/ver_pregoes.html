@@ -67,19 +67,21 @@
                        <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
                        <td>{{ pregao.responsavel}}</td>
                        <td>
-                           {% if perms.base.pode_cadastrar_pregao %}
-                               <a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a><br>
-                               <a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a>
-                           {% endif %}
-                           {% if eh_ordenador_despesa and pregao.tem_resultado %}
-                                {% if pregao.eh_pregao and pregao.data_adjudicacao or pregao.pode_homologar %}
-                                    <a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a>
+                           <ul class="action-bar">
+                               {% if perms.base.pode_cadastrar_pregao %}
+                                   <li><a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a></li>
+                                   <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li>
+                               {% endif %}
+                               {% if eh_ordenador_despesa and pregao.tem_resultado %}
+                                    {% if pregao.eh_pregao and pregao.data_adjudicacao or pregao.pode_homologar %}
+                                        <li><a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a></li>
 
-                                    {% if not pregao.arquivo_homologacao %}
-                                        <a class="btn btn-success btn-sm" href="/registrar_homologacao/{{pregao.id}}/">Homologar</a>
+                                        {% if not pregao.arquivo_homologacao %}
+                                            <li><a class="btn btn-success btn-sm" href="/registrar_homologacao/{{pregao.id}}/">Homologar</a></li>
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}
-                           {% endif %}
+                               {% endif %}
+                           </ul>
                        </td>
                    </tr>
                 {% endfor %}
