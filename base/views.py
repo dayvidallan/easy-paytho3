@@ -5352,3 +5352,45 @@ def ver_pesquisas(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pesquisas = PesquisaMercadologica.objects.filter(solicitacao=solicitacao)
     return render(request, 'ver_pesquisas.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_item_pedido(request, pedido_id, tipo):
+    title = u'Editar Item do Pedido'
+    if tipo == u'1':
+        pedido = get_object_or_404(PedidoContrato, pk=pedido_id)
+        form = EditarPedidoContratoForm(request.POST or None, instance=pedido)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Item editado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  pedido.solicitacao.id)
+
+    else:
+        pedido = get_object_or_404(PedidoAtaRegistroPreco, pk=pedido_id)
+        form = EditarPedidoARPForm(request.POST or None, instance=pedido)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Item editado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  pedido.solicitacao.id)
+
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+
+@login_required()
+def apagar_item_pedido(request, pedido_id, tipo):
+    if tipo == u'1':
+        pedido = get_object_or_404(PedidoContrato, pk=pedido_id)
+        solicitacao = pedido.solicitacao
+        pedido.delete()
+        messages.success(request, u'Item excluído com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  solicitacao.id)
+
+    else:
+        pedido = get_object_or_404(PedidoAtaRegistroPreco, pk=pedido_id)
+        solicitacao = pedido.solicitacao
+        pedido.delete()
+        messages.success(request, u'Item excluído com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  solicitacao.id)
+
+
+

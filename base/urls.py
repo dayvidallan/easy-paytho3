@@ -157,6 +157,8 @@ urlpatterns = [
     url(r'^editar_item/(?P<item_id>\d+)/$', views.editar_item, name='editar_item'),
 
     url(r'^solicitar_pedidos_novamente/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.solicitar_pedidos_novamente, name='solicitar_pedidos_novamente'),
+    url(r'^editar_item_pedido/(?P<pedido_id>\d+)/(?P<tipo>\d+)/$', views.editar_item_pedido, name='editar_item_pedido'),
+    url(r'^apagar_item_pedido/(?P<pedido_id>\d+)/(?P<tipo>\d+)/$', views.apagar_item_pedido, name='apagar_item_pedido'),
 
 
 

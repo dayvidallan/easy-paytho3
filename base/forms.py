@@ -760,3 +760,15 @@ class RevogarPregaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RevogarPregaoForm, self).__init__(*args, **kwargs)
         self.fields['data_revogacao'].widget.attrs = {'class': 'vDateField'}
+
+
+class EditarPedidoContratoForm(forms.ModelForm):
+    class Meta:
+        model = PedidoContrato
+        fields = ('quantidade',)
+
+
+class EditarPedidoARPForm(forms.ModelForm):
+    class Meta:
+        model = PedidoAtaRegistroPreco
+        fields = ('quantidade',)

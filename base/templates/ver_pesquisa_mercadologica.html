@@ -66,8 +66,10 @@
                             </td>
                             <td>
                                 {% if pesquisa.ativo and pesquisa.item.solicitacao.prazo_aberto %}
-                                    <a href="/base/excluir_item_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Excluir</a>
-                                    <a href="/base/rejeitar_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Rejeitar</a>
+                                    <ul class="action-bar">
+                                        <li><a href="/base/excluir_item_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Excluir</a></li>
+                                        <li><a href="/base/rejeitar_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Rejeitar</a></li>
+                                    </ul>
                                 {% endif %}
                             </td>
                         </tr>
