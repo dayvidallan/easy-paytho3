@@ -2854,6 +2854,8 @@ def ver_processo(request, processo_id):
 @login_required()
 def imprimir_capa_processo(request, processo_id):
     processo = get_object_or_404(Processo, pk=processo_id)
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, processo=processo)
+
     # destino_arquivo = u'upload/pesquisas/rascunhos/%s.pdf' % processo_id
     # if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'rascunhos')):
     #     os.makedirs(os.path.join(settings.MEDIA_ROOT, 'rascunhos'))
@@ -2901,17 +2903,18 @@ def imprimir_capa_processo(request, processo_id):
                      barHeight=10*mm, barWidth=0.5*mm, bearers = 0, checksum = 0)
     codbarra.drawOn(c, LARGURA - 101*mm, ALTURA - 75*mm)
 
+    from django.template.defaultfilters import truncatechars
     # INFORMAÇÕES SOBRE O DOCUMENTO
     c.rect(30*mm, ALTURA - 129*mm, 160*mm, 47*mm)
     c.setFont('Helvetica', 12)
     c.drawString(32*mm, ALTURA - 88*mm, u'Data: %s' % processo.data_cadastro.strftime('%d/%m/%Y'))
     #c.drawString(110*mm, ALTURA - 88*mm, u'Campus: %s' % processo.uo.setor.sigla)
     #c.drawString(32*mm, ALTURA - 95*mm, u'Interessado: %s' % processo.pessoa_interessada.nome[:55] + (processo.pessoa_interessada.nome[55:] and '...'))
-    c.drawString(32*mm, ALTURA - 96*mm, u'Secretaria de Origem: %s' % (processo.setor_origem.secretaria))
-    c.drawString(32*mm, ALTURA - 104*mm, u'Setor de Origem: %s' % (processo.setor_origem))
+    c.drawString(32*mm, ALTURA - 96*mm, u'Setor de Origem: %s' % truncatechars(processo.setor_origem, 65))
+    c.drawString(32*mm, ALTURA - 104*mm, u'Tipo: %s' % (solicitacao.tipo_aquisicao))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
-    from django.template.defaultfilters import truncatechars
-    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 285),'Helvetica',12,155 * mm)
+
+    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 220),'Helvetica',12,155 * mm)
     y = ALTURA - 111*mm
     for t in L:
         c.drawString(32*mm,y,t)
@@ -4586,6 +4589,17 @@ def rejeitar_pesquisa(request, item_pesquisa_id):
         o.rejeitado_em = datetime.datetime.now()
         o.rejeitado_por = request.user
         o.save()
+        elemento = item.item
+        registros = ItemPesquisaMercadologica.objects.filter(item=elemento, rejeitado_por__isnull=True)
+        if registros.exists():
+            total_registros = registros.count()
+            soma = registros.aggregate(Sum('valor_maximo'))
+            elemento.valor_medio = soma['valor_maximo__sum']/total_registros
+            elemento.total = elemento.valor_medio * elemento.quantidade
+
+        else:
+            elemento.valor_medio = 0
+            elemento.total = 0
         messages.success(request, u'Proposta rejeitada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_pesquisa_mercadologica/%s/' % item.item.id)
     return render(request, 'rejeitar_pesquisa.html', locals(), RequestContext(request))
@@ -4593,8 +4607,21 @@ def rejeitar_pesquisa(request, item_pesquisa_id):
 @login_required()
 def excluir_item_pesquisa(request, item_pesquisa_id):
     item = get_object_or_404(ItemPesquisaMercadologica, pk=item_pesquisa_id)
-    id = item.item.id
+    elemento = item.item
+    id = elemento.id
     item.delete()
+    registros = ItemPesquisaMercadologica.objects.filter(item=elemento, rejeitado_por__isnull=True)
+    if registros.exists():
+        total_registros = registros.count()
+        soma = registros.aggregate(Sum('valor_maximo'))
+        elemento.valor_medio = soma['valor_maximo__sum']/total_registros
+        elemento.total = elemento.valor_medio * elemento.quantidade
+
+    else:
+        elemento.valor_medio = 0
+        elemento.total = 0
+    elemento.save()
+
     messages.success(request, u'Proposta pelo item excluída com sucesso.')
     return HttpResponseRedirect(u'/base/ver_pesquisa_mercadologica/%s/' % id)
 
@@ -4602,8 +4629,25 @@ def excluir_item_pesquisa(request, item_pesquisa_id):
 def excluir_pesquisa(request, pesquisa_id):
     item = get_object_or_404(PesquisaMercadologica, pk=pesquisa_id)
     solicitacao = item.solicitacao
+    ids = list()
+    for opcao in  ItemPesquisaMercadologica.objects.filter(pesquisa=item):
+       ids.append(opcao.item.id)
     ItemPesquisaMercadologica.objects.filter(pesquisa=item).delete()
     item.delete()
+
+    for id_item in ids:
+        elemento = get_object_or_404(ItemSolicitacaoLicitacao, pk=id_item)
+        registros = ItemPesquisaMercadologica.objects.filter(item=elemento, rejeitado_por__isnull=True)
+        if registros.exists():
+            total_registros = registros.count()
+            soma = registros.aggregate(Sum('valor_maximo'))
+            elemento.valor_medio = soma['valor_maximo__sum']/total_registros
+            elemento.total = elemento.valor_medio * elemento.quantidade
+
+        else:
+            elemento.valor_medio = 0
+            elemento.total = 0
+        elemento.save()
     messages.success(request, u'Proposta excluída com sucesso.')
     return HttpResponseRedirect(u'/base/ver_pesquisas/%s/' % solicitacao.id)
 
