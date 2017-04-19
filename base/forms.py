@@ -434,9 +434,14 @@ class SetorEnvioForm(forms.Form):
     obs = forms.CharField(label=u'Observações', widget=forms.Textarea, required=False)
     def __init__(self, *args, **kwargs):
         self.devolve = kwargs.pop('devolve', None)
+        self.setor_atual = kwargs.pop('setor_atual', None)
         super(SetorEnvioForm, self).__init__(*args, **kwargs)
         if self.devolve:
             del self.fields['setor']
+
+    def clean(self):
+        if self.cleaned_data.get('setor') and self.cleaned_data.get('setor') == self.setor_atual:
+            raise forms.ValidationError(u'A solicitação já está no setor selecionado.')
 
 
 class GanhadoresForm(forms.Form):

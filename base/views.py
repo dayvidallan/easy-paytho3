@@ -1198,10 +1198,11 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
     title=u'Enviar Solicitação'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     if tipo ==u'3':
-        form = SetorEnvioForm(request.POST or None, devolve=True)
+        form = SetorEnvioForm(request.POST or None, devolve=True, setor_atual=solicitacao.setor_atual)
     else:
-        form = SetorEnvioForm(request.POST or None, devolve=False)
+        form = SetorEnvioForm(request.POST or None, devolve=False, setor_atual=solicitacao.setor_atual)
     if form.is_valid():
+
         if tipo ==u'3':
             solicitacao.situacao = SolicitacaoLicitacao.DEVOLVIDO
             solicitacao.setor_atual = solicitacao.setor_origem
