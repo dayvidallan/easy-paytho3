@@ -188,11 +188,11 @@
     <br>
      <div class="pull-right">
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
-            <a class="btn btn-info" href="/base/registrar_ocorrencia_pregao/{{ pregao.pk }}/">Registrar Ocorrência</a>
+            <a class="btn btn-info" href="/base/registrar_ocorrencia_pregao/{{ pregao.pk }}/" target="_blank">Registrar Ocorrência</a>
             {% if pregao.eh_pregao %}
-                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Pregão</a>
+                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/" target="_blank">Suspender Pregão</a>
             {% else %}
-                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/">Suspender Licitação</a>
+                <a class="btn btn-default" href="/base/suspender_pregao/{{ pregao.pk }}/" target="_blank">Suspender Licitação</a>
             {% endif %}
         {% elif pregao.eh_suspenso %}
             {% if pregao.eh_pregao %}
@@ -244,12 +244,12 @@
     </div>
     <div class="tab-content">
         <div id="anexos" class="tab-pane in active">
-            {% if pregao.eh_ativo %}
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>
-                    <br><br>
-                </div>
-            {% endif %}
+
+            <div class="pull-right">
+                <a class="btn btn-primary" href="/base/cadastrar_anexo_pregao/{{pregao.id}}/">Cadastrar Anexo</a>
+                <br><br>
+            </div>
+
             <h2>Anexos do Pregão</h2>
             {%  if pregao.anexopregao_set.exists %}
                 <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
