@@ -2959,7 +2959,7 @@ def criar_lote(request, pregao_id):
             ids.append(item.id)
             valor_medio = valor_medio +  (item.valor_medio * item.quantidade)
 
-
+        
         novo_lote = ItemSolicitacaoLicitacao()
         novo_lote.solicitacao = pregao.solicitacao
         novo_lote.item = pregao.solicitacao.get_proximo_item(eh_lote=True)
@@ -3839,7 +3839,6 @@ def ver_ordem_compra(request, solicitacao_id):
     data_emissao = datetime.date.today()
     ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
 
-
     eh_lote = False
 
     tabela = {}
@@ -3905,7 +3904,12 @@ def ver_ordem_compra(request, solicitacao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    cpf_secretario = configuracao.responsavel.cpf
+    cpf_secretario_formatado = "%s.%s.%s-%s" % ( cpf_secretario[0:3], cpf_secretario[3:6], cpf_secretario[6:9], cpf_secretario[9:11] )
+
+    cpf_ordenador = configuracao.ordenador_despesa.cpf
+    cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
+    data = {'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 
@@ -3951,7 +3955,13 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     for item in itens:
         total += item.get_total()
 
-    data = {'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
+
+    cpf_secretario = configuracao.responsavel.cpf
+    cpf_secretario_formatado = "%s.%s.%s-%s" % ( cpf_secretario[0:3], cpf_secretario[3:6], cpf_secretario[6:9], cpf_secretario[9:11] )
+
+    cpf_ordenador = configuracao.ordenador_despesa.cpf
+    cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
+    data = {'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
 

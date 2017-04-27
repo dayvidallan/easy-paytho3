@@ -81,6 +81,7 @@
                     <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
                 {% elif not solicitacao.eh_dispensa or not solicitacao.tem_ordem_compra %}
                     <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
+                    <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
                 {% endif %}
 
              {% endif %}
