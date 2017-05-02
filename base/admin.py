@@ -295,5 +295,10 @@ class OrdemCompraAdmin(NewModelAdmin):
     list_display = ('numero', 'solicitacao',  'data')
     ordering = ('numero',)
 
-
 admin.site.register(OrdemCompra, OrdemCompraAdmin)
+
+class ProcessoAdmin(NewModelAdmin):
+    list_display = ('numero', 'data_cadastro',  'pessoa_cadastro')
+    ordering = ('numero',)
+
+admin.site.register(Processo, ProcessoAdmin)
