@@ -108,7 +108,7 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
 
     class Meta:
         model = ItemSolicitacaoLicitacao
-        exclude = ['item', 'solicitacao', 'total', 'valor_medio', 'data_inicio_pesquisa', 'data_fim_pesquisa', 'setor_origem', 'setor_atual', 'situacao', 'obs', 'ativo', 'eh_lote']
+        fields = ['material', 'unidade', 'quantidade']
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao',None)
         super(CadastrarItemSolicitacaoForm, self).__init__(*args, **kwargs)
@@ -214,10 +214,6 @@ class SolicitacaoForm(forms.ModelForm):
         if not self.instance.pk and self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando'), setor_origem__secretaria=self.request.user.pessoafisica.setor.secretaria).exists():
             self.add_error('num_memorando', u'Já existe uma solicitação para este memorando.')
 
-class ItemSolicitacaoLicitacaoForm(forms.ModelForm):
-    class Meta:
-        model = ItemSolicitacaoLicitacao
-        exclude = ['solicitacao', 'item', 'total', 'valor_medio', 'situacao', 'obs']
 
 class EditarItemSolicitacaoLicitacaoForm(forms.ModelForm):
     unidade = forms.ModelChoiceField(TipoUnidade.objects, label=u'Unidade')
