@@ -34,7 +34,7 @@
                     <th>Marca</th>
                     <th>Valor Máximo</th>
                     <th>Situação</th>
-                    <th>Proposta</th>
+                    <th>Arquivo da Proposta</th>
                     <th>Opções</th>
                 </thead>
                 <tbody>
@@ -82,18 +82,7 @@
                         <th colspan="2"><b>Valor Médio Calculado - Envio de Proposta</b> (*considera apenas propostas com arquivo anexado.)</th>
                         <td><font color="blue"><b>{{ item.get_valor_medio_envio_pesquisa|format_money|default_if_none:'-' }}</b></font></td>
                     </tr>
-                    {% if item.valor_medio %}
-                        <tr>
-                            <th colspan="2"><b>Valor Médio Cadastrado</b></th>
-                            <td>
-                                <font color="blue"><b>{{ item.valor_medio|format_money|default_if_none:'-' }}</b></font>
-                                {% if item.arquivo_referencia_valor_medio %}
-                                    <a href="/media/{{ item.arquivo_referencia_valor_medio }}" class="btn btn-default btn-sm" target="_blank">Ver Arquivo de Referência</a>
-                                {% endif %}
-                            </td>
 
-                        </tr>
-                    {% endif %}
                 </tbody>
             </table>
         {% else %}

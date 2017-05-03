@@ -261,35 +261,44 @@
 
                                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                             <thead>
-                                                <tr>
-                                                    <th colspan="6">{{lote}}</th>
 
-                                                </tr>
                                                 <tr>
                                                     <th>Item</th>
                                                     <th>Material</th>
                                                     <th>Marca</th>
+                                                    <th>Unidade</th>
                                                     <th>Empresa</th>
                                                     <th>Valor</th>
+                                                    <th>Quantidade Inicial</th>
                                                     <th>Quantidade Disponível</th>
 
 
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for item in lote.get_itens_do_lote %}
+                                                {% for opcao in ata.itemataregistropreco_set.all %}
                                                     <tr>
-                                                        <td>{{ item }}</td>
-                                                        <td>{{ item.material|truncatechars:500 }}</td>
-                                                        <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
-                                                        <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
-                                                        <td>{{ item.get_valor_unitario_final }}</td>
-                                                        <td>{{ item.get_quantidade_disponivel }}</td>
+                                                        {% if ata.adesao %}
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                        {% else %}
+                                                            <td>{{ opcao.item }}</td>
+                                                            <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                        {% endif %}
+                                                        <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                        <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                                                        {% if ata.adesao %}
+                                                            <td>{{ opcao.fornecedor }}</td>
+                                                        {% else %}
+                                                            <td>{{ opcao.participante }}</td>
+                                                        {% endif %}
+                                                        <td>{{ opcao.valor|format_money }}</td>
+                                                        <td>{{ opcao.quantidade }}</td>
+                                                        <td>{{ opcao.get_quantidade_disponivel }}</td>
 
 
                                                     </tr>
-                                                {% endfor%}
-
+                                                {% endfor %}
                                             </tbody>
                                         </table>
                                     {% endfor %}
