@@ -300,5 +300,6 @@ admin.site.register(OrdemCompra, OrdemCompraAdmin)
 class ProcessoAdmin(NewModelAdmin):
     list_display = ('numero', 'data_cadastro',  'pessoa_cadastro')
     ordering = ('numero',)
+    search_fields = ('numero',)
 
 admin.site.register(Processo, ProcessoAdmin)

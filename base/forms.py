@@ -243,7 +243,7 @@ class LanceForm(forms.Form):
 class RegistrarPrecoItemForm(forms.ModelForm):
     class Meta:
         model = ItemSolicitacaoLicitacao
-        fields = ['valor_medio',]
+        fields = ['valor_medio', 'arquivo_referencia_valor_medio']
 
 
 class PesquisaMercadologicaForm(forms.ModelForm):
