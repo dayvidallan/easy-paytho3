@@ -793,7 +793,7 @@ def enviar_para_licitacao(request, solicitacao_id):
 def registrar_preco_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     title = u'Registrar Valor - %s' % item
-    form = RegistrarPrecoItemForm(request.POST or None, instance=item)
+    form = RegistrarPrecoItemForm(request.POST or None, request.FILES or None, instance=item)
     if form.is_valid():
         o = form.save(False)
         o.total = o.quantidade*o.valor_medio

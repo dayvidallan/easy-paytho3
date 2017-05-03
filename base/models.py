@@ -456,6 +456,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     obs = models.CharField(u'Observação', max_length=3000, null=True, blank=True)
     ativo = models.BooleanField(u'Ativo', default=True)
     eh_lote = models.BooleanField(u'Lote', default=False)
+    arquivo_referencia_valor_medio = models.FileField(u'Arquivo com a Referência do Valor Médio', null=True, upload_to=u'upload/referencias_valor_medio/')
 
     def __unicode__(self):
 
@@ -524,6 +525,9 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_id_lote(self):
         return ItemLote.objects.filter(item=self)[0].lote.item
+
+    def get_lote(self):
+        return ItemLote.objects.filter(item=self)[0].lote
 
     def tem_lance_registrado(self):
         return LanceItemRodadaPregao.objects.filter(item=self).exists()
@@ -892,7 +896,11 @@ class ItemSolicitacaoLicitacao(models.Model):
        return not ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO).exists()
 
     def tem_resultado(self):
-        return ResultadoItemPregao.objects.filter(item=self).exists()
+        if not ItemLote.objects.filter(item=self).exists():
+            return ResultadoItemPregao.objects.filter(item=self).exists()
+        else:
+            lote = ItemLote.objects.filter(item=self)
+            return ResultadoItemPregao.objects.filter(item__in=lote.values_list('lote', flat=True)).exists()
 
     def get_itens_do_lote(self):
         itens = ItemLote.objects.filter(lote=self)
