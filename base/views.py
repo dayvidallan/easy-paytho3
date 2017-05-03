@@ -3319,7 +3319,7 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
-                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_arp().get_quantidade_disponivel():
                             messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
                             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
             else:
@@ -3486,7 +3486,7 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
-                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_contrato().get_quantidade_disponivel():
                             messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
                             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
             else:

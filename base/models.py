@@ -930,6 +930,13 @@ class ItemSolicitacaoLicitacao(models.Model):
     #     return 0
 
 
+    def get_item_arp(self):
+        return ItemAtaRegistroPreco.objects.filter(item=self)[0]
+
+    def get_item_contrato(self):
+        return ItemContrato.objects.filter(item=self)[0]
+
+
     def get_empresa_item_lote(self):
         lote = ItemLote.objects.filter(item=self)[0].lote
         return lote.get_empresa_vencedora()
