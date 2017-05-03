@@ -20,10 +20,18 @@
             <tr>
                 <th width="10%"><b>Item</b></th>
                 <th width="10%"><b>Material</b></th>
+                <th width="10%"><b>Proposta de Referência</b></th>
             </tr>
             <tr>
                 <td>{{ item.item }}</td>
                 <td>{{ item.material }}</td>
+                <td>
+                    {% if item.arquivo_referencia_valor_medio %}
+                        <a href="/media/{{ item.arquivo_referencia_valor_medio }}" class="btn btn-default btn-sm" target="_blank">Ver Arquivo de Referência</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
             </tr>
         </table>
         {% if pesquisas.exists %}
