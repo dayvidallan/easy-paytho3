@@ -777,4 +777,4 @@ class EditarPedidoARPForm(forms.ModelForm):
 class VisitantePregaoForm(forms.ModelForm):
     class Meta:
         model = VisitantePregao
-        fields = ('nome', 'rg', 'cpf', )
+        fields = ('nome',  'cpf', 'rg',)

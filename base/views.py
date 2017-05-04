@@ -361,7 +361,7 @@ def cadastra_visitante_pregao(request, pregao_id):
         o.pregao = pregao
         o.save()
         messages.success(request, u'Visitante cadastrado com sucesso')
-        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
+        return HttpResponseRedirect(u'/base/gerenciar_visitantes/%s/' % pregao.id)
 
     return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))
 
@@ -5492,4 +5492,31 @@ def apagar_item_pedido(request, pedido_id, tipo):
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  solicitacao.id)
 
 
+@login_required()
+def gerenciar_visitantes(request, pregao_id):
+    title = u'Lista de Visitantes do Pregão'
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    visitantes = VisitantePregao.objects.filter(pregao=pregao)
 
+    return render(request, 'gerenciar_visitantes.html', locals(), RequestContext(request))
+
+
+@login_required()
+def editar_visitante(request, visitante_id):
+    title = u'Editar Visitante'
+    visitante = get_object_or_404(VisitantePregao, pk=visitante_id)
+    form = VisitantePregaoForm(request.POST or None, instance=visitante)
+    if form.is_valid():
+        form.save()
+
+        messages.success(request, u'Visitante editado com sucesso.')
+        return HttpResponseRedirect(u'/base/gerenciar_visitantes/%s/' %  visitante.pregao.id)
+    return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def excluir_visitante(request, visitante_id):
+    visitante = get_object_or_404(VisitantePregao, pk=visitante_id)
+    pregao = visitante.pregao
+    visitante.delete()
+    messages.success(request, u'Visitante excluído com sucesso.')
+    return HttpResponseRedirect(u'/base/gerenciar_visitantes/%s/' % pregao.id)
