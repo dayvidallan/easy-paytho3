@@ -357,6 +357,7 @@
             <div class="pull-right">
                 {% if pregao.eh_ativo %}
                     <a class="btn btn-primary" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
+                    <a class="btn btn-default" href="/base/cadastra_visitante_pregao/{{ pregao.pk }}/">Cadastrar Visitante</a>
                     <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
                     <a class="btn btn-danger" href="/base/encerrar_pregao/{{ pregao.pk }}/2/">Fracassado</a>
                 {% endif %}
@@ -821,6 +822,13 @@
                         <tr>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
                         </tr>
+
+
+                        {% if pregao.visitantepregao_set.exists %}
+                            <tr>
+                                <td><a href="/base/relatorio_lista_visitantes/{{ pregao.id }}/" target="_blank">Lista de Visitantes</a></td>
+                            </tr>
+                        {% endif %}
                         {% if pregao.eh_pregao and pregao.tem_lance_registrado %}
                             <tr>
                                 <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>

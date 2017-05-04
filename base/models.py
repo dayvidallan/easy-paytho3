@@ -1210,6 +1210,19 @@ class ParticipantePregao(models.Model):
     def pode_remover(self):
         return not ParticipanteItemPregao.objects.filter(participante=self).exists() and  not PropostaItemPregao.objects.filter(participante=self).exists()
 
+class VisitantePregao(models.Model):
+    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
+    nome = models.CharField(u'Nome', max_length=255, null=True, blank=True)
+    rg = models.CharField(u'RG', max_length=255, null=True, blank=True)
+    cpf = models.CharField(u'CPF', max_length=255, null=True, blank=True)
+
+    class Meta:
+        verbose_name = u'Visitante do Pregão'
+        verbose_name_plural = u'Visitantes do Pregão'
+
+
+    def __unicode__(self):
+        return self.nome
 
 class ParticipanteItemPregao(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item')

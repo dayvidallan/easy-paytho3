@@ -352,6 +352,20 @@ def cadastra_participante_pregao(request, pregao_id):
     return render(request, 'cadastra_participante_pregao.html', locals(), RequestContext(request))
 
 @login_required()
+def cadastra_visitante_pregao(request, pregao_id):
+    title=u'Cadastrar Visitante do Pregão'
+    pregao = get_object_or_404(Pregao, pk= pregao_id)
+    form = VisitantePregaoForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.pregao = pregao
+        o.save()
+        messages.success(request, u'Visitante cadastrado com sucesso')
+        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
+
+    return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))
+
+@login_required()
 def rodada_pregao(request, item_id):
 
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
@@ -1729,9 +1743,9 @@ def importar_itens(request, solicitacao_id):
             for row in range(3, sheet.nrows):
 
                 #codigo = unicode(sheet.cell_value(row, 0)).strip()
-                especificacao = unicode(sheet.cell_value(row, 0)).strip()
-                unidade = unicode(sheet.cell_value(row, 1)).strip()
-                qtd = unicode(sheet.cell_value(row, 2)).strip()
+                especificacao = unicode(sheet.cell_value(row, 1)).strip()
+                unidade = unicode(sheet.cell_value(row, 2)).strip()
+                qtd = unicode(sheet.cell_value(row, 3)).strip()
                 if row == 3:
                     if especificacao != u'ESPECIFICAÇÃO DO PRODUTO' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
                         raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
@@ -1760,7 +1774,7 @@ def importar_itens(request, solicitacao_id):
                             material.save()
                         novo_item.material = material
                         novo_item.unidade = un
-                        novo_item.quantidade = int(sheet.cell_value(row, 2))
+                        novo_item.quantidade = int(sheet.cell_value(row, 3))
                         novo_item.save()
 
                         novo_item_qtd = ItemQuantidadeSecretaria()
@@ -2032,6 +2046,36 @@ def relatorio_lista_participantes(request, pregao_id):
     data = {'participantes': participantes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
     template = get_template('relatorio_lista_participantes.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
+@login_required()
+def relatorio_lista_visitantes(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+    participantes = VisitantePregao.objects.filter(pregao=pregao)
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    data = {'participantes': participantes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
+
+    template = get_template('relatorio_lista_visitantes.html')
 
     html  = template.render(Context(data))
 
