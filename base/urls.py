@@ -62,6 +62,9 @@ urlpatterns = [
     url(r'^revogar_pregao/(?P<pregao_id>\d+)/$', views.revogar_pregao, name='revogar_pregao'),
     url(r'^cadastra_visitante_pregao/(?P<pregao_id>\d+)/$', views.cadastra_visitante_pregao, name='cadastra_visitante_pregao'),
     url(r'^relatorio_lista_visitantes/(?P<pregao_id>\d+)/$', views.relatorio_lista_visitantes, name='relatorio_lista_visitantes'),
+    url(r'^gerenciar_visitantes/(?P<pregao_id>\d+)/$', views.gerenciar_visitantes, name='gerenciar_visitantes'),
+    url(r'^editar_visitante/(?P<visitante_id>\d+)/$', views.editar_visitante, name='editar_visitante'),
+    url(r'^excluir_visitante/(?P<visitante_id>\d+)/$', views.excluir_visitante, name='excluir_visitante'),
 
 
     url(r'^imprimir_fornecedor/(?P<fornecedor_id>\d+)/$', views.imprimir_fornecedor, name='imprimir_fornecedor'),
