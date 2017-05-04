@@ -773,3 +773,8 @@ class EditarPedidoARPForm(forms.ModelForm):
     class Meta:
         model = PedidoAtaRegistroPreco
         fields = ('quantidade',)
+
+class VisitantePregaoForm(forms.ModelForm):
+    class Meta:
+        model = VisitantePregao
+        fields = ('nome', 'rg', 'cpf', )
