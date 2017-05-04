@@ -28,6 +28,28 @@
             <br><br>
         </div>
 
+        <fieldset>
+
+            <form action="." method="POST" class="form-horizontal">
+                {% csrf_token %}
+                 <div class="miolo">
+                    <div class="row-fluid">
+                        <div class="col-xs-4">
+
+                            {{ form|bootstrap }}
+                        </div>
+
+                        <div class="col-xs-6">
+                            <br>
+                            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+
+                        </div>
+                    </div>
+                 </div>
+            </form>
+
+        </fieldset>
+
         {% if fornecedores.exists %}
             <table class="table table-bordered table-condensed table-striped">
                 <thead>

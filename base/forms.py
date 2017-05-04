@@ -778,3 +778,6 @@ class VisitantePregaoForm(forms.ModelForm):
     class Meta:
         model = VisitantePregao
         fields = ('nome',  'cpf', 'rg',)
+
+class BuscaFornecedorForm(forms.Form):
+    nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:')

@@ -540,6 +540,9 @@ def lances_item(request, item_id):
 def ver_fornecedores(request, fornecedor_id=None):
     title=u'Lista de Fornecedores'
     fornecedores = Fornecedor.objects.all().order_by('razao_social')
+    form = BuscaFornecedorForm(request.POST or None)
+    if form.is_valid():
+        fornecedores = fornecedores.filter(Q(razao_social__icontains=form.cleaned_data.get('nome')) | Q(cnpj__icontains=form.cleaned_data.get('nome')))
     exibe_popup = False
 
     if fornecedor_id:
