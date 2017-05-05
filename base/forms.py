@@ -577,7 +577,7 @@ class RejeitarPesquisaForm(forms.ModelForm):
         fields = ('motivo_rejeicao', )
 
 class FiltrarSecretariaForm(forms.Form):
-    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
+    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria',  widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
     def __init__(self, *args, **kwargs):
         self.pedidos = kwargs.pop('pedidos', None)
         super(FiltrarSecretariaForm, self).__init__(*args, **kwargs)
@@ -783,7 +783,10 @@ class EditarPedidoARPForm(forms.ModelForm):
 class VisitantePregaoForm(forms.ModelForm):
     class Meta:
         model = VisitantePregao
-        fields = ('nome',  'cpf', 'rg',)
+        fields = ('nome',  'cpf',)
 
 class BuscaFornecedorForm(forms.Form):
     nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:')
+
+class LocalizarProcessoForm(forms.Form):
+    numero = forms.CharField(label=u'Informe o Número do Processo', required=False)

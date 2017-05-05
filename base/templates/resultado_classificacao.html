@@ -26,7 +26,7 @@
             <tr>
                 <td>{{ item.item }}</td>
                 <td>{{ item.solicitacao.num_memorando }}</td>
-                <td>{{ item.material.nome }}</td>
+                <td>{{ item.material.nome|default_if_none:'-' }}</td>
                 <td>{{ item.situacao }}</td>
                 <td>
                     {% if item.sem_fornecedor_habilitado and not item.eh_fracassado %}
@@ -54,7 +54,7 @@
                         <tr>
                             <td>{{ lance.ordem }}</td>
                             <td>{{ lance.participante }}</td>
-                            <td>{{ lance.marca }}</td>
+                            <td>{{ lance.marca|default_if_none:'-' }}</td>
                             <td>{{ lance.valor|format_money }}</td>
                             <td>{{ lance.observacoes|default_if_none:'-' }}</td>
                             <td>{{ lance.situacao }}</td>

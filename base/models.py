@@ -475,7 +475,10 @@ class ItemSolicitacaoLicitacao(models.Model):
         verbose_name = u'Item da Solicitação de Licitação'
         verbose_name_plural = u'Itens da Solicitação de Licitação'
 
-
+    def tem_valor_final_preenchido(self):
+        itens_lote = ItemLote.objects.filter(lote=self).values_list('item', flat=True)
+        return PropostaItemPregao.objects.filter(item__in=itens_lote, valor_item_lote__isnull=False).exists()
+    
     def get_valor_unitario_proposto(self):
         if ItemLote.objects.filter(item=self).exists():
             lote = ItemLote.objects.filter(item=self)[0].lote
@@ -1223,7 +1226,6 @@ class ParticipantePregao(models.Model):
 class VisitantePregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
     nome = models.CharField(u'Nome', max_length=255, null=True, blank=True)
-    rg = models.CharField(u'RG', max_length=255, null=True, blank=True)
     cpf = models.CharField(u'CPF', max_length=255, null=True, blank=True)
 
     class Meta:

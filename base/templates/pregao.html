@@ -574,6 +574,7 @@
                                             <th>Valor</th>
                                         {% endif %}
                                         <th>Itens do Lote</th>
+                                        <th>Opções</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -610,7 +611,6 @@
                                                         <th>Valor Total Proposto</th>
                                                         <th>Valor Unitário Final</th>
                                                         <th>Valor Total Final</th>
-                                                        <th>Opções</th>
 
                                                     </tr>
                                                 </thead>
@@ -624,18 +624,7 @@
                                                             <td>{{ item.get_valor_total_proposto|format_money }}</td>
                                                             <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
                                                             <td>{{ item.get_valor_item_lote|format_money|default_if_none:"não informado" }} </td>
-                                                            <td>
-                                                                {% if not item.get_valor_item_lote %}
-                                                                    <a href="/base/informar_valor_final_item_lote/{{item.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
-                                                                {% endif %}
-                                                                {% if lote.tem_empate %}
-                                                                    <a href="/base/desempatar_item/{{ lote.id }}/" class="btn btn-success btn-sm">Desempatar</a>
-                                                                {% endif %}
-                                                                {% if item.tem_resultado %}
-                                                                    <a class="btn btn-info btn-sm" href="/base/resultado_classificacao/{{ item.get_lote.id }}/"  title="Classificação">Classificação Completa</a>
-                                                                {% endif %}
 
-                                                            </td>
                                                         </tr>
                                                     {% endfor %}
                                                     <tr>
@@ -643,6 +632,20 @@
                                                     </tr>
                                                 </tbody>
                                            </table>
+                                        </td>
+                                        <td>
+
+                                            {% if not lote.tem_valor_final_preenchido %}
+                                                <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
+                                            {% endif %}
+
+                                            {% if lote.tem_empate %}
+                                                <a href="/base/desempatar_item/{{ lote.id }}/" class="btn btn-success btn-sm">Desempatar</a>
+                                            {% endif %}
+                                            {% if lote.tem_resultado %}
+                                                <a class="btn btn-info btn-sm" href="/base/resultado_classificacao/{{ lote.id }}/"  title="Classificação">Classificação Completa</a>
+                                            {% endif %}
+
                                         </td>
                                     </tr>
                                 </tbody>
