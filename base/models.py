@@ -906,6 +906,15 @@ class ItemSolicitacaoLicitacao(models.Model):
         itens = ItemLote.objects.filter(lote=self)
         return ItemSolicitacaoLicitacao.objects.filter(id__in=itens.values_list('item', flat=True))
 
+
+    def get_valor_total_item_lote(self):
+        total = 0
+        itens = self.get_itens_do_lote()
+        for item in itens:
+            total += item.get_valor_item_lote()
+        return total
+
+
     def tem_pesquisa_registrada(self):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
 

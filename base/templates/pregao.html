@@ -584,13 +584,16 @@
                                                 {% if lote.ganhou_com_valor_acima %}
                                                     <br>* Venceu com valor acima do valor máximo.
                                                 {% endif %}
+                                                {% if lote.tem_empate %}
+                                                    <br>* Este item possui classificados com empate. Consulte a classificação completa.
+                                                {% endif %}
                                                 </font>
                                             {% else %}
                                                 {{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
                                         </td>
                                         {% if eh_maior_desconto %}
-                                            <td>{{ lote.get_total_lance_ganhador }}%</td>
+                                            <td>{{ lote.get_total_lance_ganhador|format_money }}%</td>
 
                                         {% else %}
                                             <td>{{ lote.get_total_lance_ganhador|format_money }}</td>
@@ -617,10 +620,10 @@
                                                             <td>{{ item }}</td>
                                                             <td>{{ item.quantidade }}</td>
                                                             <td>{{ item.valor_medio }}</td>
-                                                            <td>{{ item.get_valor_unitario_proposto }}</td>
-                                                            <td>{{ item.get_valor_total_proposto }}</td>
-                                                            <td>{{ item.get_valor_unitario_final|default_if_none:"não informado" }} {% if item.get_valor_unitario_final %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/">(Editar)</a>{% endif %}</td>
-                                                            <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }} </td>
+                                                            <td>{{ item.get_valor_unitario_proposto|format_money }}</td>
+                                                            <td>{{ item.get_valor_total_proposto|format_money }}</td>
+                                                            <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
+                                                            <td>{{ item.get_valor_item_lote|format_money|default_if_none:"não informado" }} </td>
                                                             <td>
                                                                 {% if not item.get_valor_item_lote %}
                                                                     <a href="/base/informar_valor_final_item_lote/{{item.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
@@ -632,6 +635,9 @@
                                                             </td>
                                                         </tr>
                                                     {% endfor %}
+                                                    <tr>
+                                                        <td colspan="6"><b>Total</b></td><td>{{ lote.get_valor_total_item_lote|format_money }}</td>
+                                                    </tr>
                                                 </tbody>
                                            </table>
                                         </td>

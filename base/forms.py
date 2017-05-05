@@ -601,6 +601,11 @@ class FiltraFornecedorPedidoForm(forms.Form):
 
 class ValorFinalItemLoteForm(forms.Form):
     valor = forms.DecimalField(label=u'Valor')
+    participante_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    def __init__(self, *args, **kwargs):
+        self.participante_id = kwargs.pop('participante_id', None)
+        super(ValorFinalItemLoteForm, self).__init__(*args, **kwargs)
+        self.fields['participante_id'].initial = self.participante_id
 
 class CriarOrdemForm(forms.ModelForm):
     dotacao = forms.BooleanField(label=u'Preencher Dotação', initial=False, required=False)
