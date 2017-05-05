@@ -26,6 +26,9 @@ from reportlab.lib.utils import simpleSplit
 import collections
 from django.conf import settings
 from django.core.mail import send_mail
+from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
+from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
+import xlwt
 
 LARGURA = 210*mm
 ALTURA = 297*mm
@@ -832,9 +835,44 @@ def planilha_pesquisa_mercadologica(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
 
-    import xlwt
+
+    nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_pesquisa_mercadologica')
+    file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_pesquisa_mercadologica.xls')
+    rb = open_workbook(file_path,formatting_info=True)
+
+    wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+    w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+    sheet = rb.sheet_by_name("Sheet1")
+    for idx, item in enumerate(itens, 0):
+        row_index = idx + 1
+        style = xlwt.XFStyle()
+        style.alignment.wrap = 1
+
+        w_sheet.write(row_index, 0, item.item)
+        w_sheet.write(row_index, 1, item.material.nome, style)
+        w_sheet.write(row_index, 2, item.unidade.nome)
+
+
+    salvou = nome + u'_%s' % solicitacao.id + '.xls'
+    wb.save(salvou)
+
+    arquivo = open(salvou, "rb")
+
+
+    content_type = 'application/vnd.ms-excel'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    nome_arquivo = salvou.split('/')[-1]
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(salvou)
+    return response
+
+
+
+
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=PesquisaMercadologica_Solicitacao.xls'
+    response['Content-Disposition'] = 'attachment; filename=modelo_proposta_pesquisa_mercadologica.xls'
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet("Sheet1")
     row_num = 0
@@ -1011,41 +1049,18 @@ def planilha_propostas(request, solicitacao_id):
     pregao = get_object_or_404(Pregao, solicitacao=solicitacao)
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
 
-    # import xlwt
-    #
-    # workbook = xlwt.open_workbook(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls'))
-    #
-    #
-    # sheet = workbook.sheet_by_index(0)
-    #
-    # for row in range(0, sheet.nrows):
-    #     if row == 20:
-    #
-    #        sheet.write(row, 0, label = 'Row 0, Column 0 Value')
-    #
-    # workbook.save(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor_teste.xls'))
-    from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
-    from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
-    import xlwt
+
+
     nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor')
     file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls')
     rb = open_workbook(file_path,formatting_info=True)
 
     wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
-    # w_sheet.write(1, 1, solicitacao.get_pregao().num_pregao)
-    # w_sheet.write(2, 1, solicitacao.objetivo)
-    # endereco = u'%s, dia %s às %s.' % (solicitacao.get_pregao().local, solicitacao.get_pregao().data_abertura, solicitacao.get_pregao().hora_abertura)
-    # w_sheet.write(3, 1, endereco)
-
 
     sheet = rb.sheet_by_name("Sheet1")
     for idx, item in enumerate(itens, 0):
         row_index = idx + 1
-        # cell = sheet.cell(row_index, 0)
-        # print "cell.xf_index is", cell.xf_index
-        # fmt = rb.xf_list[cell.xf_index]
-        # print "type(fmt) is", type(fmt)
         style = xlwt.XFStyle()
         style.alignment.wrap = 1
 
@@ -1825,7 +1840,7 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                 marca = unicode(sheet.cell_value(row, 3)).strip()
                 valor = unicode(sheet.cell_value(row, 4)).strip()
                 if row == 0:
-                    if item!= u'Item' or especificacao != u'Material' or unidade != u'Unidade' or marca != u'Marca' or valor!=u'Valor Unitario':
+                    if item!= u'ITEM' or especificacao != u'MATERIAL' or unidade != u'UNIDADE' or marca != u'MARCA' or valor!=u'VALOR UNITÁRIO':
                         raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Material, Unidade e Marca e Valor Unitario.')
                 else:
                     if item and especificacao and unidade and valor:
@@ -3857,6 +3872,36 @@ def informar_valor_final_item_lote(request, item_id, pregao_id):
         return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
     return render(request, 'informar_valor_final_item_lote.html', locals(), RequestContext(request))
 
+@login_required()
+def informar_valor_final_itens_lote(request, lote_id, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    lote =get_object_or_404(ItemSolicitacaoLicitacao, pk=lote_id)
+    itens = ItemLote.objects.filter(lote=lote)
+    ids_itens_do_lote = ItemLote.objects.filter(lote=lote).values_list('item', flat=True)
+    vencedor = lote.get_empresa_vencedora()
+    title=u'Informar Valor Unitário Final do %s' % (lote)
+    form = ValorFinalItemLoteForm(request.POST or None)
+    if request.POST:
+        contador = 0
+        for id_do_item in request.POST.getlist('id_item'):
+            item = ItemSolicitacaoLicitacao.objects.get(pk=id_do_item)
+            valor_informado = Decimal(request.POST.getlist('itens')[contador].replace('.','').replace(',','.'))
+            if valor_informado > item.get_valor_total_proposto() or valor_informado > item.valor_medio:
+                messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto (%s) nem do que o valor máximo do item.' % item.get_valor_total_proposto())
+                return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
+
+
+            valor = PropostaItemPregao.objects.filter(participante=vencedor, item__in=ids_itens_do_lote).aggregate(total=Sum('valor_item_lote'))['total'] or 0
+            if (valor + valor_informado) > lote.get_total_lance_ganhador():
+                messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador.')
+                return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
+
+            valor_final = valor_informado * item.quantidade
+            PropostaItemPregao.objects.filter(participante=vencedor, item=item).update(valor_item_lote=valor_final)
+            contador += 1
+        messages.success(request, u'Valor cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
+    return render(request, 'informar_valor_final_itens_lote.html', locals(), RequestContext(request))
 
 @login_required()
 def gerar_ordem_compra(request, solicitacao_id):
@@ -5531,3 +5576,16 @@ def excluir_visitante(request, visitante_id):
     visitante.delete()
     messages.success(request, u'Visitante excluído com sucesso.')
     return HttpResponseRedirect(u'/base/gerenciar_visitantes/%s/' % pregao.id)
+
+def localizar_processo(request):
+    title = u'Localizar Processo'
+    form = LocalizarProcessoForm(request.POST or None)
+    if form.is_valid():
+        if Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero')).exists():
+            processo = Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero'))[0]
+            solicitacao = SolicitacaoLicitacao.objects.filter(processo=processo)
+            if solicitacao.exists():
+                movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao[0]).order_by('-data_envio')
+
+
+    return render(request, 'localizar_processo.html', locals(), RequestContext(request))

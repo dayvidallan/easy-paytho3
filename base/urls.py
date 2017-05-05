@@ -214,13 +214,18 @@ urlpatterns = [
     url(r'^ver_variaveis_configuracao/$', views.ver_variaveis_configuracao, name='ver_variaveis_configuracao'),
     url(r'^cadastrar_variaveis_configuracao/$', views.cadastrar_variaveis_configuracao, name='cadastrar_variaveis_configuracao'),
 
-    url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
+    url(r'^localizar_processo/$', views.localizar_processo, name='localizar_processo'),
 
+    url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
+    url(r'^informar_valor_final_itens_lote/(?P<lote_id>\d+)/(?P<pregao_id>\d+)/$', views.informar_valor_final_itens_lote, name='informar_valor_final_itens_lote'),
 
     url(r'^secretaria-autocomplete/$', SecretariaAutocomplete.as_view(), name='secretaria-autocomplete'),
     url(r'^participantepregao-autocomplete/$', ParticipantePregaoAutocomplete.as_view(), name='participantepregao-autocomplete'),
     url(r'^pessoafisica-autocomplete/$', PessoaFisicaAutocomplete.as_view(), name='pessoafisica-autocomplete'),
     url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
+
+
+
 
 ]
 

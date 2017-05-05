@@ -51,7 +51,7 @@
                             <td>
                                 {{ pesquisa.pesquisa.origem }}:
                                 {% if pesquisa.pesquisa.origem == pesquisa.pesquisa.ATA_PRECO %}
-                                    <b>N° {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b>
+                                    <b>N° {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b> - <b>Órgão Gerenciador:</b> {{ pesquisa.pesquisa.orgao_gerenciador_ata }}
                                 {% else %}
                                     <b>{{ pesquisa.pesquisa.razao_social }}</b>
                                 {% endif %}

@@ -6,8 +6,8 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/ver_solicitacoes/">Solicitações<i class="fa fa-angle-right"></i></a>
-    <a href="/base/itens_solicitacao/{{solicitacao.id}}/">{{ solicitacao }}<i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
+     <a href="/base/pregao/{{pregao.id}}/">{{ pregao }}<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
@@ -29,7 +29,6 @@
                     <tr>
                         <th>Nome</th>
                         <th>CPF</th>
-                        <th>RG</th>
                         <th>Opções</th>
 
                     </tr>
@@ -41,7 +40,6 @@
                        <tr>
                            <td>{{ visitante.nome }}</td>
                            <td>{{ visitante.cpf }}</td>
-                           <td>{{ visitante.rg }}</td>
                            <td>
                                 <a class="btn btn-info btn-sm" href="/base/editar_visitante/{{ visitante.id }}/">Editar</a>
                                 <a class="btn btn-danger btn-sm" href="/base/excluir_visitante/{{ visitante.id }}/">Excluir</a>
