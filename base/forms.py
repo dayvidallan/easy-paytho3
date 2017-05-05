@@ -237,6 +237,7 @@ class LanceForm(forms.Form):
     lance = forms.DecimalField(required=True)
 
 class RegistrarPrecoItemForm(forms.ModelForm):
+    arquivo_referencia_valor_medio = forms.FileField(label=u'Arquivo com a Referência do Valor Médio', required=False)
     class Meta:
         model = ItemSolicitacaoLicitacao
         fields = ['valor_medio', 'arquivo_referencia_valor_medio']

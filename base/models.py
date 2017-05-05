@@ -911,7 +911,8 @@ class ItemSolicitacaoLicitacao(models.Model):
         total = 0
         itens = self.get_itens_do_lote()
         for item in itens:
-            total += item.get_valor_item_lote()
+            if item.get_valor_item_lote():
+                total += item.get_valor_item_lote()
         return total
 
 
