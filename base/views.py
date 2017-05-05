@@ -209,7 +209,7 @@ def pregao(request, pregao_id):
     else:
         form = GanhadoresForm(request.POST or None, participantes = participantes)
 
-    print "sssssssssssssssssssss", participante
+    
     return render(request, 'pregao.html', locals(), RequestContext(request))
 
 @login_required()

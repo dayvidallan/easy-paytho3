@@ -628,6 +628,9 @@
                                                                 {% if not item.get_valor_item_lote %}
                                                                     <a href="/base/informar_valor_final_item_lote/{{item.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
                                                                 {% endif %}
+                                                                {% if lote.tem_empate %}
+                                                                    <a href="/base/desempatar_item/{{ lote.id }}/" class="btn btn-success btn-sm">Desempatar</a>
+                                                                {% endif %}
                                                                 {% if item.tem_resultado %}
                                                                     <a class="btn btn-info btn-sm" href="/base/resultado_classificacao/{{ item.get_lote.id }}/"  title="Classificação">Classificação Completa</a>
                                                                 {% endif %}
