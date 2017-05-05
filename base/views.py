@@ -209,7 +209,7 @@ def pregao(request, pregao_id):
     else:
         form = GanhadoresForm(request.POST or None, participantes = participantes)
 
-    
+
     return render(request, 'pregao.html', locals(), RequestContext(request))
 
 @login_required()
@@ -1198,6 +1198,7 @@ def desempatar_item(request, item_id):
     title=u'Desempatar Item'
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     resultados = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
+    pregao = item.get_licitacao()
 
     return render(request, 'desempatar_item.html', locals(), RequestContext(request))
 
