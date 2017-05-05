@@ -193,6 +193,8 @@ def pregao(request, pregao_id):
     resultados = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id',flat=True))
     buscou = False
     ids_ganhador = list()
+
+    participante = u'0'
     if request.GET.get('participante'):
         buscou = True
         participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
@@ -207,6 +209,7 @@ def pregao(request, pregao_id):
     else:
         form = GanhadoresForm(request.POST or None, participantes = participantes)
 
+    print "sssssssssssssssssssss", participante
     return render(request, 'pregao.html', locals(), RequestContext(request))
 
 @login_required()
@@ -5235,7 +5238,8 @@ def editar_valor_final(request, item_id, pregao_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     title=u'Editar Valor Unitário Final - %s' % item
     valor = item.get_valor_item_lote() / item.quantidade
-    form = ValorFinalItemLoteForm(request.POST or None, initial=dict(valor=valor))
+    participante_id = request.GET.get("participante")
+    form = ValorFinalItemLoteForm(request.POST or None, initial=dict(valor=valor), participante_id=participante_id)
     if form.is_valid():
         lote = ItemLote.objects.filter(item=item)[0].lote
         itens_do_lote = ItemLote.objects.filter(lote=lote).values_list('item', flat=True)
@@ -5252,7 +5256,10 @@ def editar_valor_final(request, item_id, pregao_id):
         valor_final = form.cleaned_data.get('valor') * item.quantidade
         PropostaItemPregao.objects.filter(item=item, participante=lote.get_empresa_vencedora()).update(valor_item_lote=valor_final)
         messages.success(request, u'Valor editado com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+        if form.cleaned_data.get('participante_id'):
+            return HttpResponseRedirect(u'/base/pregao/%s/?participante=%s#classificacao' % (pregao.id, form.cleaned_data.get('participante_id')))
+        else:
+            return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
 
 @login_required()
