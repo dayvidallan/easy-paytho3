@@ -478,7 +478,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     def tem_valor_final_preenchido(self):
         itens_lote = ItemLote.objects.filter(lote=self).values_list('item', flat=True)
         return PropostaItemPregao.objects.filter(item__in=itens_lote, valor_item_lote__isnull=False).exists()
-    
+
     def get_valor_unitario_proposto(self):
         if ItemLote.objects.filter(item=self).exists():
             lote = ItemLote.objects.filter(item=self)[0].lote
@@ -798,7 +798,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_unitario_final(self):
         if self.get_valor_item_lote():
             return self.get_valor_item_lote() / self.quantidade
-        return
+        return 0
 
     def get_proposta_item_lote(self):
         if ItemLote.objects.filter(item=self).exists():

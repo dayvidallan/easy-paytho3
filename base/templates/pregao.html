@@ -635,9 +635,9 @@
                                         </td>
                                         <td>
 
-                                            {% if not lote.tem_valor_final_preenchido %}
-                                                <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
-                                            {% endif %}
+
+                                            <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
+
 
                                             {% if lote.tem_empate %}
                                                 <a href="/base/desempatar_item/{{ lote.id }}/" class="btn btn-success btn-sm">Desempatar</a>
