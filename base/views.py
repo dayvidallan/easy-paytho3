@@ -975,7 +975,7 @@ def upload_pesquisa_mercadologica(request, pesquisa_id):
         o.cadastrada_em = datetime.datetime.now()
         o.save()
         messages.success(request, u'Pesquisa cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/ver_solicitacoes/')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
 
     return render(request, 'upload_pesquisa_mercadologica.html', locals(), RequestContext(request))
 
