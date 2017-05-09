@@ -5586,7 +5586,7 @@ def localizar_processo(request):
             solicitacao = SolicitacaoLicitacao.objects.filter(processo=processo)
             if solicitacao.exists():
                 solicitacao = solicitacao[0]
-                movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao[0]).order_by('-data_envio')
+                movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).order_by('-data_envio')
 
 
     return render(request, 'localizar_processo.html', locals(), RequestContext(request))
