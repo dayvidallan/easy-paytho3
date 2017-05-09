@@ -5585,6 +5585,7 @@ def localizar_processo(request):
             processo = Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero'))[0]
             solicitacao = SolicitacaoLicitacao.objects.filter(processo=processo)
             if solicitacao.exists():
+                solicitacao = solicitacao[0]
                 movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao[0]).order_by('-data_envio')
 
 
