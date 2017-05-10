@@ -324,7 +324,7 @@ def cadastra_proposta_pregao(request, pregao_id):
 def propostas_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
     itens = PropostaItemPregao.objects.filter(item=item)
-    titulo = u'Valores - Item %s - Pregão: %s' % (item.item, item.solicitacao.pregao_set.all()[0])
+    titulo = u'Valores - Item %s - %s' % (item.item, item.solicitacao.pregao_set.all()[0])
     eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
 
     return render(request, 'propostas_item.html', locals(), RequestContext(request))
@@ -871,37 +871,37 @@ def planilha_pesquisa_mercadologica(request, solicitacao_id):
 
 
 
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=modelo_proposta_pesquisa_mercadologica.xls'
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet("Sheet1")
-    row_num = 0
-
-    columns = [
-        (u"Item"),
-        (u"Material"),
-        (u"Unidade"),
-        (u"Marca"),
-        (u"Valor Unitario"),
-    ]
-
-    for col_num in xrange(len(columns)):
-        ws.write(row_num, col_num, columns[col_num])
-
-    for obj in itens:
-        row_num += 1
-        row = [
-            obj.item,
-            obj.material.nome,
-            obj.unidade.nome,
-            '',
-            '',
-        ]
-        for col_num in xrange(len(row)):
-            ws.write(row_num, col_num, row[col_num])
-
-    wb.save(response)
-    return response
+    # response = HttpResponse(content_type='application/ms-excel')
+    # response['Content-Disposition'] = 'attachment; filename=modelo_proposta_pesquisa_mercadologica.xls'
+    # wb = xlwt.Workbook(encoding='utf-8')
+    # ws = wb.add_sheet("Sheet1")
+    # row_num = 0
+    #
+    # columns = [
+    #     (u"Item"),
+    #     (u"Material"),
+    #     (u"Unidade"),
+    #     (u"Marca"),
+    #     (u"Valor Unitario"),
+    # ]
+    #
+    # for col_num in xrange(len(columns)):
+    #     ws.write(row_num, col_num, columns[col_num])
+    #
+    # for obj in itens:
+    #     row_num += 1
+    #     row = [
+    #         obj.item,
+    #         obj.material.nome,
+    #         obj.unidade.nome,
+    #         '',
+    #         '',
+    #     ]
+    #     for col_num in xrange(len(row)):
+    #         ws.write(row_num, col_num, row[col_num])
+    #
+    # wb.save(response)
+    # return response
 
 def preencher_pesquisa_mercadologica(request, solicitacao_id):
     title = u'Preencher Pesquisa Mercadológica'
@@ -2197,6 +2197,62 @@ def relatorio_ocorrencias(request, pregao_id):
     return HttpResponse(pdf, 'application/pdf')
 
 
+@login_required()
+def relatorio_propostas_pregao(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+    destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    tabela = {}
+    itens = {}
+    resultado = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False).order_by('item')
+
+    for num in resultado.order_by('item'):
+        chave = '%s' % str(num)
+        tabela[chave] = []
+
+
+    for item in resultado.order_by('item'):
+
+        chave = '%s' % str(item)
+        for proposta in PropostaItemPregao.objects.filter(item=item):
+            tabela[chave].append(proposta)
+
+
+    from blist import sorteddict
+
+    def my_key(dict_key):
+           try:
+                  return int(dict_key)
+           except ValueError:
+                  return dict_key
+
+
+    resultado =  sorteddict(my_key, **tabela)
+
+    
+    data = {'itens':itens,  'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+
+    template = get_template('relatorio_propostas_pregao.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
 
 @login_required()
 def relatorio_lances_item(request, pregao_id):
@@ -5130,27 +5186,39 @@ def ata_sessao(request, pregao_id):
         p.add_run(texto[2])
 
 
-    table = document.add_table(rows=1, cols=4)
-    hdr_cells = table.rows[0].cells
-    hdr_cells[0].text = u'CNPJ/CPF'
-    hdr_cells[1].text = u'Razão Social'
-    hdr_cells[2].text = u'ME/EPP'
-    hdr_cells[3].text = u'Representante'
 
     for item in ParticipantePregao.objects.filter(pregao=pregao):
-        me = u'Não '
-        if item.me_epp:
-            me = u'SIm'
 
-        repre = u'Não Compareceu'
+
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        texto = u'%s (%s)' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+        p.add_run(texto)
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         if item.nome_representante:
-            repre = item.nome_representante
+            texto = item.nome_representante
+            if item.cpf_representante:
+                texto += u' (CPF: %s)' % item.cpf_representante
+            p.add_run(texto)
 
-        row_cells = table.add_row().cells
-        row_cells[0].text = u'%s' % item.fornecedor.cnpj
-        row_cells[1].text = u'%s' % item.fornecedor.razao_social
-        row_cells[2].text = u'%s' % me
-        row_cells[3].text = u'%s' % repre
+
+
+        # me = u'Não '
+        # if item.me_epp:
+        #     me = u'SIm'
+        #
+        # repre = u'Não Compareceu'
+        # if item.nome_representante:
+        #     repre = item.nome_representante
+        #
+        # row_cells = table.add_row().cells
+        # row_cells[0].text = u'%s' % item.fornecedor.cnpj
+        # row_cells[1].text = u'%s' % item.fornecedor.razao_social
+        # row_cells[2].text = u'%s' % me
+        # row_cells[3].text = u'%s' % repre
 
 
     document.add_page_break()

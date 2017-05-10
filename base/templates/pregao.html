@@ -834,6 +834,11 @@
                         <tr>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
                         </tr>
+                        {% if pregao.tem_proposta %}
+                            <tr>
+                                <td><a href="/base/relatorio_propostas_pregao/{{ pregao.id }}/" target="_blank">Relatório de Propostas</a></td>
+                            </tr>
+                        {% endif %}
 
 
                         {% if pregao.visitantepregao_set.exists %}
