@@ -195,6 +195,7 @@
                     <tr>
                         <th>Nº do Contrato</th>
                         <th>Nº Processo</th>
+                        <th>Solicitação de Origem</th>
                         <th>Objeto</th>
                         <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
@@ -209,6 +210,7 @@
                         <tr>
                             <td>{{ item.numero }}</td>
                             <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
+                            <td>{{ item.solicitacao.num_memorando }}</td>
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
@@ -242,6 +244,7 @@
                     <tr>
                         <th>Nº da ARP</th>
                         <th>Nº Processo</th>
+                        <th>Solicitação de Origem</th>
                         <th>Objeto</th>
                         <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
@@ -255,6 +258,7 @@
                         <tr>
                             <td>{{ item.numero }}</td>
                             <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
+                            <td>{{ item.solicitacao.num_memorando }}</td>
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.data_fim|default_if_none:"-" }}</td>
