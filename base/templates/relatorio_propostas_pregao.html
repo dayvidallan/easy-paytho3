@@ -48,9 +48,7 @@ ul{
 {% block content %}
 
 <center>
-    {% for key, lances in resultado.items %}
-            {% if lances %}
-                {% block content_title %}
+    {% block content_title %}
 
                   <h1 class="page-header">
                     {% include "cabecalho.html" %}
@@ -61,8 +59,11 @@ ul{
 
 
                 {% endblock %}
+    {% for key, lances in resultado.items %}
+            {% if lances %}
 
-                <h2>{{ key }}</h2>
+
+                <h2>Item {{ key }}</h2>
 
                 <table border="1" width="95%" cellpadding="5" cellspacing="5">
                     <thead>
@@ -91,9 +92,7 @@ ul{
 
                     </tbody>
                 </table>
-                {% if not forloop.last %}
-                    <pdf:nextpage />
-                {% endif %}
+
             {% endif %}
     {% endfor %}
 </center>

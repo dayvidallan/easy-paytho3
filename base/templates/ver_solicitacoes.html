@@ -204,7 +204,7 @@
             {% endif %}
             {% if outras.exists %}
                 <fieldset>
-                    <legend>Solicitações Encontradas</legend>
+                    <legend>{{ outras.count }} Solicitações Encontradas</legend>
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
@@ -260,17 +260,15 @@
 
             {% if solicitacoes.exists %}
                 <fieldset>
-                    <legend>Solicitações Encontradas</legend>
+                    <legend>{{ solicitacoes.count }} Solicitações Encontradas</legend>
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
                                 <th>Memorando</th>
                                 <th>Objeto</th>
-                                {% if perms.base.pode_cadastrar_solicitacao %}
-                                    <th>Data de Cadastro</th>
-                                {% else %}
-                                    <th>Data de Recebimento</th>
-                                {% endif %}
+
+                                <th>Data de Cadastro</th>
+
                                 <th>Tipo</th>
                                 <th>Situação</th>
                                 <th>Opções</th>
@@ -285,13 +283,7 @@
 
                                    <td>{{ solicitacao.num_memorando }}</td>
                                    <td>{{ solicitacao.objeto }}</td>
-                                   <td>
-                                       {% if perms.base.pode_cadastrar_solicitacao %}
-                                           {{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}
-                                       {% else %}
-                                            {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
-                                       {% endif %}
-                                   </td>
+                                   <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</td>
                                    <td>
                                        {% if solicitacao.tipo == solicitacao.COMPRA %}
                                         Compra

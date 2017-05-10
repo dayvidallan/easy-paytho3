@@ -565,7 +565,7 @@ def ver_pregoes(request):
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
 
-    form = BuscarSolicitacaoForm(request.POST or None)
+    form = BuscarLicitacaoForm(request.POST or None)
 
     if form.is_valid():
 
@@ -695,7 +695,8 @@ def ver_solicitacoes(request):
         aba2 = u''
         class_aba1 = u'active'
         class_aba2 = u''
-        outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero=form.cleaned_data.get('info')) | Q(num_memorando=form.cleaned_data.get('info')))
+        if form.cleaned_data.get('info'):
+            outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')))
     return render(request, 'ver_solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
@@ -2216,13 +2217,13 @@ def relatorio_propostas_pregao(request, pregao_id):
     resultado = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False).order_by('item')
 
     for num in resultado.order_by('item'):
-        chave = '%s' % str(num)
+        chave = '%s' % str(num.item)
         tabela[chave] = []
 
 
     for item in resultado.order_by('item'):
 
-        chave = '%s' % str(item)
+        chave = '%s' % str(item.item)
         for proposta in PropostaItemPregao.objects.filter(item=item):
             tabela[chave].append(proposta)
 
@@ -2238,7 +2239,7 @@ def relatorio_propostas_pregao(request, pregao_id):
 
     resultado =  sorteddict(my_key, **tabela)
 
-    
+
     data = {'itens':itens,  'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_propostas_pregao.html')
@@ -5189,7 +5190,8 @@ def ata_sessao(request, pregao_id):
 
     for item in ParticipantePregao.objects.filter(pregao=pregao):
 
-
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p = document.add_paragraph()
         #p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
