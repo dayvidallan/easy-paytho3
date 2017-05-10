@@ -1998,12 +1998,13 @@ class ItemContrato(models.Model):
                 return self.quantidade
 
         else:
-
+            total = self.quantidade
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
             pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
             if pedidos.exists():
-                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-            else:
-                return self.quantidade
+                return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            return total
 
         return 0
 
@@ -2066,14 +2067,13 @@ class ItemAtaRegistroPreco(models.Model):
                     else:
                         return valor_total
             else:
-
+                total = self.quantidade
+                if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                    total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
                 pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
                 if pedidos.exists():
-                    return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-                else:
-                    return self.quantidade
-
-
+                    return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                return total
 
         return 0
 
