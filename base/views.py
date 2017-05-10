@@ -1353,48 +1353,72 @@ def cadastrar_contrato(request, solicitacao_id):
 
     title=u'Cadastrar Contrato'
 
+    if pregao:
+        form = CriarContratoForm(request.POST or None, request.FILES or None, pregao=pregao)
+    else:
+        form = ContratoForm(request.POST or None, request.FILES or None)
 
-    form = ContratoForm(request.POST or None, request.FILES or None)
+
     if form.is_valid():
-        o = form.save(False)
-        o.solicitacao = solicitacao
-        if pregao:
-            o.pregao = pregao
-            o.valor = pregao.get_valor_total()
-        else:
-            o.valor = solicitacao.get_valor_total()
-        o.save()
+        # import ipdb; ipdb.set_trace()
+        # o = form.save(False)
+        # o.solicitacao = solicitacao
+        # if pregao:
+        #     o.pregao = pregao
+        #     o.valor = pregao.get_valor_total()
+        # else:
+        #     o.valor = solicitacao.get_valor_total()
+        # o.save()
 
         if pregao:
-            if solicitacao.eh_lote():
-                itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
-                for lote in itens_pregao:
-                    for item in lote.get_itens_do_lote():
-                        novo_item = ItemContrato()
-                        novo_item.contrato = o
-                        novo_item.item = item
-                        novo_item.material = item.material
-                        novo_item.marca = item.get_marca_item_lote()
-                        novo_item.participante = lote.get_vencedor().participante
-                        novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
-                        novo_item.valor = item.get_valor_unitario_final()
-                        novo_item.quantidade = item.quantidade
-                        novo_item.unidade = item.unidade
-                        novo_item.save()
-            else:
-                for resultado in solicitacao.get_resultado():
-                    novo_item = ItemContrato()
-                    novo_item.contrato = o
-                    novo_item.item = resultado.item
-                    novo_item.material = resultado.item.material
-                    novo_item.marca = resultado.marca
-                    novo_item.participante = resultado.participante
-                    novo_item.fornecedor = resultado.participante.fornecedor
-                    novo_item.valor = resultado.valor
-                    novo_item.quantidade = resultado.item.quantidade
-                    novo_item.unidade = resultado.item.unidade
-                    novo_item.save()
+
+            for participante in pregao.get_vencedores():
+
+                o = Contrato()
+                o.solicitacao = solicitacao
+                o.pregao = pregao
+                o.valor = pregao.get_valor_total(participante)
+                o.numero = form.cleaned_data.get('contrato_%d' % participante.id)
+
+                o.data_inicio = form.cleaned_data.get('data_inicial_%d' % participante.id)
+                o.data_fim = form.cleaned_data.get('data_final_%d' % participante.id)
+                o.save()
+
+                if solicitacao.eh_lote():
+                    itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+                    for lote in itens_pregao:
+                        for item in lote.get_itens_do_lote():
+                            if lote.get_vencedor().participante == participante:
+                                novo_item = ItemContrato()
+                                novo_item.contrato = o
+                                novo_item.item = item
+                                novo_item.material = item.material
+                                novo_item.marca = item.get_marca_item_lote()
+                                novo_item.participante = lote.get_vencedor().participante
+                                novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
+                                novo_item.valor = item.get_valor_unitario_final()
+                                novo_item.quantidade = item.quantidade
+                                novo_item.unidade = item.unidade
+                                novo_item.save()
+                else:
+                    for resultado in solicitacao.get_resultado():
+                        if resultado.participante == participante:
+                            novo_item = ItemContrato()
+                            novo_item.contrato = o
+                            novo_item.item = resultado.item
+                            novo_item.material = resultado.item.material
+                            novo_item.marca = resultado.marca
+                            novo_item.participante = resultado.participante
+                            novo_item.fornecedor = resultado.participante.fornecedor
+                            novo_item.valor = resultado.valor
+                            novo_item.quantidade = resultado.item.quantidade
+                            novo_item.unidade = resultado.item.unidade
+                            novo_item.save()
         else:
+            o = form.save(False)
+            o.solicitacao = solicitacao
+            o.valor = solicitacao.get_valor_total()
+            o.save()
 
 
             if PedidoContrato.objects.filter(solicitacao=solicitacao).exists():

@@ -1130,7 +1130,7 @@ class Pregao(models.Model):
     def tem_ocorrencia(self):
         return HistoricoPregao.objects.filter(pregao=self).exists()
 
-    def get_valor_total(self):
+    def get_valor_total(self, ganhador=None):
         eh_lote = self.criterio.id == CriterioPregao.LOTE
         if eh_lote:
             itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
@@ -1139,7 +1139,11 @@ class Pregao(models.Model):
         total = 0
         for item in itens_pregao:
             if item.get_total_lance_ganhador():
-                total = total + item.get_total_lance_ganhador()
+                if ganhador:
+                    if item.get_vencedor().participante == ganhador:
+                        total = total + item.get_total_lance_ganhador()
+                else:
+                    total = total + item.get_total_lance_ganhador()
         return total
 
     def get_vencedora_global(self):
@@ -1157,6 +1161,15 @@ class Pregao(models.Model):
 
     def get_arquivos_publicos(self):
         return AnexoPregao.objects.filter(pregao=self, publico=True)
+
+    def get_vencedores(self):
+        ids_vencedores = list()
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao):
+            if item.get_vencedor():
+                ids_vencedores.append(item.get_vencedor().participante.id)
+
+
+        return ParticipantePregao.objects.filter(id__in=ids_vencedores)
 
 
 #TODO usar esta estrutura para pregão por lote

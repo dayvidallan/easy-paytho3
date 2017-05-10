@@ -558,6 +558,7 @@ class ContratoForm(forms.ModelForm):
         fields = ('numero', 'data_inicio', 'data_fim')
 
     def __init__(self, *args, **kwargs):
+        self.pregao = kwargs.pop('pregao', None)
         super(ContratoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
@@ -566,6 +567,42 @@ class ContratoForm(forms.ModelForm):
             lista = ultima.numero.split('/')
             if len(lista) > 1:
                 self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+
+
+class CriarContratoForm(forms.Form):
+    # class Meta:
+    #     model = Contrato
+    #     fields = ('numero', 'data_inicio', 'data_fim')
+
+    def __init__(self, *args, **kwargs):
+        self.pregao = kwargs.pop('pregao', None)
+        super(CriarContratoForm, self).__init__(*args, **kwargs)
+        # self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        # self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        ultima = Contrato.objects.latest('id')
+        if ultima.numero:
+            lista = ultima.numero.split('/')
+        valor_contrato = None
+        nome_campos = u''
+        if len(lista) > 1:
+            valor_contrato = int(lista[0])+1
+
+        for i in self.pregao.get_vencedores():
+            label = u'Número do Contrato - Fornecedor: %s' % (i)
+            self.fields["contrato_%d" % i.id] = forms.CharField(label=label, required=True)
+            if valor_contrato:
+                self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
+                valor_contrato += 1
+            nome_campos = nome_campos + '%s, ' % i.id
+            label = u'Data Inicial'
+            self.fields["data_inicial_%d" % i.id] = forms.DateField(label=label, required=True)
+            self.fields["data_inicial_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+            nome_campos = nome_campos + '%s, ' % i.id
+            label = u'Data Final'
+            self.fields["data_final_%d" % i.id] = forms.DateField(label=label, required=True)
+            self.fields["data_final_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+            nome_campos = nome_campos + '%s, ' % i.id
+
 
 
 class NovoPedidoCompraForm(forms.ModelForm):
