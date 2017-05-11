@@ -503,7 +503,7 @@
                                     <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>
                                     <td>{{ item.valor_medio|format_money }}</td>
-                                    <td>{{ item.total|format_money }}</td>
+                                    <td>{{ item.get_total|format_money }}</td>
 
                                     <td>
                                         <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
