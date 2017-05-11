@@ -1025,6 +1025,9 @@ class Pregao(models.Model):
     def __unicode__(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
 
+    def get_local(self):
+        return u'Dia %s às %s, no(a) %s' % (self.data_abertura.strftime('%d/%m/%y'), self.hora_abertura, self.local)
+
     def get_titulo(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
 

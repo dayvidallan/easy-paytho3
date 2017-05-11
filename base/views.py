@@ -246,7 +246,7 @@ def cadastra_proposta_pregao(request, pregao_id):
             except XLRDError:
                 raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-            for row in range(1, sheet.nrows):
+            for row in range(8, sheet.nrows):
                 try:
                     item = unicode(sheet.cell_value(row, 0)).strip()
                     marca = unicode(sheet.cell_value(row, 5)).strip() or None
@@ -1060,8 +1060,12 @@ def planilha_propostas(request, solicitacao_id):
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
 
     sheet = rb.sheet_by_name("Sheet1")
+    w_sheet.write(0, 1, pregao.get_titulo())
+    w_sheet.write(1, 1, pregao.solicitacao.objeto)
+    w_sheet.write(2, 1, pregao.get_local())
+
     for idx, item in enumerate(itens, 0):
-        row_index = idx + 1
+        row_index = idx + 8
         style = xlwt.XFStyle()
         style.alignment.wrap = 1
 
