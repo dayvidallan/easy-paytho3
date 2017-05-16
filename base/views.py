@@ -2367,8 +2367,11 @@ def relatorio_ata_registro_preco(request, pregao_id):
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     municipio = None
+    prefeito = None
+
     if get_config_geral():
         municipio = get_config_geral().municipio
+        prefeito = get_config_geral()
 
 
 
@@ -2436,8 +2439,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     titulo_pregao = u'sdasd'
     texto = u'''
-    No dia %s, o(a) %s, inscrito no CNPJ/MF sob o nº %s, localizado no endereço %s, representado neste ato por seu Prefeito, o(a) Sr(a) %s, inscrito no CPF n° %s, nos termos da Lei nº 10.520/2002 e de modo subsidiário, da Lei nº 8.666/93 e Decreto Municipal nº 046/2010, conforme a classificação da proposta apresentada no %s, homologado em %s, resolve registrar o preço oferecido pela empresa, conforme os seguintes termos:
-    ''' % (ata.data_inicio.strftime('%d/%m/%y'), configuracao.nome, configuracao.cnpj, configuracao.endereco, configuracao.ordenador_despesa.nome, configuracao.cpf_ordenador_despesa, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
+    No dia %s, o(a) %s, CPF nº %s, representado neste ato por seu Prefeito, o(a) Sr(a) %s, inscrito no CPF n° %s, nos termos da Lei nº 10.520/2002 e de modo subsidiário, da Lei nº 8.666/93 e Decreto Municipal nº 046/2010, conforme a classificação da proposta apresentada no %s, homologado em %s, resolve registrar o preço oferecido pela empresa, conforme os seguintes termos:
+    ''' % (ata.data_inicio.strftime('%d/%m/%y'), configuracao.ordenador_despesa.nome, configuracao.cpf_ordenador_despesa, prefeito.ordenador_despesa.nome, prefeito.cpf_ordenador_despesa, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()
@@ -3350,27 +3353,6 @@ def aprovar_todos_pedidos_secretaria(request, solicitacao_id, secretaria_id):
 
 
 @login_required()
-def novo_pedido_compra(request, solicitacao_id):
-    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    pregao = solicitacao.get_pregao()
-    title=u'Novo Pedido de Compra - %s' % pregao
-    form = NovoPedidoCompraForm(request.POST or None)
-    if form.is_valid():
-        o = form.save(False)
-        o.tipo = SolicitacaoLicitacao.COMPRA
-        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_ADESAO_ARP
-        o.setor_origem = request.user.pessoafisica.setor
-        o.setor_atual = request.user.pessoafisica.setor
-        o.data_cadastro = datetime.datetime.now()
-        o.cadastrado_por = request.user
-        o.save()
-
-        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, o.id))
-    return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
-
-
-
-@login_required()
 def novo_pedido_compra_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
     title=u'Novo Pedido de Compra - %s' % contrato
@@ -3679,102 +3661,6 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-@login_required()
-def informar_quantidades_do_pedido(request, solicitacao_original, nova_solicitacao):
-    setor = request.user.pessoafisica.setor
-    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_original)
-    nova_solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=nova_solicitacao)
-    title=u'Pedido de Compra - %s' % nova_solicitacao
-    participantes = solicitacao.get_resultado()
-    form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
-    eh_lote = solicitacao.eh_lote()
-    if eh_lote:
-        resultados = solicitacao.get_lotes()
-    else:
-        resultados = participantes
-    buscou = False
-
-    if form.is_valid():
-        buscou = True
-        if eh_lote:
-            ids = list()
-            for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
-                registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
-                if registro.participante == form.cleaned_data.get('vencedor'):
-                    ids.append(registro.item.id)
-            resultados = resultados.filter(id__in=ids)
-        else:
-            resultados = solicitacao.get_resultado(vencedor=form.cleaned_data.get('vencedor'))
-        fornecedor = form.cleaned_data.get('vencedor')
-        
-        if 'quantidades' in request.POST:
-            fornecedor = request.POST.get('fornecedor')
-            participante = ParticipantePregao.objects.get(id=fornecedor)
-
-            if eh_lote and '0' in request.POST.getlist('quantidades'):
-                messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
-                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
-
-
-            if eh_lote:
-                ids = list()
-                resultados = solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False)
-                for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
-                    registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
-                    if registro.participante == participante:
-                        for id_do_item in registro.item.get_itens_do_lote():
-                            ids.append(id_do_item.id)
-                resultados = resultados.filter(id__in=ids)
-
-
-                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-                    valor_pedido = int(valor)
-                    if valor_pedido > 0:
-                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
-                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
-                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
-            else:
-                resultados = solicitacao.get_resultado(vencedor=participante)
-                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-                    valor_pedido = int(valor)
-                    if valor_pedido > 0:
-                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).item.get_quantidade_disponivel():
-                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
-                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido/%s/%s/' % (solicitacao.id, nova_solicitacao.id))
-
-            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-                valor_pedido = int(valor)
-                if valor_pedido > 0:
-                    novo_pedido = PedidoItem()
-                    novo_pedido.solicitacao = nova_solicitacao
-                    if eh_lote:
-                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
-                        novo_pedido.proposta = resultados[idx].get_proposta_item_lote()
-                    else:
-                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx]).item
-                        novo_pedido.resultado = resultados.get(id=request.POST.getlist('id')[idx])
-                    novo_pedido.quantidade = valor_pedido
-                    novo_pedido.setor = setor
-                    novo_pedido.pedido_por = request.user
-                    novo_pedido.pedido_em = datetime.datetime.now()
-                    novo_pedido.save()
-
-            messages.success(request, u'Pedido cadastrado com sucesso.')
-            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
-    return render(request, 'informar_quantidades_do_pedido.html', locals(), RequestContext(request))
 
 @login_required()
 def apagar_anexo_pregao(request, item_id):

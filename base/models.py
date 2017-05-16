@@ -398,7 +398,7 @@ class SolicitacaoLicitacao(models.Model):
 
     def get_situacao(self):
         if self.tipo == SolicitacaoLicitacao.COMPRA:
-            if OrdemCompra.objects.filter(solicitacao=self).exists() or PedidoItem.objects.filter(solicitacao=self, ativo=False).exists():
+            if OrdemCompra.objects.filter(solicitacao=self).exists():
                 return u'Finalizada'
             else:
                 return u'Aguardando Ordem de Compra'
@@ -921,27 +921,6 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def tem_pesquisa_registrada(self):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
-
-    # def get_quantidade_disponivel(self):
-    #     usuario = tl.get_user()
-    #     if usuario.groups.filter(name=u'Gerente').exists():
-    #         pedidos = PedidoItem.objects.filter(item=self, ativo=True)
-    #         if pedidos.exists():
-    #             return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-    #         else:
-    #             return self.quantidade
-    #
-    #     else:
-    #
-    #         if ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-    #             valor_total = ItemQuantidadeSecretaria.objects.filter(item=self, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
-    #             pedidos = PedidoItem.objects.filter(item=self, ativo=True, setor=usuario.pessoafisica.setor)
-    #             if pedidos.exists():
-    #                 return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-    #             else:
-    #                 return valor_total
-    #     return 0
-
 
     def get_item_arp(self):
         return ItemAtaRegistroPreco.objects.filter(item=self)[0]
@@ -1808,29 +1787,6 @@ class Configuracao(models.Model):
     class Meta:
         verbose_name = u'Variável de Configuração'
         verbose_name_plural = u'Variáveis de Configuração'
-
-
-class PedidoItem(models.Model):
-    item = models.ForeignKey(ItemSolicitacaoLicitacao)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
-    resultado = models.ForeignKey(ResultadoItemPregao, null=True)
-    proposta = models.ForeignKey(PropostaItemPregao, null=True)
-    quantidade = models.IntegerField(u'Quantidade')
-    setor = models.ForeignKey(Setor)
-    pedido_por = models.ForeignKey(User)
-    pedido_em = models.DateTimeField(u'Pedido em')
-    ativo = models.BooleanField(u'Ativo', default=True)
-
-    class Meta:
-        verbose_name = u'Pedido do Item'
-        verbose_name_plural = u'Pedidos do Item'
-
-
-    def get_total(self):
-        if self.resultado:
-            return self.quantidade * self.resultado.valor
-        else:
-            return self.quantidade * self.item.get_valor_item_lote()
 
 class DotacaoOrcamentaria(models.Model):
 
