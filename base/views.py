@@ -2639,7 +2639,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     4.3 – Fica eleito o Foro da Comarca Local, para dirimir as dúvidas ou controvérsias resultantes da interpretação deste Contrato, renunciando a qualquer outro por mais privilegiado que seja.
 
-    ''' % (pregao.solicitacao.objeto, pregao.modalidade, configuracao.municipio)
+    ''' % (pregao.solicitacao.objeto, pregao.modalidade, municipio)
 
     p = document.add_paragraph()
     p.alignment = 3
@@ -2647,7 +2647,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     p.add_run(texto)
 
 
-    texto = u'%s, %s' % (configuracao.municipio, ata.data_inicio.strftime('%d/%m/%y'))
+    texto = u'%s, %s' % (municipio, ata.data_inicio.strftime('%d/%m/%y'))
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
