@@ -1919,7 +1919,7 @@ class Contrato(models.Model):
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
     usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
-    aplicacao_artigo_57 = models.CharField(u'Aplicação do Art. 57 da Lei 8666/93', max_length=200, null=True, blank=True, choices=INCISOS_ARTIGO_57_CHOICES, default=NAO_SE_APLICA)
+    aplicacao_artigo_57 = models.CharField(u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)', max_length=200, null=True, blank=True, choices=INCISOS_ARTIGO_57_CHOICES, default=NAO_SE_APLICA)
     garantia_execucao_objeto = models.CharField(u'Garantia de Execução do Objeto (%)', null=True, blank=True, max_length=50, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
 
     def __unicode__(self):

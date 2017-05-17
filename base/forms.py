@@ -600,7 +600,7 @@ class CriarContratoForm(forms.Form):
                 self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
                 valor_contrato += 1
             nome_campos = nome_campos + '%s, ' % i.id
-            label = u'Aplicação do Art. 57 da Lei 8666/93'
+            label = u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)'
             self.fields["aplicacao_artigo_57_%d" % i.id] = forms.ChoiceField(label=label, required=False, choices=Contrato.INCISOS_ARTIGO_57_CHOICES)
             label = u'Garantia de Execução do Objeto (%)'
             self.fields["garantia_%d" % i.id] = forms.IntegerField(label=label, required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
