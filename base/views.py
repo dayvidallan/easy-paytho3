@@ -1383,6 +1383,8 @@ def cadastrar_contrato(request, solicitacao_id):
                 o.pregao = pregao
                 o.valor = pregao.get_valor_total(participante)
                 o.numero = form.cleaned_data.get('contrato_%d' % participante.id)
+                o.aplicacao_artigo_57 = form.cleaned_data.get('aplicacao_artigo_57_%d' % participante.id)
+                o.garantia_execucao_objeto = form.cleaned_data.get('garantia_%d' % participante.id)
 
                 o.data_inicio = form.cleaned_data.get('data_inicial_%d' % participante.id)
                 o.data_fim = form.cleaned_data.get('data_final_%d' % participante.id)
@@ -3300,6 +3302,7 @@ def gestao_pedidos(request):
 @login_required()
 def gestao_contratos(request):
     setor = request.user.pessoafisica.setor
+    pode_editar = False
     if request.user.groups.filter(name=u'Gerente'):
         title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
         solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
@@ -3307,6 +3310,7 @@ def gestao_contratos(request):
         contratos_finalizados = Pregao.objects.filter(eh_ata_registro_preco=False, solicitacao__in=solicitacoes.values_list('id', flat=True))
         atas = AtaRegistroPreco.objects.all()
         contratos = Contrato.objects.all()
+        pode_editar = True
 
     else:
         return HttpResponseRedirect(u'/')
@@ -4152,6 +4156,7 @@ def termo_homologacao(request, pregao_id):
 def visualizar_contrato(request, solicitacao_id):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
     title = u'Contrato %s' % contrato.numero
+    pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
     pode_gerenciar = request.user.groups.filter(name='Gerente')
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))

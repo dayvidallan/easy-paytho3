@@ -137,7 +137,7 @@ class PregaoForm(forms.ModelForm):
     num_processo = forms.CharField(label=u'Número do Processo', required=True)
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'tipo', 'criterio', 'objeto_tipo', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
 
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
@@ -553,9 +553,10 @@ class AtaRegistroPrecoForm(forms.ModelForm):
 
 
 class ContratoForm(forms.ModelForm):
+    garantia_execucao_objeto = forms.IntegerField(label=u'Garantia de Execução do Objeto (%)', required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
     class Meta:
         model = Contrato
-        fields = ('numero', 'data_inicio', 'data_fim')
+        fields = ('numero', 'aplicacao_artigo_57', 'garantia_execucao_objeto', 'data_inicio', 'data_fim')
 
     def __init__(self, *args, **kwargs):
         self.pregao = kwargs.pop('pregao', None)
@@ -567,6 +568,11 @@ class ContratoForm(forms.ModelForm):
             lista = ultima.numero.split('/')
             if len(lista) > 1:
                 self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+
+    def clean(self):
+        if self.cleaned_data.get('garantia_execucao_objeto'):
+            if self.cleaned_data.get('garantia_execucao_objeto') > 5:
+                raise forms.ValidationError(u'O limite máximo é de 5%.')
 
 
 class CriarContratoForm(forms.Form):
@@ -594,6 +600,11 @@ class CriarContratoForm(forms.Form):
                 self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
                 valor_contrato += 1
             nome_campos = nome_campos + '%s, ' % i.id
+            label = u'Aplicação do Art. 57 da Lei 8666/93'
+            self.fields["aplicacao_artigo_57_%d" % i.id] = forms.ChoiceField(label=label, required=False, choices=Contrato.INCISOS_ARTIGO_57_CHOICES)
+            label = u'Garantia de Execução do Objeto (%)'
+            self.fields["garantia_%d" % i.id] = forms.IntegerField(label=label, required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
+
             label = u'Data Inicial'
             self.fields["data_inicial_%d" % i.id] = forms.DateField(label=label, required=True)
             self.fields["data_inicial_%d" % i.id].widget.attrs = {'class': 'vDateField'}
@@ -602,6 +613,13 @@ class CriarContratoForm(forms.Form):
             self.fields["data_final_%d" % i.id] = forms.DateField(label=label, required=True)
             self.fields["data_final_%d" % i.id].widget.attrs = {'class': 'vDateField'}
             nome_campos = nome_campos + '%s, ' % i.id
+
+    def clean(self):
+        for i in self.pregao.get_vencedores():
+            nome_campo = u'garantia_%d' %  i.id
+            if self.cleaned_data.get(nome_campo):
+                if self.cleaned_data.get(nome_campo) > 5:
+                    raise forms.ValidationError(u'O limite máximo é de 5%.')
 
 
 

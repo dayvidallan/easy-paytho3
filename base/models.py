@@ -41,6 +41,7 @@ class User(AbstractUser):
 class Secretaria(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
     sigla = models.CharField(u'Sigla', max_length=20, null=True, blank=True)
+    cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
     responsavel = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável', null=True, blank=True, related_name=u'secretaria_responsavel')
     endereco = models.CharField(u'Endereço', max_length=2000, null=True)
     email = models.CharField(u'Email', max_length=200, null=True)
@@ -48,7 +49,7 @@ class Secretaria(models.Model):
     logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
-    cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
+
 
     def __unicode__(self):
         return self.nome
@@ -970,7 +971,24 @@ class Pregao(models.Model):
         (REVOGADO, REVOGADO),
     )
 
+    COMPRA_MATERIAL_CONSUMO = u'Compra de Material de Consumo'
+    COMPRA_MATERIAL_PERMANENTE = u'Compra de Material Permanente'
+    OBRAS = u'Obras'
+    SERVICOS_ENGENHARIA = u'Serviços de Engenharia'
+    SERVICOS_REFORMA_E_EQUIPAMENTO = u'Serviço de Reforma de Edifício ou de Equipamento'
+    SERVICOS_OUTRO = u'Serviços – Outros'
 
+    OBJETO_TIPO_CHOICES = (
+        (COMPRA_MATERIAL_CONSUMO, COMPRA_MATERIAL_CONSUMO),
+        (COMPRA_MATERIAL_PERMANENTE, COMPRA_MATERIAL_PERMANENTE),
+        (OBRAS, OBRAS),
+        (SERVICOS_ENGENHARIA, SERVICOS_ENGENHARIA),
+        (SERVICOS_REFORMA_E_EQUIPAMENTO, SERVICOS_REFORMA_E_EQUIPAMENTO),
+        (SERVICOS_OUTRO, SERVICOS_OUTRO),
+
+
+
+    )
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
     modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade')
@@ -995,6 +1013,7 @@ class Pregao(models.Model):
     comissao = models.ForeignKey('base.ComissaoLicitacao', verbose_name=u'Comissão de Licitação', null=True )
     data_retorno = models.DateField(u'Data do Retorno', null=True)
     sine_die = models.NullBooleanField(u'Sine Die', null=True)
+    objeto_tipo = models.CharField(u'Objeto - Tipo', choices=OBJETO_TIPO_CHOICES, max_length=200, default=COMPRA_MATERIAL_CONSUMO)
 
 
     class Meta:
@@ -1867,6 +1886,25 @@ class AtaRegistroPreco(models.Model):
         return False
 
 class Contrato(models.Model):
+
+
+    NAO_SE_APLICA = u''
+    INCISO_I = u'I'
+    INCISO_II = u'II'
+    INCISO_IV = u'IV'
+    INCISO_V = u'V'
+
+    TEXTO_INCISO_I = u'I - aos projetos cujos produtos estejam contemplados nas metas estabelecidas no Plano Plurianual, os quais poderão ser prorrogados se houver interesse da Administração e desde que isso tenha sido previsto no ato convocatório;'
+    TEXTO_INCISO_II = u'II - à prestação de serviços a serem executados de forma contínua, que poderão ter a sua duração prorrogada por iguais e sucessivos períodos com vistas à obtenção de preços e condições mais vantajosas para a administração, limitada a sessenta meses; (Redação dada pela Lei nº 9.648, de 1998)'
+    TEXTO_INCISO_IV = u'IV - ao aluguel de equipamentos e à utilização de programas de informática, podendo a duração estender-se pelo prazo de até 48 (quarenta e oito) meses após o início da vigência do contrato.'
+    TEXTO_INCISO_V = u'V - às hipóteses previstas nos incisos IX, XIX, XXVIII e XXXI do art. 24, cujos contratos poderão ter vigência por até 120 (cento e vinte) meses, caso haja interesse da administração. (Incluído pela Lei nº 12.349, de 2010)'
+    INCISOS_ARTIGO_57_CHOICES = (
+        (NAO_SE_APLICA , u'---------------'),
+        (INCISO_I, TEXTO_INCISO_I),
+        (INCISO_II, TEXTO_INCISO_II),
+        (INCISO_IV, TEXTO_INCISO_IV),
+        (INCISO_V, TEXTO_INCISO_V),
+    )
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
     valor = models.DecimalField(decimal_places=2,max_digits=12)
     data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
@@ -1881,6 +1919,8 @@ class Contrato(models.Model):
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
     usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
+    aplicacao_artigo_57 = models.CharField(u'Aplicação do Art. 57 da Lei 8666/93', max_length=200, null=True, blank=True, choices=INCISOS_ARTIGO_57_CHOICES, default=NAO_SE_APLICA)
+    garantia_execucao_objeto = models.CharField(u'Garantia de Execução do Objeto (%)', null=True, blank=True, max_length=50, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
 
     def __unicode__(self):
         return 'Contrato N° %s' % (self.numero)
