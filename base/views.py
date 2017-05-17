@@ -1635,7 +1635,9 @@ def suspender_pregao(request, pregao_id):
         pregao.data_suspensao = datetime.datetime.now().date()
         if form.cleaned_data.get('sine_die'):
             pregao.sine_die = True
+            pregao.data_retorno = None
         else:
+            pregao.sine_die = False
             pregao.data_retorno = form.cleaned_data.get('data_retorno')
         pregao.save()
 
