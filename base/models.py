@@ -47,9 +47,10 @@ class Secretaria(models.Model):
     email = models.CharField(u'Email', max_length=200, null=True)
     telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
     logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
+    eh_ordenadora_despesa = models.BooleanField(u'A Secretaria é a Própria Ordenadora de Despesa?', default=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
-    eh_ordenadora_despesa = models.BooleanField(u'A Secretaria é a Própria Ordenadora de Despesa?', default=True)
+
 
 
     def __unicode__(self):
