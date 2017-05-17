@@ -2362,17 +2362,26 @@ def relatorio_ata_registro_preco(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
 
-
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    secretaria = pregao.solicitacao.setor_origem.secretaria
+    configuracao = get_config(secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     municipio = None
 
+    if secretaria.eh_ordenadora_despesa:
+        nome_ordenador = configuracao.nome
+        cnpj_ordenador =  configuracao.cnpj
+        endereco_ordenador =  configuracao.endereco
 
-    if get_config_geral():
-        config_geral = get_config_geral()
+    else:
+
+        if get_config_geral():
+            config_geral = get_config_geral()
+            nome_ordenador = config_geral.nome
+            cnpj_ordenador =  config_geral.cnpj
+            endereco_ordenador =  config_geral.endereco
 
 
 
@@ -2441,7 +2450,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     titulo_pregao = u'sdasd'
     texto = u'''
     No dia %s, o(a) %s, inscrito(a) no CNPJ/MF sob o nº %s, situado(a) no(a)  %s, representado neste ato pelo(a) Sr(a) %s, inscrito no CPF n° %s, nos termos da Lei nº 10.520/2002 e de modo subsidiário, da Lei nº 8.666/93 e Decreto Municipal nº 046/2010, conforme a classificação da proposta apresentada no %s, homologado em %s, resolve registrar o preço oferecido pela empresa, conforme os seguintes termos:
-    ''' % (ata.data_inicio.strftime('%d/%m/%y'), config_geral.nome, config_geral.cnpj, config_geral.endereco, configuracao.ordenador_despesa.nome, configuracao.cpf_ordenador_despesa, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
+    ''' % (ata.data_inicio.strftime('%d/%m/%y'), nome_ordenador, cnpj_ordenador, endereco_ordenador, configuracao.ordenador_despesa.nome, configuracao.cpf_ordenador_despesa, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()
