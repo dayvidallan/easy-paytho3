@@ -1055,12 +1055,10 @@ class Pregao(models.Model):
             else:
                 texto = u'Suspenso'
 
-            if self.data_retorno:
-                texto += u' Retorno em %s' % self.data_retorno.strftime('%d/%m/%y')
-
             if self.sine_die:
                 texto += u' - Sine die'
-
+            elif self.data_retorno:
+                texto += u' Retorno em %s' % self.data_retorno.strftime('%d/%m/%y')
 
             return texto
 
