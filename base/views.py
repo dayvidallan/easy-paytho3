@@ -2383,7 +2383,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
         nome_ordenador = config_geral.nome
         cnpj_ordenador =  config_geral.cnpj
         endereco_ordenador =  config_geral.endereco
-        orgao = config_geral.ordenador_despesa.setor.secretaria.nome
+        orgao = config_geral.nome
         nome_pessoa_ordenadora = config_geral.ordenador_despesa.nome
         cpf_pessoa_ordenadora = config_geral.cpf_ordenador_despesa
         logo = os.path.join(settings.MEDIA_ROOT,config_geral.logo.name)
