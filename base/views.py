@@ -2370,22 +2370,25 @@ def relatorio_ata_registro_preco(request, pregao_id):
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-    municipio = None
+    config_geral = get_config_geral()
+    municipio = config_geral.municipio.nome
 
     if secretaria.eh_ordenadora_despesa:
         nome_ordenador = configuracao.nome
         cnpj_ordenador =  configuracao.cnpj
         endereco_ordenador =  configuracao.endereco
+        orgao = configuracao.ordenador_despesa.setor.secretaria.nome
+        nome_pessoa_ordenadora = configuracao.ordenador_despesa.nome
+        cpf_pessoa_ordenadora = configuracao.cpf_ordenador_despesa
 
     else:
 
-        if get_config_geral():
-            config_geral = get_config_geral()
-            nome_ordenador = config_geral.nome
-            cnpj_ordenador =  config_geral.cnpj
-            endereco_ordenador =  config_geral.endereco
-
-
+        nome_ordenador = config_geral.nome
+        cnpj_ordenador =  config_geral.cnpj
+        endereco_ordenador =  config_geral.endereco
+        orgao = config_geral.ordenador_despesa.setor.secretaria.nome
+        nome_pessoa_ordenadora = config_geral.ordenador_despesa.nome
+        cpf_pessoa_ordenadora = config_geral.cpf_ordenador_despesa
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     tabela = {}
@@ -2452,7 +2455,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     titulo_pregao = u'sdasd'
     texto = u'''
     No dia %s, o(a) %s, inscrito(a) no CNPJ/MF sob o nº %s, situado(a) no(a)  %s, representado neste ato pelo(a) Sr(a) %s, inscrito no CPF n° %s, nos termos da Lei nº 10.520/2002 e de modo subsidiário, da Lei nº 8.666/93 e Decreto Municipal nº 046/2010, conforme a classificação da proposta apresentada no %s, homologado em %s, resolve registrar o preço oferecido pela empresa, conforme os seguintes termos:
-    ''' % (ata.data_inicio.strftime('%d/%m/%y'), nome_ordenador, cnpj_ordenador, endereco_ordenador, configuracao.ordenador_despesa.nome, configuracao.cpf_ordenador_despesa, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
+    ''' % (ata.data_inicio.strftime('%d/%m/%y'), nome_ordenador, cnpj_ordenador, endereco_ordenador, nome_pessoa_ordenadora, cpf_pessoa_ordenadora, pregao, pregao.data_homologacao.strftime('%d/%m/%y'))
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()
@@ -2619,7 +2622,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     2.1 – Este Registro de Preços tem validade de até 12 (DOZE) MESES, contados da data da sua assinatura, incluídas eventuais prorrogações, com eficácia legal após a publicação no DIÁRIO OFICIAL e demais meios, conforme exigido na legislação aplicável.
 
-    2.2 – Durante o prazo de validade desta Ata de Registro de Preço, o(a) %s não será obrigado a firmar as contratações que dela poderão advir, facultando-se a realização de licitação específica para a aquisição pretendida, sendo assegurado ao beneficiário do registro preferência no fornecimento em igualdade de condições.
+    2.2 – Durante o prazo de validade desta Ata de Registro de Preço, o(a) %s não será obrigado(a) a firmar as contratações que dela poderão advir, facultando-se a realização de licitação específica para a aquisição pretendida, sendo assegurado ao beneficiário do registro preferência no fornecimento em igualdade de condições.
 
     3 – DA UTILIZAÇÃO DA ATA DE REGISTRO DE PREÇOS POR ÓRGÃO OU ENTIDADES NÃO PARTICIPANTES
 
@@ -2654,7 +2657,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     4.3 – Fica eleito o Foro da Comarca Local, para dirimir as dúvidas ou controvérsias resultantes da interpretação deste Contrato, renunciando a qualquer outro por mais privilegiado que seja.
 
-    ''' % (pregao.solicitacao.objeto, pregao.modalidade, municipio)
+    ''' % (pregao.solicitacao.objeto, pregao.modalidade, nome_ordenador)
 
     p = document.add_paragraph()
     p.alignment = 3
@@ -2670,7 +2673,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
 
     document.add_paragraph()
-    texto = u'%s' % (configuracao.ordenador_despesa.nome)
+    texto = u'%s' % (nome_pessoa_ordenadora)
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
@@ -2679,7 +2682,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(configuracao.nome)
+    p.add_run(orgao)
+
     document.add_paragraph()
     for fornecedor in fornecedores:
         nome_responsavel = ParticipantePregao.objects.filter(fornecedor=fornecedor, pregao=pregao)[0].nome_representante
@@ -2692,6 +2696,40 @@ def relatorio_ata_registro_preco(request, pregao_id):
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.add_run(fornecedor.razao_social)
         document.add_paragraph()
+
+    texto = u'TESTEMUNHAS:'
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    p.add_run(texto).underline=True
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    table = document.add_table(rows=2, cols=4)
+
+    hdr_cells = table.rows[0].cells
+    table.columns[0].width = Inches(2.0)
+    table.columns[1].width = Inches(5.5)
+    table.columns[2].width = Inches(2.0)
+    table.columns[3].width = Inches(5.5)
+
+
+
+    hdr_cells[0].text = u'1) '
+    hdr_cells[1].text = u'______________________'
+    hdr_cells[2].text = u'2) '
+    hdr_cells[3].text = u'______________________'
+
+    hdr_cells = table.rows[1].cells
+
+    hdr_cells[0].text = u'CPF/MF: '
+    hdr_cells[1].text = u'______________________'
+    hdr_cells[2].text = u'CPF/MF: '
+    hdr_cells[3].text = u'______________________'
+
+
+
+
 
 
 
