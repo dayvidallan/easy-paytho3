@@ -25,20 +25,36 @@
             <legend>Buscar Licitação</legend>
             <form action="." method="POST" class="form-horizontal">
                 {% csrf_token %}
-                 <div class="miolo">
-                    <div class="row-fluid">
-                        <div class="col-xs-4">
+                 <div class="row-fluid">
 
-                            {{ form|bootstrap }}
+                        <div class="col-xs-3">
+                            <div class="controls">{{ form.info|bootstrap }}
+                                {% if form.info.help_text %}
+                                    <p class="help-inline"><small>{{ form.info.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-xs-2">
+                            <div class="controls">{{ form.situacao|bootstrap }}
+                                {% if form.situacao.help_text %}
+                                    <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-xs-2">
+                            <div class="controls">{{ form.secretaria|bootstrap }}
+                                {% if form.secretaria.help_text %}
+                                    <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="col-xs-6">
-                            <br>
-                            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
 
-                        </div>
+                    <div class="col-xs-2">
+                        <br>
+                        <p><button type="submit" class="btn btn-primary">Buscar</button></p>
                     </div>
-                 </div>
+                </div>
             </form>
 
         </fieldset>

@@ -23,15 +23,15 @@
         <form action="." method="POST" class="form-horizontal">
             {% csrf_token %}
                 <div class="row-fluid">
-                        {% for field in form %}
-                            <div class="col-xs-2">
-                                    <div class="controls">{{ field|bootstrap }}
-                                        {% if field.help_text %}
-                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                                        {% endif %}
-                                    </div>
-                             </div>
-                        {% endfor %}
+                    {% for field in form %}
+                        <div class="col-xs-2">
+                            <div class="controls">{{ field|bootstrap }}
+                                {% if field.help_text %}
+                                    <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                         </div>
+                    {% endfor %}
 
                     <div class="col-xs-2">
                         <br>

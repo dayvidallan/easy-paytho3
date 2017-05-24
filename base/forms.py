@@ -482,7 +482,8 @@ class BuscarSolicitacaoForm(forms.Form):
 
 class BuscarLicitacaoForm(forms.Form):
     info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
-    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES, widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
 
 class MaterialConsumoForm(forms.ModelForm):
     class Meta:

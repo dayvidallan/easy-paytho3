@@ -568,11 +568,13 @@ def ver_pregoes(request):
     form = BuscarLicitacaoForm(request.POST or None)
 
     if form.is_valid():
+        if form.cleaned_data.get('info'):
+            pregoes = pregoes.filter(Q(solicitacao__processo__numero=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando=form.cleaned_data.get('info')) | Q(num_pregao=form.cleaned_data.get('info')) )
+        if form.cleaned_data.get('situacao'):
+            pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
+        if form.cleaned_data.get('secretaria'):
+            pregoes = pregoes.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
-        pregoes = pregoes.filter(Q(solicitacao__processo__numero=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando=form.cleaned_data.get('info')) | Q(num_pregao=form.cleaned_data.get('info')) )
-
-    if request.GET.get('situacao'):
-        pregoes = pregoes.filter(situacao=request.GET.get('situacao'))
     return render(request, 'ver_pregoes.html', locals(), RequestContext(request))
 
 @login_required()
