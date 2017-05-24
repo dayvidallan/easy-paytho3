@@ -482,6 +482,7 @@ class BuscarSolicitacaoForm(forms.Form):
 
 class BuscarLicitacaoForm(forms.Form):
     info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
+    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
 
