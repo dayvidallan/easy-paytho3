@@ -1,0 +1,133 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% load pagination_tags %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?situacao=" + escape( $('#'+campo.id).val());
+
+        }
+	</script>
+{% endblock %}
+{% block content %}
+
+    <fieldset>
+        <legend>Filtros</legend>
+        <form action="." method="POST" class="form-horizontal">
+            {% csrf_token %}
+                <div class="row-fluid">
+                        {% for field in form %}
+                            <div class="col-xs-2">
+                                    <div class="controls">{{ field|bootstrap }}
+                                        {% if field.help_text %}
+                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                        {% endif %}
+                                    </div>
+                             </div>
+                        {% endfor %}
+
+                    <div class="col-xs-2">
+                        <br>
+                        <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                    </div>
+                </div>
+
+        </form>
+
+    </fieldset>
+
+    {% if pregoes.exists %}
+
+        {% if relatorio == 'Relatório de Situação' %}
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Pregão</th>
+                        <th>Memorando</th>
+                        <th>Objeto</th>
+                        <th width="10%">Situação</th>
+                        <th>Abertura das Propostas</th>
+                        <th>Responsável</th>
+                        <th>Valor</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% autopaginate pregoes 10 %}
+                    {% paginate %}
+                    {% for pregao in pregoes %}
+                       <tr>
+                           <td>{{ pregao.num_pregao }}</td>
+                           <td>{{ pregao.solicitacao.num_memorando }}</td>
+                           <td>{{ pregao.solicitacao.objeto }}</td>
+                           <td>{{ pregao.get_situacao }}</td>
+                           <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
+                           <td>{{ pregao.responsavel}}</td>
+                           <td>{{ pregao.get_valor_total|format_money }}</td>
+                       </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% elif relatorio == 'Relatório de Economia' %}
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Pregão</th>
+                        <th>Memorando</th>
+                        <th>Objeto</th>
+                        <th width="10%">Situação</th>
+                        <th>Abertura das Propostas</th>
+                        <th>Responsável</th>
+                        <th>Opções</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% autopaginate pregoes 10 %}
+                    {% paginate %}
+                    {% for pregao in pregoes %}
+                       <tr>
+                           <td>{{ pregao.num_pregao }}</td>
+                           <td>{{ pregao.solicitacao.num_memorando }}</td>
+                           <td>{{ pregao.solicitacao.objeto }}</td>
+                           <td>{{ pregao.get_situacao }}</td>
+                           <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
+                           <td>{{ pregao.responsavel}}</td>
+                           <td>
+                               <ul class="action-bar">
+                                   {% if perms.base.pode_cadastrar_pregao %}
+                                       <li><a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a></li>
+                                       <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li>
+                                   {% endif %}
+                                   {% if eh_ordenador_despesa and pregao.tem_resultado %}
+                                        {% if pregao.eh_pregao and pregao.data_adjudicacao or pregao.pode_homologar %}
+                                            <li><a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a></li>
+
+                                            {% if not pregao.arquivo_homologacao %}
+                                                <li><a class="btn btn-success btn-sm" href="/registrar_homologacao/{{pregao.id}}/">Homologar</a></li>
+                                            {% endif %}
+                                        {% endif %}
+                                   {% endif %}
+                               </ul>
+                           </td>
+                       </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% elif form.is_bound %}
+        <p class="alert alert-info">Nenhum pregão cadastrado.</p>
+    {% else %}
+
+        <p class="alert alert-info">Selecione os filtros para gerar o relatório.</p>
+    {% endif %}
+
+
+{% endblock %}

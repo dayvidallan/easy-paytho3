@@ -5625,3 +5625,64 @@ def localizar_processo(request):
 
 
     return render(request, 'localizar_processo.html', locals(), RequestContext(request))
+
+
+
+
+@login_required()
+def ver_relatorios_gerenciais(request):
+    title=u'Relatórios Gerenciais'
+
+    eh_ordenador_despesa = False
+    if get_config():
+        eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
+
+    form = RelatoriosGerenciaisForm(request.POST or None)
+
+    if form.is_valid():
+        pregoes = Pregao.objects.all().order_by('num_pregao')
+        relatorio =  form.cleaned_data.get('relatorio')
+        modalidade = form.cleaned_data.get('modalidade')
+        situacao = form.cleaned_data.get('situacao')
+        visualizar = form.cleaned_data.get('visualizar')
+
+        pregoes = pregoes.filter()
+
+        if situacao:
+            pregoes = pregoes.filter(situacao=situacao)
+
+        if modalidade:
+            pregoes = pregoes.filter(modalidade=modalidade)
+
+        if visualizar == u'2':
+            destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  request.user.pessoafisica.id
+            if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+                os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+            caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+            data_emissao = datetime.date.today()
+
+            configuracao = get_config(request.user.pessoafisica.setor.secretaria)
+            logo = None
+            if configuracao.logo:
+                logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+            data = {'pregoes': pregoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+            if relatorio == u'Relatório de Economia':
+                template = get_template('relatorio_gerencial_economia.html')
+            else:
+                template = get_template('relatorio_gerencial_situacao.html')
+
+
+            html  = template.render(Context(data))
+
+            pdf_file = open(caminho_arquivo, "w+b")
+            pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                    encoding='utf-8')
+            pdf_file.close()
+            file = open(caminho_arquivo, "r")
+            pdf = file.read()
+            file.close()
+            return HttpResponse(pdf, 'application/pdf')
+
+
+    return render(request, 'ver_relatorios_gerenciais.html', locals(), RequestContext(request))

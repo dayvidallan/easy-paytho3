@@ -848,3 +848,9 @@ class BuscaFornecedorForm(forms.Form):
 
 class LocalizarProcessoForm(forms.Form):
     numero = forms.CharField(label=u'Informe o Número do Processo', required=False)
+
+class RelatoriosGerenciaisForm(forms.Form):
+    relatorio = forms.ChoiceField(label=u'Tipo de Relatório', choices=((u'Relatório de Situação', u'Relatório de Situação'),(u'Relatório de Economia', u'Relatório de Economia'),), required=False)
+    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
+    visualizar = forms.ChoiceField(label=u'Modo de Visualização', required=False, choices=((u'1', u'Na Tela'),(u'2', u'Gerar PDF'),),)
