@@ -73,6 +73,7 @@
                            <td>{{ pregao.get_valor_total|format_money }}</td>
                        </tr>
                     {% endfor %}
+                    <tr><td colspan="6">Total</td><td>{{ total|format_money }}</td></tr>
                 </tbody>
             </table>
         {% elif relatorio == 'Relatório de Economia' %}
@@ -82,11 +83,10 @@
                         <th>Pregão</th>
                         <th>Memorando</th>
                         <th>Objeto</th>
-                        <th width="10%">Situação</th>
-                        <th>Abertura das Propostas</th>
-                        <th>Responsável</th>
-                        <th>Opções</th>
-
+                        <th>Total Previsto</th>
+                        <th>Total Final</th>
+                        <th>Total Desconto</th>
+                        <th>Total Economizado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,28 +97,22 @@
                            <td>{{ pregao.num_pregao }}</td>
                            <td>{{ pregao.solicitacao.num_memorando }}</td>
                            <td>{{ pregao.solicitacao.objeto }}</td>
-                           <td>{{ pregao.get_situacao }}</td>
-                           <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
-                           <td>{{ pregao.responsavel}}</td>
-                           <td>
-                               <ul class="action-bar">
-                                   {% if perms.base.pode_cadastrar_pregao %}
-                                       <li><a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a></li>
-                                       <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li>
-                                   {% endif %}
-                                   {% if eh_ordenador_despesa and pregao.tem_resultado %}
-                                        {% if pregao.eh_pregao and pregao.data_adjudicacao or pregao.pode_homologar %}
-                                            <li><a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a></li>
-
-                                            {% if not pregao.arquivo_homologacao %}
-                                                <li><a class="btn btn-success btn-sm" href="/registrar_homologacao/{{pregao.id}}/">Homologar</a></li>
-                                            {% endif %}
-                                        {% endif %}
-                                   {% endif %}
-                               </ul>
-                           </td>
+                           <td>{{ pregao.get_total_previsto|format_money  }}</td>
+                           <td>{{ pregao.get_total_final|format_money  }}</td>
+                           <td>{{ pregao.get_total_desconto }}</td>
+                           <td>{{ pregao.get_total_economizado|format_money  }}</td>
                        </tr>
                     {% endfor %}
+                    <tr>
+                        <td colspan="3">Total</td>
+                        <td>{{ total_previsto|format_money }}</td>
+                        <td>{{ total_final|format_money }}</td>
+                        <td>{{ total_desconto }}</td>
+                        <td>{{ total_economizado|format_money }}</td>
+                    </tr>
+
+
+
                 </tbody>
             </table>
         {% endif %}

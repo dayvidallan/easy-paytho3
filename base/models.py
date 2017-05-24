@@ -1174,6 +1174,60 @@ class Pregao(models.Model):
 
         return ParticipantePregao.objects.filter(id__in=ids_vencedores)
 
+    def get_total_previsto(self):
+        eh_lote = self.criterio.id == CriterioPregao.LOTE
+        if eh_lote:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+        else:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+
+        valor = 0
+
+        for item in itens_pregao.order_by('item'):
+            if item.get_vencedor():
+                valor = valor + (item.valor_medio*item.quantidade)
+        return valor
+
+    def get_total_final(self):
+        eh_lote = self.criterio.id == CriterioPregao.LOTE
+        if eh_lote:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+        else:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+
+        valor = 0
+
+        for item in itens_pregao.order_by('item'):
+            if item.get_vencedor():
+                valor = valor + item.get_total_lance_ganhador()
+        return valor
+
+    def get_total_desconto(self):
+        if self.get_total_previsto():
+            reducao = self.get_total_final() / self.get_total_previsto()
+            ajuste= 1-reducao
+            total_desconto_geral = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+            return total_desconto_geral
+        else:
+            return 0
+
+
+    def get_total_economizado(self):
+        eh_lote = self.criterio.id == CriterioPregao.LOTE
+        if eh_lote:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+        else:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+
+        valor = 0
+        for item in itens_pregao.order_by('item'):
+            if item.get_vencedor():
+
+                valor = valor + item.get_economizado()
+        return valor
+
+
+
 
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):

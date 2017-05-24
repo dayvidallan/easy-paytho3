@@ -5645,14 +5645,34 @@ def ver_relatorios_gerenciais(request):
         modalidade = form.cleaned_data.get('modalidade')
         situacao = form.cleaned_data.get('situacao')
         visualizar = form.cleaned_data.get('visualizar')
+        secretaria = form.cleaned_data.get('secretaria')
 
-        pregoes = pregoes.filter()
-
+        total = 0
         if situacao:
             pregoes = pregoes.filter(situacao=situacao)
 
         if modalidade:
             pregoes = pregoes.filter(modalidade=modalidade)
+
+        if secretaria:
+            pregoes = pregoes.filter(solicitacao__setor_origem__secretaria=secretaria)
+
+        if relatorio == u'Relatório de Economia':
+            total_previsto = 0
+            total_final = 0
+            total_desconto = 0
+            total_economizado = 0
+            for pregao in pregoes:
+                total_previsto += pregao.get_total_previsto()
+                total_final += pregao.get_total_final()
+                total_economizado += pregao.get_total_economizado()
+
+            reducao = total_final / total_previsto
+            ajuste= 1-reducao
+            total_desconto = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+        else:
+            for pregao in pregoes:
+                total += pregao.get_valor_total()
 
         if visualizar == u'2':
             destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  request.user.pessoafisica.id
@@ -5666,10 +5686,12 @@ def ver_relatorios_gerenciais(request):
             if configuracao.logo:
                 logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
 
-            data = {'pregoes': pregoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+
             if relatorio == u'Relatório de Economia':
+                data = {'pregoes': pregoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total_previsto': total_previsto, 'total_final': total_final, 'total_desconto': total_desconto,  'total_economizado': total_economizado}
                 template = get_template('relatorio_gerencial_economia.html')
             else:
+                data = {'pregoes': pregoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
                 template = get_template('relatorio_gerencial_situacao.html')
 
 
