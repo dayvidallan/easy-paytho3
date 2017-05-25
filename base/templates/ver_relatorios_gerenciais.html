@@ -23,43 +23,42 @@
         <form action="." method="POST" class="form-horizontal">
             {% csrf_token %}
                 <div class="row-fluid">
-
-                    <div class="col-xs-2">
-                        <div class="controls">{{ form.relatorio|bootstrap }}
-                            {% if form.relatorio.help_text %}
-                                <p class="help-inline"><small>{{ form.relatorio.help_text }}</small></p>
-                            {% endif %}
-                        </div>
-                     </div>
-                    <div class="col-xs-1">
+                    <div class="col-xs-1 col-md-1">
                         <div class="controls">{{ form.ano|bootstrap }}
                             {% if form.ano.help_text %}
                                 <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
                             {% endif %}
                         </div>
                      </div>
-                    <div class="col-xs-1">
+                    <div class="col-xs-2 col-md-2">
+                        <div class="controls">{{ form.relatorio|bootstrap }}
+                            {% if form.relatorio.help_text %}
+                                <p class="help-inline"><small>{{ form.relatorio.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                     </div>
+                    <div class="col-xs-1 col-md-2">
                         <div class="controls">{{ form.modalidade|bootstrap }}
                             {% if form.modalidade.help_text %}
                                 <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
                             {% endif %}
                         </div>
                      </div>
-                    <div class="col-xs-1">
+                    <div class="col-xs-1 col-md-1">
                         <div class="controls">{{ form.situacao|bootstrap }}
                             {% if form.situacao.help_text %}
                                 <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
                             {% endif %}
                         </div>
                      </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-2 col-md-2">
                         <div class="controls">{{  form.secretaria|bootstrap }}
                             {% if form.secretaria.help_text %}
                                 <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
                             {% endif %}
                         </div>
                      </div>
-                    <div class="col-xs-1">
+                    <div class="col-xs-1 col-md-1">
                         <div class="controls">{{ form.visualizar|bootstrap }}
                             {% if form.visualizar.help_text %}
                                 <p class="help-inline"><small>{{ form.visualizar.help_text }}</small></p>
@@ -68,7 +67,7 @@
                      </div>
 
 
-                    <div class="col-xs-2">
+                    <div class="col-xs-1 col-md-1">
                         <br>
                         <p><button type="submit" class="btn btn-primary">Buscar</button></p>
                     </div>

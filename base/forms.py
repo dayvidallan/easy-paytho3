@@ -481,12 +481,13 @@ class BuscarSolicitacaoForm(forms.Form):
     info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
 
 class BuscarLicitacaoForm(forms.Form):
-    info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
-    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     ano = forms.ChoiceField([],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
+    info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
+    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
 
@@ -502,6 +503,7 @@ class BuscarLicitacaoForm(forms.Form):
         else:
             ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
 
 class MaterialConsumoForm(forms.ModelForm):
     class Meta:
@@ -869,11 +871,12 @@ class LocalizarProcessoForm(forms.Form):
     numero = forms.CharField(label=u'Informe o Número do Processo', required=False)
 
 class RelatoriosGerenciaisForm(forms.Form):
-    relatorio = forms.ChoiceField(label=u'Tipo de Relatório', choices=((u'Relatório de Situação', u'Relatório de Situação'),(u'Relatório de Economia', u'Relatório de Economia'),), required=False)
     ano = forms.ChoiceField([],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
+    relatorio = forms.ChoiceField(label=u'Tipo de Relatório', choices=((u'Relatório de Situação', u'Relatório de Situação'),(u'Relatório de Economia', u'Relatório de Economia'),), required=False)
+
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
@@ -892,3 +895,4 @@ class RelatoriosGerenciaisForm(forms.Form):
         else:
             ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
