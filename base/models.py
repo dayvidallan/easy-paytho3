@@ -1226,6 +1226,29 @@ class Pregao(models.Model):
                 valor = valor + item.get_economizado()
         return valor
 
+    def get_economia_alcancada(self):
+        eh_lote = self.criterio.id == CriterioPregao.LOTE
+        if eh_lote:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).only('valor_medio', 'quantidade')
+        else:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).only('valor_medio', 'quantidade')
+
+        previsto = 0
+        final = 0
+        economizado = 0
+        total_desconto_geral = 0
+        for item in itens_pregao.order_by('item'):
+            if item.get_vencedor():
+                previsto = previsto + (item.valor_medio*item.quantidade)
+                final = final + item.get_total_lance_ganhador()
+                economizado = economizado + item.get_economizado()
+
+        if previsto:
+            reducao = final / previsto
+            ajuste= 1-reducao
+            total_desconto_geral = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+        return previsto, final, total_desconto_geral, economizado
+
 
 
 

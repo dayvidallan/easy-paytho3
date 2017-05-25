@@ -43,6 +43,13 @@
                                 {% endif %}
                             </div>
                         </div>
+                        <div class="col-xs-1">
+                            <div class="controls">{{ form.ano|bootstrap }}
+                                {% if form.ano.help_text %}
+                                    <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                        </div>
                         <div class="col-xs-2">
                             <div class="controls">{{ form.situacao|bootstrap }}
                                 {% if form.situacao.help_text %}

@@ -574,9 +574,12 @@ def ver_pregoes(request):
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
 
+        if form.cleaned_data.get('ano'):
+            pregoes = pregoes.filter(data_abertura__year=form.cleaned_data.get('ano'))
+
         if form.cleaned_data.get('situacao'):
             pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
-            
+
         if form.cleaned_data.get('secretaria'):
             pregoes = pregoes.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
@@ -5653,8 +5656,12 @@ def ver_relatorios_gerenciais(request):
         situacao = form.cleaned_data.get('situacao')
         visualizar = form.cleaned_data.get('visualizar')
         secretaria = form.cleaned_data.get('secretaria')
+        ano = form.cleaned_data.get('ano')
 
         total = 0
+        if ano:
+            pregoes = pregoes.filter(data_abertura__year=ano)
+
         if situacao:
             pregoes = pregoes.filter(situacao=situacao)
 
@@ -5674,9 +5681,10 @@ def ver_relatorios_gerenciais(request):
                 total_final += pregao.get_total_final()
                 total_economizado += pregao.get_total_economizado()
 
-            reducao = total_final / total_previsto
-            ajuste= 1-reducao
-            total_desconto = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+            if total_previsto:
+                reducao = total_final / total_previsto
+                ajuste= 1-reducao
+                total_desconto = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
         else:
             for pregao in pregoes:
                 total += pregao.get_valor_total()

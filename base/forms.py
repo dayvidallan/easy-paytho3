@@ -483,8 +483,25 @@ class BuscarSolicitacaoForm(forms.Form):
 class BuscarLicitacaoForm(forms.Form):
     info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(BuscarLicitacaoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
 
 class MaterialConsumoForm(forms.ModelForm):
     class Meta:
@@ -853,7 +870,25 @@ class LocalizarProcessoForm(forms.Form):
 
 class RelatoriosGerenciaisForm(forms.Form):
     relatorio = forms.ChoiceField(label=u'Tipo de Relatório', choices=((u'Relatório de Situação', u'Relatório de Situação'),(u'Relatório de Economia', u'Relatório de Economia'),), required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
     visualizar = forms.ChoiceField(label=u'Modo de Visualização', required=False, choices=((u'1', u'Na Tela'),(u'2', u'Gerar PDF'),),)
+
+
+    def __init__(self, *args, **kwargs):
+        super(RelatoriosGerenciaisForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES

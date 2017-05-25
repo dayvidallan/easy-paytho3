@@ -23,15 +23,50 @@
         <form action="." method="POST" class="form-horizontal">
             {% csrf_token %}
                 <div class="row-fluid">
-                    {% for field in form %}
-                        <div class="col-xs-2">
-                            <div class="controls">{{ field|bootstrap }}
-                                {% if field.help_text %}
-                                    <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                                {% endif %}
-                            </div>
-                         </div>
-                    {% endfor %}
+
+                    <div class="col-xs-2">
+                        <div class="controls">{{ form.relatorio|bootstrap }}
+                            {% if form.relatorio.help_text %}
+                                <p class="help-inline"><small>{{ form.relatorio.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                     </div>
+                    <div class="col-xs-1">
+                        <div class="controls">{{ form.ano|bootstrap }}
+                            {% if form.ano.help_text %}
+                                <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                     </div>
+                    <div class="col-xs-1">
+                        <div class="controls">{{ form.modalidade|bootstrap }}
+                            {% if form.modalidade.help_text %}
+                                <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                     </div>
+                    <div class="col-xs-1">
+                        <div class="controls">{{ form.situacao|bootstrap }}
+                            {% if form.situacao.help_text %}
+                                <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                     </div>
+                    <div class="col-xs-2">
+                        <div class="controls">{{  form.secretaria|bootstrap }}
+                            {% if form.secretaria.help_text %}
+                                <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                     </div>
+                    <div class="col-xs-1">
+                        <div class="controls">{{ form.visualizar|bootstrap }}
+                            {% if form.visualizar.help_text %}
+                                <p class="help-inline"><small>{{ form.visualizar.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                     </div>
+
 
                     <div class="col-xs-2">
                         <br>
@@ -44,7 +79,7 @@
     </fieldset>
 
     {% if pregoes.exists %}
-
+        <h3>{{ pregoes.count }} pregões encontrados</h3>
         {% if relatorio == 'Relatório de Situação' %}
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
@@ -90,17 +125,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% autopaginate pregoes 10 %}
+
                     {% paginate %}
                     {% for pregao in pregoes %}
                        <tr>
                            <td>{{ pregao.num_pregao }}</td>
                            <td>{{ pregao.solicitacao.num_memorando }}</td>
                            <td>{{ pregao.solicitacao.objeto }}</td>
-                           <td>{{ pregao.get_total_previsto|format_money  }}</td>
-                           <td>{{ pregao.get_total_final|format_money  }}</td>
-                           <td>{{ pregao.get_total_desconto }}</td>
-                           <td>{{ pregao.get_total_economizado|format_money  }}</td>
+                           {% with a=pregao.get_economia_alcancada %}
+                               <td>{{ a.0|format_money  }}</td>
+                               <td>{{ a.1|format_money  }}</td>
+                               <td>{{ a.2 }}</td>
+                               <td>{{ a.3|format_money  }}</td>
+                           {% endwith %}
                        </tr>
                     {% endfor %}
                     <tr>
