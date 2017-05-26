@@ -121,7 +121,7 @@ def index(request):
     if MovimentoSolicitacao.objects.filter(setor_destino=request.user.pessoafisica.setor, recebido_por__isnull=True).exists():
         tem_solicitacao = MovimentoSolicitacao.objects.filter(setor_destino=request.user.pessoafisica.setor, recebido_por__isnull=True)[0]
     tem_preencher_itens = list()
-    if SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False, setor_atual=F('setor_origem')).exists():
+    if SolicitacaoLicitacao.objects.filter(liberada_para_pedido=True, interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False, setor_atual=F('setor_origem')).exists():
         for item in SolicitacaoLicitacao.objects.filter(interessados=request.user.pessoafisica.setor.secretaria, prazo_resposta_interessados__gte=datetime.datetime.now().date(), itemsolicitacaolicitacao__isnull=False):
             if not ItemQuantidadeSecretaria.objects.filter(solicitacao=item, secretaria=request.user.pessoafisica.setor.secretaria).exists():
                 if not item in tem_preencher_itens:
@@ -756,10 +756,15 @@ def cadastrar_solicitacao(request):
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
-        if not form.cleaned_data['interessados']:
+        if not form.cleaned_data['interessados'] and not form.cleaned_data['todos_interessados']:
             o.prazo_resposta_interessados = None
         o.save()
-        if form.cleaned_data['interessados'] and form.cleaned_data['outros_interessados']:
+
+        if form.cleaned_data['todos_interessados']:
+            for item in Secretaria.objects.all():
+                o.interessados.add(item)
+
+        elif form.cleaned_data['outros_interessados']:
             form.save_m2m()
         messages.success(request, u'Solicitação cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
@@ -5723,3 +5728,17 @@ def ver_relatorios_gerenciais(request):
 
 
     return render(request, 'ver_relatorios_gerenciais.html', locals(), RequestContext(request))
+
+@login_required()
+def liberar_pedidos_solicitacao(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if solicitacao.liberada_para_pedido:
+        solicitacao.liberada_para_pedido = False
+        messages.success(request, u'Liberação encerrada com sucesso.')
+    else:
+        solicitacao.liberada_para_pedido = True
+        messages.success(request, u'Liberação realizada com sucesso.')
+    solicitacao.save()
+
+    return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  solicitacao.id)
+

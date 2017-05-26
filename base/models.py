@@ -238,6 +238,7 @@ class SolicitacaoLicitacao(models.Model):
     arquivo_parecer_minuta = models.FileField(u'Arquivo com o Parecer', null=True, blank=True, upload_to=u'upload/minutas/')
     prazo_aberto = models.NullBooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
     processo = models.ForeignKey(Processo, null=True)
+    liberada_para_pedido = models.BooleanField(u'Liberada para Pedido', default=False)
 
 
     def __unicode__(self):
@@ -246,6 +247,9 @@ class SolicitacaoLicitacao(models.Model):
     class Meta:
         verbose_name = u'Solicitação de Licitação'
         verbose_name_plural = u'Solicitações de Licitação'
+
+    def pode_receber_pedidos_secretarias(self):
+        return self.prazo_resposta_interessados >= datetime.date.today()
 
     def get_proximo_item(self, eh_lote=False):
         if not self.itemsolicitacaolicitacao_set.exists():

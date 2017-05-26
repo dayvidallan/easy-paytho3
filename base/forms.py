@@ -190,10 +190,11 @@ class SolicitacaoForm(forms.ModelForm):
     justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea(), required=True)
     outros_interessados = forms.BooleanField(label=u'Adicionar Outros Interessados', required=False)
     interessados = forms.ModelMultipleChoiceField(Secretaria.objects, label=u'Interessados', required=False, widget=autocomplete.ModelSelect2Multiple(url='secretaria-autocomplete'))
+    todos_interessados = forms.BooleanField(label=u'Selecionar Todos como Interessados', initial=False, required=False)
     prazo_resposta_interessados = forms.DateField(label=u'Prazo para retorno dos interessados', widget=AdminDateWidget(), required=False)
     class Meta:
         model = SolicitacaoLicitacao
-        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'outros_interessados', 'interessados', 'prazo_resposta_interessados']
+        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'outros_interessados', 'interessados', 'todos_interessados',  'prazo_resposta_interessados']
 
     class Media:
             js = ['/static/base/js/solicitacao.js']
@@ -206,6 +207,7 @@ class SolicitacaoForm(forms.ModelForm):
         if self.instance.tipo == SolicitacaoLicitacao.COMPRA:
             del self.fields['justificativa']
             del self.fields['tipo_aquisicao']
+            del self.fields['todos_interessados']
             del self.fields['outros_interessados']
             del self.fields['interessados']
             del self.fields['prazo_resposta_interessados']

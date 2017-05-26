@@ -11,7 +11,7 @@
 
 {% block content %}
 
-     <form action="." method="post" class="form-horizontal">
+     <form action="." method="post" class="form-horizontal" onsubmit="return confirm('Tem certeza que deseja continuar?');">
             {% csrf_token %}
              <div class="miolo">
                     <table class="table table-bordered table-condensed table-striped">
