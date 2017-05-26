@@ -14,7 +14,7 @@ from django.template import Context
 from django.template.loader import get_template
 from django.template import RequestContext
 from xhtml2pdf import pisa
-from django.db.models import Q, F
+from django.db.models import Q, F, Count
 from dal import autocomplete
 from django.contrib.auth.models import Group
 from templatetags.app_filters import format_money
@@ -223,6 +223,8 @@ def cadastra_proposta_pregao(request, pregao_id):
     edicao=False
     participante = None
     selecionou = False
+    total = ParticipantePregao.objects.filter(pregao=pregao).count()
+    informados = PropostaItemPregao.objects.filter(pregao=pregao).aggregate(total=Count('participante'))['total']
     if request.GET.get('participante'):
         selecionou = True
         participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
