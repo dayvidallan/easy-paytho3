@@ -85,9 +85,10 @@
                     <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
                     <a class="btn btn-info" href="/base/ver_pesquisas/{{ solicitacao.id }}/">Ver Pesquisas</a>
                     <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
+                    <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
                 {% elif not solicitacao.eh_dispensa or not solicitacao.tem_ordem_compra %}
                     <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
-                    <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
+
                 {% endif %}
 
              {% endif %}
@@ -218,16 +219,14 @@
 
                             <td>
                                 {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
-                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
+                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado and not solicitacao.prazo_aberto %}
                                         <a href="/base/editar_item/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
                                         <a href="/base/apagar_item/{{item.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                     {% endif %}
-                                    {% if solicitacao.interessados and item.tem_pedidos_outras_secretarias %}
-                                        <a href="/base/ver_pedidos_secretaria/{{item.id}}/" class="btn btn-default btn-sm">Pedidos das Secretarias</a>
-                                    {% endif %}
+                                    
                                 {% endif %}
                                 {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                                    {% if  not solicitacao.eh_dispensa %}
+                                    {% if  not solicitacao.eh_dispensa and solicitacao.prazo_aberto %}
                                         <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
                                     {% endif %}
                                     {% if item.arquivo_referencia_valor_medio %}
