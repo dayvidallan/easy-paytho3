@@ -3387,6 +3387,9 @@ def avaliar_pedidos(request, solicitacao_id):
     pode_avaliar = request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor
     pedidos = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao)
 
+    total = solicitacao.interessados.count()
+    informados = pedidos.distinct('secretaria').count()
+
     form = FiltrarSecretariaForm(request.POST or None, pedidos=pedidos)
     if request.GET.get('secretaria'):
         pedidos = pedidos.filter(secretaria=request.GET.get('secretaria'))

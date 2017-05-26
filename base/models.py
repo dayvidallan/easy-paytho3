@@ -533,6 +533,12 @@ class ItemSolicitacaoLicitacao(models.Model):
     def tem_pedidos_outras_secretarias(self):
         return ItemQuantidadeSecretaria.objects.filter(item=self).count() > 1
 
+    def get_pedido_secretaria(self):
+        usuario = tl.get_user()
+        if ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self).exists():
+            return ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self)[0].quantidade
+        return None
+
     def get_id_lote(self):
         return ItemLote.objects.filter(item=self)[0].lote.item
 

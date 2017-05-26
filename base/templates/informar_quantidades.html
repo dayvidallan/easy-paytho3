@@ -27,7 +27,7 @@
                                 <td>{{ item.item }}</td>
                                 <td>{{ item.material }}</td>
                                 <td>{{ item.unidade }}</td>
-                                <td><input name="quantidade"></td>
+                                <td><input name="quantidade" value="{{ item.get_pedido_secretaria }}"></td>
                                 <input name="id_item" type="hidden" value="{{ item.id }}">
                             </tr>
 
