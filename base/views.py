@@ -567,7 +567,7 @@ def ver_pregoes(request):
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
 
-    form = BuscarLicitacaoForm(request.POST or None)
+    form = BuscarLicitacaoForm(request.GET or None)
 
     if form.is_valid():
         if form.cleaned_data.get('info'):

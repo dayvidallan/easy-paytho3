@@ -23,7 +23,7 @@
     {% if form %}
         <fieldset>
             <legend>Buscar Licitação</legend>
-            <form action="." method="POST" class="form-horizontal">
+            <form action="." method="GET" class="form-horizontal">
                 {% csrf_token %}
                  <div class="row-fluid">
                      <div class="col-xs-3">
@@ -92,7 +92,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% autopaginate pregoes 10 %}
+                {% autopaginate pregoes 1 %}
                 {% paginate %}
                 {% for pregao in pregoes %}
                    <tr>

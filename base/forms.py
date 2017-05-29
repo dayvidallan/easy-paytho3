@@ -483,6 +483,7 @@ class BuscarSolicitacaoForm(forms.Form):
     info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
 
 class BuscarLicitacaoForm(forms.Form):
+    METHOD = u'GET'
     ano = forms.ChoiceField([],
                 required = False,
                 label    = u'Filtrar por Ano:',
