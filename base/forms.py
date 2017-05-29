@@ -66,7 +66,7 @@ class CadastraPrecoRodadaPregaoForm(forms.ModelForm):
 class PessoaFisicaForm(forms.ModelForm):
     METHOD = 'POST'
 
-    data_nascimento = forms.DateTimeField(widget=AdminDateWidget())
+    data_nascimento = forms.DateField(widget=AdminDateWidget())
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
       label                = u'Município',
@@ -78,7 +78,7 @@ class PessoaFisicaForm(forms.ModelForm):
 
     grupo = forms.ModelChoiceField(Group.objects, label=u'Grupo de Acesso', required=True)
     email = forms.EmailField(label=u'Email', required=True)
-    cpf = utils.CpfFormField(label=u'CPF', required=False)
+    cpf = utils.CpfFormField(label=u'CPF', required=True)
 
     class Meta:
         model = PessoaFisica
@@ -97,6 +97,8 @@ class PessoaFisicaForm(forms.ModelForm):
                 self.fields['estado'].initial = self.instance.municipio.estado
 
             self.fields['grupo'].initial = self.instance.user.groups.all()[0]
+
+
 
     def clean(self):
         if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf')).exists() and not self.edicao:
