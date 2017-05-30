@@ -249,7 +249,9 @@ class SolicitacaoLicitacao(models.Model):
         verbose_name_plural = u'Solicitações de Licitação'
 
     def pode_receber_pedidos_secretarias(self):
-        return self.prazo_resposta_interessados >= datetime.date.today()
+        if self.prazo_resposta_interessados:
+            return self.prazo_resposta_interessados >= datetime.date.today()
+        return False
 
     def get_proximo_item(self, eh_lote=False):
         if not self.itemsolicitacaolicitacao_set.exists():
