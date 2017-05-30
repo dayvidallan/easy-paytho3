@@ -1803,7 +1803,7 @@ class LogDownloadArquivo(models.Model):
 class HistoricoPregao(models.Model):
     pregao = models.ForeignKey(Pregao)
     data = models.DateTimeField(u'Data')
-    obs = models.CharField(u'Observação', max_length=2500, null=True, blank=True)
+    obs = models.CharField(u'Observação', max_length=10000, null=True, blank=True)
 
     class Meta:
         verbose_name = u'Histórico do Pregão'
