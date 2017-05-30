@@ -34,17 +34,17 @@
                 {% if perms.base.pode_cadastrar_solicitacao or perms.base.pode_cadastrar_pesquisa_mercadologica  %}
                     <tr>
                         <td>Modelo de Memorando</td>
-                        <td><a class="btn btn-info btn-sm" href="/memorando/{{solicitacao.id}}/">Ver Documento</a></td>
+                        <td><a class="btn btn-info btn-sm" href="/memorando/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
                     </tr>
 
                     <tr>
                         <td>Modelo de Termo de Referência</td>
-                        <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/">Ver Documento</a></td>
+                        <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
                     </tr>
                     {% if solicitacao.itemsolicitacaolicitacao_set.exists %}
                         <tr>
                             <td>Relação de Materiais da Solicitação</td>
-                            <td><a class="btn btn-info btn-sm" href="/lista_materiais/{{solicitacao.id}}/">Ver Documento</a></td>
+                            <td><a class="btn btn-info btn-sm" href="/lista_materiais/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
                         </tr>
                     {% endif %}
 
@@ -52,7 +52,7 @@
                         {% for item in solicitacao.get_pedidos_secretarias %}
                             <tr>
                                 <td>Relação de Materiais da Solicitação - Pedido {{ item.secretaria }}</td>
-                                <td><a class="btn btn-info btn-sm" href="/lista_materiais_por_secretaria/{{solicitacao.id}}/{{item.secretaria.id}}/">Ver Documento</a></td>
+                                <td><a class="btn btn-info btn-sm" href="/lista_materiais_por_secretaria/{{solicitacao.id}}/{{item.secretaria.id}}/" target="_blank">Ver Documento</a></td>
                             </tr>
                         {% endfor %}
 
@@ -62,7 +62,7 @@
                         {% for item in solicitacao.get_documentos_contrato %}
                                 <tr>
                                     <td>{{ item.nome }}</td>
-                                    <td><a class="btn btn-info btn-sm" href="/media/{{item.arquivo}}">Ver Documento</a></td>
+                                    <td><a class="btn btn-info btn-sm" href="/media/{{item.arquivo}}" target="_blank">Ver Documento</a></td>
                                 </tr>
                             {% endfor %}
                     {% endif %}
