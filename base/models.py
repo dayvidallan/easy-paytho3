@@ -293,7 +293,7 @@ class SolicitacaoLicitacao(models.Model):
         return ItemQuantidadeSecretaria.objects.filter(id__in=ids)
 
     def tem_pedidos_outras_secretarias(self):
-        return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).count() > 1
+        return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).distinct('secretaria').count() > 1
 
     def pode_enviar_para_compra(self):
         return self.situacao == SolicitacaoLicitacao.CADASTRADO and self.tem_item_cadastrado()

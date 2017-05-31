@@ -98,9 +98,6 @@ class ComissaoLicitacaoAdmin(NewModelAdmin):
         texto += u'<br><br><a class="btn btn-danger btn-sm" href="/base/remover_membro_comissao/%s/" class="btn-sm btn-danger">Remover Membro</a>' % obj.id
         return texto
 
-    def save_model(self, request, obj, form, change):
-        obj.secretaria = request.user.pessoafisica.setor.secretaria
-        obj.save()
 
     def get_queryset(self, request):
         qs = super(ComissaoLicitacaoAdmin, self).get_queryset(request)

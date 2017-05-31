@@ -700,15 +700,28 @@ def ver_solicitacoes(request):
     aba2 = u'in active'
     class_aba1 = u''
     class_aba2 = u'active'
-    form = BuscarSolicitacaoForm(request.POST or None)
+    form = BuscarSolicitacaoForm(request.GET or None)
 
     if form.is_valid():
         aba1 = u'in active'
         aba2 = u''
         class_aba1 = u'active'
         class_aba2 = u''
+        buscou = False
         if form.cleaned_data.get('info'):
-            outras = SolicitacaoLicitacao.objects.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')))
+            buscou = SolicitacaoLicitacao.objects.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')))
+        if form.cleaned_data.get('ano'):
+            if buscou:
+                buscou = buscou.filter(data_cadastro__year=form.cleaned_data.get('ano'))
+            else:
+                buscou = SolicitacaoLicitacao.objects.filter(data_cadastro__year=form.cleaned_data.get('ano'))
+        if form.cleaned_data.get('secretaria'):
+            if buscou:
+                buscou = buscou.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+            else:
+                buscou = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+        if buscou:
+            outras = buscou
     return render(request, 'ver_solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
@@ -3240,7 +3253,10 @@ def extrato_inicial(request, pregao_id):
 @login_required()
 def termo_adjudicacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -3369,11 +3385,22 @@ def gestao_contratos(request):
     if request.user.groups.filter(name=u'Gerente'):
         title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
         solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
-        atas_finalizadas = Pregao.objects.filter(eh_ata_registro_preco=True, solicitacao__in=solicitacoes.values_list('id', flat=True))
-        contratos_finalizados = Pregao.objects.filter(eh_ata_registro_preco=False, solicitacao__in=solicitacoes.values_list('id', flat=True))
+
         atas = AtaRegistroPreco.objects.all()
         contratos = Contrato.objects.all()
         pode_editar = True
+        form = GestaoContratoForm(request.GET or None)
+        if form.is_valid():
+            if form.cleaned_data.get('info'):
+                atas = atas.filter(numero__icontains=form.cleaned_data.get('info'))
+                contratos = contratos.filter(numero__icontains=form.cleaned_data.get('info'))
+            if form.cleaned_data.get('ano'):
+                atas = atas.filter(data_inicio__year=form.cleaned_data.get('ano'))
+                contratos = contratos.filter(data_inicio__year=form.cleaned_data.get('ano'))
+
+            if form.cleaned_data.get('secretaria'):
+                atas = atas.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+                contratos = contratos.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
     else:
         return HttpResponseRedirect(u'/')
@@ -4152,7 +4179,10 @@ def registrar_homologacao(request, pregao_id):
 @login_required()
 def termo_homologacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -4655,7 +4685,7 @@ def lista_materiais(request, solicitacao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
 
-    pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
+    pode_ver_preco = ItemPesquisaMercadologica.objects.filter(item__solicitacao=solicitacao).exists()
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False)
     total = 0
     if pode_ver_preco:
@@ -4695,7 +4725,7 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
 
-    pode_ver_preco = request.user.groups.filter(name=u'Compras').exists()
+    pode_ver_preco = ItemPesquisaMercadologica.objects.filter(item__solicitacao=solicitacao).exists()
     itens = ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao, secretaria=secretaria).order_by('item')
     total = 0
     if pode_ver_preco:

@@ -481,8 +481,53 @@ class AbrirProcessoForm(forms.ModelForm):
         super(AbrirProcessoForm, self).__init__(*args, **kwargs)
         self.fields['objeto'].initial = self.solicitacao.objeto
 
+
+class GestaoContratoForm(forms.Form):
+    METHOD = u'GET'
+    info = forms.CharField(label=u'Digite o número do contrato ou do ata', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(GestaoContratoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhuma solicitação encontrada'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
+
 class BuscarSolicitacaoForm(forms.Form):
+    METHOD = u'GET'
     info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(BuscarSolicitacaoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhuma solicitação encontrada'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
+
 
 class BuscarLicitacaoForm(forms.Form):
     METHOD = u'GET'
@@ -816,7 +861,7 @@ class RemoverMembroComissaoLicitacaoForm(forms.Form):
 class ComissaoLicitacaoForm(forms.ModelForm):
     class Meta:
         model = ComissaoLicitacao
-        fields = ('nome', )
+        fields = ('nome', 'secretaria')
 
 
 class AderirARPForm(forms.ModelForm):

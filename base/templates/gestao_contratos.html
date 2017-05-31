@@ -173,7 +173,43 @@
 
 
     <div>
+            {% if form %}
+                <fieldset>
+                    <legend>Buscar Solicitações</legend>
+                    <form action="." method="GET" class="form-horizontal">
+                        {% csrf_token %}
+                        <div class="row-fluid">
+                            <div class="col-xs-3">
+                                <div class="controls">{{ form.info|bootstrap }}
+                                    {% if form.info.help_text %}
+                                        <p class="help-inline"><small>{{ form.info.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
 
+                            <div class="col-xs-2 col-md-2">
+                                <div class="controls">{{ form.ano|bootstrap }}
+                                    {% if form.ano.help_text %}
+                                        <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-xs-2 col-md-2">
+                                <div class="controls">{{ form.secretaria|bootstrap }}
+                                    {% if form.secretaria.help_text %}
+                                        <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-xs-1 col-md-1">
+                                <br>
+                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                            </div>
+                        </div>
+                    </form>
+
+                </fieldset>
+            {% endif %}
         <ul class="nav nav-tabs">
 
             <li class="active">
