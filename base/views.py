@@ -3265,7 +3265,7 @@ def termo_adjudicacao(request, pregao_id):
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-
+    config_geral = get_config_geral()
 
     tabela = {}
 
@@ -3302,7 +3302,7 @@ def termo_adjudicacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
 
     template = get_template('termo_adjudicacao.html')
 
@@ -4191,6 +4191,7 @@ def termo_homologacao(request, pregao_id):
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    config_geral = get_config_geral()
 
 
     tabela = {}
@@ -4228,7 +4229,7 @@ def termo_homologacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados}
+    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
     if pregao.eh_pregao():
         template = get_template('termo_homologacao.html')
     else:
