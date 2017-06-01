@@ -181,11 +181,11 @@
         <div id="outras_secretarias" class="tab-pane {{aba1}}">
             {% if form %}
                 <fieldset>
-                    <legend>Buscar Solicitações</legend>
+                    <legend>Filtros</legend>
                     <form action="." method="GET" class="form-horizontal">
                         {% csrf_token %}
                         <div class="row-fluid">
-                            <div class="col-xs-3">
+                            <div class="col-xs-3 col-md-3">
                                 <div class="controls">{{ form.info|bootstrap }}
                                     {% if form.info.help_text %}
                                         <p class="help-inline"><small>{{ form.info.help_text }}</small></p>
