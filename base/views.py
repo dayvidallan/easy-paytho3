@@ -1925,7 +1925,10 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
 @login_required()
 def relatorio_resultado_final(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -1967,7 +1970,10 @@ def relatorio_resultado_final(request, pregao_id):
 @login_required()
 def relatorio_economia(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -2060,7 +2066,10 @@ def relatorio_economia(request, pregao_id):
 @login_required()
 def relatorio_resultado_final_por_vencedor(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -2123,7 +2132,10 @@ def relatorio_lista_participantes(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     participantes = ParticipantePregao.objects.filter(pregao=pregao)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -2153,7 +2165,10 @@ def relatorio_lista_visitantes(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     participantes = VisitantePregao.objects.filter(pregao=pregao)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -2176,10 +2191,15 @@ def relatorio_lista_visitantes(request, pregao_id):
 @login_required()
 def relatorio_classificacao_por_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     destino_arquivo = u'upload/resultados/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
@@ -2239,7 +2259,10 @@ def relatorio_ocorrencias(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     registros = HistoricoPregao.objects.filter(pregao=pregao)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -2263,7 +2286,10 @@ def relatorio_ocorrencias(request, pregao_id):
 @login_required()
 def relatorio_propostas_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -2320,7 +2346,10 @@ def relatorio_propostas_pregao(request, pregao_id):
 @login_required()
 def relatorio_lances_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -4183,6 +4212,7 @@ def termo_homologacao(request, pregao_id):
         configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    config_geral = get_config_geral()
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -4191,7 +4221,7 @@ def termo_homologacao(request, pregao_id):
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-    config_geral = get_config_geral()
+
 
 
     tabela = {}
@@ -4835,7 +4865,10 @@ def excluir_pesquisa(request, pesquisa_id):
 def relatorio_lista_download_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
