@@ -77,6 +77,8 @@ class Setor(models.Model):
 
 
 class ModalidadePregao(models.Model):
+    PREGAO_SRP = 10
+    CONCORRENCIA_SRP = 11
     nome = models.CharField(u'Nome', max_length=80)
 
     def __unicode__(self):
@@ -282,10 +284,14 @@ class SolicitacaoLicitacao(models.Model):
                 return False
         return True
 
-    def get_pedidos_secretarias(self):
+    def get_pedidos_secretarias(self, secretaria=None):
         ids= list()
         ids_secretaria = list()
-        for item in ItemQuantidadeSecretaria.objects.filter(solicitacao=self):
+        itens = ItemQuantidadeSecretaria.objects.filter(solicitacao=self)
+        if secretaria:
+            itens = itens.filter(secretaria=secretaria)
+
+        for item in itens:
             if item.secretaria.id not in ids_secretaria:
                 ids.append(item.id)
                 ids_secretaria.append(item.secretaria.id)
@@ -539,7 +545,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         usuario = tl.get_user()
         if ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self).exists():
             return ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self)[0].quantidade
-        return ''
+        return 0
 
     def get_id_lote(self):
         return ItemLote.objects.filter(item=self)[0].lote.item
@@ -963,6 +969,11 @@ class ItemLote(models.Model):
         verbose_name_plural = u'Itens dos Lotes'
 
 
+class OpcaoLCN(models.Model):
+    descricao = models.CharField(u'Descrição', max_length=5000)
+
+    def __unicode__(self):
+        return self.descricao
 
 def upload_path_termo_homologacao(instance, filename):
     return os.path.join('upload/homologacoes/%s/' % instance.id, filename)
@@ -1005,9 +1016,11 @@ class Pregao(models.Model):
     )
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
-    modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade')
-    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Tipo')
-    criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Julgamento')
+    modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade / Procedimento')
+    fundamento_legal = models.CharField(u'Fundamento Legal', max_length=5000, null=True)
+    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento')
+    criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação')
+    aplicacao_lcn_123_06 = models.ForeignKey(OpcaoLCN, verbose_name=u'MPE – Aplicação Da LCN 123/06 (Lei 123/06)', null=True)
     data_inicio = models.DateField(u'Data de Início da Retirada das Propostas', null=True)
     data_termino = models.DateField(u'Data de Término da Retirada das Propostas', null=True)
     data_abertura = models.DateField(u'Data de Abertura das Propostas', null=True)
@@ -1034,8 +1047,18 @@ class Pregao(models.Model):
         verbose_name = u'Pregão'
         verbose_name_plural = u'Pregões'
 
+
+
     def __unicode__(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
+
+    def save(self):
+
+        if self.modalidade.id in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.CONCORRENCIA_SRP]:
+            self.eh_ata_registro_preco = True
+        else:
+            self.eh_ata_registro_preco = False
+        super(Pregao, self).save()
 
     def get_local(self):
         return u'Dia %s às %s, no(a) %s' % (self.data_abertura.strftime('%d/%m/%y'), self.hora_abertura, self.local)

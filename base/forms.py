@@ -139,7 +139,11 @@ class PregaoForm(forms.ModelForm):
     num_processo = forms.CharField(label=u'Número do Processo', required=True)
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'tipo', 'criterio', 'objeto_tipo', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+
+    class Media:
+            js = ['/static/base/js/pregao.js']
+
 
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)

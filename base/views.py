@@ -1777,7 +1777,7 @@ def informar_quantidades(request, solicitacao_id):
     if request.POST:
         ItemQuantidadeSecretaria.objects.filter(secretaria = request.user.pessoafisica.setor.secretaria, solicitacao = solicitacao).delete()
         for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
-            if item:
+            if item and int(request.POST.getlist('quantidade')[idx-1]) > 0:
                 item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=solicitacao, id=request.POST.getlist('id_item')[idx-1])
                 novo_preco = ItemQuantidadeSecretaria()
                 novo_preco.solicitacao = solicitacao
@@ -4399,6 +4399,11 @@ def lista_documentos(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title = u'Lista de Documentos'
     documentos = DocumentoSolicitacao.objects.filter(solicitacao=solicitacao)
+    minha_secretaria = request.user.pessoafisica.setor.secretaria
+    ve_tudo = minha_secretaria == solicitacao.setor_origem.secretaria
+    listas = None
+    if not ve_tudo:
+        listas = solicitacao.get_pedidos_secretarias(minha_secretaria)
 
     return render(request, 'lista_documentos.html', locals(), RequestContext(request))
 
@@ -4632,7 +4637,7 @@ def editar_pregao(request, pregao_id):
             solicitacao.processo = novo_processo
             solicitacao.save()
         messages.success(request, u'Licitação editada com sucesso.')
-        return HttpResponseRedirect(u'/base/ver_pregoes/')
+        return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
 
     return render(request, 'editar_pregao.html', locals(), RequestContext(request))
 
