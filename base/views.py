@@ -707,7 +707,7 @@ def ver_solicitacoes(request):
         aba2 = u''
         class_aba1 = u'active'
         class_aba2 = u''
-
+        outras = SolicitacaoLicitacao.objects.all()
         if form.cleaned_data.get('info'):
             outras = outras.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')))
         if form.cleaned_data.get('ano'):
