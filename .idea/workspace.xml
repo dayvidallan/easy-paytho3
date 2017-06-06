@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51aad98f-dbd2-4dc3-a5d0-a437d3a264d9" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/models.py" afterPath="$PROJECT_DIR$/base/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html" afterPath="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html" afterPath="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/informar_valor_final_itens_lote.html" afterPath="$PROJECT_DIR$/base/templates/informar_valor_final_itens_lote.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../suap/ae/permissions.xml" afterPath="$PROJECT_DIR$/../suap/ae/permissions.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../suap/ae/views.py" afterPath="$PROJECT_DIR$/../suap/ae/views.py" />
     </list>
     <ignored path="licita.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,11 +24,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="permissions.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../suap/ae/permissions.xml">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="860">
-              <caret line="622" column="20" lean-forward="false" selection-start-line="622" selection-start-column="20" selection-end-line="622" selection-end-column="20" />
+            <state relative-caret-position="234">
+              <caret line="4660" column="48" lean-forward="true" selection-start-line="4660" selection-start-column="48" selection-end-line="4660" selection-end-column="48" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/base/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="349">
+              <caret line="2131" column="12" lean-forward="false" selection-start-line="2131" selection-start-column="12" selection-end-line="2131" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -40,17 +48,7 @@
         <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="195">
-              <caret line="46" column="168" lean-forward="false" selection-start-line="46" selection-start-column="168" selection-end-line="46" selection-end-column="168" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="informar_quantidades_do_pedido.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="23" column="127" lean-forward="false" selection-start-line="23" selection-start-column="127" selection-end-line="23" selection-end-column="127" />
+              <caret line="46" column="170" lean-forward="false" selection-start-line="46" selection-start-column="170" selection-end-line="46" selection-end-column="170" />
               <folding />
             </state>
           </provider>
@@ -66,21 +64,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="informar_valor_final_item_lote.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/informar_valor_final_item_lote.html">
+      <file leaf-file-name="informar_quantidades_do_pedido.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="informar_valor_final_itens_lote.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/base/templates/informar_valor_final_itens_lote.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" column="126" lean-forward="false" selection-start-line="14" selection-start-column="126" selection-end-line="14" selection-end-column="126" />
+            <state relative-caret-position="345">
+              <caret line="27" column="47" lean-forward="true" selection-start-line="27" selection-start-column="47" selection-end-line="27" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -90,37 +78,7 @@
         <entry file="file://$PROJECT_DIR$/base/templates/preencher_itens_pesquisa_mercadologica.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="240">
-              <caret line="16" column="122" lean-forward="true" selection-start-line="16" selection-start-column="59" selection-end-line="16" selection-end-column="122" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="menu.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../suap/ae/menu.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" column="39" lean-forward="false" selection-start-line="25" selection-start-column="16" selection-end-line="25" selection-end-column="39" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../suap/ae/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="339">
-              <caret line="4547" column="91" lean-forward="false" selection-start-line="4547" selection-start-column="91" selection-end-line="4547" selection-end-column="91" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="admin.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../suap/ae/admin.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="1147" column="6" lean-forward="false" selection-start-line="1147" selection-start-column="6" selection-end-line="1147" selection-end-column="6" />
+              <caret line="16" column="124" lean-forward="true" selection-start-line="16" selection-start-column="59" selection-end-line="16" selection-end-column="124" />
               <folding />
             </state>
           </provider>
@@ -130,11 +88,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>fechar</find>
-      <find>class moda</find>
-      <find>django-form</find>
-      <find>django-cris</find>
-      <find>cris</find>
       <find>class PregaoForm</find>
       <find>class preg</find>
       <find>class preao</find>
@@ -152,14 +105,19 @@
       <find>change_programa</find>
       <find>&lt;name&gt;ofertaalimentacao&lt;/name&gt;</find>
       <find>change_ofertaalimentacao</find>
-      <find>pode_gerenciar_ofertaalimentacao_do_campus</find>
       <find>Assistente social de câmpus;</find>
       <find>Assistente social de câmpus</find>
       <find>aalimen</find>
-      <find>OfertaAlimentacaoForm</find>
       <find>add_agendamentorefeicao</find>
       <find>add_historicosuspensoesalimentacao</find>
       <find>add_horario</find>
+      <find>OfertaAlimentacaoForm</find>
+      <find>pode_gerenciar_ofertaalimentacao_todos</find>
+      <find>pode_gerenciar_ofertaalimentacao_do_campus</find>
+      <find>pode_revogar_participacao</find>
+      <find>informar_quantidades_do_pedido_contrato</find>
+      <find>def informar_quantidades_do_pedido_contrato</find>
+      <find>print</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/../suap/saude/templates</dir>
@@ -213,13 +171,13 @@
         <option value="$PROJECT_DIR$/../suap/edu/migrations/0186_auto_20170530_1349.py" />
         <option value="$PROJECT_DIR$/../suap/edu/migrations/0184_auto_20170523_1131.py" />
         <option value="$PROJECT_DIR$/../suap/saude/models.py" />
-        <option value="$PROJECT_DIR$/base/models.py" />
-        <option value="$PROJECT_DIR$/../suap/ae/admin.py" />
-        <option value="$PROJECT_DIR$/../suap/ae/views.py" />
-        <option value="$PROJECT_DIR$/../suap/ae/permissions.xml" />
-        <option value="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html" />
-        <option value="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html" />
         <option value="$PROJECT_DIR$/base/templates/informar_valor_final_itens_lote.html" />
+        <option value="$PROJECT_DIR$/../suap/ae/admin.py" />
+        <option value="$PROJECT_DIR$/../suap/ae/permissions.xml" />
+        <option value="$PROJECT_DIR$/../suap/ae/views.py" />
+        <option value="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html" />
+        <option value="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html" />
+        <option value="$PROJECT_DIR$/base/models.py" />
       </list>
     </option>
   </component>
@@ -270,24 +228,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -509,27 +449,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../suap/saude/static/saude/js/form_hide.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="198" column="54" lean-forward="true" selection-start-line="198" selection-start-column="54" selection-end-line="198" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/lista_documentos.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="59" column="49" lean-forward="false" selection-start-line="59" selection-start-column="49" selection-end-line="59" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../suap/estagios/migrations/0029_auto_20170526_1924.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../suap/saude/menu.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
@@ -705,14 +624,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="3434" column="4" lean-forward="false" selection-start-line="3434" selection-start-column="4" selection-end-line="3434" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/base/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="554">
@@ -801,14 +712,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="450" column="91" lean-forward="false" selection-start-line="450" selection-start-column="91" selection-end-line="450" selection-end-column="91" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../suap/saude/templates/prontuarios.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="359">
@@ -825,74 +728,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../suap/ae/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="1321" column="27" lean-forward="false" selection-start-line="1321" selection-start-column="6" selection-end-line="1321" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../suap/ae/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="1147" column="6" lean-forward="false" selection-start-line="1147" selection-start-column="6" selection-end-line="1147" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../suap/ae/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="4547" column="91" lean-forward="false" selection-start-line="4547" selection-start-column="91" selection-end-line="4547" selection-end-column="91" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../suap/ae/menu.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
           <caret line="25" column="39" lean-forward="false" selection-start-line="25" selection-start-column="16" selection-end-line="25" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../suap/ae/permissions.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="860">
-          <caret line="622" column="20" lean-forward="false" selection-start-line="622" selection-start-column="20" selection-end-line="622" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/preencher_itens_pesquisa_mercadologica.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="122" lean-forward="true" selection-start-line="16" selection-start-column="59" selection-end-line="16" selection-end-column="122" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="46" column="168" lean-forward="false" selection-start-line="46" selection-start-column="168" selection-end-line="46" selection-end-column="168" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="127" lean-forward="false" selection-start-line="23" selection-start-column="127" selection-end-line="23" selection-end-column="127" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -909,6 +748,110 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="14" column="126" lean-forward="false" selection-start-line="14" selection-start-column="126" selection-end-line="14" selection-end-column="126" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/pedido_outro_interessado.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/novo_pedido_compra.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../suap/ae/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="863" column="20" lean-forward="true" selection-start-line="863" selection-start-column="20" selection-end-line="863" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../suap/ae/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="471">
+          <caret line="1332" column="73" lean-forward="false" selection-start-line="1332" selection-start-column="31" selection-end-line="1332" selection-end-column="73" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../suap/ae/permissions.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="521">
+          <caret line="453" column="57" lean-forward="false" selection-start-line="453" selection-start-column="32" selection-end-line="453" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../suap/ae/templates/liberar_participacao_alimentacao.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="30" column="76" lean-forward="false" selection-start-line="30" selection-start-column="51" selection-end-line="30" selection-end-column="76" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../suap/ae/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="226" column="4" lean-forward="false" selection-start-line="226" selection-start-column="4" selection-end-line="226" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/preencher_itens_pesquisa_mercadologica.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="124" lean-forward="true" selection-start-line="16" selection-start-column="59" selection-end-line="16" selection-end-column="124" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="46" column="170" lean-forward="false" selection-start-line="46" selection-start-column="170" selection-end-line="46" selection-end-column="170" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="27" column="47" lean-forward="true" selection-start-line="27" selection-start-column="47" selection-end-line="27" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="4660" column="48" lean-forward="true" selection-start-line="4660" selection-start-column="48" selection-end-line="4660" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="349">
+          <caret line="2131" column="12" lean-forward="false" selection-start-line="2131" selection-start-column="12" selection-end-line="2131" selection-end-column="12" />
           <folding />
         </state>
       </provider>

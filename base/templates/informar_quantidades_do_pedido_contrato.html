@@ -44,7 +44,7 @@
 
             {% if solicitacao.eh_lote %}
                 {% for lote in resultados %}
-                    <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');">
+                    <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
                         {% csrf_token %}
                         <input type="hidden" id="fornecedor" name="fornecedor" value="{{fornecedor.id}}">
                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
