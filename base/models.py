@@ -85,6 +85,7 @@ class ModalidadePregao(models.Model):
         return self.nome
 
     class Meta:
+        ordering = ['nome']
         verbose_name = u'Modalidade de Pregão'
         verbose_name_plural = u'Modalidades de Pregão'
 
@@ -1041,6 +1042,11 @@ class Pregao(models.Model):
     data_retorno = models.DateField(u'Data do Retorno', null=True)
     sine_die = models.NullBooleanField(u'Sine Die', null=True)
     objeto_tipo = models.CharField(u'Objeto - Tipo', choices=OBJETO_TIPO_CHOICES, max_length=200, default=COMPRA_MATERIAL_CONSUMO)
+    valor_total = models.DecimalField(u'Valor Total Orçado', decimal_places=2, max_digits=12, null=True)
+    recurso_proprio = models.DecimalField(u'Recurso Próprio', decimal_places=2, max_digits=12, null=True)
+    recurso_federal = models.DecimalField(u'Recurso Transferido (Federal)', decimal_places=2, max_digits=12, null=True)
+    recurso_estadual = models.DecimalField(u'Recurso Transferido (Estadual)', decimal_places=2, max_digits=12, null=True)
+    recurso_municipal = models.DecimalField(u'Recurso Transferido (Municipal)', decimal_places=2, max_digits=12, null=True)
 
 
     class Meta:

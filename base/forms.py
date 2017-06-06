@@ -137,9 +137,21 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
 
 class PregaoForm(forms.ModelForm):
     num_processo = forms.CharField(label=u'Número do Processo', required=True)
+    fieldsets = (
+        (u'Dados Gerais', {
+            'fields': ('solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo')
+        }),
+        (u'Valores da Licitação', {
+            'fields': ('valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', )
+        }),
+        (u'Cronograma', {
+            'fields': ('data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel')
+        }),
+    )
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+
 
     class Media:
             js = ['/static/base/js/pregao.js']
@@ -148,6 +160,8 @@ class PregaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PregaoForm, self).__init__(*args, **kwargs)
+        self.fields['aplicacao_lcn_123_06'].label = u'MPE – Aplicação Da LCN 123/06'
+        self.fields['aplicacao_lcn_123_06'].help_text = u'<a href="http://www.planalto.gov.br/ccivil_03/leis/LCP/Lcp123.htm" target="_blank">De acordo com a Lei 123/06</a>'
         if not self.instance.id:
             self.fields['solicitacao'] = forms.ModelChoiceField(label=u'Solicitação', queryset=SolicitacaoLicitacao.objects.filter(id=self.solicitacao.id), initial=0)
             self.fields['solicitacao'].widget.attrs = {'readonly': 'True'}

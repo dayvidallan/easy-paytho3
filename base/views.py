@@ -695,7 +695,7 @@ def ver_solicitacoes(request):
     setor = request.user.pessoafisica.setor
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
     solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao__in=[SolicitacaoLicitacao.RECEBIDO, SolicitacaoLicitacao.EM_LICITACAO])).order_by('-data_cadastro')
-    outras = SolicitacaoLicitacao.objects.exclude(id__in=solicitacoes.values_list('id', flat=True)).filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
+    outras = SolicitacaoLicitacao.objects.filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
     aba1 = u''
     aba2 = u'in active'
     class_aba1 = u''
@@ -707,21 +707,15 @@ def ver_solicitacoes(request):
         aba2 = u''
         class_aba1 = u'active'
         class_aba2 = u''
-        buscou = False
+
         if form.cleaned_data.get('info'):
-            buscou = SolicitacaoLicitacao.objects.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')))
+            outras = outras.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')))
         if form.cleaned_data.get('ano'):
-            if buscou:
-                buscou = buscou.filter(data_cadastro__year=form.cleaned_data.get('ano'))
-            else:
-                buscou = SolicitacaoLicitacao.objects.filter(data_cadastro__year=form.cleaned_data.get('ano'))
+           outras = outras.filter(data_cadastro__year=form.cleaned_data.get('ano'))
+
         if form.cleaned_data.get('secretaria'):
-            if buscou:
-                buscou = buscou.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
-            else:
-                buscou = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
-        if buscou:
-            outras = buscou
+            outras = outras.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
     return render(request, 'ver_solicitacoes.html', locals(), RequestContext(request))
 
 @login_required()
