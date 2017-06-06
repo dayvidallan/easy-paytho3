@@ -137,6 +137,7 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
 
 class PregaoForm(forms.ModelForm):
     num_processo = forms.CharField(label=u'Número do Processo', required=True)
+
     fieldsets = (
         (u'Dados Gerais', {
             'fields': ('solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo')
@@ -162,7 +163,7 @@ class PregaoForm(forms.ModelForm):
         super(PregaoForm, self).__init__(*args, **kwargs)
         self.fields['aplicacao_lcn_123_06'].label = u'MPE – Aplicação Da LCN 123/06'
         self.fields['aplicacao_lcn_123_06'].help_text = u'<a href="http://www.planalto.gov.br/ccivil_03/leis/LCP/Lcp123.htm" target="_blank">De acordo com a Lei 123/06</a>'
-        self.initial['valor_total'] = Decimal(self.solicitacao.get_valor_da_solicitacao())
+        self.initial['valor_total'] = format_money(self.solicitacao.get_valor_da_solicitacao())
         self.fields['valor_total'].widget.attrs = {'readonly': 'True'}
         if not self.instance.id:
             self.fields['solicitacao'] = forms.ModelChoiceField(label=u'Solicitação', queryset=SolicitacaoLicitacao.objects.filter(id=self.solicitacao.id), initial=0)
