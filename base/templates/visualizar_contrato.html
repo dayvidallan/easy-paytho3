@@ -266,8 +266,8 @@
                                             <th>Material</th>
                                             <th>Marca</th>
                                             <th>Unidade</th>
-                                            <th>Empresa</th>
-                                            <th>Valor</th>
+                                            <th>Valor Unitário</th>
+                                            <th>Valor Total</th>
                                             <th>Quantidade Inicial</th>
                                             <th>Quantidade Disponível</th>
 
@@ -287,12 +287,8 @@
                                                 {% endif %}
                                                 <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                 <td>{{ opcao.unidade|default_if_none:"-" }}</td>
-                                                {% if opcao.participante %}
-                                                    <td>{{ opcao.participante }}</td>
-                                                {% else %}
-                                                    <td>{{ opcao.fornecedor }}</td>
-                                                {% endif %}
                                                 <td>{{ opcao.valor|format_money }}</td>
+                                                <td>{{ opcao.get_valor_total|format_money }}</td>
                                                 <td>{{ opcao.quantidade }}</td>
                                                 <td>{{ opcao.get_quantidade_disponivel }}</td>
 

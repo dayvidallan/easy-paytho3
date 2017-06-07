@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51aad98f-dbd2-4dc3-a5d0-a437d3a264d9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/gestao_contratos.html" afterPath="$PROJECT_DIR$/base/templates/gestao_contratos.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/models.py" afterPath="$PROJECT_DIR$/base/models.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/gestao_pedidos.html" afterPath="$PROJECT_DIR$/base/templates/gestao_pedidos.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/pregao.html" afterPath="$PROJECT_DIR$/base/templates/pregao.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/ver_pregoes.html" afterPath="$PROJECT_DIR$/base/templates/ver_pregoes.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/visualizar_contrato.html" afterPath="$PROJECT_DIR$/base/templates/visualizar_contrato.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/views.py" afterPath="$PROJECT_DIR$/base/views.py" />
     </list>
     <ignored path="licita.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,28 +30,38 @@
       <file leaf-file-name="visualizar_contrato.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/templates/visualizar_contrato.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="445">
-              <caret line="197" column="16" lean-forward="true" selection-start-line="197" selection-start-column="16" selection-end-line="197" selection-end-column="16" />
+            <state relative-caret-position="617">
+              <caret line="290" column="76" lean-forward="false" selection-start-line="290" selection-start-column="61" selection-end-line="290" selection-end-column="76" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gestao_contratos.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/base/templates/gestao_contratos.html">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="317">
-              <caret line="251" column="0" lean-forward="false" selection-start-line="251" selection-start-column="0" selection-end-line="251" selection-end-column="0" />
+            <state relative-caret-position="654">
+              <caret line="2145" column="43" lean-forward="false" selection-start-line="2145" selection-start-column="43" selection-end-line="2145" selection-end-column="43" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/views.py">
+      <file leaf-file-name="gestao_pedidos.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/templates/gestao_pedidos.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="571">
-              <caret line="1441" column="32" lean-forward="false" selection-start-line="1441" selection-start-column="32" selection-end-line="1441" selection-end-column="32" />
+            <state relative-caret-position="233">
+              <caret line="214" column="72" lean-forward="false" selection-start-line="214" selection-start-column="72" selection-end-line="214" selection-end-column="72" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ver_pregoes.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/base/templates/ver_pregoes.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="521">
+              <caret line="110" column="50" lean-forward="false" selection-start-line="110" selection-start-column="50" selection-end-line="110" selection-end-column="50" />
               <folding />
             </state>
           </provider>
@@ -56,27 +71,17 @@
         <entry file="file://$PROJECT_DIR$/base/templates/pregao.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="467">
-              <caret line="189" column="86" lean-forward="true" selection-start-line="189" selection-start-column="8" selection-end-line="189" selection-end-column="86" />
+              <caret line="189" column="75" lean-forward="false" selection-start-line="189" selection-start-column="75" selection-end-line="189" selection-end-column="75" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ver_pregoes.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/ver_pregoes.html">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="561">
-              <caret line="108" column="114" lean-forward="false" selection-start-line="108" selection-start-column="73" selection-end-line="108" selection-end-column="114" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="294">
-              <caret line="2101" column="12" lean-forward="false" selection-start-line="2101" selection-start-column="0" selection-end-line="2101" selection-end-column="12" />
+            <state relative-caret-position="346">
+              <caret line="4280" column="40" lean-forward="false" selection-start-line="4280" selection-start-column="40" selection-end-line="4280" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -86,8 +91,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>criar_cont</find>
-      <find>class solic</find>
       <find>class pregao</find>
       <find>class pre</find>
       <find>atendimento</find>
@@ -116,6 +119,8 @@
       <find>criar contra</find>
       <find>get_quantidade_disponivel</find>
       <find>class itemco</find>
+      <find>prontuarios_abertos</find>
+      <find>class item</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/../suap/saude/templates</dir>
@@ -135,7 +140,6 @@
         <option value="$PROJECT_DIR$/base/middleware/threadlocals.py" />
         <option value="$PROJECT_DIR$/base/urls.py" />
         <option value="$PROJECT_DIR$/base/templates/ver_solicitacoes.html" />
-        <option value="$PROJECT_DIR$/base/templates/gestao_pedidos.html" />
         <option value="$PROJECT_DIR$/base/templates/resultado_classificacao.html" />
         <option value="$PROJECT_DIR$/base/management/commands/sync.py" />
         <option value="$PROJECT_DIR$/base/management/commands/sync_permissions.py" />
@@ -171,13 +175,15 @@
         <option value="$PROJECT_DIR$/../suap/ae/views.py" />
         <option value="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido_contrato.html" />
         <option value="$PROJECT_DIR$/base/templates/informar_quantidades_do_pedido.html" />
-        <option value="$PROJECT_DIR$/base/models.py" />
         <option value="$PROJECT_DIR$/base/forms.py" />
+        <option value="$PROJECT_DIR$/base/templates/gestao_contratos.html" />
         <option value="$PROJECT_DIR$/../suap/saude/views.py" />
-        <option value="$PROJECT_DIR$/base/templates/pregao.html" />
         <option value="$PROJECT_DIR$/base/views.py" />
         <option value="$PROJECT_DIR$/base/templates/visualizar_contrato.html" />
-        <option value="$PROJECT_DIR$/base/templates/gestao_contratos.html" />
+        <option value="$PROJECT_DIR$/base/models.py" />
+        <option value="$PROJECT_DIR$/base/templates/gestao_pedidos.html" />
+        <option value="$PROJECT_DIR$/base/templates/pregao.html" />
+        <option value="$PROJECT_DIR$/base/templates/ver_pregoes.html" />
       </list>
     </option>
   </component>
@@ -485,13 +491,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../suap/pesquisa/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="626" column="6" lean-forward="false" selection-start-line="626" selection-start-column="6" selection-end-line="626" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../suap/pesquisa/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="261">
@@ -616,6 +615,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
           <caret line="623" column="0" lean-forward="false" selection-start-line="623" selection-start-column="0" selection-end-line="623" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -623,13 +623,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../suap/saude/templates/prontuarios.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="170" column="30" lean-forward="true" selection-start-line="170" selection-start-column="30" selection-end-line="170" selection-end-column="30" />
         </state>
       </provider>
     </entry>
@@ -762,13 +755,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../suap/saude/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="706">
-          <caret line="1866" column="28" lean-forward="false" selection-start-line="1866" selection-start-column="28" selection-end-line="1866" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/base/templates/itens_solicitacao.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1167">
@@ -800,50 +786,74 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/pregao.html">
+    <entry file="file://$PROJECT_DIR$/base/templates/gestao_contratos.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="467">
-          <caret line="189" column="86" lean-forward="true" selection-start-line="189" selection-start-column="8" selection-end-line="189" selection-end-column="86" />
+        <state relative-caret-position="317">
+          <caret line="251" column="0" lean-forward="false" selection-start-line="251" selection-start-column="0" selection-end-line="251" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/ver_pregoes.html">
+    <entry file="file://$PROJECT_DIR$/../suap/saude/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="108" column="114" lean-forward="false" selection-start-line="108" selection-start-column="73" selection-end-line="108" selection-end-column="114" />
+        <state relative-caret-position="474">
+          <caret line="2066" column="22" lean-forward="false" selection-start-line="2066" selection-start-column="22" selection-end-line="2066" selection-end-column="22" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/models.py">
+    <entry file="file://$PROJECT_DIR$/../suap/saude/templates/prontuarios.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="2101" column="12" lean-forward="false" selection-start-line="2101" selection-start-column="0" selection-end-line="2101" selection-end-column="12" />
+        <state relative-caret-position="1304">
+          <caret line="178" column="20" lean-forward="true" selection-start-line="178" selection-start-column="20" selection-end-line="178" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/base/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="571">
-          <caret line="1441" column="32" lean-forward="false" selection-start-line="1441" selection-start-column="32" selection-end-line="1441" selection-end-column="32" />
+        <state relative-caret-position="346">
+          <caret line="4280" column="40" lean-forward="false" selection-start-line="4280" selection-start-column="40" selection-end-line="4280" selection-end-column="40" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/base/templates/visualizar_contrato.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
-          <caret line="197" column="16" lean-forward="true" selection-start-line="197" selection-start-column="16" selection-end-line="197" selection-end-column="16" />
+        <state relative-caret-position="617">
+          <caret line="290" column="76" lean-forward="false" selection-start-line="290" selection-start-column="61" selection-end-line="290" selection-end-column="76" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/gestao_contratos.html">
+    <entry file="file://$PROJECT_DIR$/base/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="251" column="0" lean-forward="false" selection-start-line="251" selection-start-column="0" selection-end-line="251" selection-end-column="0" />
+        <state relative-caret-position="654">
+          <caret line="2145" column="43" lean-forward="false" selection-start-line="2145" selection-start-column="43" selection-end-line="2145" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/gestao_pedidos.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="233">
+          <caret line="214" column="72" lean-forward="false" selection-start-line="214" selection-start-column="72" selection-end-line="214" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/pregao.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="467">
+          <caret line="189" column="75" lean-forward="false" selection-start-line="189" selection-start-column="75" selection-end-line="189" selection-end-column="75" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/ver_pregoes.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="521">
+          <caret line="110" column="50" lean-forward="false" selection-start-line="110" selection-start-column="50" selection-end-line="110" selection-end-column="50" />
           <folding />
         </state>
       </provider>

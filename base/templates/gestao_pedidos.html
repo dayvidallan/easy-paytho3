@@ -212,12 +212,12 @@
                                                             <th align="right"><a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a></th>
                                                         </tr>
                                                         <tr>
-                                                            <th>Item</th>
-                                                            <th>Material</th>
-                                                            <th>Marca</th>
-                                                            <th>Empresa</th>
-                                                            <th>Valor</th>
-                                                            <th>Quantidade Disponível</th>
+                                                            <th  width="5%">Item</th>
+                                                            <th width="45%">Material</th>
+                                                            <th width="10%">Marca</th>
+                                                            <th width="20%">Empresa</th>
+                                                            <th width="5%">Valor</th>
+                                                            <th width="5%">Quantidade Disponível</th>
 
 
                                                         </tr>
@@ -229,7 +229,7 @@
                                                                 <td>{{ item.material }}</td>
                                                                 <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
                                                                 <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
-                                                                <td>{{ item.get_valor_item_lote }}</td>
+                                                                <td>{{ item.get_valor_item_lote|format_money }}</td>
                                                                 <td>{{ item.get_item_tipo_contrato.get_quantidade_disponivel }}</td>
 
 

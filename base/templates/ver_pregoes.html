@@ -103,11 +103,12 @@
                        <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
                        <td>{{ pregao.responsavel}}</td>
                        <td>
-                           <ul class="action-bar">
+
                                {% if perms.base.pode_cadastrar_pregao %}
-                                   <li><a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a></li>
-                                   <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li>
+                                   <a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a>
+                                   <!-- <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li> -->
                                {% endif %}
+                           <ul class="action-bar">
                                {% if eh_ordenador_despesa and pregao.tem_resultado %}
                                     {% if pregao.eh_pregao and pregao.data_adjudicacao or pregao.pode_homologar %}
                                         <li><a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a></li>

@@ -2085,6 +2085,11 @@ class Contrato(models.Model):
     def get_arquivos_publicos(self):
         return AnexoContrato.objects.filter(contrato=self, publico=True)
 
+    def get_fornecedor(self):
+        if ItemContrato.objects.filter(contrato=self)[0].participante:
+            return ItemContrato.objects.filter(contrato=self)[0].participante
+        return ItemContrato.objects.filter(contrato=self)[0].fornecedor
+
 
 
 class Aditivo(models.Model):
@@ -2136,6 +2141,9 @@ class ItemContrato(models.Model):
             return total
 
         return 0
+
+    def get_valor_total(self):
+        return self.quantidade * self.valor
 
 
 class PedidoContrato(models.Model):

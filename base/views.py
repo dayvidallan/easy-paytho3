@@ -4278,7 +4278,7 @@ def termo_homologacao(request, pregao_id):
 @login_required()
 def visualizar_contrato(request, solicitacao_id):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
-    title = u'Contrato %s' % contrato.numero
+    title = u'Contrato: %s - Fornecedor: %s' % (contrato.numero, contrato.get_fornecedor())
     pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
     pode_gerenciar = request.user.groups.filter(name='Gerente')
 

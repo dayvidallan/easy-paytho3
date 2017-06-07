@@ -187,7 +187,7 @@
 
     <br>
      <div class="pull-right">
-        <a class="btn btn-info" href="/base/editar_pregao/{{ pregao.id} }/">Editar</a>
+        <a class="btn btn-default" href="/base/editar_pregao/{{ pregao.id }}/">Editar</a>
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
             <a class="btn btn-info" href="/base/registrar_ocorrencia_pregao/{{ pregao.pk }}/" target="_blank">Registrar Ocorrência</a>
             {% if pregao.eh_pregao %}
