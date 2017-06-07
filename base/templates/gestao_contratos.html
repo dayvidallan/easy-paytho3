@@ -235,7 +235,6 @@
                         <th>Objeto</th>
                         <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
-                        <th>Caráter Continuado</th>
                         <th>Valor</th>
                         <th>Situação</th>
                         <th>Opções</th>
@@ -250,7 +249,6 @@
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
-                            <td>{{ item.get_carater_continuado }}</td>
                             <td>R$ {{ item.valor|format_money }}</td>
                             <td>{{ item.get_situacao }}</td>
                             <td>
