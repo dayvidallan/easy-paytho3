@@ -54,13 +54,17 @@ ul{
                     <td align="left"><b>{{ configuracao.nome }}</b></td>
 
                 </tr>
-                {% if ordem.solicitacao.get_pregao %}
-                    <tr>
-                        <td align="left" width="25%">Pregão</td>
-                        <td align="left"><b>{{ ordem.solicitacao.get_pregao }}</b></td>
 
-                    </tr>
-                {% endif %}
+                <tr>
+                    <td align="left" width="25%">Pregão</td>
+                    {% if solicitacao.arp_origem %}
+                        <td align="left"><b>{{ solicitacao.arp_origem.solicitacao.get_pregao }}</b></td>
+                    {% else %}
+                        <td align="left"><b>{{ solicitacao.contrato_origem.solicitacao.get_pregao }}</b></td>
+                    {% endif %}
+
+                </tr>
+
                 <tr>
                     <td align="left" width="25%">Assunto</td>
                     <td align="left"><b>{{ ordem.solicitacao.objeto }}</b></td>
@@ -117,10 +121,10 @@ ul{
                                 <th>Especificação</th>
                                 {% if not eh_lote %}
 
-                                    <th width="15%">Unidade</th>
+                                    <th width="20%">Unidade</th>
                                 {% endif %}
 
-                                <th width="8%">Quantidade</th>
+                                <th width="10%">Qtd.</th>
                                 <th width="20%">Valor Unit.</th>
                                 <th width="20%">Total</th>
 

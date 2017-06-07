@@ -242,6 +242,8 @@ class SolicitacaoLicitacao(models.Model):
     prazo_aberto = models.NullBooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
     processo = models.ForeignKey(Processo, null=True)
     liberada_para_pedido = models.BooleanField(u'Liberada para Pedido', default=False)
+    arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao')
+    contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
 
 
     def __unicode__(self):

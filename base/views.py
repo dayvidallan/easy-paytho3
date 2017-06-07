@@ -3487,6 +3487,7 @@ def novo_pedido_compra_contrato(request, contrato_id):
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
+        o.contrato_origem = contrato
         o.save()
 
         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, o.id))
@@ -3505,6 +3506,7 @@ def novo_pedido_compra_arp(request, ata_id):
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
         o.cadastrado_por = request.user
+        o.arp_origem = ata
         o.save()
         if ata.adesao:
             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_adesao_arp/%s/%s/' % (ata_id, o.id))

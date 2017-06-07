@@ -119,7 +119,7 @@
                 {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_proposta and not solicitacao.prazo_aberto %}
                 <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
                 {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
-                    <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
+                    <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
                 {% endif %}
 
             {% endif %}
@@ -277,7 +277,7 @@
                 <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
 
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
-                <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
+                <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
             {% endif %}
             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists %}
                 <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
