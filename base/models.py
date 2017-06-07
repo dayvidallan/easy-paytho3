@@ -79,6 +79,13 @@ class Setor(models.Model):
 class ModalidadePregao(models.Model):
     PREGAO_SRP = 10
     CONCORRENCIA_SRP = 11
+    CARTA_CONVITE = 1
+    CONCORRENCIA = 2
+    CONCURSO = 3
+    PREGAO = 4
+    TOMADA_PRECO = 5
+
+
     nome = models.CharField(u'Nome', max_length=80)
 
     def __unicode__(self):
@@ -1158,7 +1165,7 @@ class Pregao(models.Model):
         return self.situacao in [Pregao.SUSPENSO]
 
     def eh_pregao(self):
-        return self.modalidade.nome == u'Pregão Presencial'
+        return self.modalidade.id  in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.PREGAO]
 
     def tem_resultado(self):
         return ResultadoItemPregao.objects.filter(item__solicitacao=self.solicitacao).exists()
