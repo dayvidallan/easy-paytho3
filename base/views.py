@@ -1423,7 +1423,8 @@ def cadastrar_contrato(request, solicitacao_id):
                                 novo_item.contrato = o
                                 novo_item.item = item
                                 novo_item.material = item.material
-                                novo_item.marca = item.get_marca_item_lote()
+                                if item.get_marca_item_lote():
+                                    novo_item.marca = item.get_marca_item_lote()
                                 novo_item.participante = lote.get_vencedor().participante
                                 novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
                                 novo_item.valor = item.get_valor_unitario_final()
@@ -1437,7 +1438,8 @@ def cadastrar_contrato(request, solicitacao_id):
                             novo_item.contrato = o
                             novo_item.item = resultado.item
                             novo_item.material = resultado.item.material
-                            novo_item.marca = resultado.marca
+                            if resultado.marca:
+                                novo_item.marca = resultado.marca
                             novo_item.participante = resultado.participante
                             novo_item.fornecedor = resultado.participante.fornecedor
                             novo_item.valor = resultado.valor
