@@ -30,12 +30,14 @@ ul{
      @page {
             size: a4 landscape;
             margin: 0.3cm;
+            margin-bottom: 0.7cm;
+            margin-top: 0.3cm;
             @frame footer {
     		    -pdf-frame-content: footerblock;
     		    bottom: 1cm;
     		    margin-left: 1cm;
     		    margin-right: 1cm;
-             margin-top: 1cm;
+                margin-top: 1cm;
     		    height: 1cm;
 		    }
 
@@ -102,7 +104,6 @@ ul{
                             <tr>
                                 <th width="7%">Item</th>
                                 <th>Material</th>
-                                <th width="20%">Marca</th>
                                 <th width="15%">Unidade</th>
                                 <th width="8%">Qtd</th>
 
@@ -121,8 +122,7 @@ ul{
 
                                 <tr>
                                     <td>{{ item.item }}</td>
-                                    <td>{{ item.material}}</td>
-                                    <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
+                                    <td style="text-align: left;">{{ item.material }} - MARCA: {{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                     <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>
                                     {% if eh_maior_desconto %}
@@ -137,7 +137,7 @@ ul{
                                 </tr>
                             {% endfor %}
                             {% if not eh_maior_desconto %}
-                                <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                                <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
                             {% endif %}
                         </tbody>
                     </table>

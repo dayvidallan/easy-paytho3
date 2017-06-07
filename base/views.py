@@ -3411,8 +3411,8 @@ def gestao_contratos(request):
         title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
         solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
 
-        atas = AtaRegistroPreco.objects.all()
-        contratos = Contrato.objects.all()
+        atas = AtaRegistroPreco.objects.all().order_by('id')
+        contratos = Contrato.objects.all().order_by('id')
         pode_editar = True
         form = GestaoContratoForm(request.GET or None)
         if form.is_valid():
@@ -4171,7 +4171,9 @@ def registrar_adjudicacao(request, pregao_id):
     title=u'Registrar Adjudicação'
     form = RegistrarAdjudicacaoForm(request.POST or None, instance=pregao)
     if form.is_valid():
-        form.save()
+        o = form.save(False)
+        o.situacao = Pregao.ADJUDICADO
+        o.save()
         messages.success(request, u'Data de adjudicação registrada com sucesso.')
         return HttpResponseRedirect(u'/base/pregao/%s/#homologacao' % pregao.id)
     return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
@@ -4933,11 +4935,13 @@ def registrar_ocorrencia_pregao(request, pregao_id):
 
 @login_required()
 def ata_sessao(request, pregao_id):
-
-
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-    configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)

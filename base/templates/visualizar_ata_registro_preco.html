@@ -166,6 +166,9 @@
 
 {% block content %}
     <div class="pull-right">
+        {% if pode_gerenciar %}
+            <a class="btn btn-info" href="/admin/base/contrato/{{ contrato.pk }}/change/">Editar</a>
+        {% endif %}
         {% if not ata.data_fim and pode_gerenciar %}
             <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
         {% endif %}

@@ -994,6 +994,7 @@ class Pregao(models.Model):
     CONCLUIDO = u'Concluído'
     SUSPENSO = u'Suspenso'
     REVOGADO = u'Revogado'
+    ADJUDICADO = u'Adjudicado'
 
 
     SITUACAO_CHOICES = (
@@ -1001,6 +1002,7 @@ class Pregao(models.Model):
         (DESERTO, DESERTO),
         (FRACASSADO, FRACASSADO),
         (SUSPENSO, SUSPENSO),
+        (ADJUDICADO, ADJUDICADO),
         (CONCLUIDO, CONCLUIDO),
         (REVOGADO, REVOGADO),
     )

@@ -15,10 +15,7 @@
                     <td style="font-size:10px;">Endereço: {{configuracao.endereco}}</td>
                 </tr>
                 <tr>
-                    <td style="font-size:10px;">Telefone: {{configuracao.telefones|default_if_none:""}}</td>
-                </tr>
-                <tr>
-                    <td style="font-size:10px;">Email: {{configuracao.email|default_if_none:""}}</td>
+                    <td style="font-size:10px;">Telefone: {{configuracao.telefones|default_if_none:""}} - Email: {{configuracao.email|default_if_none:""}}</td>
                 </tr>
             </table>
         </td>

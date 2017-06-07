@@ -54,6 +54,13 @@ ul{
                     <td align="left"><b>{{ configuracao.nome }}</b></td>
 
                 </tr>
+                {% if ordem.solicitacao.get_pregao %}
+                    <tr>
+                        <td align="left" width="25%">Pregão</td>
+                        <td align="left"><b>{{ ordem.solicitacao.get_pregao }}</b></td>
+
+                    </tr>
+                {% endif %}
                 <tr>
                     <td align="left" width="25%">Assunto</td>
                     <td align="left"><b>{{ ordem.solicitacao.objeto }}</b></td>
@@ -106,16 +113,16 @@ ul{
                     <table border="1" width="100%" cellpadding="5" cellspacing="5">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th width="60%">Especificação</th>
+                                <th width="7%">Item</th>
+                                <th>Especificação</th>
                                 {% if not eh_lote %}
-                                    <th>Marca</th>
-                                    <th>Unidade</th>
+
+                                    <th width="15%">Unidade</th>
                                 {% endif %}
 
-                                <th>Quantidade</th>
-                                <th>Valor Unit.</th>
-                                <th>Total</th>
+                                <th width="8%">Quantidade</th>
+                                <th width="20%">Valor Unit.</th>
+                                <th width="20%">Total</th>
 
                             </tr>
                         </thead>
@@ -125,12 +132,10 @@ ul{
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
                                     {% if pedido.item.item.material %}
-                                        <td>{{ pedido.item.item.material|truncatechars:500 }}</td>
+                                        <td  style="text-align: left;">{{ pedido.item.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% else %}
-                                        <td>{{ pedido.item.material|truncatechars:500 }}</td>
+                                        <td  style="text-align: left;">{{ pedido.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% endif %}
-
-                                    <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
 
                                     {% if pedido.item.item.unidade %}
                                         <td>{{ pedido.item.item.unidade }}</td>
@@ -148,9 +153,9 @@ ul{
                                 </tr>
                             {% endfor %}
                             {% if eh_lote %}
-                                <tr><td colspan="4" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
+                                <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
                             {% else %}
-                                <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
+                                <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
                             {% endif %}
                         </tbody>
                     </table>

@@ -253,9 +253,7 @@
                             <td>{{ item.get_situacao }}</td>
                             <td>
                                 <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info btn-sm">Visualizar</a>
-                                {% if pode_editar %}
-                                    <a href="/admin/base/contrato/{{item.id}}/change/" class="btn btn-default btn-sm">Editar</a>
-                                {% endif %}
+
                             </td>
 
 
@@ -306,9 +304,6 @@
                             <td>{{ item.get_situacao }}</td>
                             <td>
                                 <a href="/base/visualizar_ata_registro_preco/{{item.id}}/" class="btn btn-info">Visualizar</a>
-                                {% if pode_editar %}
-                                    <a href="/admin/base/contrato/{{item.id}}/change/" class="btn btn-default">Editar</a>
-                                {% endif %}
                             </td>
 
 
