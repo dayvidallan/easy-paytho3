@@ -192,9 +192,8 @@
                 <th>Nº Processo</th>
                 <th>Data da Assinatura do Contrato</th>
                 <th>Vigência</th>
-                <th>Caráter Continuado</th>
+                <th>Valor Global</th>
                 <th>Situação</th>
-                <th>Garantia de Execução do Objeto</th>
             </tr>
         </thead>
         <tbody>
@@ -205,16 +204,8 @@
 
                 <td>{{ contrato.data_inicio }}</td>
                 <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
-                <td>{{ contrato.get_carater_continuado }}</td>
-
+                <td>{{ contrato.valor|format_money }}</td>
                 <td>{{ contrato.get_situacao }}</td>
-                <td>
-                    {% if contrato.garantia_execucao_objeto %}
-                        {{ contrato.garantia_execucao_objeto }}%
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
             </tr>
         </tbody>
    </table>
