@@ -571,7 +571,7 @@ def ver_pregoes(request):
 
     if form.is_valid():
         if form.cleaned_data.get('info'):
-            pregoes = pregoes.filter(Q(solicitacao__processo__numero=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando=form.cleaned_data.get('info')) | Q(num_pregao=form.cleaned_data.get('info')) )
+            pregoes = pregoes.filter(Q(solicitacao__processo__numero__icontains=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando__icontains=form.cleaned_data.get('info')) | Q(num_pregao__icontains=form.cleaned_data.get('info')) )
 
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
