@@ -763,12 +763,15 @@ class ItemSolicitacaoLicitacao(models.Model):
         if participantes.count()<=3:
             return
         else:
+            valores = participantes.order_by('valor').values('valor').distinct()
             melhor_valor = participantes[0].valor
+            participantes.update(desclassificado=False, desistencia=False, concorre=True)
             ordenado = participantes.order_by('-valor')
+
             for item in ordenado:
-                if ordenado.filter(concorre=True).count()<=3:
-                    continue
-                if item.valor > (melhor_valor + (10*melhor_valor)/100):
+                # if ordenado.filter(concorre=True).count()<=3:
+                #     continue
+                if item.valor > (melhor_valor + (10*melhor_valor)/100) or item.valor > valores[2]['valor']:
                     item.concorre = False
                     item.save()
             return
@@ -1399,7 +1402,7 @@ class ParticipanteItemPregao(models.Model):
         verbose_name_plural = u'Participantes do Item do Pregão'
 
     def __unicode__(self):
-        return self.item.fornecedor.razao_social
+        return self.participante.fornecedor.razao_social
 
 class PropostaItemPregao(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação')
