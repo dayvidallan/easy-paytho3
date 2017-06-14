@@ -3442,7 +3442,7 @@ def avaliar_pedidos(request, solicitacao_id):
     pedidos = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao)
 
     total = solicitacao.interessados.count()
-    informados = pedidos.distinct('secretaria').count()
+    informados = pedidos.distinct('secretaria').count() - 1
 
     form = FiltrarSecretariaForm(request.POST or None, pedidos=pedidos)
     if request.GET.get('secretaria'):

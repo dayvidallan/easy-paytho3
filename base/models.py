@@ -771,7 +771,7 @@ class ItemSolicitacaoLicitacao(models.Model):
             for item in ordenado:
                 # if ordenado.filter(concorre=True).count()<=3:
                 #     continue
-                if item.valor > (melhor_valor + (10*melhor_valor)/100) or item.valor > valores[2]['valor']:
+                if item.valor > (melhor_valor + (10*melhor_valor)/100) or ( len(valores) > 2 and item.valor > valores[2]['valor']):
                     item.concorre = False
                     item.save()
             return
