@@ -5823,7 +5823,7 @@ def liberar_pedidos_solicitacao(request, solicitacao_id):
 def relatorio_dados_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-    destino_arquivo = u'upload/dados_licitacao/%s.pdf' % pregao_id
+    destino_arquivo = u'upload/dados_licitacao_procedimento/%s.pdf' % pregao_id
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/dados_licitacao_procedimento')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/dados_licitacao_procedimento'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
