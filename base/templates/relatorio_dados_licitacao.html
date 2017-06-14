@@ -59,35 +59,35 @@ ul{
                 </tr>
                 <tr>
                     <td align="left" width="30%"><b>Número do Processo</b></td>
-                    <td align="left">{{ pregao.solicitacao.processo }}</td>
+                    <td align="left">{{ pregao.solicitacao.processo|default_if_none:"-" }}</td>
                 </tr>
                 <tr>
                     <td align="left" width="30%"><b>Comissão</b></td>
-                    <td align="left">{{ pregao.comissao }}</td>
+                    <td align="left">{{ pregao.comissao|default_if_none:"-" }}</td>
                 </tr>
                 <tr>
                     <td align="left" width="30%"><b>Modalidade</b></td>
-                    <td align="left">{{ pregao.modalidade }}</td>
+                    <td align="left">{{ pregao.modalidade|default_if_none:"-" }}</td>
                 </tr>
                 <tr>
                     <td align="left" width="30%"><b>Fundamento legal</b></td>
-                    <td align="left">{{ pregao.fundamento_legal }}</td>
+                    <td align="left">{{ pregao.fundamento_legal|default_if_none:"-" }}</td>
                 </tr>
                 <tr>
                     <td align="left" width="30%"><b>Critério de Julgamento</b></td>
-                    <td align="left">{{ pregao.tipo }}</td>
+                    <td align="left">{{ pregao.tipo|default_if_none:"-" }}</td>
                 </tr>
                 <tr>
                     <td align="left" width="30%"><b>Critério de Adjudicação</b></td>
-                    <td align="left">{{ pregao.criterio }}</td>
+                    <td align="left">{{ pregao.criterio|default_if_none:"-" }}</td>
                 </tr>
                 <tr>
                     <td align="left" width="30%"><b>MPE – Aplicação Da LCN 123/06</b></td>
-                    <td align="left">{{ pregao.aplicacao_lcn_123_06 }}</td>
+                    <td align="left">{{ pregao.aplicacao_lcn_123_06|default_if_none:"-" }}</td>
                 </tr>
                 <tr>
-                    <td align="left" width="30%"><b>Objeto - Tipo</td>
-                    <td align="left">{{ pregao.objeto_tipo }}</td>
+                    <td align="left" width="30%"><b>Objeto - Tipo</b></td>
+                    <td align="left">{{ pregao.objeto_tipo|default_if_none:"-" }}</td>
                 </tr>
             </thead>
         </table>
