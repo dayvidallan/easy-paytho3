@@ -144,6 +144,7 @@ urlpatterns = [
     url(r'^cadastrar_anexo_contrato/(?P<contrato_id>\d+)/$', views.cadastrar_anexo_contrato, name='cadastrar_anexo_contrato'),
     url(r'^editar_anexo_contrato/(?P<item_id>\d+)/$', views.editar_anexo_contrato, name='editar_anexo_contrato'),
     url(r'^liberar_licitacao_homologacao/(?P<pregao_id>\d+)/$', views.liberar_licitacao_homologacao, name='liberar_licitacao_homologacao'),
+    url(r'^relatorio_dados_licitacao/(?P<pregao_id>\d+)/$', views.relatorio_dados_licitacao, name='relatorio_dados_licitacao'),
 
 
 

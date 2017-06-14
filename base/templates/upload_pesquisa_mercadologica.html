@@ -11,25 +11,29 @@
     {% endblock %}
 {% endif %}
 {% block content %}
-        <p class="alert alert-info"> Faça o download do documento, assine e faça o envio pelo formulário abaixo. Informe a validade da proposta.</p>
-        <a href="/base/imprimir_pesquisa/{{ pesquisa.id }}/" target="_blank">Baixar Documento</a>
-        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
-            {% csrf_token %}
-             <div class="miolo">
-				<div class="row-fluid">
-                    <div class="col-xs-12">
-                        {{ form|bootstrap }}
-                    </div>
-		        </div>
-
-                    <div>
-                        <div class="controls">
-                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <p class="alert alert-danger"><font size="4">ATENÇÃO!!! Sua proposta só será válida se você anexar o documento assinado. Clique no botão 'baixar documento' abaixo, assine o documento e faça o upload do documento assinado.</font></p>
+        <a href="/base/imprimir_pesquisa/{{ pesquisa.id }}/" target="_blank" class="btn btn-success">Baixar Documento</a>
+        <br><br>
+        <fieldset>
+            <legend>Upload do Documento Assinado</legend>
+            <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
+                {% csrf_token %}
+                 <div class="miolo">
+                    <div class="row-fluid">
+                        <div class="col-xs-12">
+                            {{ form|bootstrap }}
                         </div>
                     </div>
 
-             </div>
-        </form>
+                        <div>
+                            <div class="controls">
+                                <button type="submit" class="btn btn-primary">Cadastrar</button>
+                            </div>
+                        </div>
+
+                 </div>
+            </form>
+        </fieldset>
     </div>
 
 

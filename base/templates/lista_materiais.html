@@ -71,24 +71,24 @@ ul{
             <th>Unidade</th>
             <th>Qtd.</th>
             {% if pode_ver_preco %}
-                <th>Valor Unitário Máximo</th>
-                <th>Total</th>
+                <th>Valor Unitário Máximo (R$)</th>
+                <th>Total (R$)</th>
             {% endif %}
         </thead>
         <tbody>
             {% for item in itens %}
                 <tr>
-                    <td width="7%">{{ item.item }}</td>
+                    <td width="6%">{{ item.item }}</td>
                     {% if pode_ver_preco %}
-                        <td width="60%">{{ item.material }}</td>
+                        <td width="55%">{{ item.material }}</td>
+                        <td width="12%">{{ item.unidade }}</td>
+                        <td width="8%">{{ item.quantidade }}</td>
+                        <td align="right" width="15%">{{ item.valor_medio|format_money }}</td>
+                        <td align="right" width="15%">{{ item.get_total|format_money }}</td>
                     {% else %}
                         <td width="75%">{{ item.material }}</td>
-                    {% endif %}
-                    <td width="12%">{{ item.unidade }}</td>
-                    <td width="8%">{{ item.quantidade }}</td>
-                    {% if pode_ver_preco %}
-                        <td align="right">R$ {{ item.valor_medio|format_money }}</td>
-                        <td align="right">R$ {{ item.get_total|format_money }}</td>
+                        <td width="12%">{{ item.unidade }}</td>
+                        <td width="8%">{{ item.quantidade }}</td>
                     {% endif %}
                 </tr>
 
@@ -96,7 +96,7 @@ ul{
             {% if pode_ver_preco %}
                 <tr>
                     <td colspan="5" align="right">Total</td>
-                    <td align="right">R$ {{total|format_money}}</td>
+                    <td align="right">{{total|format_money}}</td>
                 </tr>
             {% endif %}
 
