@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51aad98f-dbd2-4dc3-a5d0-a437d3a264d9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/lista_materiais.html" afterPath="$PROJECT_DIR$/base/templates/lista_materiais.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/lista_materiais_por_secretaria.html" afterPath="$PROJECT_DIR$/base/templates/lista_materiais_por_secretaria.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/pregao.html" afterPath="$PROJECT_DIR$/base/templates/pregao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/upload_pesquisa_mercadologica.html" afterPath="$PROJECT_DIR$/base/templates/upload_pesquisa_mercadologica.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/urls.py" afterPath="$PROJECT_DIR$/base/urls.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/media/upload/dados_licitacao/13.pdf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/media/upload/dados_licitacao/init" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/views.py" afterPath="$PROJECT_DIR$/base/views.py" />
     </list>
     <ignored path="licita.iws" />
@@ -28,17 +24,17 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/base/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="4621" column="4" lean-forward="false" selection-start-line="4621" selection-start-column="4" selection-end-line="4621" selection-end-column="4" />
+            <state relative-caret-position="426">
+              <caret line="5827" column="90" lean-forward="false" selection-start-line="5827" selection-start-column="90" selection-end-line="5827" selection-end-column="90" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="relatorio_dados_licitacao.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="relatorio_dados_licitacao.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/templates/relatorio_dados_licitacao.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="281">
@@ -164,8 +160,8 @@
         <option value="$PROJECT_DIR$/base/templates/lista_materiais_por_secretaria.html" />
         <option value="$PROJECT_DIR$/base/templates/pregao.html" />
         <option value="$PROJECT_DIR$/base/urls.py" />
-        <option value="$PROJECT_DIR$/base/views.py" />
         <option value="$PROJECT_DIR$/base/templates/relatorio_dados_licitacao.html" />
+        <option value="$PROJECT_DIR$/base/views.py" />
       </list>
     </option>
   </component>
@@ -806,14 +802,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="4621" column="4" lean-forward="false" selection-start-line="4621" selection-start-column="4" selection-end-line="4621" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/base/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-269">
@@ -834,6 +822,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
           <caret line="110" column="67" lean-forward="false" selection-start-line="110" selection-start-column="67" selection-end-line="110" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="426">
+          <caret line="5827" column="90" lean-forward="false" selection-start-line="5827" selection-start-column="90" selection-end-line="5827" selection-end-column="90" />
           <folding />
         </state>
       </provider>
