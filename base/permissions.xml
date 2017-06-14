@@ -92,6 +92,15 @@
                     <permission>change_materialconsumo</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>tipounidade</name>
+                <permissions>
+                    <permission>add_tipounidade</permission>
+                    <permission>delete_tipounidade</permission>
+                    <permission>change_tipounidade</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>

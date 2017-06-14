@@ -68,6 +68,24 @@
                 </div>
             </div>
         </a>
+        <a href="/admin/base/tipounidade/">
+                <div class="col-lg-2 col-md-4">
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-users fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Unidades de Medida</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
 
         {% if request.user.is_superuser %}
             <a href="/admin/base/secretaria/">
@@ -124,24 +142,7 @@
                     </div>
                 </div>
             </a>
-            <a href="/admin/base/tipounidade/">
-                <div class="col-lg-2 col-md-4">
 
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-users fa-3x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">{{ num_membros }}</div>
-                                    <div><strong>Unidades de Medida</strong></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
         {% endif %}
 
 
