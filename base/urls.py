@@ -125,7 +125,6 @@ urlpatterns = [
     url(r'^liberar_solicitacao_contrato/(?P<solicitacao_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_contrato, name='liberar_solicitacao_contrato'),
     url(r'^definir_vigencia_contrato/(?P<contrato_id>\d+)/$', views.definir_vigencia_contrato, name='definir_vigencia_contrato'),
     url(r'^aditivar_contrato/(?P<contrato_id>\d+)/$', views.aditivar_contrato, name='aditivar_contrato'),
-    url(r'^cancelar_pedido_compra/(?P<solicitacao_id>\d+)/$', views.cancelar_pedido_compra, name='cancelar_pedido_compra'),
     url(r'^memorando/(?P<solicitacao_id>\d+)/$', views.memorando, name='memorando'),
     url(r'^termo_referencia/(?P<solicitacao_id>\d+)/$', views.termo_referencia, name='termo_referencia'),
     url(r'^lista_materiais/(?P<solicitacao_id>\d+)/$', views.lista_materiais, name='lista_materiais'),
