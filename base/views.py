@@ -29,6 +29,7 @@ from django.core.mail import send_mail
 from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
 from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
 import xlwt
+from django.core.exceptions import PermissionDenied
 
 LARGURA = 210*mm
 ALTURA = 297*mm
@@ -133,31 +134,28 @@ def index(request):
 
 @login_required()
 def solicitacoes(request):
-
     title = u'Solicitações'
     return render(request, 'solicitacoes.html', locals(), RequestContext(request))
 
-@login_required()
-def licitacoes(request):
-
-    title = u'Licitações'
-    return render(request, 'licitacoes.html', locals(), RequestContext(request))
-
-@login_required()
-def pedidos_e_controle(request):
-
-    title = u'Pedidos e Controle'
-    return render(request, 'pedidos_e_controle.html', locals(), RequestContext(request))
 
 @login_required()
 def administracao(request):
+    if request.user.is_superuser:
+        title = u'Administração'
+        return render(request, 'administracao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
-    title = u'Administração'
-    return render(request, 'administracao.html', locals(), RequestContext(request))
+@login_required()
+def auditoria(request):
+    if request.user.is_superuser:
+        title = u'Auditoria'
+        return render(request, 'auditoria.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def cadastros(request):
-
     title = u'Cadastros'
     return render(request, 'cadastros.html', locals(), RequestContext(request))
 
@@ -171,155 +169,162 @@ def fornecedor(request, fornecedor_id):
 
 @login_required()
 def pregao(request, pregao_id):
-    pregao = get_object_or_404(Pregao, pk= pregao_id)
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        pregao = get_object_or_404(Pregao, pk= pregao_id)
 
-    if not (pregao.solicitacao.setor_atual == request.user.pessoafisica.setor) and pregao.eh_ativo():
-        pregao.situacao = Pregao.CONCLUIDO
-        pregao.save()
+        if not (pregao.solicitacao.setor_atual == request.user.pessoafisica.setor) and pregao.eh_ativo():
+            pregao.situacao = Pregao.CONCLUIDO
+            pregao.save()
 
-    elif pregao.solicitacao.setor_atual == request.user.pessoafisica.setor and pregao.situacao == Pregao.CONCLUIDO:
-        pregao.situacao = Pregao.CADASTRADO
-        pregao.save()
+        elif pregao.solicitacao.setor_atual == request.user.pessoafisica.setor and pregao.situacao == Pregao.CONCLUIDO:
+            pregao.situacao = Pregao.CADASTRADO
+            pregao.save()
 
 
-    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
-    title = u'%s ' % pregao
-    if eh_lote:
-        lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
-        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
+        eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+        eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+        title = u'%s ' % pregao
+        if eh_lote:
+            lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
+        else:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
+        #title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
+        itens_pregao_unidades = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
+        participantes = ParticipantePregao.objects.filter(pregao=pregao,desclassificado=False)
+        resultados = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id',flat=True))
+        buscou = False
+        ids_ganhador = list()
+
+        participante = u'0'
+        if request.GET.get('participante'):
+            buscou = True
+            participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
+
+            for opcao in itens_pregao:
+                resultados = ResultadoItemPregao.objects.filter(item=opcao, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
+                if resultados.exists() and resultados[0].participante == participante:
+                    ids_ganhador.append(resultados[0].item.id)
+            itens_pregao = itens_pregao.filter(id__in=ids_ganhador)
+
+            form = GanhadoresForm(request.POST or None, participantes = participantes, initial=dict(ganhador=participante))
+        else:
+            form = GanhadoresForm(request.POST or None, participantes = participantes)
+
+
+        return render(request, 'pregao.html', locals(), RequestContext(request))
     else:
-        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
-    #title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
-    itens_pregao_unidades = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
-    participantes = ParticipantePregao.objects.filter(pregao=pregao,desclassificado=False)
-    resultados = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id',flat=True))
-    buscou = False
-    ids_ganhador = list()
-
-    participante = u'0'
-    if request.GET.get('participante'):
-        buscou = True
-        participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
-
-        for opcao in itens_pregao:
-            resultados = ResultadoItemPregao.objects.filter(item=opcao, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
-            if resultados.exists() and resultados[0].participante == participante:
-                ids_ganhador.append(resultados[0].item.id)
-        itens_pregao = itens_pregao.filter(id__in=ids_ganhador)
-
-        form = GanhadoresForm(request.POST or None, participantes = participantes, initial=dict(ganhador=participante))
-    else:
-        form = GanhadoresForm(request.POST or None, participantes = participantes)
-
-
-    return render(request, 'pregao.html', locals(), RequestContext(request))
+        raise PermissionDenied
 
 @login_required()
 def cadastra_proposta_pregao(request, pregao_id):
-    title=u'Cadastrar Proposta'
-    pregao = get_object_or_404(Pregao, pk= pregao_id)
-    itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
-    edicao=False
-    participante = None
-    selecionou = False
-    total = ParticipantePregao.objects.filter(pregao=pregao).count()
-    informados = PropostaItemPregao.objects.filter(pregao=pregao).aggregate(total=Count('participante'))['total']
-    if request.GET.get('participante'):
-        selecionou = True
-        participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
-        itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante, item__eh_lote=False).order_by('item')
-        if itens.exists():
-            edicao=True
-        else:
-            itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
-    if edicao or selecionou:
-        form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao, initial=dict(fornecedor=participante))
-    else:
-        form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao)
-    if form.is_valid():
-        arquivo_up = form.cleaned_data.get('arquivo')
-        fornecedor = form.cleaned_data.get('fornecedor')
-        if arquivo_up:
-            sheet = None
-            try:
-                workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
-                sheet = workbook.sheet_by_index(0)
-            except XLRDError:
-                raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
-
-            for row in range(8, sheet.nrows):
-                try:
-                    item = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 5)).strip() or None
-                    valor = unicode(sheet.cell_value(row, 6)).strip()
-                    if row == 0:
-                        if item != u'Item' or valor != u'VALOR UNITÁRIO':
-                            raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
-                    else:
-                        if item and valor:
-                            item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
-                            if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
-                                PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
-                            else:
-                                novo_preco = PropostaItemPregao()
-                                novo_preco.item = item_do_pregao
-                                novo_preco.pregao = pregao
-                                novo_preco.participante = fornecedor
-                                novo_preco.valor = valor
-                                novo_preco.marca = marca
-                                novo_preco.save()
-                            if not ParticipanteItemPregao.objects.filter(participante=fornecedor, item=item_do_pregao).exists():
-                                participante_item = ParticipanteItemPregao()
-                                participante_item.participante = fornecedor
-                                participante_item.item = item_do_pregao
-                                participante_item.save()
-
-
-                except ValueError:
-                    raise Exception(u'Alguma coluna da planilha possui o valor incorreto.')
-        if not edicao and not arquivo_up:
-            for idx, item in enumerate(request.POST.getlist('itens'), 1):
-                if item:
-                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao, id=request.POST.getlist('id_item')[idx-1])
-                    novo_preco = PropostaItemPregao()
-                    novo_preco.item = item_do_pregao
-                    novo_preco.pregao = pregao
-                    novo_preco.participante = fornecedor
-                    novo_preco.valor = item.replace('.','').replace(',','.')
-                    novo_preco.marca = request.POST.getlist('marcas')[idx-1]
-                    novo_preco.save()
-
-
-        lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
-        if lotes.exists():
-            for lote in lotes:
-                itens = ItemLote.objects.filter(lote=lote)
-                if itens.exists():
-                    propostas = PropostaItemPregao.objects.filter(item__in=itens.values_list('item', flat=True), participante=fornecedor, pregao=pregao)
-                    if propostas.exists():
-                        total_propostas = 0
-                        for proposta in propostas:
-                            total_propostas = total_propostas + proposta.valor * proposta.item.quantidade
-                        if PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).exists():
-                            PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).update(valor=total_propostas)
-                        else:
-                            nova_proposta_para_lote = PropostaItemPregao()
-                            nova_proposta_para_lote.pregao = pregao
-                            nova_proposta_para_lote.item = lote
-                            nova_proposta_para_lote.participante = fornecedor
-                            nova_proposta_para_lote.valor = total_propostas
-                            nova_proposta_para_lote.save()
-
-        messages.success(request, u'Proposta cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
-    else:
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        title=u'Cadastrar Proposta'
+        pregao = get_object_or_404(Pregao, pk= pregao_id)
+        itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
+        edicao=False
+        participante = None
+        selecionou = False
+        total = ParticipantePregao.objects.filter(pregao=pregao).count()
+        informados = PropostaItemPregao.objects.filter(pregao=pregao).aggregate(total=Count('participante'))['total']
+        if request.GET.get('participante'):
+            selecionou = True
+            participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
+            itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante, item__eh_lote=False).order_by('item')
+            if itens.exists():
+                edicao=True
+            else:
+                itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
         if edicao or selecionou:
-            form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao, initial=dict(fornecedor=participante))
+            form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao, initial=dict(fornecedor=participante))
         else:
-            form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao)
+            form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao)
+        if form.is_valid():
+            arquivo_up = form.cleaned_data.get('arquivo')
+            fornecedor = form.cleaned_data.get('fornecedor')
+            if arquivo_up:
+                sheet = None
+                try:
+                    workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
+                    sheet = workbook.sheet_by_index(0)
+                except XLRDError:
+                    raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-    return render(request, 'cadastra_proposta_pregao.html', locals(), RequestContext(request))
+                for row in range(8, sheet.nrows):
+                    try:
+                        item = unicode(sheet.cell_value(row, 0)).strip()
+                        marca = unicode(sheet.cell_value(row, 5)).strip() or None
+                        valor = unicode(sheet.cell_value(row, 6)).strip()
+                        if row == 0:
+                            if item != u'Item' or valor != u'VALOR UNITÁRIO':
+                                raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
+                        else:
+                            if item and valor:
+                                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
+                                if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
+                                    PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
+                                else:
+                                    novo_preco = PropostaItemPregao()
+                                    novo_preco.item = item_do_pregao
+                                    novo_preco.pregao = pregao
+                                    novo_preco.participante = fornecedor
+                                    novo_preco.valor = valor
+                                    novo_preco.marca = marca
+                                    novo_preco.save()
+                                if not ParticipanteItemPregao.objects.filter(participante=fornecedor, item=item_do_pregao).exists():
+                                    participante_item = ParticipanteItemPregao()
+                                    participante_item.participante = fornecedor
+                                    participante_item.item = item_do_pregao
+                                    participante_item.save()
+
+
+                    except ValueError:
+                        raise Exception(u'Alguma coluna da planilha possui o valor incorreto.')
+            if not edicao and not arquivo_up:
+                for idx, item in enumerate(request.POST.getlist('itens'), 1):
+                    if item:
+                        item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao, id=request.POST.getlist('id_item')[idx-1])
+                        novo_preco = PropostaItemPregao()
+                        novo_preco.item = item_do_pregao
+                        novo_preco.pregao = pregao
+                        novo_preco.participante = fornecedor
+                        novo_preco.valor = item.replace('.','').replace(',','.')
+                        novo_preco.marca = request.POST.getlist('marcas')[idx-1]
+                        novo_preco.save()
+
+
+            lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
+            if lotes.exists():
+                for lote in lotes:
+                    itens = ItemLote.objects.filter(lote=lote)
+                    if itens.exists():
+                        propostas = PropostaItemPregao.objects.filter(item__in=itens.values_list('item', flat=True), participante=fornecedor, pregao=pregao)
+                        if propostas.exists():
+                            total_propostas = 0
+                            for proposta in propostas:
+                                total_propostas = total_propostas + proposta.valor * proposta.item.quantidade
+                            if PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).exists():
+                                PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).update(valor=total_propostas)
+                            else:
+                                nova_proposta_para_lote = PropostaItemPregao()
+                                nova_proposta_para_lote.pregao = pregao
+                                nova_proposta_para_lote.item = lote
+                                nova_proposta_para_lote.participante = fornecedor
+                                nova_proposta_para_lote.valor = total_propostas
+                                nova_proposta_para_lote.save()
+
+            messages.success(request, u'Proposta cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
+        else:
+            if edicao or selecionou:
+                form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao, initial=dict(fornecedor=participante))
+            else:
+                form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao)
+
+        return render(request, 'cadastra_proposta_pregao.html', locals(), RequestContext(request))
+
+    else:
+        raise PermissionDenied
 
 
 @login_required()
@@ -333,216 +338,231 @@ def propostas_item(request, item_id):
 
 @login_required()
 def cadastra_participante_pregao(request, pregao_id):
-    title=u'Cadastrar Participante do Pregão'
-    pregao = get_object_or_404(Pregao, pk= pregao_id)
-    id_sessao = "%s_fornecedor" % (request.user.pessoafisica.id)
-    request.session[id_sessao] = pregao.id
-    form = CadastraParticipantePregaoForm(request.POST or None, pregao=pregao)
-    if form.is_valid():
-        if ParticipantePregao.objects.filter(pregao=pregao,fornecedor=form.cleaned_data['fornecedor']).exists():
-            messages.error(request, u'Este fornecedor já foi cadastrado.')
-            return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        title=u'Cadastrar Participante do Pregão'
+        pregao = get_object_or_404(Pregao, pk= pregao_id)
+        id_sessao = "%s_fornecedor" % (request.user.pessoafisica.id)
+        request.session[id_sessao] = pregao.id
+        form = CadastraParticipantePregaoForm(request.POST or None, pregao=pregao)
+        if form.is_valid():
+            if ParticipantePregao.objects.filter(pregao=pregao,fornecedor=form.cleaned_data['fornecedor']).exists():
+                messages.error(request, u'Este fornecedor já foi cadastrado.')
+                return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
 
-        o = form.save(False)
-        o.pregao = pregao
-        if form.cleaned_data.get('sem_representante'):
-            o.pode_dar_lance = False
-            historico = HistoricoPregao()
-            historico.pregao = pregao
-            historico.data = datetime.datetime.now()
-            historico.obs = u'Ausência do participante: %s. Motivo: %s' % (form.cleaned_data['fornecedor'], form.cleaned_data.get('obs_ausencia_participante'))
-            historico.save()
-        o.save()
+            o = form.save(False)
+            o.pregao = pregao
+            if form.cleaned_data.get('sem_representante'):
+                o.pode_dar_lance = False
+                historico = HistoricoPregao()
+                historico.pregao = pregao
+                historico.data = datetime.datetime.now()
+                historico.obs = u'Ausência do participante: %s. Motivo: %s' % (form.cleaned_data['fornecedor'], form.cleaned_data.get('obs_ausencia_participante'))
+                historico.save()
+            o.save()
 
-        messages.success(request, u'Participante cadastrado com sucesso')
-        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
+            messages.success(request, u'Participante cadastrado com sucesso')
+            return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    return render(request, 'cadastra_participante_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastra_participante_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def cadastra_visitante_pregao(request, pregao_id):
-    title=u'Cadastrar Visitante do Pregão'
-    pregao = get_object_or_404(Pregao, pk= pregao_id)
-    form = VisitantePregaoForm(request.POST or None)
-    if form.is_valid():
-        o = form.save(False)
-        o.pregao = pregao
-        o.save()
-        messages.success(request, u'Visitante cadastrado com sucesso')
-        return HttpResponseRedirect(u'/base/gerenciar_visitantes/%s/' % pregao.id)
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        title=u'Cadastrar Visitante do Pregão'
+        pregao = get_object_or_404(Pregao, pk= pregao_id)
+        form = VisitantePregaoForm(request.POST or None)
+        if form.is_valid():
+            o = form.save(False)
+            o.pregao = pregao
+            o.save()
+            messages.success(request, u'Visitante cadastrado com sucesso')
+            return HttpResponseRedirect(u'/base/gerenciar_visitantes/%s/' % pregao.id)
 
-    return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def rodada_pregao(request, item_id):
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
+        pregao = get_object_or_404(Pregao, solicitacao=item.solicitacao)
+        rodadas = RodadaPregao.objects.filter(item=item).order_by('-rodada')
+        if rodadas.exists():
+            num_rodada = rodadas[0].rodada + 1
 
-    item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
-    pregao = get_object_or_404(Pregao, solicitacao=item.solicitacao)
-    rodadas = RodadaPregao.objects.filter(item=item).order_by('-rodada')
-    if rodadas.exists():
-        num_rodada = rodadas[0].rodada + 1
+        else:
+            num_rodada = 1
 
+        RodadaPregao.objects.filter(item=item).update(atual=False)
+        nova_rodada = RodadaPregao()
+        nova_rodada.rodada = num_rodada
+        nova_rodada.pregao = pregao
+        nova_rodada.item = item
+        nova_rodada.atual = True
+        nova_rodada.save()
+        messages.success(request, u'Nova rodada cadastrada.')
+        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
     else:
-        num_rodada = 1
-
-    RodadaPregao.objects.filter(item=item).update(atual=False)
-    nova_rodada = RodadaPregao()
-    nova_rodada.rodada = num_rodada
-    nova_rodada.pregao = pregao
-    nova_rodada.item = item
-    nova_rodada.atual = True
-    nova_rodada.save()
-    messages.success(request, u'Nova rodada cadastrada.')
-    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+        raise PermissionDenied
 
 @login_required()
 def lances_rodada_pregao(request, rodada_id, item_id):
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        rodada = get_object_or_404(RodadaPregao, pk= rodada_id)
 
-    rodada = get_object_or_404(RodadaPregao, pk= rodada_id)
-
-    title=u'Rodada %s do %s' % (rodada.rodada, rodada.pregao)
-    lances_rodadas = LanceItemRodadaPregao.objects.filter(rodada=rodada).order_by('item')
-    return render(request, 'lances_rodada_pregao.html', locals(), RequestContext(request))
+        title=u'Rodada %s do %s' % (rodada.rodada, rodada.pregao)
+        lances_rodadas = LanceItemRodadaPregao.objects.filter(rodada=rodada).order_by('item')
+        return render(request, 'lances_rodada_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def declinar_lance(request, rodada_id, item_id, participante_id):
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        rodada = get_object_or_404(RodadaPregao, pk= rodada_id)
+        item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+        participante = get_object_or_404(ParticipantePregao, pk=participante_id)
 
-    rodada = get_object_or_404(RodadaPregao, pk= rodada_id)
-    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    participante = get_object_or_404(ParticipantePregao, pk=participante_id)
+        novo_lance = LanceItemRodadaPregao()
+        novo_lance.item = item
+        novo_lance.rodada = rodada
+        novo_lance.participante = participante
+        novo_lance.declinio = True
+        novo_lance.ordem_lance = rodada.get_ordem_lance()
+        novo_lance.save()
 
-    novo_lance = LanceItemRodadaPregao()
-    novo_lance.item = item
-    novo_lance.rodada = rodada
-    novo_lance.participante = participante
-    novo_lance.declinio = True
-    novo_lance.ordem_lance = rodada.get_ordem_lance()
-    novo_lance.save()
-
-    messages.success(request, u'Lance declinado com sucesso.')
-    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+        messages.success(request, u'Lance declinado com sucesso.')
+        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def lances_item(request, item_id):
-    item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
-    pregao = item.solicitacao.get_pregao()
-    desempatar = False
-    botao_incluir = False
-    eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
+    if request.user.is_superuser or request.user.has_perm('base.pode_cadastrar_pregao'):
+        item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
+        pregao = item.solicitacao.get_pregao()
+        desempatar = False
+        botao_incluir = False
+        eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
 
-    fornecedores_lance = PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
-    if request.GET.get('empate'):
-        desempatar = True
-    # if not PropostaItemPregao.objects.filter(item=item).exists():
-    #     messages.error(request, u'Este item não possui nenhuma proposta cadastrada.')
-    #    return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % item.get_licitacao().id)
-    rodadas = RodadaPregao.objects.filter(item=item)
-    itens_do_lote = False
-    if item.eh_lote:
-        itens_do_lote = ItemSolicitacaoLicitacao.objects.filter(id__in=ItemLote.objects.filter(lote=item).values_list('item', flat=True))
+        fornecedores_lance = PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
+        if request.GET.get('empate'):
+            desempatar = True
+        # if not PropostaItemPregao.objects.filter(item=item).exists():
+        #     messages.error(request, u'Este item não possui nenhuma proposta cadastrada.')
+        #    return HttpResponseRedirect(u'/base/pregao/%s/#propostas' % item.get_licitacao().id)
+        rodadas = RodadaPregao.objects.filter(item=item)
+        itens_do_lote = False
+        if item.eh_lote:
+            itens_do_lote = ItemSolicitacaoLicitacao.objects.filter(id__in=ItemLote.objects.filter(lote=item).values_list('item', flat=True))
 
 
-    if request.GET and request.GET.get('filtrar') == u'1':
-        if item.ja_recebeu_lance():
-            messages.info(request,u'Não é possível aplicar filtro após o início dos lances.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-        else:
-            if not request.GET.get('incluido') and not request.GET.get('incluir'):
-                item.filtrar_por_10_porcento()
-            botao_incluir = True
-            if request.GET.get('incluir') == u'1':
-                fornecedores_lance = item.get_lista_participantes(inativos=True)
+        if request.GET and request.GET.get('filtrar') == u'1':
+            if item.ja_recebeu_lance():
+                messages.info(request,u'Não é possível aplicar filtro após o início dos lances.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
             else:
-                fornecedores_lance = item.get_lista_participantes(ativos=True)
-    elif  request.GET and request.GET.get('filtrar') == u'2':
-        if item.ja_recebeu_lance():
-            messages.info(request,u'Não é possível aplicar filtro após o início dos lances.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-        else:
-            item.filtrar_todos_ativos()
-    form = LanceForm(request.POST or None)
-    if form.is_valid():
-        rodada_atual = item.get_rodada_atual()
-        if desempatar and item.tem_empate_beneficio():
-            participante = item.get_participante_desempate()
-        else:
-            participante = item.get_proximo_lance() or item.get_participante_desempate()
-        rodada_anterior = int(rodada_atual.rodada) - 1
-        if not eh_modalidade_desconto:
-            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
-                messages.error(request, u'Você não pode dar uma lance maior do que sua proposta.')
+                if not request.GET.get('incluido') and not request.GET.get('incluir'):
+                    item.filtrar_por_10_porcento()
+                botao_incluir = True
+                if request.GET.get('incluir') == u'1':
+                    fornecedores_lance = item.get_lista_participantes(inativos=True)
+                else:
+                    fornecedores_lance = item.get_lista_participantes(ativos=True)
+        elif  request.GET and request.GET.get('filtrar') == u'2':
+            if item.ja_recebeu_lance():
+                messages.info(request,u'Não é possível aplicar filtro após o início dos lances.')
                 return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
-                messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
-                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            if form.cleaned_data.get('lance') > item.valor_medio:
-                messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
-                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
-                messages.error(request, u'Este lance já foi dado.')
-                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
+            else:
+                item.filtrar_todos_ativos()
+        form = LanceForm(request.POST or None)
+        if form.is_valid():
+            rodada_atual = item.get_rodada_atual()
             if desempatar and item.tem_empate_beneficio():
-                if LanceItemRodadaPregao.objects.filter(item=item, valor__lt=form.cleaned_data.get('lance')).exists():
-                    messages.error(request, u'Você não pode dar um lance maior que o menor lance atual.')
-                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+                participante = item.get_participante_desempate()
+            else:
+                participante = item.get_proximo_lance() or item.get_participante_desempate()
+            rodada_anterior = int(rodada_atual.rodada) - 1
+            if not eh_modalidade_desconto:
+                if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
+                    messages.error(request, u'Você não pode dar uma lance maior do que sua proposta.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
+                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
+                    messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if form.cleaned_data.get('lance') > item.valor_medio:
+                    messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
+                    messages.error(request, u'Este lance já foi dado.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if desempatar and item.tem_empate_beneficio():
+                    if LanceItemRodadaPregao.objects.filter(item=item, valor__lt=form.cleaned_data.get('lance')).exists():
+                        messages.error(request, u'Você não pode dar um lance maior que o menor lance atual.')
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+
+            else:
+                if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') <= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
+                    messages.error(request, u'Você não pode dar uma lance menor do que sua proposta.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') <= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
+                    messages.error(request, u'Você não pode dar uma lance menor do que o lance da rodada anterior.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                # if form.cleaned_data.get('lance') >= item.valor_medio:
+                #     messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
+                #     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
+                    messages.error(request, u'Este lance já foi dado.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if desempatar and item.tem_empate_beneficio():
+                    if LanceItemRodadaPregao.objects.filter(item=item, valor__gt=form.cleaned_data.get('lance')).exists():
+                        messages.error(request, u'Você não pode dar um lance menor que o maior lance atual.')
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+
+
+
+            novo_lance = LanceItemRodadaPregao()
+            novo_lance.item = item
+            novo_lance.rodada = rodada_atual
+            novo_lance.participante = participante
+            novo_lance.valor = form.cleaned_data.get('lance')
+            novo_lance.ordem_lance = rodada_atual.get_ordem_lance()
+            novo_lance.save()
+            messages.success(request, u'Novo lance cadastrado com sucesso.')
+
+        if item.eh_lote:
+            title=u'Lances - Lote: %s' % item.item
         else:
-            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') <= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
-                messages.error(request, u'Você não pode dar uma lance menor do que sua proposta.')
-                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') <= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
-                messages.error(request, u'Você não pode dar uma lance menor do que o lance da rodada anterior.')
-                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            # if form.cleaned_data.get('lance') >= item.valor_medio:
-            #     messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
-            #     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
-                messages.error(request, u'Este lance já foi dado.')
-                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            if desempatar and item.tem_empate_beneficio():
-                if LanceItemRodadaPregao.objects.filter(item=item, valor__gt=form.cleaned_data.get('lance')).exists():
-                    messages.error(request, u'Você não pode dar um lance menor que o maior lance atual.')
-                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+            title=u'Lances - Item: %s' % item
+        tabela = {}
+        resultado = {}
+        lances = LanceItemRodadaPregao.objects.filter(item=item)
 
 
+        num_rodadas =  rodadas.values('rodada').order_by('rodada').distinct('rodada')
+        for num in num_rodadas:
+            chave = '%s' % num['rodada']
+            tabela[chave] = []
+        for lance in lances.order_by('id'):
+            chave = '%s' % str(lance.rodada.rodada)
+            tabela[chave].append(lance)
 
-        novo_lance = LanceItemRodadaPregao()
-        novo_lance.item = item
-        novo_lance.rodada = rodada_atual
-        novo_lance.participante = participante
-        novo_lance.valor = form.cleaned_data.get('lance')
-        novo_lance.ordem_lance = rodada_atual.get_ordem_lance()
-        novo_lance.save()
-        messages.success(request, u'Novo lance cadastrado com sucesso.')
-
-    if item.eh_lote:
-        title=u'Lances - Lote: %s' % item.item
+        resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True,  key=lambda x: int(x[0])))
+        return render(request, 'lances_item.html', locals(), RequestContext(request))
     else:
-        title=u'Lances - Item: %s' % item
-    tabela = {}
-    resultado = {}
-    lances = LanceItemRodadaPregao.objects.filter(item=item)
-
-
-    num_rodadas =  rodadas.values('rodada').order_by('rodada').distinct('rodada')
-    for num in num_rodadas:
-        chave = '%s' % num['rodada']
-        tabela[chave] = []
-    for lance in lances.order_by('id'):
-        chave = '%s' % str(lance.rodada.rodada)
-        tabela[chave].append(lance)
-
-    resultado = collections.OrderedDict(sorted(tabela.items(), reverse=True,  key=lambda x: int(x[0])))
-    return render(request, 'lances_item.html', locals(), RequestContext(request))
+        raise PermissionDenied
 
 @login_required()
 def ver_fornecedores(request, fornecedor_id=None):
@@ -595,7 +615,6 @@ def itens_solicitacao(request, solicitacao_id):
 
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'%s' % (solicitacao)
-    setor_do_usuario = request.user.pessoafisica.setor
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
     eh_lote = False
     contrato = False
@@ -608,17 +627,8 @@ def itens_solicitacao(request, solicitacao_id):
     eh_lote = solicitacao.eh_lote()
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria)
     ja_aprovou = ja_registrou_preco.filter(aprovado=True).exists()
-    recebida_no_setor = False
-    movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao)
-    if movimentacao.exists():
-        ultima_movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).latest('id')
-        if ultima_movimentacao.setor_destino == setor_do_usuario and ultima_movimentacao.data_recebimento:
-            recebida_no_setor = True
-    elif solicitacao.setor_atual == setor_do_usuario:
-        if itens.exists() and solicitacao.tipo == SolicitacaoLicitacao.LICITACAO:
-            recebida_no_setor = True
-        elif solicitacao.tipo == SolicitacaoLicitacao.COMPRA or solicitacao.tipo == SolicitacaoLicitacao.ADESAO_ARP:
-            recebida_no_setor = True
+    recebida_no_setor = solicitacao.recebida_setor(request.user.pessoafisica.setor)
+
 
     return render(request, 'itens_solicitacao.html', locals(), RequestContext(request))
 
@@ -629,32 +639,35 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
     id_user = '%s' % request.user.pessoafisica.id
     request.session[id_user] = solicitacao_id
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    form = CadastrarItemSolicitacaoForm(request.POST or None, initial=dict(solicitacao=solicitacao), solicitacao=solicitacao)
-    if form.is_valid():
-        o = form.save(False)
-        o.solicitacao = solicitacao
-        o.item = solicitacao.get_proximo_item()
-        if o.valor_medio:
-            o.total = o.valor_medio * o.quantidade
-        o.save()
-        novo_item = ItemQuantidadeSecretaria()
-        novo_item.solicitacao = solicitacao
-        novo_item.item = o
-        novo_item.secretaria = request.user.pessoafisica.setor.secretaria
-        novo_item.quantidade = o.quantidade
-        novo_item.aprovado = True
-        novo_item.avaliado_por = request.user
-        novo_item.avaliado_em = datetime.datetime.now()
-        novo_item.save()
+    if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado() and not solicitacao.prazo_aberto:
+        form = CadastrarItemSolicitacaoForm(request.POST or None, initial=dict(solicitacao=solicitacao), solicitacao=solicitacao)
+        if form.is_valid():
+            o = form.save(False)
+            o.solicitacao = solicitacao
+            o.item = solicitacao.get_proximo_item()
+            if o.valor_medio:
+                o.total = o.valor_medio * o.quantidade
+            o.save()
+            novo_item = ItemQuantidadeSecretaria()
+            novo_item.solicitacao = solicitacao
+            novo_item.item = o
+            novo_item.secretaria = request.user.pessoafisica.setor.secretaria
+            novo_item.quantidade = o.quantidade
+            novo_item.aprovado = True
+            novo_item.avaliado_por = request.user
+            novo_item.avaliado_em = datetime.datetime.now()
+            novo_item.save()
 
-        # send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
-        #  ['walkyso@gmail.com'], fail_silently=False)
+            # send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
+            #  ['walkyso@gmail.com'], fail_silently=False)
 
 
-        messages.success(request, u'Item cadastrado com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+            messages.success(request, u'Item cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
-    return render(request, 'cadastrar_item_solicitacao.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_item_solicitacao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 def baixar_editais(request):
     hoje = datetime.date.today()
@@ -721,85 +734,99 @@ def ver_solicitacoes(request):
 @login_required()
 def rejeitar_solicitacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Negar Solicitação %s' % solicitacao.num_memorando
-    form = RejeitarSolicitacaoForm(request.POST or None, instance=solicitacao)
-    if form.is_valid():
-        o = form.save(False)
-        o.situacao = SolicitacaoLicitacao.NEGADA
-        o.save()
-        messages.success(request, u'Solicitação rejeitada com sucesso.')
-        return HttpResponseRedirect(u'/base/ver_solicitacoes/')
+    recebida_no_setor = solicitacao.recebida_setor(request.user.pessoafisica.setor)
 
-    return render(request, 'rejeitar_solicitacao.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and recebida_no_setor and solicitacao.eh_apta() and solicitacao.minuta_aprovada and not solicitacao.tem_pregao_cadastrado():
+        title=u'Negar Solicitação %s' % solicitacao.num_memorando
+        form = RejeitarSolicitacaoForm(request.POST or None, instance=solicitacao)
+        if form.is_valid():
+            o = form.save(False)
+            o.situacao = SolicitacaoLicitacao.NEGADA
+            o.save()
+            messages.success(request, u'Solicitação rejeitada com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_solicitacoes/')
+
+        return render(request, 'rejeitar_solicitacao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def cadastrar_pregao(request, solicitacao_id):
-    title=u'Cadastrar Licitação'
-    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    form = PregaoForm(request.POST or None, solicitacao=solicitacao)
-    if form.is_valid():
-        form.save()
-        solicitacao.situacao = SolicitacaoLicitacao.EM_LICITACAO
-        if not solicitacao.processo and form.cleaned_data.get('num_processo'):
-            novo_processo = Processo()
-            novo_processo.pessoa_cadastro = request.user
-            novo_processo.numero = form.cleaned_data.get('num_processo')
-            novo_processo.objeto = solicitacao.objeto
-            novo_processo.tipo = Processo.TIPO_MEMORANDO
-            novo_processo.setor_origem = request.user.pessoafisica.setor
-            novo_processo.save()
-            solicitacao.processo = novo_processo
-        solicitacao.save()
-        messages.success(request, u'Licitação cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/' % form.instance.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        title=u'Cadastrar Licitação'
+        solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+        form = PregaoForm(request.POST or None, solicitacao=solicitacao)
+        if form.is_valid():
+            form.save()
+            solicitacao.situacao = SolicitacaoLicitacao.EM_LICITACAO
+            if not solicitacao.processo and form.cleaned_data.get('num_processo'):
+                novo_processo = Processo()
+                novo_processo.pessoa_cadastro = request.user
+                novo_processo.numero = form.cleaned_data.get('num_processo')
+                novo_processo.objeto = solicitacao.objeto
+                novo_processo.tipo = Processo.TIPO_MEMORANDO
+                novo_processo.setor_origem = request.user.pessoafisica.setor
+                novo_processo.save()
+                solicitacao.processo = novo_processo
+            solicitacao.save()
+            messages.success(request, u'Licitação cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/pregao/%s/' % form.instance.id)
 
-    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def cadastrar_solicitacao(request):
-    title=u'Cadastrar Solicitação'
-    form = SolicitacaoForm(request.POST or None, request=request)
-    if form.is_valid():
-        o = form.save(False)
-        o.setor_origem = request.user.pessoafisica.setor
-        o.setor_atual = request.user.pessoafisica.setor
-        o.data_cadastro = datetime.datetime.now()
-        o.cadastrado_por = request.user
-        if not form.cleaned_data['interessados'] and not form.cleaned_data['todos_interessados']:
-            o.prazo_resposta_interessados = None
-        o.save()
+    if request.user.has_perm('base.pode_cadastrar_solicitacao'):
+        title=u'Cadastrar Solicitação'
+        form = SolicitacaoForm(request.POST or None, request=request)
+        if form.is_valid():
+            o = form.save(False)
+            o.setor_origem = request.user.pessoafisica.setor
+            o.setor_atual = request.user.pessoafisica.setor
+            o.data_cadastro = datetime.datetime.now()
+            o.cadastrado_por = request.user
+            if not form.cleaned_data['interessados'] and not form.cleaned_data['todos_interessados']:
+                o.prazo_resposta_interessados = None
+            o.save()
 
-        if form.cleaned_data['todos_interessados']:
-            for item in Secretaria.objects.all():
-                o.interessados.add(item)
+            if form.cleaned_data['todos_interessados']:
+                for item in Secretaria.objects.all():
+                    o.interessados.add(item)
 
-        elif form.cleaned_data['outros_interessados']:
-            form.save_m2m()
-        messages.success(request, u'Solicitação cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
+            elif form.cleaned_data['outros_interessados']:
+                form.save_m2m()
+            messages.success(request, u'Solicitação cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
 
-    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def editar_solicitacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Editar Solicitação'
-    form = SolicitacaoForm(request.POST or None, instance=solicitacao, request=request)
-    if form.is_valid():
-        o = form.save(False)
-        o.setor_origem = request.user.pessoafisica.setor
-        o.setor_atual = request.user.pessoafisica.setor
-        o.data_cadastro = datetime.datetime.now()
-        o.cadastrado_por = request.user
-        if not form.cleaned_data.get('interessados'):
-            o.prazo_resposta_interessados = None
-        o.save()
-        if form.cleaned_data.get('interessados') and form.cleaned_data['outros_interessados']:
-            form.save_m2m()
-        messages.success(request, u'Solicitação cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
+    if solicitacao.setor_origem == request.user.pessoafisica.setor and (solicitacao.situacao == solicitacao.CADASTRADO or not solicitacao.tem_pregao_cadastrado()) and not solicitacao.tipo == solicitacao.LICITACAO:
+        title=u'Editar Solicitação'
+        form = SolicitacaoForm(request.POST or None, instance=solicitacao, request=request)
+        if form.is_valid():
+            o = form.save(False)
+            o.setor_origem = request.user.pessoafisica.setor
+            o.setor_atual = request.user.pessoafisica.setor
+            o.data_cadastro = datetime.datetime.now()
+            o.cadastrado_por = request.user
+            if not form.cleaned_data.get('interessados'):
+                o.prazo_resposta_interessados = None
+            o.save()
+            if form.cleaned_data.get('interessados') and form.cleaned_data['outros_interessados']:
+                form.save_m2m()
+            messages.success(request, u'Solicitação cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
 
-    return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 
 @login_required()
@@ -840,15 +867,19 @@ def enviar_para_licitacao(request, solicitacao_id):
 @login_required()
 def registrar_preco_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    title = u'Registrar Valor - %s' % item
-    form = RegistrarPrecoItemForm(request.POST or None, request.FILES or None, instance=item)
-    if form.is_valid():
-        o = form.save(False)
-        o.total = o.quantidade*o.valor_medio
-        o.save()
-        messages.success(request, u'Valor registrado com sucesso.')
-        return HttpResponseRedirect(u'/itens_solicitacao/%s/' % item.solicitacao.id)
-    return render(request, 'registrar_preco_item.html', locals(), RequestContext(request))
+
+    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor) and not item.solicitacao.eh_dispensa() and item.solicitacao.prazo_aberto:
+        title = u'Registrar Valor - %s' % item
+        form = RegistrarPrecoItemForm(request.POST or None, request.FILES or None, instance=item)
+        if form.is_valid():
+            o = form.save(False)
+            o.total = o.quantidade*o.valor_medio
+            o.save()
+            messages.success(request, u'Valor registrado com sucesso.')
+            return HttpResponseRedirect(u'/itens_solicitacao/%s/' % item.solicitacao.id)
+        return render(request, 'registrar_preco_item.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def pesquisa_mercadologica(request, solicitacao_id):
@@ -893,40 +924,6 @@ def planilha_pesquisa_mercadologica(request, solicitacao_id):
     os.unlink(salvou)
     return response
 
-
-
-
-    # response = HttpResponse(content_type='application/ms-excel')
-    # response['Content-Disposition'] = 'attachment; filename=modelo_proposta_pesquisa_mercadologica.xls'
-    # wb = xlwt.Workbook(encoding='utf-8')
-    # ws = wb.add_sheet("Sheet1")
-    # row_num = 0
-    #
-    # columns = [
-    #     (u"Item"),
-    #     (u"Material"),
-    #     (u"Unidade"),
-    #     (u"Marca"),
-    #     (u"Valor Unitario"),
-    # ]
-    #
-    # for col_num in xrange(len(columns)):
-    #     ws.write(row_num, col_num, columns[col_num])
-    #
-    # for obj in itens:
-    #     row_num += 1
-    #     row = [
-    #         obj.item,
-    #         obj.material.nome,
-    #         obj.unidade.nome,
-    #         '',
-    #         '',
-    #     ]
-    #     for col_num in xrange(len(row)):
-    #         ws.write(row_num, col_num, row[col_num])
-    #
-    # wb.save(response)
-    # return response
 
 def preencher_pesquisa_mercadologica(request, solicitacao_id):
     title = u'Preencher Pesquisa Mercadológica'
@@ -1034,47 +1031,54 @@ def imprimir_pesquisa(request, pesquisa_id):
 @login_required()
 def ver_pesquisa_mercadologica(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    title=u'Pesquisa Mercadológica'
-    pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
+    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor) and not item.solicitacao.eh_dispensa() and item.solicitacao.prazo_aberto and item.tem_pesquisa_registrada():
+        title=u'Pesquisa Mercadológica'
+        pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
 
-    return render(request, 'ver_pesquisa_mercadologica.html', locals(), RequestContext(request))
+        return render(request, 'ver_pesquisa_mercadologica.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def resultado_classificacao(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    title = u'Classificação - %s' % item
-    lances = ResultadoItemPregao.objects.filter(item=item).order_by('ordem')
-    pregao = item.get_licitacao()
-    return render(request, 'resultado_classificacao.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title = u'Classificação - %s' % item
+        lances = ResultadoItemPregao.objects.filter(item=item).order_by('ordem')
+        pregao = item.get_licitacao()
+        return render(request, 'resultado_classificacao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def desclassificar_do_pregao(request, participante_id):
     title=u'Desclassificar Participante'
     participante = get_object_or_404(ParticipantePregao, pk=participante_id)
     pregao = participante.pregao
-    form = DesclassificaParticipantePregao(request.POST or None, instance = participante)
-    if form.is_valid():
-        o = form.save(False)
-        o.desclassificado = True
-        o.save()
-        if PropostaItemPregao.objects.filter(participante=participante).exists():
-            PropostaItemPregao.objects.filter(participante=participante).update(concorre=False, desclassificado=True, motivo_desclassificacao=o.motivo_desclassificacao)
-        historico = HistoricoPregao()
-        historico.pregao = participante.pregao
-        historico.data = datetime.datetime.now()
-        historico.obs = u'Desclassificação do participante: %s. Motivo: %s' % (participante, form.cleaned_data.get('motivo_desclassificacao'))
-        historico.save()
-        messages.success(request, u'Desclassificação cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/' % participante.pregao.id)
-    return render(request, 'desclassificar_do_pregao.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        form = DesclassificaParticipantePregao(request.POST or None, instance = participante)
+        if form.is_valid():
+            o = form.save(False)
+            o.desclassificado = True
+            o.save()
+            if PropostaItemPregao.objects.filter(participante=participante).exists():
+                PropostaItemPregao.objects.filter(participante=participante).update(concorre=False, desclassificado=True, motivo_desclassificacao=o.motivo_desclassificacao)
+            historico = HistoricoPregao()
+            historico.pregao = participante.pregao
+            historico.data = datetime.datetime.now()
+            historico.obs = u'Desclassificação do participante: %s. Motivo: %s' % (participante, form.cleaned_data.get('motivo_desclassificacao'))
+            historico.save()
+            messages.success(request, u'Desclassificação cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/pregao/%s/' % participante.pregao.id)
+        return render(request, 'desclassificar_do_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def planilha_propostas(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = get_object_or_404(Pregao, solicitacao=solicitacao)
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
-
-
 
     nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor')
     file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls')
@@ -1118,145 +1122,166 @@ def planilha_propostas(request, solicitacao_id):
 @login_required()
 def remover_participante(request, proposta_id, situacao):
     proposta = get_object_or_404(PropostaItemPregao, pk=proposta_id)
-    if situacao == u'1':
-        title=u'Registrar Desclassificação'
-    elif situacao == u'2':
-        title=u'Registrar Desistências'
-
-    form = RemoverParticipanteForm(request.POST or None)
-    if form.is_valid():
+    if request.user.has_perm('base.pode_cadastrar_pregao') and proposta.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         if situacao == u'1':
-            proposta.desclassificado = True
-            proposta.motivo_desclassificacao = form.cleaned_data.get('motivo')
-
+            title=u'Registrar Desclassificação'
         elif situacao == u'2':
-            proposta.desistencia = True
-            proposta.motivo_desistencia = form.cleaned_data.get('motivo')
+            title=u'Registrar Desistências'
 
-        proposta.concorre = False
-        proposta.save()
+        form = RemoverParticipanteForm(request.POST or None)
+        if form.is_valid():
+            if situacao == u'1':
+                proposta.desclassificado = True
+                proposta.motivo_desclassificacao = form.cleaned_data.get('motivo')
 
-        historico = HistoricoPregao()
-        historico.pregao = proposta.pregao
-        historico.data = datetime.datetime.now()
-        if situacao == u'1':
-            historico.obs = u'Desclassificação do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
-        elif situacao == u'2':
-            historico.obs = u'Desistência do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
-        historico.save()
-        messages.success(request, u'Remoção feita com sucesso.')
-        return HttpResponseRedirect(u'/base/lances_item/%s/' % proposta.item.id)
+            elif situacao == u'2':
+                proposta.desistencia = True
+                proposta.motivo_desistencia = form.cleaned_data.get('motivo')
 
+            proposta.concorre = False
+            proposta.save()
 
-
-    return render(request, 'remover_participante.html', locals(), RequestContext(request))
+            historico = HistoricoPregao()
+            historico.pregao = proposta.pregao
+            historico.data = datetime.datetime.now()
+            if situacao == u'1':
+                historico.obs = u'Desclassificação do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
+            elif situacao == u'2':
+                historico.obs = u'Desistência do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
+            historico.save()
+            messages.success(request, u'Remoção feita com sucesso.')
+            return HttpResponseRedirect(u'/base/lances_item/%s/' % proposta.item.id)
+        return render(request, 'remover_participante.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def adicionar_por_discricionaridade(request, proposta_id):
     proposta = get_object_or_404(PropostaItemPregao, pk=proposta_id)
-    proposta.concorre = True
-    proposta.save()
-    messages.success(request, u'Participante adicionado.')
-    return HttpResponseRedirect(u'/base/lances_item/%s/?filtrar=1&incluido=1' % proposta.item.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and proposta.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        proposta.concorre = True
+        proposta.save()
+        messages.success(request, u'Participante adicionado.')
+        return HttpResponseRedirect(u'/base/lances_item/%s/?filtrar=1&incluido=1' % proposta.item.id)
+    else:
+        raise PermissionDenied
 
 @login_required()
 def gerar_resultado(request, item_id):
-    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    item.gerar_resultado()
-    messages.success(request, u'Resultados gerados com sucesso.')
-    return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+        item.gerar_resultado()
+        messages.success(request, u'Resultados gerados com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def resultado_alterar(request, resultado_id, situacao):
     title=u'Alterar Situação de Fornecedor'
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
-    form = ResultadoObsForm(request.POST or None, instance=resultado)
-    if form.is_valid():
-        if situacao ==u'1':
-            resultado.situacao = ResultadoItemPregao.INABILITADO
+    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        form = ResultadoObsForm(request.POST or None, instance=resultado)
+        if form.is_valid():
+            if situacao ==u'1':
+                resultado.situacao = ResultadoItemPregao.INABILITADO
 
-        elif situacao == u'2':
-            resultado.situacao = ResultadoItemPregao.DESCLASSIFICADO
-        elif situacao == u'3':
-            resultado.situacao = ResultadoItemPregao.CLASSIFICADO
-        form.save()
+            elif situacao == u'2':
+                resultado.situacao = ResultadoItemPregao.DESCLASSIFICADO
+            elif situacao == u'3':
+                resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+            form.save()
 
-        historico = HistoricoPregao()
-        historico.pregao = resultado.item.get_licitacao()
-        historico.data = datetime.datetime.now()
-        if situacao == u'1':
-            historico.obs = u'Inabilitação do participante: %s do Item: %s. Motivo: %s' % (resultado.participante, resultado.item.item, form.cleaned_data.get('observacoes'))
-        elif situacao == u'2':
-            historico.obs = u'Desclassificação do participante: %s do Item: %s. Motivo: %s' % (resultado.participante, resultado.item.item, form.cleaned_data.get('observacoes'))
-        elif situacao == u'3':
-            historico.obs = u'Classificação do participante: %s do Item: %s. Motivo: %s' % (resultado.participante, resultado.item.item, form.cleaned_data.get('observacoes'))
-        historico.save()
-        messages.success(request, u'Situação alterada com sucesso.')
-        return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
-    return render(request, 'resultado_alterar.html', locals(), RequestContext(request))
+            historico = HistoricoPregao()
+            historico.pregao = resultado.item.get_licitacao()
+            historico.data = datetime.datetime.now()
+            if situacao == u'1':
+                historico.obs = u'Inabilitação do participante: %s do Item: %s. Motivo: %s' % (resultado.participante, resultado.item.item, form.cleaned_data.get('observacoes'))
+            elif situacao == u'2':
+                historico.obs = u'Desclassificação do participante: %s do Item: %s. Motivo: %s' % (resultado.participante, resultado.item.item, form.cleaned_data.get('observacoes'))
+            elif situacao == u'3':
+                historico.obs = u'Classificação do participante: %s do Item: %s. Motivo: %s' % (resultado.participante, resultado.item.item, form.cleaned_data.get('observacoes'))
+            historico.save()
+            messages.success(request, u'Situação alterada com sucesso.')
+            return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
+        return render(request, 'resultado_alterar.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    participante = get_object_or_404(ParticipantePregao, pk=participante_id)
-    title=u'Alterar Participante'
-    form = RemoverParticipanteForm(request.POST or None)
-    if form.is_valid():
-        if situacao ==u'1':
-            ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.INABILITADO, observacoes=form.cleaned_data.get('motivo'))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        participante = get_object_or_404(ParticipantePregao, pk=participante_id)
+        title=u'Alterar Participante'
+        form = RemoverParticipanteForm(request.POST or None)
+        if form.is_valid():
+            if situacao ==u'1':
+                ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.INABILITADO, observacoes=form.cleaned_data.get('motivo'))
 
-        elif situacao == u'2':
-            ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.DESCLASSIFICADO, observacoes=form.cleaned_data.get('motivo'))
+            elif situacao == u'2':
+                ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.DESCLASSIFICADO, observacoes=form.cleaned_data.get('motivo'))
 
-        historico = HistoricoPregao()
-        historico.pregao = pregao
-        historico.data = datetime.datetime.now()
-        if situacao == u'1':
-            historico.obs = u'Inabilitação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
-        elif situacao == u'2':
-            historico.obs = u'Desclassificação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
+            historico = HistoricoPregao()
+            historico.pregao = pregao
+            historico.data = datetime.datetime.now()
+            if situacao == u'1':
+                historico.obs = u'Inabilitação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
+            elif situacao == u'2':
+                historico.obs = u'Desclassificação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
 
-        historico.save()
-        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
-    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+            historico.save()
+            return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+        return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def resultado_ajustar_preco(request, resultado_id):
     title=u'Ajustar Preço de Fornecedor'
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
-    form = ResultadoAjustePrecoForm(request.POST or None, instance=resultado)
-    if form.is_valid():
-        form.save()
-        if resultado.item.get_licitacao().eh_pregao():
-            messages.success(request, u'Situação alterada com sucesso.')
-            return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
-        else:
-            PropostaItemPregao.objects.filter(item=resultado.item, participante=resultado.participante, marca=resultado.marca).update(valor=resultado.valor)
-            return HttpResponseRedirect(u'/base/gerar_resultado_licitacao/%s/' % resultado.item.get_licitacao().id)
-    return render(request, 'resultado_ajustar_preco.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        form = ResultadoAjustePrecoForm(request.POST or None, instance=resultado)
+        if form.is_valid():
+            form.save()
+            if resultado.item.get_licitacao().eh_pregao():
+                messages.success(request, u'Situação alterada com sucesso.')
+                return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)
+            else:
+                PropostaItemPregao.objects.filter(item=resultado.item, participante=resultado.participante, marca=resultado.marca).update(valor=resultado.valor)
+                return HttpResponseRedirect(u'/base/gerar_resultado_licitacao/%s/' % resultado.item.get_licitacao().id)
+        return render(request, 'resultado_ajustar_preco.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def desempatar_item(request, item_id):
     title=u'Desempatar Item'
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    resultados = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
-    pregao = item.get_licitacao()
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        resultados = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
+        pregao = item.get_licitacao()
 
-    return render(request, 'desempatar_item.html', locals(), RequestContext(request))
+        return render(request, 'desempatar_item.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def definir_colocacao(request, resultado_id):
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
-    form = DefinirColocacaoForm(request.POST or None, instance=resultado)
-    if form.is_valid():
-        o = form.save(False)
-        o.empate = False
-        o.save()
-        messages.success(request, u'Colocação registrada com sucesso.')
-        return HttpResponseRedirect(u'/base/desempatar_item/%s/' % resultado.item.id)
-    return render(request, 'definir_colocacao.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        form = DefinirColocacaoForm(request.POST or None, instance=resultado)
+        if form.is_valid():
+            o = form.save(False)
+            o.empate = False
+            o.save()
+            messages.success(request, u'Colocação registrada com sucesso.')
+            return HttpResponseRedirect(u'/base/desempatar_item/%s/' % resultado.item.id)
+        return render(request, 'definir_colocacao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def movimentar_solicitacao(request, solicitacao_id, tipo):
@@ -1293,204 +1318,207 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
 @login_required()
 def cadastrar_anexo_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title=u'Cadastrar Anexo - %s' % pregao
-    form = AnexoPregaoForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        o = form.save(False)
-        o.pregao = pregao
-        o.cadastrado_por = request.user
-        o.cadastrado_em = datetime.datetime.now()
-        o.save()
-        messages.success(request, u'Anexo cadastrado com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#anexos' % pregao.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Cadastrar Anexo - %s' % pregao
+        form = AnexoPregaoForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            o = form.save(False)
+            o.pregao = pregao
+            o.cadastrado_por = request.user
+            o.cadastrado_em = datetime.datetime.now()
+            o.save()
+            messages.success(request, u'Anexo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/pregao/%s/#anexos' % pregao.id)
 
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def cadastrar_anexo_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
-    title=u'Cadastrar Anexo - %s' % contrato
-    form = AnexoContratoForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        o = form.save(False)
-        o.contrato = contrato
-        o.cadastrado_por = request.user
-        o.cadastrado_em = datetime.datetime.now()
-        o.save()
-        messages.success(request, u'Anexo cadastrado com sucesso.')
-        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
+    if request.user.has_perm('base.pode_gerenciar_contrato') and contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Cadastrar Anexo - %s' % contrato
+        form = AnexoContratoForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            o = form.save(False)
+            o.contrato = contrato
+            o.cadastrado_por = request.user
+            o.cadastrado_em = datetime.datetime.now()
+            o.save()
+            messages.success(request, u'Anexo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
 
-    return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
-
+        return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def cadastrar_ata_registro_preco(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
+    if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and pregao and pregao.data_homologacao and pregao.eh_ata_registro_preco and not solicitacao.get_ata():
 
-    title=u'Cadastrar Ata de Registro de Preço'
+        title=u'Cadastrar Ata de Registro de Preço'
 
-    form = AtaRegistroPrecoForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        o = form.save(False)
-        o.solicitacao = solicitacao
-        o.pregao = pregao
-        o.valor = pregao.get_valor_total()
-        o.save()
-        if solicitacao.eh_lote():
-            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
-            for lote in itens_pregao:
-                for item in lote.get_itens_do_lote():
+        form = AtaRegistroPrecoForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            o = form.save(False)
+            o.solicitacao = solicitacao
+            o.pregao = pregao
+            o.valor = pregao.get_valor_total()
+            o.save()
+            if solicitacao.eh_lote():
+                itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+                for lote in itens_pregao:
+                    for item in lote.get_itens_do_lote():
+                        novo_item = ItemAtaRegistroPreco()
+                        novo_item.ata = o
+                        novo_item.item = item
+                        novo_item.marca = item.get_marca_item_lote()
+                        novo_item.participante = lote.get_vencedor().participante
+                        novo_item.valor = item.get_valor_unitario_final()
+                        novo_item.quantidade = item.quantidade
+                        novo_item.unidade = item.unidade
+                        novo_item.material = item.material
+                        novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
+                        novo_item.save()
+
+            else:
+                for resultado in solicitacao.get_resultado():
                     novo_item = ItemAtaRegistroPreco()
                     novo_item.ata = o
-                    novo_item.item = item
-                    novo_item.marca = item.get_marca_item_lote()
-                    novo_item.participante = lote.get_vencedor().participante
-                    novo_item.valor = item.get_valor_unitario_final()
-                    novo_item.quantidade = item.quantidade
-                    novo_item.unidade = item.unidade
-                    novo_item.material = item.material
-                    novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
+                    novo_item.item = resultado.item
+                    novo_item.marca = resultado.marca
+                    novo_item.participante = resultado.participante
+                    novo_item.valor = resultado.valor
+                    novo_item.quantidade = resultado.item.quantidade
+                    novo_item.unidade = resultado.item.unidade
+                    novo_item.material = resultado.item.material
+                    novo_item.fornecedor = resultado.participante.fornecedor
                     novo_item.save()
 
-        else:
-            for resultado in solicitacao.get_resultado():
-                novo_item = ItemAtaRegistroPreco()
-                novo_item.ata = o
-                novo_item.item = resultado.item
-                novo_item.marca = resultado.marca
-                novo_item.participante = resultado.participante
-                novo_item.valor = resultado.valor
-                novo_item.quantidade = resultado.item.quantidade
-                novo_item.unidade = resultado.item.unidade
-                novo_item.material = resultado.item.material
-                novo_item.fornecedor = resultado.participante.fornecedor
-                novo_item.save()
 
-
-        messages.success(request, u'Ata de Registro de Preço cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % o.id)
-    return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+            messages.success(request, u'Ata de Registro de Preço cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % o.id)
+        return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def cadastrar_contrato(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
 
+    if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and  pregao and pregao.data_homologacao and not solicitacao.contrato_set.exists() and not solicitacao.ataregistropreco_set.exists():
 
-    title=u'Cadastrar Contrato'
-
-    if pregao:
-        form = CriarContratoForm(request.POST or None, request.FILES or None, pregao=pregao)
-    else:
-        form = ContratoForm(request.POST or None, request.FILES or None)
-
-
-    if form.is_valid():
-        # import ipdb; ipdb.set_trace()
-        # o = form.save(False)
-        # o.solicitacao = solicitacao
-        # if pregao:
-        #     o.pregao = pregao
-        #     o.valor = pregao.get_valor_total()
-        # else:
-        #     o.valor = solicitacao.get_valor_total()
-        # o.save()
+        title=u'Cadastrar Contrato'
 
         if pregao:
+            form = CriarContratoForm(request.POST or None, request.FILES or None, pregao=pregao)
+        else:
+            form = ContratoForm(request.POST or None, request.FILES or None)
 
-            for participante in pregao.get_vencedores():
 
-                o = Contrato()
-                o.solicitacao = solicitacao
-                o.pregao = pregao
-                o.valor = pregao.get_valor_total(participante)
-                o.numero = form.cleaned_data.get('contrato_%d' % participante.id)
-                o.aplicacao_artigo_57 = form.cleaned_data.get('aplicacao_artigo_57_%d' % participante.id)
-                o.garantia_execucao_objeto = form.cleaned_data.get('garantia_%d' % participante.id)
+        if form.is_valid():
 
-                o.data_inicio = form.cleaned_data.get('data_inicial_%d' % participante.id)
-                o.data_fim = form.cleaned_data.get('data_final_%d' % participante.id)
-                o.save()
 
-                if solicitacao.eh_lote():
-                    itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
-                    for lote in itens_pregao:
-                        for item in lote.get_itens_do_lote():
-                            if lote.get_vencedor().participante == participante:
+            if pregao:
+
+                for participante in pregao.get_vencedores():
+
+                    o = Contrato()
+                    o.solicitacao = solicitacao
+                    o.pregao = pregao
+                    o.valor = pregao.get_valor_total(participante)
+                    o.numero = form.cleaned_data.get('contrato_%d' % participante.id)
+                    o.aplicacao_artigo_57 = form.cleaned_data.get('aplicacao_artigo_57_%d' % participante.id)
+                    o.garantia_execucao_objeto = form.cleaned_data.get('garantia_%d' % participante.id)
+
+                    o.data_inicio = form.cleaned_data.get('data_inicial_%d' % participante.id)
+                    o.data_fim = form.cleaned_data.get('data_final_%d' % participante.id)
+                    o.save()
+
+                    if solicitacao.eh_lote():
+                        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+                        for lote in itens_pregao:
+                            for item in lote.get_itens_do_lote():
+                                if lote.get_vencedor().participante == participante:
+                                    novo_item = ItemContrato()
+                                    novo_item.contrato = o
+                                    novo_item.item = item
+                                    novo_item.material = item.material
+                                    if item.get_marca_item_lote():
+                                        novo_item.marca = item.get_marca_item_lote()
+                                    novo_item.participante = lote.get_vencedor().participante
+                                    novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
+                                    novo_item.valor = item.get_valor_unitario_final()
+                                    novo_item.quantidade = item.quantidade
+                                    novo_item.unidade = item.unidade
+                                    novo_item.save()
+                    else:
+                        for resultado in solicitacao.get_resultado():
+                            if resultado.participante == participante:
                                 novo_item = ItemContrato()
                                 novo_item.contrato = o
-                                novo_item.item = item
-                                novo_item.material = item.material
-                                if item.get_marca_item_lote():
-                                    novo_item.marca = item.get_marca_item_lote()
-                                novo_item.participante = lote.get_vencedor().participante
-                                novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
-                                novo_item.valor = item.get_valor_unitario_final()
-                                novo_item.quantidade = item.quantidade
-                                novo_item.unidade = item.unidade
+                                novo_item.item = resultado.item
+                                novo_item.material = resultado.item.material
+                                if resultado.marca:
+                                    novo_item.marca = resultado.marca
+                                novo_item.participante = resultado.participante
+                                novo_item.fornecedor = resultado.participante.fornecedor
+                                novo_item.valor = resultado.valor
+                                novo_item.quantidade = resultado.item.quantidade
+                                novo_item.unidade = resultado.item.unidade
                                 novo_item.save()
-                else:
-                    for resultado in solicitacao.get_resultado():
-                        if resultado.participante == participante:
-                            novo_item = ItemContrato()
-                            novo_item.contrato = o
-                            novo_item.item = resultado.item
-                            novo_item.material = resultado.item.material
-                            if resultado.marca:
-                                novo_item.marca = resultado.marca
-                            novo_item.participante = resultado.participante
-                            novo_item.fornecedor = resultado.participante.fornecedor
-                            novo_item.valor = resultado.valor
-                            novo_item.quantidade = resultado.item.quantidade
-                            novo_item.unidade = resultado.item.unidade
-                            novo_item.save()
-        else:
-            o = form.save(False)
-            o.solicitacao = solicitacao
-            o.valor = solicitacao.get_valor_total()
-            o.save()
+            else:
+                o = form.save(False)
+                o.solicitacao = solicitacao
+                o.valor = solicitacao.get_valor_total()
+                o.save()
 
 
-            if PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
-                for resultado in PedidoContrato.objects.filter(solicitacao=solicitacao):
-                    novo_item = ItemContrato()
-                    novo_item.contrato = o
-                    if resultado.item.item:
-                        novo_item.item = resultado.item.item
-                    novo_item.material = resultado.item.material
-                    novo_item.marca = resultado.item.marca
-                    if resultado.item.participante:
-                        novo_item.participante = resultado.item.participante
-                    novo_item.fornecedor = resultado.item.fornecedor
-                    novo_item.valor = resultado.item.valor
-                    novo_item.quantidade = resultado.quantidade
-                    novo_item.unidade = resultado.item.unidade
-                    novo_item.save()
+                if PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
+                    for resultado in PedidoContrato.objects.filter(solicitacao=solicitacao):
+                        novo_item = ItemContrato()
+                        novo_item.contrato = o
+                        if resultado.item.item:
+                            novo_item.item = resultado.item.item
+                        novo_item.material = resultado.item.material
+                        novo_item.marca = resultado.item.marca
+                        if resultado.item.participante:
+                            novo_item.participante = resultado.item.participante
+                        novo_item.fornecedor = resultado.item.fornecedor
+                        novo_item.valor = resultado.item.valor
+                        novo_item.quantidade = resultado.quantidade
+                        novo_item.unidade = resultado.item.unidade
+                        novo_item.save()
 
-            elif PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
-                for resultado in PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao):
-                    novo_item = ItemContrato()
-                    novo_item.contrato = o
-                    if resultado.item.item:
-                        novo_item.item = resultado.item.item
-                    novo_item.material = resultado.item.material
+                elif PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+                    for resultado in PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao):
+                        novo_item = ItemContrato()
+                        novo_item.contrato = o
+                        if resultado.item.item:
+                            novo_item.item = resultado.item.item
+                        novo_item.material = resultado.item.material
 
-                    novo_item.marca = resultado.item.marca
-                    if resultado.item.participante:
-                        novo_item.participante = resultado.item.participante
-                    novo_item.fornecedor = resultado.item.fornecedor
-                    novo_item.valor = resultado.item.valor
-                    novo_item.quantidade = resultado.quantidade
-                    novo_item.unidade = resultado.item.unidade
-                    novo_item.save()
+                        novo_item.marca = resultado.item.marca
+                        if resultado.item.participante:
+                            novo_item.participante = resultado.item.participante
+                        novo_item.fornecedor = resultado.item.fornecedor
+                        novo_item.valor = resultado.item.valor
+                        novo_item.quantidade = resultado.quantidade
+                        novo_item.unidade = resultado.item.unidade
+                        novo_item.save()
 
 
-        messages.success(request, u'Cadastrado realizado com sucesso.')
-        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
+            messages.success(request, u'Cadastrado realizado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
 
-    return render(request, 'cadastrar_contrato.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 def baixar_arquivo(request, arquivo_id):
 
@@ -1508,187 +1536,212 @@ def baixar_arquivo(request, arquivo_id):
 @login_required()
 def alterar_valor_lance(request, lance_id):
     lance = get_object_or_404(LanceItemRodadaPregao, pk=lance_id)
-    form = AlteraLanceForm(request.POST or None, instance=lance)
-    if form.is_valid():
-        rodada_atual = lance.item.get_rodada_atual()
-        participante = lance.participante
-        item = lance.item
-        rodada_anterior = int(rodada_atual.rodada) - 1
-        if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('valor') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
-            messages.error(request, u'Você não pode dar uma lance maior do que sua proposta.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and lance.rodada.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        form = AlteraLanceForm(request.POST or None, instance=lance)
+        if form.is_valid():
+            rodada_atual = lance.item.get_rodada_atual()
+            participante = lance.participante
+            item = lance.item
+            rodada_anterior = int(rodada_atual.rodada) - 1
+            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('valor') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
+                messages.error(request, u'Você não pode dar uma lance maior do que sua proposta.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-        if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('valor') >= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
-            messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+            if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('valor') >= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
+                messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-        if form.cleaned_data.get('valor') >= item.valor_medio:
-            messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+            if form.cleaned_data.get('valor') >= item.valor_medio:
+                messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-        if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('valor')):
-            messages.error(request, u'Este lance já foi dado.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+            if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('valor')):
+                messages.error(request, u'Este lance já foi dado.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
 
 
-        form.save()
-        messages.success(request, u'Lance alterado com sucesso.')
-        return HttpResponseRedirect(u'/base/lances_item/%s/' % lance.item.id)
-    return render(request, 'alterar_valor_lance.html', locals(), RequestContext(request))
+            form.save()
+            messages.success(request, u'Lance alterado com sucesso.')
+            return HttpResponseRedirect(u'/base/lances_item/%s/' % lance.item.id)
+        return render(request, 'alterar_valor_lance.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def avancar_proximo_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    if item.tem_empate_beneficio():
-        messages.error(request, u'Este item tem um empate.')
-        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
-    else:
-        if item.eh_ativo():
-            item.gerar_resultado()
-        #item.ativo=False
-        #item.save()
-        if request.GET.get('ultimo'):
-            return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        if item.tem_empate_beneficio():
+            messages.error(request, u'Este item tem um empate.')
+            return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
         else:
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.tem_proximo_item())
+            if item.eh_ativo():
+                item.gerar_resultado()
+            #item.ativo=False
+            #item.save()
+            if request.GET.get('ultimo'):
+                return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
+            else:
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.tem_proximo_item())
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def cancelar_rodada(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    rodada = item.get_rodada_atual()
-    LanceItemRodadaPregao.objects.filter(rodada=rodada, item=item).delete()
-    rodada_anterior = rodada.get_rodada_anterior()
-    if rodada_anterior:
-        rodada_anterior.atual=True
-        rodada_anterior.save()
-    rodada.delete()
-    messages.success(request, u'Rodada cancelada.')
-    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        rodada = item.get_rodada_atual()
+        LanceItemRodadaPregao.objects.filter(rodada=rodada, item=item).delete()
+        rodada_anterior = rodada.get_rodada_anterior()
+        if rodada_anterior:
+            rodada_anterior.atual=True
+            rodada_anterior.save()
+        rodada.delete()
+        messages.success(request, u'Rodada cancelada.')
+        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    else:
+        raise PermissionDenied
 
 @login_required()
 def editar_proposta(request, proposta_id):
     proposta = get_object_or_404(PropostaItemPregao, pk=proposta_id)
-    title=u'Editar Item da Proposta'
-    form = EditarPropostaForm(request.POST or None, instance=proposta)
-    if form.is_valid():
-        form.save()
-        messages.success(request, u'Item da proposta atualizada com sucesso.')
-        return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (proposta.pregao.id, proposta.participante.id))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and proposta.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Editar Item da Proposta'
+        form = EditarPropostaForm(request.POST or None, instance=proposta)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Item da proposta atualizada com sucesso.')
+            return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (proposta.pregao.id, proposta.participante.id))
 
-    return render(request, 'editar_proposta.html', locals(), RequestContext(request))
+        return render(request, 'editar_proposta.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def encerrar_pregao(request, pregao_id, motivo):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title=u'Alterar Situação - %s' % pregao
-    form = EncerrarPregaoForm(request.POST or None, instance=pregao)
-    if form.is_valid():
-        o = form.save(False)
-        if motivo == u'1':
-            o.situacao = Pregao.DESERTO
-        elif motivo == u'2':
-            o.situacao = Pregao.FRACASSADO
-        o.save()
-        historico = HistoricoPregao()
-        historico.pregao = pregao
-        historico.data = datetime.datetime.now()
-        if motivo == u'1':
-            historico.obs = u'Pregão Deserto. Observações: %s' %  form.cleaned_data.get('obs')
-        elif motivo == u'2':
-            historico.obs = u'Pregão Fracassado. Observações: %s' %  form.cleaned_data.get('obs')
-        historico.save()
-        messages.success(request, u'Pregão atualizado com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Alterar Situação - %s' % pregao
+        form = EncerrarPregaoForm(request.POST or None, instance=pregao)
+        if form.is_valid():
+            o = form.save(False)
+            if motivo == u'1':
+                o.situacao = Pregao.DESERTO
+            elif motivo == u'2':
+                o.situacao = Pregao.FRACASSADO
+            o.save()
+            historico = HistoricoPregao()
+            historico.pregao = pregao
+            historico.data = datetime.datetime.now()
+            if motivo == u'1':
+                historico.obs = u'Pregão Deserto. Observações: %s' %  form.cleaned_data.get('obs')
+            elif motivo == u'2':
+                historico.obs = u'Pregão Fracassado. Observações: %s' %  form.cleaned_data.get('obs')
+            historico.save()
+            messages.success(request, u'Pregão atualizado com sucesso.')
+            return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+        return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def encerrar_itempregao(request, item_id, motivo, origem):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    title=u'Alterar Situação do Item %s' % item
-    form = EncerrarItemPregaoForm(request.POST or None, instance=item)
-    if form.is_valid():
-        o = form.save(False)
-        if motivo == u'1':
-            o.situacao = ItemSolicitacaoLicitacao.DESERTO
-            historico = HistoricoPregao()
-            historico.pregao = item.get_licitacao()
-            historico.data = datetime.datetime.now()
-            historico.obs = u'Item Deserto: %s. Motivo: %s' % (item, form.cleaned_data.get('obs'))
-            historico.save()
-        elif motivo == u'2':
-            o.situacao = ItemSolicitacaoLicitacao.FRACASSADO
-            historico = HistoricoPregao()
-            historico.pregao = item.get_licitacao()
-            historico.data = datetime.datetime.now()
-            historico.obs = u'Item Fracassado: %s. Motivo: %s' % (item, form.cleaned_data.get('obs'))
-            historico.save()
-        o.save()
-        messages.success(request, u'Item atualizado com sucesso.')
-        if origem ==u'1':
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-        else:
-            return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Alterar Situação do Item %s' % item
+        form = EncerrarItemPregaoForm(request.POST or None, instance=item)
+        if form.is_valid():
+            o = form.save(False)
+            if motivo == u'1':
+                o.situacao = ItemSolicitacaoLicitacao.DESERTO
+                historico = HistoricoPregao()
+                historico.pregao = item.get_licitacao()
+                historico.data = datetime.datetime.now()
+                historico.obs = u'Item Deserto: %s. Motivo: %s' % (item, form.cleaned_data.get('obs'))
+                historico.save()
+            elif motivo == u'2':
+                o.situacao = ItemSolicitacaoLicitacao.FRACASSADO
+                historico = HistoricoPregao()
+                historico.pregao = item.get_licitacao()
+                historico.data = datetime.datetime.now()
+                historico.obs = u'Item Fracassado: %s. Motivo: %s' % (item, form.cleaned_data.get('obs'))
+                historico.save()
+            o.save()
+            messages.success(request, u'Item atualizado com sucesso.')
+            if origem ==u'1':
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+            else:
+                return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % item.get_licitacao().id)
 
 
-    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+        return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def suspender_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    title=u'Suspender - %s' % pregao
-    if 'retomar' in request.GET:
-        pregao.situacao = Pregao.CADASTRADO
-        pregao.save()
-        registro = HistoricoPregao()
-        registro.data =datetime.datetime.now()
-        registro.obs = u'Pregão Retomado'
-        registro.pregao = pregao
-        registro.save()
-        messages.success(request, u'Pregão retomado com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Suspender - %s' % pregao
+        if 'retomar' in request.GET:
+            pregao.situacao = Pregao.CADASTRADO
+            pregao.save()
+            registro = HistoricoPregao()
+            registro.data =datetime.datetime.now()
+            registro.obs = u'Pregão Retomado'
+            registro.pregao = pregao
+            registro.save()
+            messages.success(request, u'Pregão retomado com sucesso.')
+            return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    form = SuspenderPregaoForm(request.POST or None)
-    if form.is_valid():
-        registro = HistoricoPregao()
-        registro.data = datetime.datetime.now()
-        registro.obs = form.cleaned_data.get('motivo')
-        registro.pregao = pregao
-        registro.save()
-        pregao.situacao = Pregao.SUSPENSO
-        pregao.data_suspensao = datetime.datetime.now().date()
-        if form.cleaned_data.get('sine_die'):
-            pregao.sine_die = True
-            pregao.data_retorno = None
-        else:
-            pregao.sine_die = False
-            pregao.data_retorno = form.cleaned_data.get('data_retorno')
-        pregao.save()
+        form = SuspenderPregaoForm(request.POST or None)
+        if form.is_valid():
+            registro = HistoricoPregao()
+            registro.data = datetime.datetime.now()
+            registro.obs = form.cleaned_data.get('motivo')
+            registro.pregao = pregao
+            registro.save()
+            pregao.situacao = Pregao.SUSPENSO
+            pregao.data_suspensao = datetime.datetime.now().date()
+            if form.cleaned_data.get('sine_die'):
+                pregao.sine_die = True
+                pregao.data_retorno = None
+            else:
+                pregao.sine_die = False
+                pregao.data_retorno = form.cleaned_data.get('data_retorno')
+            pregao.save()
 
-        messages.success(request, u'Pregão suspenso com sucesso.')
-        return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
+            messages.success(request, u'Pregão suspenso com sucesso.')
+            return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
 
-    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+        return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def prazo_pesquisa_mercadologica(request, solicitacao_id):
     title=u'Prazo de recebimento de pesquisas'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if solicitacao.prazo_aberto:
-        solicitacao.prazo_aberto = False
-        solicitacao.save()
-        messages.success(request, u'Período para recebimento de pesquisa fechado com sucesso.')
+    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and (solicitacao.prazo_aberto or not solicitacao.eh_dispensa() or not solicitacao.tem_ordem_compra()):
+
+        if solicitacao.prazo_aberto:
+            solicitacao.prazo_aberto = False
+            solicitacao.save()
+            messages.success(request, u'Período para recebimento de pesquisa fechado com sucesso.')
+        else:
+            solicitacao.prazo_aberto = True
+            solicitacao.save()
+            messages.success(request, u'Período para recebimento de pesquisa aberto com sucesso.')
+
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
+
+        return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
     else:
-        solicitacao.prazo_aberto = True
-        solicitacao.save()
-        messages.success(request, u'Período para recebimento de pesquisa aberto com sucesso.')
-
-    return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
-
-    return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
+        raise PermissionDenied
 
 @login_required()
 def modelo_memorando(request, solicitacao_id):
@@ -1727,65 +1780,77 @@ def ver_movimentacao(request, solicitacao_id):
 @login_required()
 def cadastrar_minuta(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Cadastrar Minuta - %s' % solicitacao
-    form = CadastroMinutaForm(request.POST or None, request.FILES or None, instance=solicitacao)
-    if form.is_valid():
-        form.save()
-        messages.success(request, u'Minuta cadastrada com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
-    return render(request, 'cadastrar_minuta.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pregao') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and solicitacao.eh_apta() and not solicitacao.arquivo_minuta:
+        title=u'Cadastrar Minuta - %s' % solicitacao
+        form = CadastroMinutaForm(request.POST or None, request.FILES or None, instance=solicitacao)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Minuta cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+        return render(request, 'cadastrar_minuta.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def avalia_minuta(request, solicitacao_id, tipo):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Avaliar Minuta/Emitir Termo -  %s' % solicitacao
-    form = ObsForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        if tipo == u'1':
-            solicitacao.minuta_aprovada = True
-        elif tipo == u'2':
-            solicitacao.minuta_aprovada = True
-        solicitacao.data_avaliacao_minuta = datetime.datetime.now()
-        solicitacao.minuta_avaliada_por = request.user
-        solicitacao.obs_avaliacao_minuta = form.cleaned_data.get('obs')
-        solicitacao.arquivo_parecer_minuta = form.cleaned_data.get('arquivo')
-        solicitacao.save()
-        messages.success(request, u'Minuta avaliada com sucesso.')
-        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_avaliar_minuta') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.data_avaliacao_minuta:
+        title=u'Avaliar Minuta/Emitir Termo -  %s' % solicitacao
+        form = ObsForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            if tipo == u'1':
+                solicitacao.minuta_aprovada = True
+            elif tipo == u'2':
+                solicitacao.minuta_aprovada = True
+            solicitacao.data_avaliacao_minuta = datetime.datetime.now()
+            solicitacao.minuta_avaliada_por = request.user
+            solicitacao.obs_avaliacao_minuta = form.cleaned_data.get('obs')
+            solicitacao.arquivo_parecer_minuta = form.cleaned_data.get('arquivo')
+            solicitacao.save()
+            messages.success(request, u'Minuta avaliada com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def retomar_lances(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    item.ativo=True
-    item.save()
-    messages.success(request, u'Lances retomados com sucesso.')
-    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        item.ativo=True
+        item.save()
+        messages.success(request, u'Lances retomados com sucesso.')
+        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def informar_quantidades(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'Informar quantidade dos itens - %s' % solicitacao
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
+    if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all() and solicitacao.dentro_prazo_resposta() and not ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True).exists() and solicitacao.itemsolicitacaolicitacao_set.exists():
+        title=u'Informar quantidade dos itens - %s' % solicitacao
+        itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
 
-    if request.POST:
-        ItemQuantidadeSecretaria.objects.filter(secretaria = request.user.pessoafisica.setor.secretaria, solicitacao = solicitacao).delete()
-        for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
-            if item and int(request.POST.getlist('quantidade')[idx-1]) > 0:
-                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=solicitacao, id=request.POST.getlist('id_item')[idx-1])
-                novo_preco = ItemQuantidadeSecretaria()
-                novo_preco.solicitacao = solicitacao
-                novo_preco.item = item_do_pregao
-                novo_preco.secretaria = request.user.pessoafisica.setor.secretaria
-                novo_preco.quantidade = request.POST.getlist('quantidade')[idx-1]
-                novo_preco.save()
+        if request.POST:
+            ItemQuantidadeSecretaria.objects.filter(secretaria = request.user.pessoafisica.setor.secretaria, solicitacao = solicitacao).delete()
+            for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
+                if item and int(request.POST.getlist('quantidade')[idx-1]) > 0:
+                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=solicitacao, id=request.POST.getlist('id_item')[idx-1])
+                    novo_preco = ItemQuantidadeSecretaria()
+                    novo_preco.solicitacao = solicitacao
+                    novo_preco.item = item_do_pregao
+                    novo_preco.secretaria = request.user.pessoafisica.setor.secretaria
+                    novo_preco.quantidade = request.POST.getlist('quantidade')[idx-1]
+                    novo_preco.save()
 
-        messages.success(request, u'Quantidades cadastradas com sucesso. Faça o upload do memorando de solicitação.')
-        return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao.id)
+            messages.success(request, u'Quantidades cadastradas com sucesso. Faça o upload do memorando de solicitação.')
+            return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao.id)
 
-    return render(request, 'informar_quantidades.html', locals(), RequestContext(request))
+        return render(request, 'informar_quantidades.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def ver_pedidos_secretaria(request, item_id):

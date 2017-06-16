@@ -8,9 +8,10 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^solicitacoes/$', views.solicitacoes, name='solicitacoes'),
     url(r'^cadastros/$', views.cadastros, name='cadastros'),
-    url(r'^licitacoes/$', views.licitacoes, name='licitacoes'),
-    url(r'^pedidos_e_controle/$', views.pedidos_e_controle, name='pedidos_e_controle'),
+
+
     url(r'^administracao/$', views.administracao, name='administracao'),
+    url(r'^auditoria/$', views.auditoria, name='auditoria'),
     url(r'^pregao/(?P<pregao_id>\d+)/$', views.pregao, name='pregao'),
     url(r'^itens_solicitacao/(?P<solicitacao_id>\d+)/$', views.itens_solicitacao, name='itens_solicitacao'),
     url(r'^cadastrar_item_solicitacao/(?P<solicitacao_id>\d+)/$', views.cadastrar_item_solicitacao, name='cadastrar_item_solicitacao'),

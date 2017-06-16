@@ -1,0 +1,51 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+
+        <div>
+             <a href="/admin/easyaudit/crudevent/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-user fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Alterações de Registros</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/easyaudit/loginevent/">
+                <div class="col-lg-2 col-md-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-group fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ num_membros }}</div>
+                                    <div><strong>Registros de Logins</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+
+
+{% endblock %}
