@@ -66,7 +66,7 @@ class CadastraPrecoRodadaPregaoForm(forms.ModelForm):
 class PessoaFisicaForm(forms.ModelForm):
     METHOD = 'POST'
 
-    data_nascimento = forms.DateField(widget=AdminDateWidget())
+    
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
       label                = u'Município',
@@ -83,7 +83,9 @@ class PessoaFisicaForm(forms.ModelForm):
     class Meta:
         model = PessoaFisica
         fields = ['nome', 'cpf', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'estado', 'municipio', 'setor', 'grupo']
-
+        widgets = {
+            'data_nascimento' : forms.DateInput(attrs={'type':'date'})
+        }
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.edicao = kwargs.pop('edicao', None)
