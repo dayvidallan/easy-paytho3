@@ -11,12 +11,12 @@
 
 {% block content %}
         <fieldset>
-            <legend>Baixar Planilha</legend>
+            <legend>Baixar Planilha Modelo</legend>
             <a href="/media/upload/modelos/modelo_pedidos.xlsx" target="_blank" class="btn btn-success">Baixar Planinha</a>
             <br><br>
         </fieldset>
         <fieldset>
-            <legend>Fazer Upload da Planilha</legend>
+            <legend>Fazer Upload da Planilha com os Itens da Solicitação</legend>
             <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
                 {% csrf_token %}
                  <div class="miolo">

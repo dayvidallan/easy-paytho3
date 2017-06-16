@@ -70,7 +70,7 @@
                         {% endif %}
 
                     {% endif %}
-                    {% if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all and solicitacao.dentro_prazo_resposta and not ja_aprovou and solicitacao.itemsolicitacaolicitacao_set.exists %}
+                    {% if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all and solicitacao.dentro_prazo_resposta and not ja_aprovou and solicitacao.itemsolicitacaolicitacao_set.exists and solicitacao.liberada_para_pedido %}
                         {% if not ja_registrou_preco %}
                             <a class="btn btn-success" href="/base/informar_quantidades/{{ solicitacao.pk }}/">Informar Quantidade de Itens</a>
                         {% else %}

@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^solicitacoes/$', views.solicitacoes, name='solicitacoes'),
     url(r'^cadastros/$', views.cadastros, name='cadastros'),
-
+    url(r'^logout/$', views.logout, name='logout'),
 
     url(r'^administracao/$', views.administracao, name='administracao'),
     url(r'^auditoria/$', views.auditoria, name='auditoria'),

@@ -108,12 +108,13 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
 
 def logout(request):
     messages.error(request, u'Usuário não vinculado à um setor. Procure o administrador do sistema.')
-    return HttpResponseRedirect(u'/admin/logout/')
+    return HttpResponseRedirect(u'/admin/logout/?next=/')
 
 @login_required()
 def index(request):
-    if not request.user.pessoafisica.setor:
-        logout(request)
+
+    if not hasattr(request.user, 'pessoafisica') or not hasattr(request.user.pessoafisica, 'setor'):
+        return HttpResponseRedirect(u'/base/logout/')
     eh_ordenador_despesa = False
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
@@ -171,8 +172,8 @@ def fornecedor(request, fornecedor_id):
 def pregao(request, pregao_id):
 
     pregao = get_object_or_404(Pregao, pk= pregao_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
-
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        recebida_setor = pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor)
         if not (pregao.solicitacao.setor_atual == request.user.pessoafisica.setor) and pregao.eh_ativo():
             pregao.situacao = Pregao.CONCLUIDO
             pregao.save()
@@ -1835,7 +1836,7 @@ def retomar_lances(request, item_id):
 @login_required()
 def informar_quantidades(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all() and solicitacao.dentro_prazo_resposta() and not ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True).exists() and solicitacao.itemsolicitacaolicitacao_set.exists():
+    if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all() and solicitacao.dentro_prazo_resposta() and not ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True).exists() and solicitacao.itemsolicitacaolicitacao_set.exists() and solicitacao.liberada_para_pedido:
         title=u'Informar quantidade dos itens - %s' % solicitacao
         itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
 
@@ -1852,7 +1853,7 @@ def informar_quantidades(request, solicitacao_id):
                     novo_preco.save()
 
             messages.success(request, u'Quantidades cadastradas com sucesso. Faça o upload do memorando de solicitação.')
-            return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao.id)
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
         return render(request, 'informar_quantidades.html', locals(), RequestContext(request))
     else:
@@ -1882,7 +1883,7 @@ def importar_itens(request, solicitacao_id):
 
     if request.user.has_perm('base.pode_cadastrar_solicitacao') and  solicitacao.situacao == solicitacao.CADASTRADO and solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado() and not solicitacao.prazo_aberto:
 
-        title=u'Importar Itens para a Solicitação N°: %s' % solicitacao
+        title=u'Importar Itens da %s' % solicitacao
         form = ImportarItensForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             arquivo_up = form.cleaned_data.get('arquivo')
@@ -4353,7 +4354,7 @@ def visualizar_contrato(request, solicitacao_id):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
     title = u'Contrato: %s - Fornecedor: %s' % (contrato.numero, contrato.get_fornecedor())
     pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
-    pode_gerenciar = request.user.groups.filter(name='Gerente')
+    pode_gerenciar = request.user.groups.filter(name='Gerente') and contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
@@ -4361,11 +4362,10 @@ def visualizar_contrato(request, solicitacao_id):
 def visualizar_ata_registro_preco(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
     title = u'Ata de Registro de Preço N° %s' % ata.numero
-    if not ata.adesao:
-        pode_gerenciar = request.user.groups.filter(name='Gerente')
-    else:
-        pode_gerenciar = request.user.groups.filter(name='Gerente') or ata.secretaria == request.user.pessoafisica.setor.secretaria
     eh_gerente = request.user.groups.filter(name='Gerente')
+    pode_gerenciar = eh_gerente and ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+
+
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('item__material', 'setor')
     tabela  = {}
 
@@ -4389,6 +4389,7 @@ def visualizar_ata_registro_preco(request, ata_id):
         materiais[nome]['pedidos'].append(pedido)
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
+
 
 
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
@@ -4646,12 +4647,10 @@ def termo_referencia(request, solicitacao_id):
 @login_required()
 def apagar_documento(request, documento_id):
     documento = get_object_or_404(DocumentoSolicitacao, pk=documento_id)
-    if request.user.has_perm('base.pode_cadastrar_solicitacao') and documento.solicitacao.setor_atual == request.user.pessoafisica.setor:
+    if documento.cadastrado_por == request.user:
         solicitacao = documento.solicitacao.id
-        if request.user == documento.cadastrado_por:
-            documento.delete()
-
-            messages.success(request, u'Documento apagado com sucesso.')
+        documento.delete()
+        messages.success(request, u'Documento apagado com sucesso.')
         return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao)
     else:
         raise PermissionDenied
@@ -5481,7 +5480,7 @@ def aderir_arp(request):
         o.save()
         messages.success(request, u'Ata cadastrada com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % o.id)
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'aderir_arp.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -5569,7 +5568,7 @@ def solicitar_pedidos_novamente(request, solicitacao_id, secretaria_id):
 @login_required()
 def revogar_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         title = u'Revogar pregão - %s' % pregao
         form = RevogarPregaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
@@ -5668,8 +5667,11 @@ def cadastrar_variaveis_configuracao(request):
 def ver_pesquisas(request, solicitacao_id):
     title = u'Ver Pesquisas'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    pesquisas = PesquisaMercadologica.objects.filter(solicitacao=solicitacao)
-    return render(request, 'ver_pesquisas.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and (solicitacao.prazo_aberto or not solicitacao.eh_dispensa() or not solicitacao.tem_ordem_compra()):
+        pesquisas = PesquisaMercadologica.objects.filter(solicitacao=solicitacao)
+        return render(request, 'ver_pesquisas.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def editar_item_pedido(request, pedido_id, tipo):
@@ -5861,7 +5863,7 @@ def ver_relatorios_gerenciais(request):
 @login_required()
 def liberar_pedidos_solicitacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if request.user.has_perm('base.pode_cadastrar_solicitacao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_cadastrar_solicitacao') and solicitacao.recebida_setor(request.user.pessoafisica.setor):
         if solicitacao.liberada_para_pedido:
             solicitacao.liberada_para_pedido = False
             messages.success(request, u'Liberação encerrada com sucesso.')

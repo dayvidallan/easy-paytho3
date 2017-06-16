@@ -66,7 +66,7 @@ class CadastraPrecoRodadaPregaoForm(forms.ModelForm):
 class PessoaFisicaForm(forms.ModelForm):
     METHOD = 'POST'
 
-    data_nascimento = forms.DateField(widget=AdminDateWidget())
+    
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
       label                = u'Município',
@@ -83,7 +83,9 @@ class PessoaFisicaForm(forms.ModelForm):
     class Meta:
         model = PessoaFisica
         fields = ['nome', 'cpf', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'estado', 'municipio', 'setor', 'grupo']
-
+        widgets = {
+            'data_nascimento' : forms.DateInput(attrs={'type':'date'})
+        }
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.edicao = kwargs.pop('edicao', None)
@@ -400,6 +402,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
         fields = ['cnpj', 'nome','responsavel', 'cpf', 'email', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']
 
 class UploadPesquisaForm(forms.ModelForm):
+    arquivo = forms.FileField(label=u'Arquivo com a Proposta Assinada', required=True)
     class Meta:
         model = PesquisaMercadologica
         fields = ['arquivo']
@@ -819,6 +822,7 @@ class AditivarContratoForm(forms.Form):
 
 
 class DocumentoSolicitacaoForm(forms.ModelForm):
+    documento = forms.FileField(label=u'Arquivo', required=True)
     class Meta:
         model = DocumentoSolicitacao
         fields = ('nome', 'documento')

@@ -264,10 +264,11 @@ class SolicitacaoLicitacao(models.Model):
             ultima_movimentacao = movimentacao.latest('id')
             if ultima_movimentacao.setor_destino == setor_do_usuario and ultima_movimentacao.data_recebimento:
                 return True
-        elif solicitacao.setor_atual == setor_do_usuario:
-            if itens.exists() and solicitacao.tipo == SolicitacaoLicitacao.LICITACAO:
+        elif self.setor_atual == setor_do_usuario:
+            itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self)
+            if itens.exists() and self.tipo == SolicitacaoLicitacao.LICITACAO:
                 return True
-            elif solicitacao.tipo == SolicitacaoLicitacao.COMPRA or solicitacao.tipo == SolicitacaoLicitacao.ADESAO_ARP:
+            elif self.tipo == SolicitacaoLicitacao.COMPRA or self.tipo == SolicitacaoLicitacao.ADESAO_ARP:
                 return True
         return False
 
@@ -1927,7 +1928,7 @@ def upload_path_documento(instance, filename):
 
 class DocumentoSolicitacao(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
-    nome = models.TextField(u'Nome do Arquivo', max_length=500)
+    nome = models.CharField(u'Nome do Arquivo', max_length=500)
     cadastrado_em = models.DateTimeField(u'Cadastrado Em', null=True, blank=True)
     cadastrado_por = models.ForeignKey(User, related_name=u'documento_cadastrado_por', null=True)
     documento = models.FileField(u'Documento', null=True, blank=True, upload_to=upload_path_documento)

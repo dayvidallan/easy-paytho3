@@ -15,6 +15,8 @@
             <br><br>
         </div>
        {% if movimentos.exists %}
+            <b>Setor Atual:</b> {{ solicitacao.setor_atual }}<br>
+            <b>Setor de Origem:</b> {{ solicitacao.setor_origem }}
             <table border="2" class="table table-bordered table-condensed table-striped">
                 <thead>
                     <th>Setor Origem</th>
