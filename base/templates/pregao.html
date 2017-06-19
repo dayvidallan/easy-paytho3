@@ -784,7 +784,7 @@
                 {% else %}
                     <p class="alert alert-warning">A classificação deste pregão ainda não foi gerada.</p>
                 {% endif %}
-            {% else %}
+            {% elif pregao.data_revogacao %}
                 <p class="alert alert-danger">Pregão revogado.</p>
             {% endif %}
 
