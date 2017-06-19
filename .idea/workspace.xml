@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="51aad98f-dbd2-4dc3-a5d0-a437d3a264d9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/admin.py" afterPath="$PROJECT_DIR$/base/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/forms.py" afterPath="$PROJECT_DIR$/base/forms.py" />
-    </list>
+    <list default="true" id="51aad98f-dbd2-4dc3-a5d0-a437d3a264d9" name="Default" comment="" />
     <ignored path="licita.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,7 +23,7 @@
       <file leaf-file-name="forms.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/base/forms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
+            <state relative-caret-position="570">
               <caret line="111" column="0" lean-forward="true" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
               <folding />
             </state>
@@ -826,7 +822,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/base/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
+        <state relative-caret-position="570">
           <caret line="111" column="0" lean-forward="true" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
           <folding />
         </state>
