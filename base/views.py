@@ -635,7 +635,9 @@ def itens_solicitacao(request, solicitacao_id):
     eh_lote = solicitacao.eh_lote()
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria)
     ja_aprovou = ja_registrou_preco.filter(aprovado=True).exists()
-    recebida_no_setor = solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    setor_do_usuario = request.user.pessoafisica.setor
+    recebida_no_setor = solicitacao.recebida_setor(setor_do_usuario)
+
 
 
     return render(request, 'itens_solicitacao.html', locals(), RequestContext(request))
