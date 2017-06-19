@@ -4246,7 +4246,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
 @login_required()
 def registrar_adjudicacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.pessoa_fisica == pregao.solicitacao.setor_origem.secretaria.ordenador_despesa:
         title=u'Registrar Adjudicação'
         form = RegistrarAdjudicacaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
@@ -4262,7 +4262,7 @@ def registrar_adjudicacao(request, pregao_id):
 @login_required()
 def registrar_homologacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.pessoa_fisica == pregao.solicitacao.setor_origem.secretaria.ordenador_despesa:
         title=u'Registrar Homologação'
         form = RegistrarHomologacaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
