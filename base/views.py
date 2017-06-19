@@ -1190,7 +1190,7 @@ def gerar_resultado(request, item_id):
 def resultado_alterar(request, resultado_id, situacao):
     title=u'Alterar Situação de Fornecedor'
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.item.get_licitacao().solicitacao.recebida_setor(request.user.pessoafisica.setor):
         form = ResultadoObsForm(request.POST or None, instance=resultado)
         if form.is_valid():
             if situacao ==u'1':
@@ -1251,7 +1251,7 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
 def resultado_ajustar_preco(request, resultado_id):
     title=u'Ajustar Preço de Fornecedor'
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.item.get_licitacao().solicitacao.recebida_setor(request.user.pessoafisica.setor):
         form = ResultadoAjustePrecoForm(request.POST or None, instance=resultado)
         if form.is_valid():
             form.save()
