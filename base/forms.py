@@ -531,7 +531,7 @@ class GestaoContratoForm(forms.Form):
 
 class BuscarSolicitacaoForm(forms.Form):
     METHOD = u'GET'
-    info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
+    info = forms.CharField(label=u'Digite o número da licitação/procedimento, processo ou do memorando', required=False)
     ano = forms.ChoiceField([],
                 required = False,
                 label    = u'Filtrar por Ano:',
@@ -559,7 +559,7 @@ class BuscarLicitacaoForm(forms.Form):
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
-    info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
+    info = forms.CharField(label=u'Digite o número da licitação/procedimento, processo ou do memorando', required=False)
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
 
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
