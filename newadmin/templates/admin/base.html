@@ -60,7 +60,7 @@
                       <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
                       <a href="{% url 'admin:password_change' %}"><i class="fa fa-lock"></i>Alterar Senha</a>
                       <a href='/admin/logout/?next=/'><i class="fa fa-times"></i>Encerrar Sessão</a><br>
-                      <font color="white"><b>Bem Vindo, {{ user.pessoafisica.nome }}<br>{{ user.pessoafisica.setor.nome }} {% if user.pessoafisica.setor.sigla %}({{ user.pessoafisica.setor.sigla }}){% endif %} <br>{{ user.pessoafisica.setor.secretaria.nome }} {% if user.pessoafisica.setor.secretaria.sigla %} ({{ user.pessoafisica.setor.secretaria.sigla }}){% endif %}</b></font>
+                      <font color="white"><b>Bem Vindo, {{ user.pessoafisica.nome }}<br> {% if user.pessoafisica.setor.sigla %}{{ user.pessoafisica.setor.sigla }}{% else %}{{ user.pessoafisica.setor.nome|truncatechars:50 }}{% endif %} <br> {% if user.pessoafisica.setor.secretaria.sigla %} {{ user.pessoafisica.setor.secretaria.sigla }}{% else %}{{ user.pessoafisica.setor.secretaria.nome|truncatechars:50 }}{% endif %}</b></font>
                      </div>
                  {% endif %}
               </div>
