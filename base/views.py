@@ -709,7 +709,7 @@ def ver_solicitacoes(request):
         class_aba2 = u''
         outras = SolicitacaoLicitacao.objects.all()
         if form.cleaned_data.get('info'):
-            outras = outras.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')))
+            outras = outras.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
         if form.cleaned_data.get('ano'):
            outras = outras.filter(data_cadastro__year=form.cleaned_data.get('ano'))
 
