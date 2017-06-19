@@ -79,21 +79,27 @@ class PessoaFisicaForm(forms.ModelForm):
     grupo = forms.ModelChoiceField(Group.objects, label=u'Grupo de Acesso', required=True)
     email = forms.EmailField(label=u'Email', required=True)
     cpf = utils.CpfFormField(label=u'CPF', required=True)
-
+    #data_nascimento = forms.DateField(label=u'Data de Nascimento', widget=forms.widgets.DateInput(format="%d/%m/%Y", attrs={'type':'date'}))
     class Meta:
         model = PessoaFisica
         fields = ['nome', 'cpf', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'estado', 'municipio', 'setor', 'grupo']
-        widgets = {
-            'data_nascimento' : forms.DateInput(attrs={'type':'date'})
-        }
+        # widgets = {
+        #     'data_nascimento' : forms.DateInput(attrs={'type':'date'})
+        # }
+        # widgets = {
+        #     'data_nascimento' : forms.DateInput(format="%d/%m/%Y", attrs={'class':'vDateField'}),
+        # }
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.edicao = kwargs.pop('edicao', None)
         super(PessoaFisicaForm, self).__init__(*args, **kwargs)
+        #self.fields[ 'data_nascimento' ].input_formats = [ '%d-%m-%Y' ]
+
         if not self.request.user.is_superuser:
             self.fields['setor'].queryset = Setor.objects.filter(secretaria=self.request.user.pessoafisica.setor.secretaria)
 
         if self.instance.pk:
+
 
             if self.instance.municipio:
                 self.fields['estado'].initial = self.instance.municipio.estado
@@ -103,6 +109,7 @@ class PessoaFisicaForm(forms.ModelForm):
 
 
     def clean(self):
+
         if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf')).exists() and not self.edicao:
             self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
 

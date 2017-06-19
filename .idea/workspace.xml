@@ -2,25 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51aad98f-dbd2-4dc3-a5d0-a437d3a264d9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/admin.py" afterPath="$PROJECT_DIR$/base/admin.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/forms.py" afterPath="$PROJECT_DIR$/base/forms.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/models.py" afterPath="$PROJECT_DIR$/base/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/static/base/css/sistema.css" afterPath="$PROJECT_DIR$/base/static/base/css/sistema.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/cadastrar_anexo_pregao.html" afterPath="$PROJECT_DIR$/base/templates/cadastrar_anexo_pregao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/importar_itens.html" afterPath="$PROJECT_DIR$/base/templates/importar_itens.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/itens_solicitacao.html" afterPath="$PROJECT_DIR$/base/templates/itens_solicitacao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/preencher_pesquisa_mercadologica.html" afterPath="$PROJECT_DIR$/base/templates/preencher_pesquisa_mercadologica.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/pregao.html" afterPath="$PROJECT_DIR$/base/templates/pregao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/ver_movimentacao.html" afterPath="$PROJECT_DIR$/base/templates/ver_movimentacao.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/ver_pesquisas.html" afterPath="$PROJECT_DIR$/base/templates/ver_pesquisas.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/ver_pregoes.html" afterPath="$PROJECT_DIR$/base/templates/ver_pregoes.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/visualizar_ata_registro_preco.html" afterPath="$PROJECT_DIR$/base/templates/visualizar_ata_registro_preco.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/visualizar_contrato.html" afterPath="$PROJECT_DIR$/base/templates/visualizar_contrato.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/urls.py" afterPath="$PROJECT_DIR$/base/urls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/views.py" afterPath="$PROJECT_DIR$/base/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/newadmin/templates/admin/base.html" afterPath="$PROJECT_DIR$/newadmin/templates/admin/base.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/base/css/sistema.css" afterPath="$PROJECT_DIR$/static/base/css/sistema.css" />
     </list>
     <ignored path="licita.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,63 +24,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="699">
-              <caret line="4391" column="0" lean-forward="false" selection-start-line="4391" selection-start-column="0" selection-end-line="4391" selection-end-column="0" />
-              <folding>
-                <element signature="e#24#68#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visualizar_contrato.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/base/templates/visualizar_contrato.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="773">
-              <caret line="353" column="38" lean-forward="false" selection-start-line="353" selection-start-column="38" selection-end-line="353" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visualizar_ata_registro_preco.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/visualizar_ata_registro_preco.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="356">
-              <caret line="387" column="86" lean-forward="true" selection-start-line="387" selection-start-column="32" selection-end-line="387" selection-end-column="86" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="gestao_pedidos.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/templates/gestao_pedidos.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="235">
-              <caret line="204" column="88" lean-forward="true" selection-start-line="204" selection-start-column="40" selection-end-line="204" selection-end-column="88" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="forms.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/base/forms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="331">
-              <caret line="404" column="69" lean-forward="false" selection-start-line="404" selection-start-column="69" selection-end-line="404" selection-end-column="69" />
+            <state relative-caret-position="435">
+              <caret line="111" column="0" lean-forward="true" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/base/models.py">
+      <file leaf-file-name="admin.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="294">
-              <caret line="2317" column="8" lean-forward="false" selection-start-line="2317" selection-start-column="8" selection-end-line="2317" selection-end-column="8" />
+            <state relative-caret-position="530">
+              <caret line="113" column="47" lean-forward="false" selection-start-line="113" selection-start-column="47" selection-end-line="113" selection-end-column="47" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/licita/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-106">
+              <caret line="99" column="0" lean-forward="true" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -106,8 +58,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>importar_itens</find>
-      <find>upload_itens_pesquisa_mercadologica</find>
       <find>ja_aprovou</find>
       <find>pedido_outro_interessado</find>
       <find>def avaliar_pedido</find>
@@ -136,6 +86,8 @@
       <find>eh_gerente</find>
       <find>def revoga</find>
       <find>empresa</find>
+      <find>ADMIN_MEDIA_PREFIX</find>
+      <find>vdat</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/../suap/saude/templates</dir>
@@ -150,7 +102,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/../suap/saude/models.py" />
         <option value="$PROJECT_DIR$/../suap/projetos/templates/relatorio_dimensao_extensao.html" />
         <option value="$PROJECT_DIR$/base/templates/cadastros.html" />
         <option value="$PROJECT_DIR$/base/permissions.xml" />
@@ -177,7 +128,6 @@
         <option value="$PROJECT_DIR$/../suap/projetos/templates/projetos_pre_aprovados.html" />
         <option value="$PROJECT_DIR$/../suap/pesquisa/templates/projetos_especial_pre_aprovados.html" />
         <option value="$PROJECT_DIR$/deploy/requirements.txt" />
-        <option value="$PROJECT_DIR$/licita/settings.py" />
         <option value="$PROJECT_DIR$/base/templates/index.html" />
         <option value="$PROJECT_DIR$/base/templates/auditoria.html" />
         <option value="$PROJECT_DIR$/../suap/projetos/migrations/0073_auto_20170613_1314.py" />
@@ -190,7 +140,6 @@
         <option value="$PROJECT_DIR$/base/templates/aderir_arp.html" />
         <option value="$PROJECT_DIR$/base/templates/ver_pesquisas.html" />
         <option value="$PROJECT_DIR$/base/templates/preencher_pesquisa_mercadologica.html" />
-        <option value="$PROJECT_DIR$/base/forms.py" />
         <option value="$PROJECT_DIR$/newadmin/templates/admin/base.html" />
         <option value="$PROJECT_DIR$/base/static/base/css/sistema.css" />
         <option value="$PROJECT_DIR$/../suap/ae/urls.py" />
@@ -201,6 +150,9 @@
         <option value="$PROJECT_DIR$/base/views.py" />
         <option value="$PROJECT_DIR$/base/templates/visualizar_ata_registro_preco.html" />
         <option value="$PROJECT_DIR$/base/templates/visualizar_contrato.html" />
+        <option value="$PROJECT_DIR$/licita/settings.py" />
+        <option value="$PROJECT_DIR$/base/admin.py" />
+        <option value="$PROJECT_DIR$/base/forms.py" />
       </list>
     </option>
   </component>
@@ -250,44 +202,40 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="licita" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="licita" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="licita" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="base" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="licita" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="licita" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="base" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="views.py" />
+              <option name="myItemId" value="admin.py" />
               <option name="myItemType" value="com.jetbrains.python.projectView.PyFileNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="licita" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -534,9 +482,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="16890">
           <caret line="1143" column="6" lean-forward="false" selection-start-line="1143" selection-start-column="6" selection-end-line="1143" selection-end-column="6" />
-          <folding>
-            <marker date="1497616323066" expanded="true" signature="8280:9247" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -614,14 +559,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="510">
           <caret line="34" column="0" lean-forward="true" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/licita/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="446" column="22" lean-forward="false" selection-start-line="446" selection-start-column="22" selection-end-line="446" selection-end-column="22" />
         </state>
       </provider>
     </entry>
@@ -678,7 +615,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1185">
           <caret line="79" column="101" lean-forward="false" selection-start-line="79" selection-start-column="101" selection-end-line="79" selection-end-column="101" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -694,15 +630,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="495">
           <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1560">
-          <caret line="112" column="17" lean-forward="false" selection-start-line="112" selection-start-column="17" selection-end-line="112" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -710,7 +637,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -718,7 +644,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -726,7 +651,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
           <caret line="72" column="246" lean-forward="false" selection-start-line="72" selection-start-column="246" selection-end-line="72" selection-end-column="246" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -734,7 +658,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-899">
           <caret line="366" column="4" lean-forward="false" selection-start-line="366" selection-start-column="4" selection-end-line="366" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -742,7 +665,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="746">
           <caret line="268" column="55" lean-forward="false" selection-start-line="268" selection-start-column="32" selection-end-line="268" selection-end-column="55" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -750,7 +672,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="18" column="72" lean-forward="false" selection-start-line="18" selection-start-column="72" selection-end-line="18" selection-end-column="72" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -758,7 +679,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="7" column="45" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="42" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -766,7 +686,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -774,7 +693,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="15" column="8" lean-forward="false" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -782,15 +700,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="331">
-          <caret line="404" column="69" lean-forward="false" selection-start-line="404" selection-start-column="69" selection-end-line="404" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -798,7 +707,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -806,7 +714,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="369">
           <caret line="87" column="12" lean-forward="false" selection-start-line="87" selection-start-column="12" selection-end-line="87" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -814,7 +721,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="294">
           <caret line="746" column="59" lean-forward="false" selection-start-line="746" selection-start-column="52" selection-end-line="746" selection-end-column="59" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -822,7 +728,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="9" column="54" lean-forward="true" selection-start-line="9" selection-start-column="54" selection-end-line="9" selection-end-column="54" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -830,7 +735,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="10" column="49" lean-forward="false" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -838,7 +742,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="17" column="65" lean-forward="false" selection-start-line="17" selection-start-column="65" selection-end-line="17" selection-end-column="65" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -846,7 +749,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="512">
           <caret line="103" column="49" lean-forward="false" selection-start-line="103" selection-start-column="37" selection-end-line="103" selection-end-column="49" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -854,7 +756,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
           <caret line="724" column="88" lean-forward="false" selection-start-line="724" selection-start-column="88" selection-end-line="724" selection-end-column="88" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -862,48 +763,71 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="435">
           <caret line="62" column="22" lean-forward="false" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="65415">
+          <caret line="4391" column="0" lean-forward="false" selection-start-line="4391" selection-start-column="0" selection-end-line="4391" selection-end-column="0" />
+          <folding>
+            <element signature="e#24#68#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/templates/visualizar_contrato.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="353" column="38" lean-forward="false" selection-start-line="353" selection-start-column="38" selection-end-line="353" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/models.py">
+    <entry file="file://$PROJECT_DIR$/base/templates/visualizar_ata_registro_preco.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="2317" column="8" lean-forward="false" selection-start-line="2317" selection-start-column="8" selection-end-line="2317" selection-end-column="8" />
+        <state relative-caret-position="5805">
+          <caret line="387" column="86" lean-forward="true" selection-start-line="387" selection-start-column="32" selection-end-line="387" selection-end-column="86" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/base/templates/gestao_pedidos.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
+        <state relative-caret-position="3060">
           <caret line="204" column="88" lean-forward="true" selection-start-line="204" selection-start-column="40" selection-end-line="204" selection-end-column="88" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/views.py">
+    <entry file="file://$PROJECT_DIR$/base/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="699">
-          <caret line="4391" column="0" lean-forward="false" selection-start-line="4391" selection-start-column="0" selection-end-line="4391" selection-end-column="0" />
-          <folding>
-            <element signature="e#24#68#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/visualizar_ata_registro_preco.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="356">
-          <caret line="387" column="86" lean-forward="true" selection-start-line="387" selection-start-column="32" selection-end-line="387" selection-end-column="86" />
+        <state relative-caret-position="34635">
+          <caret line="2317" column="8" lean-forward="false" selection-start-line="2317" selection-start-column="8" selection-end-line="2317" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/visualizar_contrato.html">
+    <entry file="file://$PROJECT_DIR$/licita/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="773">
-          <caret line="353" column="38" lean-forward="false" selection-start-line="353" selection-start-column="38" selection-end-line="353" selection-end-column="38" />
+        <state relative-caret-position="-106">
+          <caret line="99" column="0" lean-forward="true" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="530">
+          <caret line="113" column="47" lean-forward="false" selection-start-line="113" selection-start-column="47" selection-end-line="113" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="111" column="0" lean-forward="true" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
           <folding />
         </state>
       </provider>
