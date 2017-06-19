@@ -186,7 +186,7 @@ admin.site.register(SolicitacaoLicitacao,SolicitacaoLicitacaoAdmin)
 
 
 class SecretariaAdmin(NewModelAdmin):
-    list_display = ('nome','responsavel')
+    list_display = ('nome', 'sigla', 'responsavel')
     ordering = ('nome',)
     list_filter = ('nome',)
 
@@ -195,7 +195,7 @@ admin.site.register(Secretaria, SecretariaAdmin)
 
 
 class SetorAdmin(NewModelAdmin):
-    list_display = ('nome', 'secretaria')
+    list_display = ('nome', 'sigla', 'secretaria')
     ordering = ('nome',)
     list_filter = ('nome', 'secretaria')
 
