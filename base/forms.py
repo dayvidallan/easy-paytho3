@@ -86,9 +86,12 @@ class PessoaFisicaForm(forms.ModelForm):
         # widgets = {
         #     'data_nascimento' : forms.DateInput(attrs={'type':'date'})
         # }
+<<<<<<< HEAD
         # widgets = {
         #     'data_nascimento' : forms.DateInput(format="%d/%m/%Y", attrs={'class':'vDateField'}),
         # }
+=======
+>>>>>>> 8df32281562adf565f238890f32a2824481cf119
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.edicao = kwargs.pop('edicao', None)
