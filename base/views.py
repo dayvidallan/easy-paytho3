@@ -1280,7 +1280,7 @@ def desempatar_item(request, item_id):
 @login_required()
 def definir_colocacao(request, resultado_id):
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.item.get_licitacao().solicitacao.recebida_setor(request.user.pessoafisica.setor):
         form = DefinirColocacaoForm(request.POST or None, instance=resultado)
         if form.is_valid():
             o = form.save(False)
