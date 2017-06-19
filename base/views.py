@@ -4721,7 +4721,7 @@ def lista_materiais(request, solicitacao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
 
-    pode_ver_preco = ItemPesquisaMercadologica.objects.filter(item__solicitacao=solicitacao).exists()
+    pode_ver_preco = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, valor_medio__isnull=False).exists()
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False)
     total = 0
     if pode_ver_preco:
@@ -4761,7 +4761,7 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
 
-    pode_ver_preco = ItemPesquisaMercadologica.objects.filter(item__solicitacao=solicitacao).exists()
+    pode_ver_preco = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, valor_medio__isnull=False).exists()
     itens = ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao, secretaria=secretaria).order_by('item')
     total = 0
     if pode_ver_preco:

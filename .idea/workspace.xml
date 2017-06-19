@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="747c8cb2-235b-4258-9f25-c75e5f42864d" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/templates/ver_solicitacoes.html" afterPath="$PROJECT_DIR$/base/templates/ver_solicitacoes.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/base/views.py" afterPath="$PROJECT_DIR$/base/views.py" />
     </list>
     <ignored path="licita.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -20,11 +20,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/base/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1016">
-              <caret line="4723" column="30" lean-forward="false" selection-start-line="4723" selection-start-column="30" selection-end-line="4723" selection-end-column="30" />
+            <state relative-caret-position="294">
+              <caret line="4723" column="121" lean-forward="false" selection-start-line="4723" selection-start-column="121" selection-end-line="4723" selection-end-column="121" />
               <folding />
             </state>
           </provider>
@@ -43,18 +43,18 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-209">
-              <caret line="1717" column="6" lean-forward="false" selection-start-line="1717" selection-start-column="6" selection-end-line="1717" selection-end-column="6" />
+            <state relative-caret-position="591">
+              <caret line="485" column="15" lean-forward="false" selection-start-line="485" selection-start-column="4" selection-end-line="485" selection-end-column="15" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ver_solicitacoes.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ver_solicitacoes.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/templates/ver_solicitacoes.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="581">
-              <caret line="315" column="39" lean-forward="false" selection-start-line="315" selection-start-column="39" selection-end-line="315" selection-end-column="39" />
+              <caret line="315" column="0" lean-forward="false" selection-start-line="315" selection-start-column="0" selection-end-line="315" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -153,11 +153,11 @@
         <option value="$PROJECT_DIR$/base/templates/lista_materiais_por_secretaria.html" />
         <option value="$PROJECT_DIR$/base/templates/pregao.html" />
         <option value="$PROJECT_DIR$/base/urls.py" />
-        <option value="$PROJECT_DIR$/base/views.py" />
         <option value="$PROJECT_DIR$/base/templates/relatorio_dados_licitacao.html" />
         <option value="$PROJECT_DIR$/base/forms.py" />
         <option value="$PROJECT_DIR$/base/admin.py" />
         <option value="$PROJECT_DIR$/base/templates/ver_solicitacoes.html" />
+        <option value="$PROJECT_DIR$/base/views.py" />
       </list>
     </option>
   </component>
@@ -734,14 +734,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1016">
-          <caret line="4723" column="30" lean-forward="false" selection-start-line="4723" selection-start-column="30" selection-end-line="4723" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/base/templates/relatorio_dados_licitacao.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-36">
@@ -773,18 +765,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/models.py">
+    <entry file="file://$PROJECT_DIR$/base/templates/ver_solicitacoes.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-209">
-          <caret line="1717" column="6" lean-forward="false" selection-start-line="1717" selection-start-column="6" selection-end-line="1717" selection-end-column="6" />
+        <state relative-caret-position="581">
+          <caret line="315" column="0" lean-forward="false" selection-start-line="315" selection-start-column="0" selection-end-line="315" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/templates/ver_solicitacoes.html">
+    <entry file="file://$PROJECT_DIR$/base/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="581">
-          <caret line="315" column="39" lean-forward="false" selection-start-line="315" selection-start-column="39" selection-end-line="315" selection-end-column="39" />
+        <state relative-caret-position="591">
+          <caret line="485" column="15" lean-forward="false" selection-start-line="485" selection-start-column="4" selection-end-line="485" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="4723" column="121" lean-forward="false" selection-start-line="4723" selection-start-column="121" selection-end-line="4723" selection-end-column="121" />
           <folding />
         </state>
       </provider>
