@@ -3523,6 +3523,7 @@ def avaliar_pedidos(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     title=u'Avaliar Pedidos - %s' % solicitacao
     tabela = {}
+    pode_avaliar = request.user.groups.filter(name=u'Secretaria').exists()  and solicitacao.setor_origem == request.user.pessoafisica.setor:
     if request.user.groups.filter(name=u'Secretaria').exists() and solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor:
         pedidos = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao)
 
