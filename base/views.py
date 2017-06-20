@@ -2805,7 +2805,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     p.add_run(texto)
 
 
-    texto = u'%s, %s' % (municipio, ata.data_inicio.strftime('%d/%m/%y'))
+    texto = u'%s/%s, %s' % (municipio, municipio.estado.sigla, ata.data_inicio.strftime('%d/%m/%y'))
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
