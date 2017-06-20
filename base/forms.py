@@ -857,13 +857,14 @@ class BaixarContratoForm(forms.Form):
 
 class HistoricoPregaoForm(forms.ModelForm):
     obs = forms.CharField(label=u'Descrição da Ocorrência', widget=forms.Textarea, required=True)
+
     class Meta:
         model = HistoricoPregao
-        fields = ('data', 'obs')
+        fields = ('obs', )
 
-    def __init__(self, *args, **kwargs):
-        super(HistoricoPregaoForm, self).__init__(*args, **kwargs)
-        self.fields['data'].widget.attrs = {'class': 'vDateField'}
+    # def __init__(self, *args, **kwargs):
+    #     super(HistoricoPregaoForm, self).__init__(*args, **kwargs)
+    #     self.fields['data'].widget.attrs = {'class': 'vDateField'}
 
 class MembroComissaoLicitacaoForm(forms.ModelForm):
     membro = forms.ModelChoiceField(PessoaFisica.objects, label=u'Pessoa', required=True, widget=autocomplete.ModelSelect2(url='pessoafisica-autocomplete'))

@@ -5037,6 +5037,7 @@ def registrar_ocorrencia_pregao(request, pregao_id):
         if form.is_valid():
             o = form.save(False)
             o.pregao = pregao
+            o.data = datetime.datetime.now()
             o.save()
             messages.success(request, u'Ocorrência registrada com sucesso.')
             return HttpResponseRedirect(u'/pregao/%s/' % pregao.id)
