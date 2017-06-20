@@ -2504,6 +2504,15 @@ def relatorio_ata_registro_preco(request, pregao_id):
     config_geral = get_config_geral()
     municipio = config_geral.municipio.nome
 
+    if pregao.comissao:
+        configuracao_logo = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao_logo = get_config(pregao.solicitacao.setor_origem.secretaria)
+
+    logo = None
+    if configuracao_logo.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao_logo.logo.name)
+
     if secretaria.eh_ordenadora_despesa:
         nome_ordenador = configuracao.nome
         cnpj_ordenador =  configuracao.cnpj
@@ -2511,7 +2520,6 @@ def relatorio_ata_registro_preco(request, pregao_id):
         orgao = configuracao.ordenador_despesa.setor.secretaria.nome
         nome_pessoa_ordenadora = configuracao.ordenador_despesa.nome
         cpf_pessoa_ordenadora = configuracao.cpf_ordenador_despesa
-        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
     else:
 
@@ -2521,7 +2529,6 @@ def relatorio_ata_registro_preco(request, pregao_id):
         orgao = config_geral.nome
         nome_pessoa_ordenadora = config_geral.ordenador_despesa.nome
         cpf_pessoa_ordenadora = config_geral.cpf_ordenador_despesa
-        logo = os.path.join(settings.MEDIA_ROOT,config_geral.logo.name)
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     tabela = {}
