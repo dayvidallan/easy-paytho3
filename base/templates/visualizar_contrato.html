@@ -166,7 +166,7 @@
 
 {% block content %}
     <div class="pull-right">
-        {% if pode_gerenciar %}
+        {% if eh_gerente %}
             <a class="btn btn-info" href="/admin/base/contrato/{{ contrato.pk }}/change/">Editar</a>
             {% if not contrato.data_fim %}
                 <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>

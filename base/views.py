@@ -4368,8 +4368,9 @@ def visualizar_contrato(request, solicitacao_id):
 def visualizar_ata_registro_preco(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
     title = u'Ata de Registro de Preço N° %s' % ata.numero
-    eh_gerente = request.user.groups.filter(name='Gerente')
+
     pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
 
 
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('item__material', 'setor')

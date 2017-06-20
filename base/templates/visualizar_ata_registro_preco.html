@@ -166,15 +166,15 @@
 
 {% block content %}
     <div class="pull-right">
-        {% if pode_gerenciar %}
+        {% if eh_gerente %}
             <a class="btn btn-info" href="/admin/base/contrato/{{ contrato.pk }}/change/">Editar</a>
         {% endif %}
-        {% if not ata.data_fim and pode_gerenciar %}
+        {% if not ata.data_fim and eh_gerente %}
             <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
         {% endif %}
-        {% if not ata.liberada_compra and pode_gerenciar %}
+        {% if not ata.liberada_compra and eh_gerente %}
             <a href="/base/liberar_solicitacao_ata/{{ata.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
-        {% elif pode_gerenciar %}
+        {% elif eh_gerente %}
                 <a href="/base/liberar_solicitacao_ata/{{ata.id}}/2/" class="btn btn-danger">Cancelar Solicitação</a>
         {% endif %}
 
@@ -201,7 +201,7 @@
         </thead>
         <tbody>
             <tr>
-                <td><a href="/base/itens_solicitacao/{{ ata.solicitacao.id }}/">{{ ata.solicitacao.num_memorando }}</td>
+                <td><a href="/base/itens_solicitacao/{{ ata.solicitacao.id }}/">{{ ata.solicitacao.num_memorando }}</a></td>
                 <td>{{ ata.solicitacao.processo|default_if_none:"-" }}</td>
 
                 {% if ata.adesao %}
