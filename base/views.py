@@ -4360,7 +4360,7 @@ def visualizar_contrato(request, solicitacao_id):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
     title = u'Contrato: %s - Fornecedor: %s' % (contrato.numero, contrato.get_fornecedor())
     pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
-    pode_gerenciar = request.user.groups.filter(name='Gerente') and contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
@@ -4369,7 +4369,7 @@ def visualizar_ata_registro_preco(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
     title = u'Ata de Registro de Preço N° %s' % ata.numero
     eh_gerente = request.user.groups.filter(name='Gerente')
-    pode_gerenciar = eh_gerente and ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
 
 
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('item__material', 'setor')
