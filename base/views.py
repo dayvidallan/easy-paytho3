@@ -4362,7 +4362,7 @@ def visualizar_contrato(request, solicitacao_id):
     pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
-    
+
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
 @login_required()

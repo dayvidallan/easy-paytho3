@@ -54,13 +54,13 @@ ul{
                     <td align="left"><b>{{ configuracao.nome }}</b></td>
 
                 </tr>
-                {% if solicitacao.arp_origem %}
+                {% if solicitacao.arp_origem.solicitacao.get_pregao %}
                     <tr>
                         <td align="left" width="25%">Pregão</td>
 
                         <td align="left"><b>{{ solicitacao.arp_origem.solicitacao.get_pregao }}</b></td>
                     </tr>
-                {% elif solicitacao.contrato_origem %}
+                {% elif solicitacao.contrato_origem.solicitacao.get_pregao %}
                      <tr>
                         <td align="left" width="25%">Pregão</td>
                         <td align="left"><b>{{ solicitacao.contrato_origem.solicitacao.get_pregao }}</b></td>
