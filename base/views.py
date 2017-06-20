@@ -5493,7 +5493,7 @@ def aderir_arp(request):
 @login_required()
 def adicionar_item_adesao_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    if request.user.has_perm('base.pode_gerenciar_contrato') and ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
 
         title = u'Adicionar Item - %s' % ata
         form = AdicionarItemAtaForm(request.POST or None)
@@ -5517,7 +5517,7 @@ def adicionar_item_adesao_arp(request, ata_id):
 def cadastrar_material_arp(request, ata_id):
     title = u'Cadastrar Material'
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    if request.user.has_perm('base.pode_gerenciar_contrato') and ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         form = MaterialConsumoForm(request.POST or None)
         if form.is_valid():
             form.save()
