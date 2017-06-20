@@ -155,7 +155,7 @@
                 </tr>
                 <tr>
                     <td>{{ solicitacao.num_memorando }}</td>
-                    <td>{{ solicitacao.setor_atual }}</td>
+                    <td>{{ solicitacao.setor_atual.nome }}</td>
                     {% if solicitacao.processo %}
                         <td>{{ solicitacao.processo }}</td>
                     {% endif %}
@@ -306,7 +306,7 @@
                             <a href="/base/ver_processo/{{solicitacao.processo.id}}/">(Processo: {{ solicitacao.processo }})</a>
                         {% endif %}
                     </td>
-                    <td>{{ solicitacao.setor_atual}}</td>
+                    <td>{{ solicitacao.setor_atual.nome }}</td>
                     <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
 
 
@@ -459,7 +459,7 @@
                             <a href="/base/ver_processo/{{solicitacao.processo.id}}/">(Processo: {{ solicitacao.processo }})</a>
                         {% endif %}
                     </td>
-                    <td>{{ solicitacao.setor_atual}}</td>
+                    <td>{{ solicitacao.setor_atual.nome }}</td>
                     <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
 
 
