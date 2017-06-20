@@ -3257,11 +3257,27 @@ def imprimir_capa_processo(request, processo_id):
     c.drawString(32*mm, ALTURA - 104*mm, u'Tipo: %s' % (solicitacao.tipo_aquisicao))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
 
-    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 200),'Helvetica',12,155 * mm)
-    y = ALTURA - 111*mm
-    for t in L:
-        c.drawString(32*mm,y,t)
-        y -= 5*mm
+    if solicitacao.tipo == solicitacao.COMPRA:
+        if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+            origem = solicitacao.arp_origem.solicitacao.get_pregao()
+            pedido = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao)[0]
+        elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
+            origem = solicitacao.contrato_origem.solicitacao.get_pregao()
+            pedido = PedidoContrato.objects.filter(solicitacao=solicitacao)[0]
+
+        c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
+        c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % (pedido.item.fornecedor))
+        L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 70),'Helvetica',12,155 * mm)
+        y = ALTURA - 126*mm
+        for t in L:
+            c.drawString(32*mm,y,t)
+            y -= 5*mm
+    else:
+        L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 200),'Helvetica',12,155 * mm)
+        y = ALTURA - 111*mm
+        for t in L:
+            c.drawString(32*mm,y,t)
+            y -= 5*mm
 
     # TRAMITAÇÃO
 
