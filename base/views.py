@@ -1040,13 +1040,10 @@ def imprimir_pesquisa(request, pesquisa_id):
 @login_required()
 def ver_pesquisa_mercadologica(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor) and not item.solicitacao.eh_dispensa() and item.solicitacao.prazo_aberto and item.tem_pesquisa_registrada():
-        title=u'Pesquisa Mercadológica'
-        pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
+    title=u'Pesquisa Mercadológica'
+    pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
+    return render(request, 'ver_pesquisa_mercadologica.html', locals(), RequestContext(request))
 
-        return render(request, 'ver_pesquisa_mercadologica.html', locals(), RequestContext(request))
-    else:
-        raise PermissionDenied
 
 @login_required()
 def resultado_classificacao(request, item_id):
@@ -3260,7 +3257,7 @@ def imprimir_capa_processo(request, processo_id):
     c.drawString(32*mm, ALTURA - 104*mm, u'Tipo: %s' % (solicitacao.tipo_aquisicao))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
 
-    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 220),'Helvetica',12,155 * mm)
+    L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 200),'Helvetica',12,155 * mm)
     y = ALTURA - 111*mm
     for t in L:
         c.drawString(32*mm,y,t)
@@ -4253,7 +4250,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
 @login_required()
 def registrar_adjudicacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    if request.user.pessoafisica == pregao.solicitacao.setor_origem.secretaria.ordenador_despesa:
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         title=u'Registrar Adjudicação'
         form = RegistrarAdjudicacaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
