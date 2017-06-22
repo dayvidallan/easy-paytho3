@@ -3598,7 +3598,7 @@ def novo_pedido_compra_contrato(request, contrato_id):
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
-        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_ADESAO_ARP
+        o.tipo_aquisicao = contrato.solicitacao.tipo_aquisicao
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
@@ -3617,7 +3617,7 @@ def novo_pedido_compra_arp(request, ata_id):
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
-        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_ADESAO_ARP
+        o.tipo_aquisicao = ata.solicitaca.tipo_aquisicao
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
