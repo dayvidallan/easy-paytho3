@@ -561,10 +561,9 @@ class BuscarSolicitacaoForm(forms.Form):
 
 class BuscarLicitacaoForm(forms.Form):
     METHOD = u'GET'
-    ano = forms.ChoiceField([],
-                required = False,
-                label    = u'Filtrar por Ano:',
-            )
+
+    data_inicial = forms.DateField(label=u'Data Inicial do Certame', required=False)
+    data_final = forms.DateField(label=u'Data Final do Certame', required=False)
     info = forms.CharField(label=u'Digite o número da licitação/procedimento, processo ou do memorando', required=False)
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
 
@@ -573,17 +572,14 @@ class BuscarLicitacaoForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(BuscarLicitacaoForm, self).__init__(*args, **kwargs)
-        ano_limite = datetime.date.today().year
-        pregoes = Pregao.objects.all().order_by('data_abertura')
-        ANO_CHOICES = []
-        if pregoes.exists():
-            ANO_CHOICES.append([u'', u'--------'])
-            ano_inicio = pregoes[0].data_abertura.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
-        else:
-            ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
-        self.fields['ano'].choices = ANO_CHOICES
-        self.fields['ano'].initial = ano_limite
+
+
+        self.fields['data_inicial'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_final'].widget.attrs = {'class': 'vDateField'}
+    def clean(self):
+
+         if self.cleaned_data.get('data_final') and self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final') < self.cleaned_data.get('data_inicial'):
+             self.add_error('data_final', u'A data final não pode ser menor do que a data inciial.')
 
 class MaterialConsumoForm(forms.ModelForm):
     class Meta:

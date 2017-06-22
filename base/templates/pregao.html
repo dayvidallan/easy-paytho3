@@ -362,6 +362,9 @@
                     <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
                     <a class="btn btn-danger" href="/base/encerrar_pregao/{{ pregao.pk }}/2/">Fracassado</a>
                 {% endif %}
+                {% if request.user.is_superuser and not pregao.eh_ativo %}
+                    <a class="btn btn-success" href="/base/encerrar_pregao/{{ pregao.pk }}/3/">Ativar Pregão</a>
+                {% endif %}
                 <br><br>
             </div>
             <h3>Lista de Presentes - Fornecedores Participantes</h3>

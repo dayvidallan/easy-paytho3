@@ -604,8 +604,11 @@ def ver_pregoes(request):
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
 
-        if form.cleaned_data.get('ano'):
-            pregoes = pregoes.filter(data_abertura__year=form.cleaned_data.get('ano'))
+        if form.cleaned_data.get('data_inicial'):
+            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
+
+        if form.cleaned_data.get('data_final'):
+            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
 
         if form.cleaned_data.get('situacao'):
             pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
@@ -816,7 +819,7 @@ def cadastrar_solicitacao(request):
 @login_required()
 def editar_solicitacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if solicitacao.setor_origem == request.user.pessoafisica.setor and (solicitacao.situacao == solicitacao.CADASTRADO or not solicitacao.tem_pregao_cadastrado()) and not solicitacao.tipo == solicitacao.LICITACAO:
+    if solicitacao.recebida_setor(request.user.pessoafisica.setor):
         title=u'Editar Solicitação'
         form = SolicitacaoForm(request.POST or None, instance=solicitacao, request=request)
         if form.is_valid():
@@ -1637,6 +1640,8 @@ def encerrar_pregao(request, pregao_id, motivo):
                 o.situacao = Pregao.DESERTO
             elif motivo == u'2':
                 o.situacao = Pregao.FRACASSADO
+            elif motivo == u'3':
+                o.situacao = Pregao.CADASTRADO
             o.save()
             historico = HistoricoPregao()
             historico.pregao = pregao
@@ -1645,6 +1650,8 @@ def encerrar_pregao(request, pregao_id, motivo):
                 historico.obs = u'Pregão Deserto. Observações: %s' %  form.cleaned_data.get('obs')
             elif motivo == u'2':
                 historico.obs = u'Pregão Fracassado. Observações: %s' %  form.cleaned_data.get('obs')
+            elif motivo == u'3':
+                historico.obs = u'Pregão Reativado pelo Administrador. Observações: %s' %  form.cleaned_data.get('obs')
             historico.save()
             messages.success(request, u'Pregão atualizado com sucesso.')
             return HttpResponseRedirect(u'/base/pregao/%s/#fornecedores' % pregao.id)
@@ -2669,7 +2676,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[1].text = u'%s' % componente.material.nome
                         row_cells[2].text = u'%s' % (marca)
                         row_cells[3].text = u'%s / %s' % (componente.unidade, componente.quantidade)
-                        row_cells[4].text = u'%s' % lance.get_vencedor().valor
+                        row_cells[4].text = u'%s' % format_money(lance.get_vencedor().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
                 row_cells = table.add_row().cells
@@ -2742,7 +2749,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[1].text = u'%s' % lance.material.nome
                         row_cells[2].text = u'%s' % (marca)
                         row_cells[3].text = u'%s / %s' % (lance.unidade, lance.quantidade)
-                        row_cells[4].text = u'%s' % lance.get_vencedor().valor
+                        row_cells[4].text = u'%s' % format(lance.get_vencedor().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
                 row_cells = table.add_row().cells

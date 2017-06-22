@@ -7,39 +7,35 @@
     <br><h3>Editais - Licitações</h3><br>
     <form action="." method="POST" class="form-horizontal">
         {% csrf_token %}
-         <div class="miolo">
-             <div class="row-fluid">
-                 <div class="col-xs-6">
-                 <table cellspacing="10" cellpadding="10" width="60%">
-                     <tr>
-                         <td>{{ form.modalidade|bootstrap }}</td>
-                         <td width="10%">&nbsp;</td>
-                         <td> {{ form.numero|bootstrap }}</td>
-                         <td width="5%">&nbsp;</td>
-                        <td>
-                            <div class="col-xs-6">
-                                <br>
-                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
-
-                            </div>
-                        </td>
-                     </tr>
-
-                 </table>
-                <div>
-             </div>
-
-
-
-
+        <div class="col-xs-3 col-md-3">
+            <div class="controls">{{ form.modalidade|bootstrap }}
+                {% if form.modalidade.help_text %}
+                    <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
+                {% endif %}
             </div>
-
-
+        </div>
+        <div class="col-xs-3 col-md-3">
+            <div class="controls">{{ form.numero|bootstrap }}
+                {% if form.numero.help_text %}
+                    <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+                {% endif %}
             </div>
-         </div>
+        </div>
+
+
+        <div class="col-xs-1 col-md-1">
+            <br>
+            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+        </div>
+
+
+
+
+
     </form>
-    {%  if pregoes.exists %}
 
+    {%  if pregoes.exists %}
+        <h4>{{ pregoes.count }} registro(s) encontrado(s).</h4>
         {%  for pregao in pregoes %}
 
             <table class="table table-bordered table-condensed table-striped">

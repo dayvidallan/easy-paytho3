@@ -57,11 +57,7 @@ ul{
                             <tr>
                                 <th>Item</th>
                                 <th width="60%">Especificação</th>
-
-                                <th>Marca</th>
                                 <th>Unidade</th>
-
-
                                 <th>Quantidade</th>
                                 <th>Valor Unit.</th>
                                 <th>Total</th>
@@ -74,12 +70,12 @@ ul{
                                 <tr>
                                     {% if not pedido.item.item %}
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{ pedido.item.material|truncatechars:500 }}</td>
+                                        <td>{{ pedido.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% else %}
                                         <td>{{ pedido.item.item }}</td>
-                                        <td>{{ pedido.item.item.material|truncatechars:500 }}</td>
+                                        <td>{{ pedido.item.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% endif %}
-                                    <td>{{ pedido.item.marca|default_if_none:"-" }}</td>
+                                    <td></td>
 
                                     {% if not pedido.item.item %}
                                         <td>{{ pedido.item.unidade }}</td>
