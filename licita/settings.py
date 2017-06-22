@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     # Local apps
     'pagination',
     'base',
+    'easyaudit',
 
 )
 
@@ -48,6 +49,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'base.middleware.threadlocals.ThreadLocals',
+    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
 )
 
 ROOT_URLCONF = 'licita.urls'

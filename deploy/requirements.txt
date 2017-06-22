@@ -32,3 +32,4 @@ xlutils
 dj-static==0.0.6
 blist
 python-docx
+django-easy-audit

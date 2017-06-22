@@ -32,6 +32,24 @@
                 </div>
             </div>
         </a>
+        <a href="/auditoria/">
+            <div class="col-lg-2 col-md-4">
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-users fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ num_membros }}</div>
+                                <div><strong>Auditoria</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
     {% else %}
 
         {% if perms.base.pode_cadastrar_pregao or eh_ordenador_despesa %}

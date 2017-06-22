@@ -51,8 +51,6 @@ class Secretaria(models.Model):
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
 
-
-
     def __unicode__(self):
         return self.nome
 
@@ -259,6 +257,20 @@ class SolicitacaoLicitacao(models.Model):
     class Meta:
         verbose_name = u'Solicitação de Licitação'
         verbose_name_plural = u'Solicitações de Licitação'
+
+    def recebida_setor(self, setor_do_usuario):
+        movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=self)
+        if movimentacao.exists():
+            ultima_movimentacao = movimentacao.latest('id')
+            if ultima_movimentacao.setor_destino == setor_do_usuario and ultima_movimentacao.data_recebimento:
+                return True
+        elif self.setor_atual == setor_do_usuario:
+            itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self)
+            if itens.exists() and self.tipo == SolicitacaoLicitacao.LICITACAO:
+                return True
+            elif self.tipo == SolicitacaoLicitacao.COMPRA or self.tipo == SolicitacaoLicitacao.ADESAO_ARP:
+                return True
+        return False
 
     def pode_receber_pedidos_secretarias(self):
         if self.prazo_resposta_interessados:
@@ -989,12 +1001,19 @@ class ItemLote(models.Model):
         verbose_name = u'Item do Lote'
         verbose_name_plural = u'Itens dos Lotes'
 
+    def __unicode__(self):
+        return u'Item %s do Lote: %s' % (self.item, self.lote)
 
 class OpcaoLCN(models.Model):
     descricao = models.CharField(u'Descrição', max_length=5000)
 
+    class Meta:
+        verbose_name = u'Opção da LCN'
+        verbose_name_plural = u'Opções da LCN'
+
     def __unicode__(self):
         return self.descricao
+
 
 def upload_path_termo_homologacao(instance, filename):
     return os.path.join('upload/homologacoes/%s/' % instance.id, filename)
@@ -1388,7 +1407,6 @@ class VisitantePregao(models.Model):
         verbose_name = u'Visitante do Pregão'
         verbose_name_plural = u'Visitantes do Pregão'
 
-
     def __unicode__(self):
         return self.nome
 
@@ -1447,6 +1465,9 @@ class RodadaPregao(models.Model):
         verbose_name = u'Rodada do Pregão'
         verbose_name_plural = u'Rodadas do Pregão'
 
+    def __unicode__(self):
+        return u'Rodada: %s do Pregão: %s' % (self.rodada, self.pregao)
+
     def eh_rodada_atual(self):
         return self.atual
 
@@ -1484,6 +1505,9 @@ class LanceItemRodadaPregao(models.Model):
         verbose_name = u'Lance da Rodada do Pregão'
         verbose_name_plural = u'Lances da Rodada do Pregão'
         ordering = ['-valor']
+
+    def __unicode__(self):
+        return u'Lance %s da Rodada: %s' % (self.id, self.self.rodada)
 
     def get_marca(self):
         preco = PropostaItemPregao.objects.filter(participante=self.participante, item=self.item)
@@ -1588,6 +1612,10 @@ class PessoaFisica(models.Model):
 class Estado(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
     sigla = models.CharField(u'Sigla', max_length=2)
+
+    class Meta:
+        verbose_name = u'Estado'
+        verbose_name_plural = u'Estados'
 
     def __unicode__(self):
         return self.sigla
@@ -1705,6 +1733,13 @@ class PesquisaMercadologica(models.Model):
     orgao_gerenciador_ata = models.CharField(u'Órgão Gerenciador da Ata', max_length=255, null=True, blank=True)
     origem = models.CharField(u'Origem', max_length=100, choices=ORIGEM_CHOICES, null=True, blank=True)
 
+    class Meta:
+        verbose_name = u'Pesquisa Mercadológica'
+        verbose_name_plural = u'Pesquisas Mercadológicas'
+
+    def __unicode__(self):
+        return u'Pesquisa Mercadológica: %s, Fornecedor: %s' % (self.id, self.razao_social)
+
     def get_itens(self):
         return ItemPesquisaMercadologica.objects.filter(pesquisa=self).order_by('item__item')
 
@@ -1764,6 +1799,8 @@ class ResultadoItemPregao(models.Model):
         verbose_name = u'Resultado da Licitação'
         verbose_name_plural = u'Resultados da Licitação'
 
+    def __unicode__(self):
+        return u'Resultado do Item: %s, Participante: %s' % (self.item, self.participante)
 
     def pode_alterar(self):
         return self.situacao == ResultadoItemPregao.CLASSIFICADO
@@ -1850,6 +1887,9 @@ class LogDownloadArquivo(models.Model):
         verbose_name = u'Log de Download de Arquivo'
         verbose_name_plural = u'Logs de Download de Arquivo'
 
+    def __unicode__(self):
+        return u'Download por %s do Arquivo: %s' % (self.nome, self.self.arquivo)
+
 
 class HistoricoPregao(models.Model):
     pregao = models.ForeignKey(Pregao)
@@ -1860,6 +1900,10 @@ class HistoricoPregao(models.Model):
         verbose_name = u'Histórico do Pregão'
         verbose_name_plural = u'Históricos do Pregão'
         ordering = ['data']
+
+
+    def __unicode__(self):
+        return u'Histórico do Pregão: %s' % self.pregao
 
 
 class MovimentoSolicitacao(models.Model):
@@ -1876,12 +1920,15 @@ class MovimentoSolicitacao(models.Model):
         verbose_name = u'Movimento da Solicitação'
         verbose_name_plural = u'Movimentos da Solicitação'
 
+    def __unicode__(self):
+        return u'Movimento %s da Solicitação: %s' % (self.id, self.solicitacao)
+
 def upload_path_documento(instance, filename):
     return os.path.join('upload/documentos_solicitacao/%s/' % instance.solicitacao.id, filename)
 
 class DocumentoSolicitacao(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
-    nome = models.TextField(u'Nome do Arquivo', max_length=500)
+    nome = models.CharField(u'Nome do Arquivo', max_length=500)
     cadastrado_em = models.DateTimeField(u'Cadastrado Em', null=True, blank=True)
     cadastrado_por = models.ForeignKey(User, related_name=u'documento_cadastrado_por', null=True)
     documento = models.FileField(u'Documento', null=True, blank=True, upload_to=upload_path_documento)
@@ -1889,6 +1936,10 @@ class DocumentoSolicitacao(models.Model):
     class Meta:
         verbose_name = u'Documento da Solicitação'
         verbose_name_plural = u'Documentos da Solicitação'
+
+    def __unicode__(self):
+        return u'Documento da Solicitação: %s' % self.solicitacao
+
 
 
 class ItemQuantidadeSecretaria(models.Model):
@@ -1905,6 +1956,12 @@ class ItemQuantidadeSecretaria(models.Model):
         valor = self.item.valor_medio or 0
         return self.quantidade * valor
 
+    class Meta:
+        verbose_name = u'Pedido de Itens da Secretaria'
+        verbose_name_plural = u'Pedidos de Itens da Secretaria'
+
+    def __unicode__(self):
+        return u'Item %s da Secretaria: %s' % (self.item, self.secretaria)
 
 
 class MaterialConsumo(models.Model):
@@ -1944,6 +2001,8 @@ class Configuracao(models.Model):
     cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
     url = models.CharField(u'URL de Acesso', max_length=500, null=True)
 
+    def __unicode__(self):
+        return u'Configuração Geral'
 
     class Meta:
         verbose_name = u'Variável de Configuração'
@@ -2006,6 +2065,13 @@ class AtaRegistroPreco(models.Model):
     objeto = models.TextField(u'Objeto', null=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
 
+    class Meta:
+        verbose_name = u'Ata de Registro de Preço'
+        verbose_name_plural = u'Atas de Registro de Preço'
+
+    def __unicode__(self):
+        return u'Aditivo: %s - %s' % (self.numero, self.contrato)
+
     def __unicode__(self):
         return 'ARP N° %s' % (self.numero)
 
@@ -2064,6 +2130,11 @@ class Contrato(models.Model):
     aplicacao_artigo_57 = models.CharField(u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)', max_length=200, null=True, blank=True, choices=INCISOS_ARTIGO_57_CHOICES, default=NAO_SE_APLICA)
     garantia_execucao_objeto = models.CharField(u'Garantia de Execução do Objeto (%)', null=True, blank=True, max_length=50, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
 
+
+    class Meta:
+        verbose_name = u'Contrato'
+        verbose_name_plural = u'Contratos'
+
     def __unicode__(self):
         return 'Contrato N° %s' % (self.numero)
 
@@ -2117,6 +2188,13 @@ class Aditivo(models.Model):
     de_valor = models.BooleanField(verbose_name=u'Aditivo de Valor', default=False)
     de_fiscal = models.BooleanField(verbose_name=u'Aditivo de Fiscal', default=False)
 
+    class Meta:
+        verbose_name = u'Aditivo do Contrato'
+        verbose_name_plural = u'Aditivos do Contrato'
+
+    def __unicode__(self):
+        return u'Aditivo: %s - %s' % (self.numero, self.contrato)
+
 
 class ItemContrato(models.Model):
     contrato = models.ForeignKey(Contrato)
@@ -2133,6 +2211,9 @@ class ItemContrato(models.Model):
         ordering = ['item__item']
         verbose_name = u'Item do Contrato'
         verbose_name_plural = u'Itens do Contrato'
+
+    def __unicode__(self):
+        return u'Item %s do Contrato: %s' % (self.item, self.contrato)
 
     def get_quantidade_disponivel(self):
         usuario = tl.get_user()
@@ -2174,6 +2255,8 @@ class PedidoContrato(models.Model):
         verbose_name = u'Pedido do Contrato'
         verbose_name_plural = u'Pedidos do Contrato'
 
+    def __unicode__(self):
+        return u'Pedido %s do Contrato: %s' % (self.id, self.contrato)
 
     def get_total(self):
         return self.quantidade * self.item.valor
@@ -2197,6 +2280,10 @@ class ItemAtaRegistroPreco(models.Model):
         ordering = ['item__item']
         verbose_name = u'Item da ARP'
         verbose_name_plural = u'Itens da ARP'
+
+
+    def __unicode__(self):
+        return u'Item %s da ARP: %s' % (self.item, self.ata)
 
     def get_quantidade_disponivel(self):
         usuario = tl.get_user()
@@ -2256,9 +2343,13 @@ class PedidoAtaRegistroPreco(models.Model):
     pedido_em = models.DateTimeField(u'Pedido em')
     ativo = models.BooleanField(u'Ativo', default=True)
 
+
     class Meta:
         verbose_name = u'Pedido da ARP'
         verbose_name_plural = u'Pedidos da ARP'
+
+    def __unicode__(self):
+        return u'Pedido %s da ARP: %s' % (self.id, self.ata)
 
 
     def get_total(self):

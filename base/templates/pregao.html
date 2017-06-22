@@ -407,7 +407,7 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if pregao.eh_ativo %}
+                                        {% if pregao.eh_ativo and recebida_setor %}
                                             <a href="/admin/base/participantepregao/{{ item.id }}/" class="btn btn-info btn-sm">Editar</a>
                                             {% if item.pode_remover %}
                                                 <a href="/base/remover_participante_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Remover</a>
@@ -532,7 +532,7 @@
         <div id="classificacao" class="tab-pane">
             <h2>Resultado do Pregão</h2>
             {% if not pregao.eh_pregao and not pregao.tem_resultado %}
-                {% if pregao.tem_proposta %}
+                {% if pregao.tem_proposta and recebida_setor %}
                     <div class="pull-right">
                         <a href="/base/gerar_resultado_licitacao/{{ pregao.id }}/" class="btn btn-success">Gerar Resultado</a>
                     </div>
@@ -552,7 +552,7 @@
                      </div>
                 </form>
                 {% if itens_pregao.exists %}
-                    {% if buscou and pregao.eh_ativo %}
+                    {% if buscou and pregao.eh_ativo and recebida_setor %}
                         <div class="pull-right">
                             {% if pregao.eh_pregao %}
                                 <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
@@ -623,7 +623,7 @@
                                                             <td>{{ item.valor_medio }}</td>
                                                             <td>{{ item.get_valor_unitario_proposto|format_money }}</td>
                                                             <td>{{ item.get_valor_total_proposto|format_money }}</td>
-                                                            <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
+                                                            <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final and recebida_setor %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
                                                             <td>{{ item.get_valor_item_lote|format_money|default_if_none:"não informado" }} </td>
 
                                                         </tr>
@@ -636,11 +636,12 @@
                                         </td>
                                         <td>
 
+                                            {% if recebida_setor %}
+                                                <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
+                                            {% endif %}
 
-                                            <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
 
-
-                                            {% if lote.tem_empate %}
+                                            {% if lote.tem_empate and recebida_setor  %}
                                                 <a href="/base/desempatar_item/{{ lote.id }}/" class="btn btn-success btn-sm">Desempatar</a>
                                             {% endif %}
                                             {% if lote.tem_resultado %}
@@ -712,16 +713,16 @@
                                             {% if pregao.eh_ativo %}
                                                 {% if item.tem_resultado %}
                                                     <a class="btn btn-info btn-sm" href="/base/resultado_classificacao/{{ item.id }}/"  title="Classificação">Classificação Completa</a>
-                                                    {% if item.ganhou_com_valor_acima %}
+                                                    {% if item.ganhou_com_valor_acima and recebida_setor %}
                                                         <a href="/base/encerrar_itempregao/{{ item.id }}/2/2/" class="btn btn-danger btn-sm">Fracassado</a>
                                                     {% endif%}
 
-                                                {% elif item.pode_gerar_resultado and pregao.eh_pregao %}
+                                                {% elif item.pode_gerar_resultado and pregao.eh_pregao and recebida_setor  %}
                                                     <a href="/base/gerar_resultado/{{ item.id }}/" class="btn btn-success btn-sm">Gerar Resultados</a>
                                                 {% else %}
                                                     -
                                                 {% endif %}
-                                                {% if item.tem_empate %}
+                                                {% if item.tem_empate and recebida_setor %}
                                                     <a href="/base/desempatar_item/{{ item.id }}/" class="btn btn-success btn-sm">Desempatar</a>
                                                 {% endif %}
                                             {% endif %}
@@ -740,7 +741,7 @@
 
         </div>
         <div id="homologacao" class="tab-pane">
-            {% if not pregao.data_revogacao %}
+            {% if not pregao.data_revogacao and recebida_setor %}
                 <div class="pull-right">
                     <a href="/base/revogar_pregao/{{ pregao.id }}/" class="btn btn-danger">Revogar</a>
                     <br><br>
@@ -750,7 +751,7 @@
                     {% if pregao.eh_pregao %}
                         <fieldset>
                             <legend>Adjudicação</legend>
-                            {% if not pregao.data_adjudicacao %}
+                            {% if not pregao.data_adjudicacao and recebida_setor %}
                                 <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
                             {% else %}
                                 <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
@@ -783,7 +784,7 @@
                 {% else %}
                     <p class="alert alert-warning">A classificação deste pregão ainda não foi gerada.</p>
                 {% endif %}
-            {% else %}
+            {% elif pregao.data_revogacao %}
                 <p class="alert alert-danger">Pregão revogado.</p>
             {% endif %}
 

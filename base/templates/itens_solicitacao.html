@@ -70,7 +70,7 @@
                         {% endif %}
 
                     {% endif %}
-                    {% if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all and solicitacao.dentro_prazo_resposta and not ja_aprovou and solicitacao.itemsolicitacaolicitacao_set.exists %}
+                    {% if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all and solicitacao.dentro_prazo_resposta and not ja_aprovou and solicitacao.itemsolicitacaolicitacao_set.exists and solicitacao.liberada_para_pedido %}
                         {% if not ja_registrou_preco %}
                             <a class="btn btn-success" href="/base/informar_quantidades/{{ solicitacao.pk }}/">Informar Quantidade de Itens</a>
                         {% else %}
@@ -137,7 +137,8 @@
         <table class="table table-bordered table-condensed table-striped">
             <thead>
                 <tr>
-                    <th width="10%">Memorando</th>
+                    <th width="8%">Memorando</th>
+                    <th width="10%">Setor Atual</th>
                     {% if solicitacao.processo %}
                         <th>Processo</th>
                     {% endif %}
@@ -154,6 +155,7 @@
                 </tr>
                 <tr>
                     <td>{{ solicitacao.num_memorando }}</td>
+                    <td>{{ solicitacao.setor_atual.nome }}</td>
                     {% if solicitacao.processo %}
                         <td>{{ solicitacao.processo }}</td>
                     {% endif %}
@@ -289,7 +291,8 @@
         <table class="table table-bordered table-condensed table-striped" width="50%">
             <thead>
                 <tr>
-                    <th width="20%">Memorando</th>
+                    <th width="10%">Memorando</th>
+                    <th width="10%">Setor Atual</th>
                     <th width="50%">Descrição do Objeto</th>
 
                     <th>Data de Cadastro</th>
@@ -303,6 +306,7 @@
                             <a href="/base/ver_processo/{{solicitacao.processo.id}}/">(Processo: {{ solicitacao.processo }})</a>
                         {% endif %}
                     </td>
+                    <td>{{ solicitacao.setor_atual.nome }}</td>
                     <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
 
 
@@ -440,7 +444,8 @@
             <table class="table table-bordered table-condensed table-striped" width="50%">
             <thead>
                 <tr>
-                    <th width="20%">Memorando</th>
+                    <th width="10%">Memorando</th>
+                    <th width="10%">Setor Atual</th>
                     <th width="50%">Descrição do Objeto</th>
 
                     <th>Data de Cadastro</th>
@@ -454,6 +459,7 @@
                             <a href="/base/ver_processo/{{solicitacao.processo.id}}/">(Processo: {{ solicitacao.processo }})</a>
                         {% endif %}
                     </td>
+                    <td>{{ solicitacao.setor_atual.nome }}</td>
                     <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
 
 
