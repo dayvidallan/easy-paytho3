@@ -1888,7 +1888,7 @@ class LogDownloadArquivo(models.Model):
         verbose_name_plural = u'Logs de Download de Arquivo'
 
     def __unicode__(self):
-        return u'Download por %s do Arquivo: %s' % (self.nome, self.self.arquivo)
+        return u'Download por %s do Arquivo: %s' % (self.nome, self.arquivo)
 
 
 class HistoricoPregao(models.Model):

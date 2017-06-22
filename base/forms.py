@@ -392,6 +392,7 @@ class AnexoARPForm(forms.ModelForm):
             self.fields['arquivo'].required = False
 
 class LogDownloadArquivoForm(forms.ModelForm):
+
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
       label                = u'Município',
@@ -405,6 +406,9 @@ class LogDownloadArquivoForm(forms.ModelForm):
     class Meta:
         model = LogDownloadArquivo
         fields = ['cnpj', 'nome','responsavel', 'cpf', 'email', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']
+
+    class Media:
+            js = ['/static/base/js/baixar_editais.js']
 
 class UploadPesquisaForm(forms.ModelForm):
     arquivo = forms.FileField(label=u'Arquivo com a Proposta Assinada', required=True)

@@ -30,7 +30,7 @@ from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
 from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
 import xlwt
 from django.core.exceptions import PermissionDenied
-
+from licita import settings
 LARGURA = 210*mm
 ALTURA = 297*mm
 
@@ -1539,9 +1539,29 @@ def baixar_arquivo(request, arquivo_id):
         o = form.save(False)
         o.arquivo = arquivo
         o.save()
-        return HttpResponseRedirect(u'/media/%s' % arquivo.arquivo)
+        arquivo_nome = u'\'%s\' - %s' % (arquivo.nome, arquivo.pregao)
+        link = settings.URL + u'media/%s' % arquivo.arquivo
+        texto = u'Olá, %s. Segue o link para download do arquivo: %s. Link: %s ' % (o.nome, arquivo_nome, link)
+        send_mail('Easy Gestão Pública - Download do Arquivo', texto, settings.EMAIL_HOST_USER,
+             [o.email], fail_silently=False)
+        messages.success(request, u'O link para download do arquivo foi enviado para seu email.')
+        return HttpResponseRedirect(u'/base/baixar_editais/', )
     return render(request, 'baixar_arquivo.html', locals(), RequestContext(request))
 
+
+def busca_pessoa(request):
+
+    from django.core import serializers
+    if request.method == 'GET':
+        pessoa = request.GET.get('pessoa')
+        medicos = LogDownloadArquivo.objects.filter(Q(cpf=pessoa) | Q(cnpj=pessoa)).order_by('-id')
+        if medicos:
+            data = serializers.serialize('json', list(medicos), fields=('nome','cpf', 'responsavel', 'cnpj', 'endereco', 'municipio', 'telefone', 'email',))
+            print data
+        else:
+            data = []
+
+        return HttpResponse(data, content_type='application/json')
 @login_required()
 def alterar_valor_lance(request, lance_id):
     lance = get_object_or_404(LanceItemRodadaPregao, pk=lance_id)

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/licita.iml" filepath="$PROJECT_DIR$/.idea/licita.iml" />
       <module fileurl="file://$PROJECT_DIR$/../suap/.idea/suap.iml" filepath="$PROJECT_DIR$/../suap/.idea/suap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../telediagnostico/.idea/telediagnostico.iml" filepath="$PROJECT_DIR$/../telediagnostico/.idea/telediagnostico.iml" />
     </modules>
   </component>
 </project>
