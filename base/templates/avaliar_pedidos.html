@@ -20,6 +20,7 @@
      <div class="pull-right">
          <a class="btn btn-primary" href="/base/itens_solicitacao/{{ solicitacao.pk }}/">Voltar</a>
     </div>
+    <b>{{ informados }}</b> secretaria(s) do total de <b>{{  total }}</b> já registraram seus pedidos.</h3>
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
              <div class="miolo">
@@ -92,10 +93,6 @@
 
 
     {% endfor %}
-
-
-
-
 
 
 {% endblock %}

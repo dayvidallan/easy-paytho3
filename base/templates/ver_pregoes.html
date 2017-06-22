@@ -16,25 +16,61 @@
 	</script>
 {% endblock %}
 {% block content %}
+    <div class="pull-right">
+            <a class="btn btn-info" href="/base/ver_relatorios_gerenciais/">Relatórios Gerenciais</a>
+    </div>
+    <br><br>
     {% if form %}
         <fieldset>
             <legend>Buscar Licitação</legend>
-            <form action="." method="POST" class="form-horizontal">
+            <form action="." method="GET" class="form-horizontal">
                 {% csrf_token %}
-                 <div class="miolo">
-                    <div class="row-fluid">
-                        <div class="col-xs-4">
-
-                            {{ form|bootstrap }}
-                        </div>
-
-                        <div class="col-xs-6">
-                            <br>
-                            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
-
+                <div class="row-fluid">
+                    <div class="col-xs-3">
+                        <div class="controls">{{ form.info|bootstrap }}
+                            {% if form.info.help_text %}
+                                <p class="help-inline"><small>{{ form.info.help_text }}</small></p>
+                            {% endif %}
                         </div>
                     </div>
-                 </div>
+                </div>
+
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.ano|bootstrap }}
+                        {% if form.ano.help_text %}
+                            <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.modalidade|bootstrap }}
+                        {% if form.modalidade.help_text %}
+                            <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.situacao|bootstrap }}
+                        {% if form.situacao.help_text %}
+                            <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.secretaria|bootstrap }}
+                        {% if form.secretaria.help_text %}
+                            <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+            <div class="col-xs-1 col-md-1">
+                <br>
+                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+            </div>
+
             </form>
 
         </fieldset>
@@ -45,7 +81,7 @@
         <table class="table table-bordered table-condensed table-striped">
             <thead>
                 <tr>
-                    <th>Pregão</th>
+                    <th>Licitação</th>
                     <th>Memorando</th>
                     <th>Objeto</th>
                     <th width="10%">Situação</th>
@@ -56,7 +92,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% autopaginate pregoes 10 %}
+                {% autopaginate pregoes 15 %}
                 {% paginate %}
                 {% for pregao in pregoes %}
                    <tr>
@@ -67,11 +103,12 @@
                        <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
                        <td>{{ pregao.responsavel}}</td>
                        <td>
-                           <ul class="action-bar">
+
                                {% if perms.base.pode_cadastrar_pregao %}
-                                   <li><a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a></li>
-                                   <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li>
+                                   <a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a>
+                                   <!-- <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li> -->
                                {% endif %}
+                           <ul class="action-bar">
                                {% if eh_ordenador_despesa and pregao.tem_resultado %}
                                     {% if pregao.eh_pregao and pregao.data_adjudicacao or pregao.pode_homologar %}
                                         <li><a class="btn btn-info btn-sm" href="/relatorio_resultado_final/{{pregao.id}}/">Resultado Final</a></li>

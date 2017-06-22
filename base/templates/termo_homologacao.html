@@ -74,7 +74,7 @@ ul{
 
 
         O Prefeito do Município de <b>{{configuracao.nome}}</b>,
-        no uso de suas atribuições legais, em atendimento ao disposto no art. 43, inciso VI, da Lei Federal nº 8.666/93, em sua redação atual, resolve <b>homologar</b> os atos praticados no procedimento licitatório referente ao <b>PREGÃO PRESENCIAL N° {{ pregao.num_pregao }}, Processo N° {{ pregao.num_processo }}</b>
+        no uso de suas atribuições legais, em atendimento ao disposto no art. 43, inciso VI, da Lei Federal nº 8.666/93, em sua redação atual, resolve <b>homologar</b> os atos praticados no procedimento licitatório referente ao <b>PREGÃO PRESENCIAL N° {{ pregao.num_pregao }}, Processo N° {{ pregao.solicitacao.processo }}</b>
         originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.solicitacao.objeto}}</b>,
 
         conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital,
@@ -97,7 +97,7 @@ ul{
 
     <center>
         <br><br>
-        {{configuracao.municipio}}, {{ pregao.data_homologacao }}
+        {{config_geral.municipio}}, {{ pregao.data_homologacao }}
 
 
         <br><br>

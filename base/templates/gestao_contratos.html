@@ -173,7 +173,43 @@
 
 
     <div>
+            {% if form %}
+                <fieldset>
+                    <legend>Buscar Solicitações</legend>
+                    <form action="." method="GET" class="form-horizontal">
+                        {% csrf_token %}
+                        <div class="row-fluid">
+                            <div class="col-xs-3">
+                                <div class="controls">{{ form.info|bootstrap }}
+                                    {% if form.info.help_text %}
+                                        <p class="help-inline"><small>{{ form.info.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
 
+                            <div class="col-xs-2 col-md-2">
+                                <div class="controls">{{ form.ano|bootstrap }}
+                                    {% if form.ano.help_text %}
+                                        <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-xs-2 col-md-2">
+                                <div class="controls">{{ form.secretaria|bootstrap }}
+                                    {% if form.secretaria.help_text %}
+                                        <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-xs-1 col-md-1">
+                                <br>
+                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                            </div>
+                        </div>
+                    </form>
+
+                </fieldset>
+            {% endif %}
         <ul class="nav nav-tabs">
 
             <li class="active">
@@ -195,10 +231,10 @@
                     <tr>
                         <th>Nº do Contrato</th>
                         <th>Nº Processo</th>
+                        <th>Solicitação de Origem</th>
                         <th>Objeto</th>
                         <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
-                        <th>Caráter Continuado</th>
                         <th>Valor</th>
                         <th>Situação</th>
                         <th>Opções</th>
@@ -209,17 +245,15 @@
                         <tr>
                             <td>{{ item.numero }}</td>
                             <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
+                            <td>{{ item.solicitacao.num_memorando }}</td>
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
-                            <td>{{ item.get_carater_continuado }}</td>
                             <td>R$ {{ item.valor|format_money }}</td>
                             <td>{{ item.get_situacao }}</td>
                             <td>
-                                <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info">Visualizar</a>
-                                {% if pode_editar %}
-                                    <a href="/admin/base/contrato/{{item.id}}/change/" class="btn btn-default">Editar</a>
-                                {% endif %}
+                                <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info btn-sm">Visualizar</a>
+
                             </td>
 
 
@@ -242,6 +276,7 @@
                     <tr>
                         <th>Nº da ARP</th>
                         <th>Nº Processo</th>
+                        <th>Solicitação de Origem</th>
                         <th>Objeto</th>
                         <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
@@ -255,6 +290,7 @@
                         <tr>
                             <td>{{ item.numero }}</td>
                             <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
+                            <td>{{ item.solicitacao.num_memorando }}</td>
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.data_fim|default_if_none:"-" }}</td>
@@ -268,9 +304,6 @@
                             <td>{{ item.get_situacao }}</td>
                             <td>
                                 <a href="/base/visualizar_ata_registro_preco/{{item.id}}/" class="btn btn-info">Visualizar</a>
-                                {% if pode_editar %}
-                                    <a href="/admin/base/contrato/{{item.id}}/change/" class="btn btn-default">Editar</a>
-                                {% endif %}
                             </td>
 
 

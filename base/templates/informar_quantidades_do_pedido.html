@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block content %}
-         <form action="." method="post" class="form-horizontal">
+         <form action="." method="post" class="form-horizontal" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
             {% csrf_token %}
              <div class="miolo">
 				<div class="miolo">
@@ -87,10 +87,10 @@
 
 
                                     </tr>
-                                {% endfor%}
+                                {% endfor %}
                                 {% if buscou %}
                                     <tr>
-                                       <td  colspan="6">&nbsp;</td>
+                                       <td  colspan="5">&nbsp;</td>
                                        <td><button type="submit" class="btn btn-primary">Solicitar</button></td>
                                     </tr>
                                 {% endif %}
@@ -101,7 +101,7 @@
 
 
             {% else %}
-                <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data">
+                <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
                     {% csrf_token %}
                     <input type="hidden" id="fornecedor" name="fornecedor" value="{{fornecedor.id}}">
                     <table width="30%" align="right" class="table table-bordered table-condensed table-striped">

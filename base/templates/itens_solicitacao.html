@@ -58,7 +58,13 @@
 
                         <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
                         <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
-
+                        {% if solicitacao.pode_receber_pedidos_secretarias %}
+                            {% if solicitacao.liberada_para_pedido %}
+                                <a class="btn btn-danger" href="/base/liberar_pedidos_solicitacao/{{ solicitacao.pk }}/">Encerrar Pedidos</a>
+                            {% else %}
+                                <a class="btn btn-success" href="/base/liberar_pedidos_solicitacao/{{ solicitacao.pk }}/">Liberar Pedidos</a>
+                            {% endif %}
+                        {% endif %}
                         {% if solicitacao.tem_pedidos_outras_secretarias %}
                             <a class="btn btn-info" href="/base/avaliar_pedidos/{{ solicitacao.pk }}/">Outros Pedidos</a>
                         {% endif %}
@@ -75,13 +81,14 @@
              {% endif %}
              {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
                 {% if solicitacao.prazo_aberto %}
-                    <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a>
+                    <!-- <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a> -->
                     <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
                     <a class="btn btn-info" href="/base/ver_pesquisas/{{ solicitacao.id }}/">Ver Pesquisas</a>
                     <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
+                    <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
                 {% elif not solicitacao.eh_dispensa or not solicitacao.tem_ordem_compra %}
                     <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
-                    <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
+
                 {% endif %}
 
              {% endif %}
@@ -112,7 +119,7 @@
                 {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_proposta and not solicitacao.prazo_aberto %}
                 <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
                 {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
-                    <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
+                    <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
                 {% endif %}
 
             {% endif %}
@@ -212,18 +219,20 @@
 
                             <td>
                                 {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
-                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado %}
+                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado and not solicitacao.prazo_aberto %}
                                         <a href="/base/editar_item/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
                                         <a href="/base/apagar_item/{{item.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                     {% endif %}
-                                    {% if solicitacao.interessados and item.tem_pedidos_outras_secretarias %}
-                                        <a href="/base/ver_pedidos_secretaria/{{item.id}}/" class="btn btn-default btn-sm">Pedidos das Secretarias</a>
-                                    {% endif %}
+
                                 {% endif %}
                                 {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                                    {% if  not solicitacao.eh_dispensa %}
+                                    {% if  not solicitacao.eh_dispensa and solicitacao.prazo_aberto %}
                                         <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
                                     {% endif %}
+                                    {% if item.arquivo_referencia_valor_medio %}
+                                        <a href="/media/{{ item.arquivo_referencia_valor_medio }}" class="btn btn-default btn-sm" target="_blank">Ver Arquivo de Referência</a>
+                                    {% endif %}
+
                                     {% if item.tem_pesquisa_registrada %}
                                         <a href="/ver_pesquisa_mercadologica/{{item.id}}/" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
                                     {% endif %}
@@ -268,7 +277,7 @@
                 <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
 
             {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
-                <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info">Ver Ordem de Compra/Serviço</a>
+                <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
             {% endif %}
             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists %}
                 <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>

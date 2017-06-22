@@ -181,30 +181,45 @@
         <div id="outras_secretarias" class="tab-pane {{aba1}}">
             {% if form %}
                 <fieldset>
-                    <legend>Buscar Solicitações</legend>
-                    <form action="." method="POST" class="form-horizontal">
+                    <legend>Filtros</legend>
+                    <form action="." method="GET" class="form-horizontal">
                         {% csrf_token %}
-                         <div class="miolo">
-                            <div class="row-fluid">
-                                <div class="col-xs-4">
-
-                                    {{ form|bootstrap }}
-                                </div>
-
-                                <div class="col-xs-6">
-                                    <br>
-                                    <p><button type="submit" class="btn btn-primary">Buscar</button></p>
-
+                        <div class="row-fluid">
+                            <div class="col-xs-3 col-md-3">
+                                <div class="controls">{{ form.info|bootstrap }}
+                                    {% if form.info.help_text %}
+                                        <p class="help-inline"><small>{{ form.info.help_text }}</small></p>
+                                    {% endif %}
                                 </div>
                             </div>
-                         </div>
+                        </div>
+                         <div class="row-fluid">
+                            <div class="col-xs-2 col-md-2">
+                                <div class="controls">{{ form.ano|bootstrap }}
+                                    {% if form.ano.help_text %}
+                                        <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-xs-2 col-md-2">
+                                <div class="controls">{{ form.secretaria|bootstrap }}
+                                    {% if form.secretaria.help_text %}
+                                        <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-xs-1 col-md-1">
+                                <br>
+                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                            </div>
+                        </div>
                     </form>
 
                 </fieldset>
             {% endif %}
             {% if outras.exists %}
                 <fieldset>
-                    <legend>Solicitações Encontradas</legend>
+                    <legend>{{ outras.count }} Solicitações Encontradas</legend>
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
@@ -260,17 +275,15 @@
 
             {% if solicitacoes.exists %}
                 <fieldset>
-                    <legend>Solicitações Encontradas</legend>
+                    <legend>{{ solicitacoes.count }} Solicitações Encontradas</legend>
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
                                 <th>Memorando</th>
                                 <th>Objeto</th>
-                                {% if perms.base.pode_cadastrar_solicitacao %}
-                                    <th>Data de Cadastro</th>
-                                {% else %}
-                                    <th>Data de Recebimento</th>
-                                {% endif %}
+
+                                <th>Data de Cadastro</th>
+
                                 <th>Tipo</th>
                                 <th>Situação</th>
                                 <th>Opções</th>
@@ -285,13 +298,7 @@
 
                                    <td>{{ solicitacao.num_memorando }}</td>
                                    <td>{{ solicitacao.objeto }}</td>
-                                   <td>
-                                       {% if perms.base.pode_cadastrar_solicitacao %}
-                                           {{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}
-                                       {% else %}
-                                            {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
-                                       {% endif %}
-                                   </td>
+                                   <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</td>
                                    <td>
                                        {% if solicitacao.tipo == solicitacao.COMPRA %}
                                         Compra
@@ -303,12 +310,10 @@
                                    <td>
                                        <ul class="action-bar">
                                        <li><a class="btn btn-info btn-sm" href="/itens_solicitacao/{{solicitacao.id}}/">Ver Solicitação</a></li>
-                                       {% if solicitacao.setor_origem == request.user.pessoafisica.setor and solicitacao.situacao == solicitacao.CADASTRADO  and not solicitacao.tipo == solicitacao.LICITACAO %}
+                                       {% if solicitacao.setor_origem == request.user.pessoafisica.setor %}
                                             <li><a class="btn btn-default btn-sm" href="/base/editar_solicitacao/{{ solicitacao.pk }}/">Editar Solicitação</a></li>
                                        {% endif %}
-                                       {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado  and solicitacao.tipo == solicitacao.LICITACAO %}
-                                            <a class="btn btn-default btn-sm" href="/base/editar_solicitacao/{{ solicitacao.pk }}/">Editar Solicitação</a>
-                                       {% endif %}
+
                                        </ul>
                                    </td>
                                </tr>

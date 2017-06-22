@@ -30,16 +30,16 @@ ul{
      @page {
             size: a4 landscape;
             margin: 0.3cm;
+            margin-bottom: 0.7cm;
+            margin-top: 0.3cm;
             @frame footer {
     		    -pdf-frame-content: footerblock;
     		    bottom: 1cm;
     		    margin-left: 1cm;
     		    margin-right: 1cm;
-             margin-top: 1cm;
+                margin-top: 1cm;
     		    height: 1cm;
 		    }
-
-
 
      }
 
@@ -50,7 +50,7 @@ ul{
     <br>
   <h1 class="page-header">
     {% include "cabecalho.html" %}
-    <center><font size="4">Classificação Final - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+    <center><font size="4">Resultado Final - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
 
 
@@ -74,10 +74,9 @@ ul{
                 <tr>
                     <th width="7%">Item</th>
                     <th>Material</th>
-                    <th>Marca</th>
-                    <th>Unidade</th>
-                    <th width="15%">Quantidade</th>
-                    <th>Vencedora</th>
+                    <th width="15%">Unidade</th>
+                    <th width="8%">Qtd</th>
+                    <th width="25%">Vencedora</th>
 
                     {% if eh_maior_desconto %}
                         <th width="20%">Valor Médio</th>
@@ -112,8 +111,7 @@ ul{
 
                     <tr>
                         <td>{{ item.item }}</td>
-                        <td>{{ item.material }}</td>
-                        <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
+                        <td style="text-align: left;">{{ item.material }} - MARCA: {{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                         <td>{{ item.unidade }}</td>
                         <td>{{ item.quantidade }}</td>
                         <td>{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</td>
@@ -131,9 +129,9 @@ ul{
             {% endfor %}
             {% if not eh_maior_desconto %}
                 {% if eh_lote %}
-                    <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                    <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
                 {% else %}
-                    <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                    <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
                 {% endif %}
             {% endif %}
 

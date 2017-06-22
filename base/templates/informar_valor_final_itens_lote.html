@@ -1,0 +1,46 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/pregao/{{pregao.id}}/">{{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+
+        <form action="." method="post" class="form-horizontal" onsubmit="return confirm('Tem certeza que deseja continuar?');">
+            {% csrf_token %}
+             <div class="miolo">
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in itens %}
+                            <tr>
+                                <td>{{ item.item }} - {{ item.item.material|truncatechars:100 }}</td>
+                                <td><input name="itens" value="{{ item.item.get_valor_unitario_final }}">
+                                <input name="id_item" type="hidden" value="{{ item.item.id }}"></td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+                <div>
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    </div>
+                </div>
+             </div>
+        </form>
+
+
+
+{% endblock %}

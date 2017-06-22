@@ -20,10 +20,18 @@
             <tr>
                 <th width="10%"><b>Item</b></th>
                 <th width="10%"><b>Material</b></th>
+                <th width="10%"><b>Proposta de Referência</b></th>
             </tr>
             <tr>
                 <td>{{ item.item }}</td>
                 <td>{{ item.material }}</td>
+                <td>
+                    {% if item.arquivo_referencia_valor_medio %}
+                        <a href="/media/{{ item.arquivo_referencia_valor_medio }}" class="btn btn-default btn-sm" target="_blank">Ver Arquivo de Referência</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
             </tr>
         </table>
         {% if pesquisas.exists %}
@@ -34,7 +42,7 @@
                     <th>Marca</th>
                     <th>Valor Máximo</th>
                     <th>Situação</th>
-                    <th>Proposta</th>
+                    <th>Arquivo da Proposta</th>
                     <th>Opções</th>
                 </thead>
                 <tbody>
@@ -43,7 +51,7 @@
                             <td>
                                 {{ pesquisa.pesquisa.origem }}:
                                 {% if pesquisa.pesquisa.origem == pesquisa.pesquisa.ATA_PRECO %}
-                                    <b>N° {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b>
+                                    <b>N° {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b> - <b>Órgão Gerenciador:</b> {{ pesquisa.pesquisa.orgao_gerenciador_ata }}
                                 {% else %}
                                     <b>{{ pesquisa.pesquisa.razao_social }}</b>
                                 {% endif %}
@@ -75,13 +83,14 @@
                         </tr>
                     {% endfor %}
                     <tr>
-                        <th colspan="2"><b>Valor Médio - Informado</b></th>
+                        <th colspan="2"><b>Valor Médio Calculado</b></th>
                         <td><font color="blue"><b>{{ item.get_valor_medio_pesquisa|format_money|default_if_none:'-' }}</b></font></td>
                     </tr>
                     <tr>
-                        <th colspan="2"><b>Valor Médio - Envio de Proposta</b></th>
+                        <th colspan="2"><b>Valor Médio Calculado - Envio de Proposta</b> (*considera apenas propostas com arquivo anexado.)</th>
                         <td><font color="blue"><b>{{ item.get_valor_medio_envio_pesquisa|format_money|default_if_none:'-' }}</b></font></td>
                     </tr>
+
                 </tbody>
             </table>
         {% else %}

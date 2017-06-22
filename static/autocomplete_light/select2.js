@@ -1,11 +1,66 @@
 ;(function ($) {
+    function get_forwards(element) {
+        var forwardElem, forwardList, prefix, forwardedData, divSelector, form;
+        divSelector = "div.dal-forward-conf#dal-forward-conf-for-" +
+                element.attr("id");
+        form = element.length > 0 ? $(element[0].form) : $();
+
+        forwardElem =
+            form.find(divSelector).find('script');
+        if (forwardElem.length === 0) {
+            return;
+        }
+        try {
+            forwardList = JSON.parse(forwardElem.text());
+        } catch (e) {
+            return;
+        }
+
+        if (!Array.isArray(forwardList)) {
+            return;
+        }
+
+        prefix = $(element).getFormPrefix();
+        forwardedData = {};
+
+        $.each(forwardList, function(ix, f) {
+            if (f["type"] === "const") {
+                forwardedData[f["dst"]] = f["val"];
+            } else if (f["type"] === "field") {
+                var srcName, dstName;
+                srcName = f["src"];
+                if (f.hasOwnProperty("dst")) {
+                    dstName = f["dst"];
+                } else {
+                    dstName = srcName;
+                }
+                // First look for this field in the inline
+                $field_selector = '[name=' + prefix + srcName + ']';
+                $field = $($field_selector);
+                if (!$field.length) {
+                    // As a fallback, look for it outside the inline
+                    $field_selector = '[name=' + srcName + ']';
+                    $field = $($field_selector);
+                }
+                if ($field.length) {
+                    if ($field.attr('type') === 'checkbox')
+                        forwardedData[dstName] = $field[0].checked;
+                    else if ($field.attr('type') === 'radio')
+                        forwardedData[dstName] = $($field_selector + ":checked").val();
+                    else
+                        forwardedData[dstName] = $field.val();
+                }
+            }
+        });
+        return JSON.stringify(forwardedData);
+    }
 
     $(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2]', function() {
         var element = $(this);
 
         // Templating helper
         function template(item) {
-            if (element.attr('data-html')) {
+            if (element.attr('data-html') !== undefined) {
                 var $result = $('<span>');
                 $result.html(item.text);
                 return $result;
@@ -86,6 +141,9 @@
             });
         });
 
+    });
+    $('[data-autocomplete-light-function]:not([id*="__prefix__"])').each(function() {
+        window.__dal__initialize(this);
     });
 
     // Remove this block when this is merged upstream:

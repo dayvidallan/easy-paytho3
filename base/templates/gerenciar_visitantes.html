@@ -1,0 +1,59 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load bootstrap %}
+{% load pagination_tags %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
+     <a href="/base/pregao/{{pregao.id}}/">{{ pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+    <br>
+    <div class="pull-right">
+        <a class="btn btn-success" href="/base/cadastra_visitante_pregao/{{pregao.id}}/">Cadastrar Visitante</a>
+        <a class="btn btn-default" href="/base/pregao/{{pregao.id}}/#fornecedores">Voltar para Pregão</a>
+    </div>
+    <br>
+
+
+    {% if visitantes.exists %}
+        <fieldset>
+            <legend>Lista de Documentos</legend>
+
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Opções</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% autopaginate visitantes 10 %}
+                    {% paginate %}
+                    {% for visitante in visitantes %}
+                       <tr>
+                           <td>{{ visitante.nome }}</td>
+                           <td>{{ visitante.cpf }}</td>
+                           <td>
+                                <a class="btn btn-info btn-sm" href="/base/editar_visitante/{{ visitante.id }}/">Editar</a>
+                                <a class="btn btn-danger btn-sm" href="/base/excluir_visitante/{{ visitante.id }}/">Excluir</a>
+
+                           </td>
+                       </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>
+    {% else %}
+        <br><br>
+        <p class="alert alert-warning">Nenhum visitante cadastrado.</p>
+    {% endif %}
+
+
+{% endblock %}

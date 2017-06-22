@@ -98,9 +98,6 @@ class ComissaoLicitacaoAdmin(NewModelAdmin):
         texto += u'<br><br><a class="btn btn-danger btn-sm" href="/base/remover_membro_comissao/%s/" class="btn-sm btn-danger">Remover Membro</a>' % obj.id
         return texto
 
-    def save_model(self, request, obj, form, change):
-        obj.secretaria = request.user.pessoafisica.setor.secretaria
-        obj.save()
 
     def get_queryset(self, request):
         qs = super(ComissaoLicitacaoAdmin, self).get_queryset(request)
@@ -114,7 +111,7 @@ admin.site.register(ComissaoLicitacao, ComissaoLicitacaoAdmin)
 
 class PessoaFisicaAdmin(NewModelAdmin):
     form = PessoaFisicaForm
-    list_display = ('nome', 'setor', 'cpf', 'telefones', 'celulares', 'municipio')
+    list_display = ('nome', 'data_nascimento', 'setor', 'cpf', 'telefones', 'celulares', 'municipio')
     ordering = ('nome',)
     list_filter = ('nome', 'setor__secretaria')
 
@@ -295,5 +292,11 @@ class OrdemCompraAdmin(NewModelAdmin):
     list_display = ('numero', 'solicitacao',  'data')
     ordering = ('numero',)
 
-
 admin.site.register(OrdemCompra, OrdemCompraAdmin)
+
+class ProcessoAdmin(NewModelAdmin):
+    list_display = ('numero', 'data_cadastro',  'pessoa_cadastro')
+    ordering = ('numero',)
+    search_fields = ('numero',)
+
+admin.site.register(Processo, ProcessoAdmin)

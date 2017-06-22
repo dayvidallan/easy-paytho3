@@ -1,0 +1,109 @@
+{% extends super_template|default:"admin/base_publica.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block content %}
+
+
+   <fieldset>
+            <form action="." method="POST" class="form-horizontal">
+                {% csrf_token %}
+                 <div class="miolo">
+                    <div class="row-fluid">
+                        <div class="col-xs-4">
+
+                            {{ form|bootstrap }}
+                        </div>
+
+                        <div class="col-xs-6">
+                            <br>
+                            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+
+                        </div>
+                    </div>
+                 </div>
+            </form>
+
+        </fieldset>
+    {% if form.is_bound %}
+        {% if processo %}
+            <fieldset>
+                <legend>Informações do Processo</legend>
+                <table class="table table-bordered table-condensed table-striped">
+                    <tr>
+                        <th>Número</th>
+                        <td>{{ processo.numero }}</td>
+                    </tr>
+                    <tr>
+                        <th>Objeto</th>
+                        <td>{{ processo.objeto }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tipo</th>
+                        <td>{{ processo.get_tipo_display }}</td>
+                    </tr>
+                    <tr>
+
+                    <tr>
+                        <th>Setor de Origem</th>
+                        <td>{{ processo.setor_origem }}</td>
+                    </tr>
+                    <tr>
+                        <th>Setor Atual</th>
+                        <td>{{ solicitacao.setor_atual }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Cadastrado Em</th>
+                        <td>{{ processo.data_cadastro }}</td>
+                    </tr>
+
+                </table>
+            </fieldset>
+            {% if movimentos.exists %}
+                <fieldset>
+                    <legend>Movimentação do Processo</legend>
+                    <table border="2" class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <th>Setor Origem</th>
+                            <th>Data de Envio</th>
+                            <th>Enviado Por</th>
+                            <th>Setor Destino</th>
+                            <th>Data de Recebimento</th>
+                            <th>Recebido Por</th>
+                            <th>Observações</th>
+                        </thead>
+                        <tbody>
+                            {% for mov in movimentos %}
+                                <tr>
+                                    <td>{{ mov.setor_origem }}</td>
+                                    <td>{{ mov.data_envio|date:'d/m/Y H:i' }}</td>
+                                    <td>{{ mov.enviado_por.pessoafisica.nome }}</td>
+                                    <td>{{ mov.setor_destino|default_if_none:'-' }}</td>
+                                    <td>{{ mov.data_recebimento|date:'d/m/Y H:i' }}</td>
+                                    <td>{{ mov.recebido_por.pessoafisica.nome|default_if_none:'-' }}</td>
+                                    <td>{{ mov.obs|default_if_none:'-' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </fieldset>
+            {% else %}
+                <p class="alert alert-warning">Nenhuma movimentação.</p>
+            {% endif %}
+
+        {% else %}
+            <p class="alert alert-warning">Nenhuma licitação cadastrada.</p>
+        {% endif %}
+    {% else %}
+        <p class="alert alert-info">Digite o número do processo para maiores informações.</p>
+    {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

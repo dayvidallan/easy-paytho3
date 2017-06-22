@@ -1,7 +1,7 @@
 <table border="0" width="100%">
       <tr>
         <td width="10%">&nbsp;</td>
-        <td  width="50%" cellspacing="10" cellpadding="10"><img src="{{logo}}"  width="150" height="90"></td>
+        <td  width="50%" cellspacing="10" cellpadding="10"><img src="{{ logo }}"  width="150" height="90"></td>
 
         <td>
             <table>
@@ -15,10 +15,7 @@
                     <td style="font-size:10px;">Endereço: {{configuracao.endereco}}</td>
                 </tr>
                 <tr>
-                    <td style="font-size:10px;">Telefone: {{configuracao.telefones|default_if_none:""}}</td>
-                </tr>
-                <tr>
-                    <td style="font-size:10px;">Email: {{configuracao.email|default_if_none:""}}</td>
+                    <td style="font-size:10px;">Telefone: {{configuracao.telefones|default_if_none:""}} - Email: {{configuracao.email|default_if_none:""}}</td>
                 </tr>
             </table>
         </td>

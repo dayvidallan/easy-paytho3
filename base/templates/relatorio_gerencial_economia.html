@@ -1,0 +1,100 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4 landscape;
+            margin: 0.3cm;
+            @frame footer {
+    		    -pdf-frame-content: footerblock;
+    		    bottom: 1cm;
+    		    margin-left: 1cm;
+    		    margin-right: 1cm;
+             margin-top: 1cm;
+    		    height: 1cm;
+		    }
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center><font size="4">Relatório Gerencial de Economia Alcançada</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+
+
+{% endblock %}
+
+{% block content %}
+<center>
+    <table border="1" width="100%" cellpadding="5" cellspacing="5">
+        <thead>
+            <tr>
+                <th width="15%">Pregão</th>
+                <th width="20%">Memorando</th>
+                <th width="50%">Objeto</th>
+                <th width="20%">Total Previsto</th>
+                <th width="20%">Total Final</th>
+                <th width="20%">Total Desconto</th>
+                <th width="20%">Total Economizado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pregao in pregoes %}
+               <tr>
+                   <td>{{ pregao.num_pregao }}</td>
+                   <td>{{ pregao.solicitacao.num_memorando }}</td>
+                   <td>{{ pregao.solicitacao.objeto }}</td>
+                   <td>{{ pregao.get_total_previsto|format_money  }}</td>
+                   <td>{{ pregao.get_total_final|format_money  }}</td>
+                   <td>{{ pregao.get_total_desconto }}</td>
+                   <td>{{ pregao.get_total_economizado|format_money  }}</td>
+               </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3">Total</td>
+                <td>{{ total_previsto|format_money }}</td>
+                <td>{{ total_final|format_money }}</td>
+                <td>{{ total_desconto }}</td>
+                <td>{{ total_economizado|format_money }}</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+{% endblock %}
+
+
+

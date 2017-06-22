@@ -60,6 +60,13 @@ urlpatterns = [
     url(r'^resultado_alterar_todos/(?P<pregao_id>\d+)/(?P<participante_id>\d+)/(?P<situacao>\d+)/$', views.resultado_alterar_todos, name='resultado_alterar_todos'),
     url(r'^relatorio_economia/(?P<pregao_id>\d+)/$', views.relatorio_economia, name='relatorio_economia'),
     url(r'^revogar_pregao/(?P<pregao_id>\d+)/$', views.revogar_pregao, name='revogar_pregao'),
+    url(r'^cadastra_visitante_pregao/(?P<pregao_id>\d+)/$', views.cadastra_visitante_pregao, name='cadastra_visitante_pregao'),
+    url(r'^relatorio_lista_visitantes/(?P<pregao_id>\d+)/$', views.relatorio_lista_visitantes, name='relatorio_lista_visitantes'),
+    url(r'^gerenciar_visitantes/(?P<pregao_id>\d+)/$', views.gerenciar_visitantes, name='gerenciar_visitantes'),
+    url(r'^editar_visitante/(?P<visitante_id>\d+)/$', views.editar_visitante, name='editar_visitante'),
+    url(r'^excluir_visitante/(?P<visitante_id>\d+)/$', views.excluir_visitante, name='excluir_visitante'),
+
+
     url(r'^imprimir_fornecedor/(?P<fornecedor_id>\d+)/$', views.imprimir_fornecedor, name='imprimir_fornecedor'),
 
 
@@ -88,6 +95,7 @@ urlpatterns = [
     url(r'^imprimir_capa_processo/(?P<processo_id>\d+)/$', views.imprimir_capa_processo, name='imprimir_capa_processo'),
     url(r'^criar_lote/(?P<pregao_id>\d+)/$', views.criar_lote, name='criar_lote'),
     url(r'^extrato_inicial/(?P<pregao_id>\d+)/$', views.extrato_inicial, name='extrato_inicial'),
+    url(r'^relatorio_propostas_pregao/(?P<pregao_id>\d+)/$', views.relatorio_propostas_pregao, name='relatorio_propostas_pregao'),
     url(r'^termo_adjudicacao/(?P<pregao_id>\d+)/$', views.termo_adjudicacao, name='termo_adjudicacao'),
     url(r'^editar_meu_perfil/(?P<pessoa_id>\d+)/$', views.editar_meu_perfil, name='editar_meu_perfil'),
     url(r'^editar_pedido/(?P<pedido_id>\d+)/$', views.editar_pedido, name='editar_pedido'),
@@ -101,8 +109,8 @@ urlpatterns = [
 
     url(r'^avaliar_pedidos/(?P<solicitacao_id>\d+)/$', views.avaliar_pedidos, name='avaliar_pedidos'),
     url(r'^aprovar_todos_pedidos_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.aprovar_todos_pedidos_secretaria, name='aprovar_todos_pedidos_secretaria'),
-    url(r'^novo_pedido_compra/(?P<solicitacao_id>\d+)/$', views.novo_pedido_compra, name='novo_pedido_compra'),
-    url(r'^informar_quantidades_do_pedido/(?P<solicitacao_original>\d+)/(?P<nova_solicitacao>\d+)/$', views.informar_quantidades_do_pedido, name='informar_quantidades_do_pedido'),
+
+
     url(r'^apagar_anexo_pregao/(?P<item_id>\d+)/$', views.apagar_anexo_pregao, name='apagar_anexo_pregao'),
     url(r'^gerar_pedido_fornecedores/(?P<solicitacao_id>\d+)/$', views.gerar_pedido_fornecedores, name='gerar_pedido_fornecedores'),
     url(r'^apagar_lote/(?P<item_id>\d+)/(?P<pregao_id>\d+)/$', views.apagar_lote, name='apagar_lote'),
@@ -136,6 +144,7 @@ urlpatterns = [
     url(r'^cadastrar_anexo_contrato/(?P<contrato_id>\d+)/$', views.cadastrar_anexo_contrato, name='cadastrar_anexo_contrato'),
     url(r'^editar_anexo_contrato/(?P<item_id>\d+)/$', views.editar_anexo_contrato, name='editar_anexo_contrato'),
     url(r'^liberar_licitacao_homologacao/(?P<pregao_id>\d+)/$', views.liberar_licitacao_homologacao, name='liberar_licitacao_homologacao'),
+    url(r'^relatorio_dados_licitacao/(?P<pregao_id>\d+)/$', views.relatorio_dados_licitacao, name='relatorio_dados_licitacao'),
 
 
 
@@ -188,6 +197,7 @@ urlpatterns = [
     url(r'^editar_anexo_arp/(?P<item_id>\d+)/$', views.editar_anexo_arp, name='editar_anexo_arp'),
 
     url(r'^cadastrar_material_arp/(?P<ata_id>\d+)/$', views.cadastrar_material_arp, name='cadastrar_material_arp'),
+    url(r'^liberar_pedidos_solicitacao/(?P<solicitacao_id>\d+)/$', views.liberar_pedidos_solicitacao, name='liberar_pedidos_solicitacao'),
 
 
     url(r'^apagar_anexo_arp/(?P<item_id>\d+)/$', views.apagar_anexo_arp, name='apagar_anexo_arp'),
@@ -207,13 +217,19 @@ urlpatterns = [
     url(r'^ver_variaveis_configuracao/$', views.ver_variaveis_configuracao, name='ver_variaveis_configuracao'),
     url(r'^cadastrar_variaveis_configuracao/$', views.cadastrar_variaveis_configuracao, name='cadastrar_variaveis_configuracao'),
 
-    url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
+    url(r'^localizar_processo/$', views.localizar_processo, name='localizar_processo'),
+    url(r'^ver_relatorios_gerenciais/$', views.ver_relatorios_gerenciais, name='ver_relatorios_gerenciais'),
 
+    url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
+    url(r'^informar_valor_final_itens_lote/(?P<lote_id>\d+)/(?P<pregao_id>\d+)/$', views.informar_valor_final_itens_lote, name='informar_valor_final_itens_lote'),
 
     url(r'^secretaria-autocomplete/$', SecretariaAutocomplete.as_view(), name='secretaria-autocomplete'),
     url(r'^participantepregao-autocomplete/$', ParticipantePregaoAutocomplete.as_view(), name='participantepregao-autocomplete'),
     url(r'^pessoafisica-autocomplete/$', PessoaFisicaAutocomplete.as_view(), name='pessoafisica-autocomplete'),
     url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
+
+
+
 
 ]
 

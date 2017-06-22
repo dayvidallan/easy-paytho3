@@ -66,7 +66,7 @@ class CadastraPrecoRodadaPregaoForm(forms.ModelForm):
 class PessoaFisicaForm(forms.ModelForm):
     METHOD = 'POST'
 
-    data_nascimento = forms.DateTimeField(widget=AdminDateWidget())
+    
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
       label                = u'Município',
@@ -78,12 +78,14 @@ class PessoaFisicaForm(forms.ModelForm):
 
     grupo = forms.ModelChoiceField(Group.objects, label=u'Grupo de Acesso', required=True)
     email = forms.EmailField(label=u'Email', required=True)
-    cpf = utils.CpfFormField(label=u'CPF', required=False)
+    cpf = utils.CpfFormField(label=u'CPF', required=True)
 
     class Meta:
         model = PessoaFisica
         fields = ['nome', 'cpf', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'estado', 'municipio', 'setor', 'grupo']
-
+        # widgets = {
+        #     'data_nascimento' : forms.DateInput(attrs={'type':'date'})
+        # }
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.edicao = kwargs.pop('edicao', None)
@@ -98,6 +100,8 @@ class PessoaFisicaForm(forms.ModelForm):
 
             self.fields['grupo'].initial = self.instance.user.groups.all()[0]
 
+
+
     def clean(self):
         if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf')).exists() and not self.edicao:
             self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
@@ -108,7 +112,7 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
 
     class Meta:
         model = ItemSolicitacaoLicitacao
-        exclude = ['item', 'solicitacao', 'total', 'valor_medio', 'data_inicio_pesquisa', 'data_fim_pesquisa', 'setor_origem', 'setor_atual', 'situacao', 'obs', 'ativo', 'eh_lote']
+        fields = ['material', 'unidade', 'quantidade']
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao',None)
         super(CadastrarItemSolicitacaoForm, self).__init__(*args, **kwargs)
@@ -135,16 +139,38 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
 
 class PregaoForm(forms.ModelForm):
     num_processo = forms.CharField(label=u'Número do Processo', required=True)
+
+    fieldsets = (
+        (u'Dados Gerais', {
+            'fields': ('solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo')
+        }),
+        (u'Valores da Licitação', {
+            'fields': ('valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', )
+        }),
+        (u'Cronograma', {
+            'fields': ('data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel')
+        }),
+    )
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'tipo', 'criterio', 'eh_ata_registro_preco', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+
+
+    class Media:
+            js = ['/static/base/js/pregao.js']
+
 
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PregaoForm, self).__init__(*args, **kwargs)
+        self.fields['aplicacao_lcn_123_06'].label = u'MPE – Aplicação Da LCN 123/06'
+        self.fields['aplicacao_lcn_123_06'].help_text = u'<a href="http://www.planalto.gov.br/ccivil_03/leis/LCP/Lcp123.htm" target="_blank">De acordo com a Lei 123/06</a>'
+        self.initial['valor_total'] = format_money(self.solicitacao.get_valor_da_solicitacao())
+        self.fields['valor_total'].widget.attrs = {'readonly': 'True'}
         if not self.instance.id:
             self.fields['solicitacao'] = forms.ModelChoiceField(label=u'Solicitação', queryset=SolicitacaoLicitacao.objects.filter(id=self.solicitacao.id), initial=0)
             self.fields['solicitacao'].widget.attrs = {'readonly': 'True'}
+
         else:
             del self.fields['solicitacao']
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
@@ -190,10 +216,11 @@ class SolicitacaoForm(forms.ModelForm):
     justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea(), required=True)
     outros_interessados = forms.BooleanField(label=u'Adicionar Outros Interessados', required=False)
     interessados = forms.ModelMultipleChoiceField(Secretaria.objects, label=u'Interessados', required=False, widget=autocomplete.ModelSelect2Multiple(url='secretaria-autocomplete'))
+    todos_interessados = forms.BooleanField(label=u'Selecionar Todos como Interessados', initial=False, required=False)
     prazo_resposta_interessados = forms.DateField(label=u'Prazo para retorno dos interessados', widget=AdminDateWidget(), required=False)
     class Meta:
         model = SolicitacaoLicitacao
-        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'outros_interessados', 'interessados', 'prazo_resposta_interessados']
+        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'outros_interessados', 'interessados', 'todos_interessados',  'prazo_resposta_interessados']
 
     class Media:
             js = ['/static/base/js/solicitacao.js']
@@ -206,6 +233,7 @@ class SolicitacaoForm(forms.ModelForm):
         if self.instance.tipo == SolicitacaoLicitacao.COMPRA:
             del self.fields['justificativa']
             del self.fields['tipo_aquisicao']
+            del self.fields['todos_interessados']
             del self.fields['outros_interessados']
             del self.fields['interessados']
             del self.fields['prazo_resposta_interessados']
@@ -214,10 +242,6 @@ class SolicitacaoForm(forms.ModelForm):
         if not self.instance.pk and self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando'), setor_origem__secretaria=self.request.user.pessoafisica.setor.secretaria).exists():
             self.add_error('num_memorando', u'Já existe uma solicitação para este memorando.')
 
-class ItemSolicitacaoLicitacaoForm(forms.ModelForm):
-    class Meta:
-        model = ItemSolicitacaoLicitacao
-        exclude = ['solicitacao', 'item', 'total', 'valor_medio', 'situacao', 'obs']
 
 class EditarItemSolicitacaoLicitacaoForm(forms.ModelForm):
     unidade = forms.ModelChoiceField(TipoUnidade.objects, label=u'Unidade')
@@ -241,9 +265,10 @@ class LanceForm(forms.Form):
     lance = forms.DecimalField(required=True)
 
 class RegistrarPrecoItemForm(forms.ModelForm):
+    arquivo_referencia_valor_medio = forms.FileField(label=u'Arquivo com a Referência do Valor Médio', required=False)
     class Meta:
         model = ItemSolicitacaoLicitacao
-        fields = ['valor_medio',]
+        fields = ['valor_medio', 'arquivo_referencia_valor_medio']
 
 
 class PesquisaMercadologicaForm(forms.ModelForm):
@@ -480,9 +505,79 @@ class AbrirProcessoForm(forms.ModelForm):
         super(AbrirProcessoForm, self).__init__(*args, **kwargs)
         self.fields['objeto'].initial = self.solicitacao.objeto
 
+
+class GestaoContratoForm(forms.Form):
+    METHOD = u'GET'
+    info = forms.CharField(label=u'Digite o número do contrato ou do ata', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(GestaoContratoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhuma solicitação encontrada'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
+
 class BuscarSolicitacaoForm(forms.Form):
-    info = forms.CharField(label=u'Digite o número do pregão, processo ou do memorando', required=False)
-    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES, widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
+    METHOD = u'GET'
+    info = forms.CharField(label=u'Digite o número da licitação/procedimento, processo ou do memorando', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(BuscarSolicitacaoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhuma solicitação encontrada'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
+
+
+class BuscarLicitacaoForm(forms.Form):
+    METHOD = u'GET'
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    info = forms.CharField(label=u'Digite o número da licitação/procedimento, processo ou do memorando', required=False)
+    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(BuscarLicitacaoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
 
 class MaterialConsumoForm(forms.ModelForm):
     class Meta:
@@ -553,11 +648,13 @@ class AtaRegistroPrecoForm(forms.ModelForm):
 
 
 class ContratoForm(forms.ModelForm):
+    garantia_execucao_objeto = forms.IntegerField(label=u'Garantia de Execução do Objeto (%)', required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
     class Meta:
         model = Contrato
-        fields = ('numero', 'data_inicio', 'data_fim')
+        fields = ('numero', 'aplicacao_artigo_57', 'garantia_execucao_objeto', 'data_inicio', 'data_fim')
 
     def __init__(self, *args, **kwargs):
+        self.pregao = kwargs.pop('pregao', None)
         super(ContratoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
@@ -566,6 +663,59 @@ class ContratoForm(forms.ModelForm):
             lista = ultima.numero.split('/')
             if len(lista) > 1:
                 self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+
+    def clean(self):
+        if self.cleaned_data.get('garantia_execucao_objeto'):
+            if self.cleaned_data.get('garantia_execucao_objeto') > 5:
+                raise forms.ValidationError(u'O limite máximo é de 5%.')
+
+
+class CriarContratoForm(forms.Form):
+    # class Meta:
+    #     model = Contrato
+    #     fields = ('numero', 'data_inicio', 'data_fim')
+
+    def __init__(self, *args, **kwargs):
+        self.pregao = kwargs.pop('pregao', None)
+        super(CriarContratoForm, self).__init__(*args, **kwargs)
+        # self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        # self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        ultima = Contrato.objects.latest('id')
+        if ultima.numero:
+            lista = ultima.numero.split('/')
+        valor_contrato = None
+        nome_campos = u''
+        if len(lista) > 1:
+            valor_contrato = int(lista[0])+1
+
+        for i in self.pregao.get_vencedores():
+            label = u'Número do Contrato - Fornecedor: %s' % (i)
+            self.fields["contrato_%d" % i.id] = forms.CharField(label=label, required=True)
+            if valor_contrato:
+                self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
+                valor_contrato += 1
+            nome_campos = nome_campos + '%s, ' % i.id
+            label = u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)'
+            self.fields["aplicacao_artigo_57_%d" % i.id] = forms.ChoiceField(label=label, required=False, choices=Contrato.INCISOS_ARTIGO_57_CHOICES)
+            label = u'Garantia de Execução do Objeto (%)'
+            self.fields["garantia_%d" % i.id] = forms.IntegerField(label=label, required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
+
+            label = u'Data Inicial'
+            self.fields["data_inicial_%d" % i.id] = forms.DateField(label=label, required=True)
+            self.fields["data_inicial_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+            nome_campos = nome_campos + '%s, ' % i.id
+            label = u'Data Final'
+            self.fields["data_final_%d" % i.id] = forms.DateField(label=label, required=True)
+            self.fields["data_final_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+            nome_campos = nome_campos + '%s, ' % i.id
+
+    def clean(self):
+        for i in self.pregao.get_vencedores():
+            nome_campo = u'garantia_%d' %  i.id
+            if self.cleaned_data.get(nome_campo):
+                if self.cleaned_data.get(nome_campo) > 5:
+                    raise forms.ValidationError(u'O limite máximo é de 5%.')
+
 
 
 class NovoPedidoCompraForm(forms.ModelForm):
@@ -580,7 +730,7 @@ class RejeitarPesquisaForm(forms.ModelForm):
         fields = ('motivo_rejeicao', )
 
 class FiltrarSecretariaForm(forms.Form):
-    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
+    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria',  widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
     def __init__(self, *args, **kwargs):
         self.pedidos = kwargs.pop('pedidos', None)
         super(FiltrarSecretariaForm, self).__init__(*args, **kwargs)
@@ -605,6 +755,11 @@ class FiltraFornecedorPedidoForm(forms.Form):
 
 class ValorFinalItemLoteForm(forms.Form):
     valor = forms.DecimalField(label=u'Valor')
+    participante_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    def __init__(self, *args, **kwargs):
+        self.participante_id = kwargs.pop('participante_id', None)
+        super(ValorFinalItemLoteForm, self).__init__(*args, **kwargs)
+        self.fields['participante_id'].initial = self.participante_id
 
 class CriarOrdemForm(forms.ModelForm):
     dotacao = forms.BooleanField(label=u'Preencher Dotação', initial=False, required=False)
@@ -730,7 +885,7 @@ class RemoverMembroComissaoLicitacaoForm(forms.Form):
 class ComissaoLicitacaoForm(forms.ModelForm):
     class Meta:
         model = ComissaoLicitacao
-        fields = ('nome', )
+        fields = ('nome', 'secretaria')
 
 
 class AderirARPForm(forms.ModelForm):
@@ -777,3 +932,41 @@ class EditarPedidoARPForm(forms.ModelForm):
     class Meta:
         model = PedidoAtaRegistroPreco
         fields = ('quantidade',)
+
+class VisitantePregaoForm(forms.ModelForm):
+    class Meta:
+        model = VisitantePregao
+        fields = ('nome',  'cpf',)
+
+class BuscaFornecedorForm(forms.Form):
+    nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:')
+
+class LocalizarProcessoForm(forms.Form):
+    numero = forms.CharField(label=u'Informe o Número do Processo', required=False)
+
+class RelatoriosGerenciaisForm(forms.Form):
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    relatorio = forms.ChoiceField(label=u'Tipo de Relatório', choices=((u'Relatório de Situação', u'Relatório de Situação'),(u'Relatório de Economia', u'Relatório de Economia'),), required=False)
+
+    modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    visualizar = forms.ChoiceField(label=u'Modo de Visualização', required=False, choices=((u'1', u'Na Tela'),(u'2', u'Gerar PDF'),),)
+
+
+    def __init__(self, *args, **kwargs):
+        super(RelatoriosGerenciaisForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        pregoes = Pregao.objects.all().order_by('data_abertura')
+        ANO_CHOICES = []
+        if pregoes.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = pregoes[0].data_abertura.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite

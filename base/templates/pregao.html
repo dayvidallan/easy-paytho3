@@ -187,6 +187,7 @@
 
     <br>
      <div class="pull-right">
+        <a class="btn btn-default" href="/base/editar_pregao/{{ pregao.id }}/">Editar</a>
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
             <a class="btn btn-info" href="/base/registrar_ocorrencia_pregao/{{ pregao.pk }}/" target="_blank">Registrar Ocorrência</a>
             {% if pregao.eh_pregao %}
@@ -356,7 +357,8 @@
 
             <div class="pull-right">
                 {% if pregao.eh_ativo %}
-                    <a class="btn btn-primary" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
+                    <a class="btn btn-success" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
+                    <a class="btn btn-primary" href="/base/gerenciar_visitantes/{{ pregao.pk }}/">Gerenciar Visitante</a>
                     <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
                     <a class="btn btn-danger" href="/base/encerrar_pregao/{{ pregao.pk }}/2/">Fracassado</a>
                 {% endif %}
@@ -502,7 +504,7 @@
                                     <td>{{ item.unidade }}</td>
                                     <td>{{ item.quantidade }}</td>
                                     <td>{{ item.valor_medio|format_money }}</td>
-                                    <td>{{ item.total|format_money }}</td>
+                                    <td>{{ item.get_total|format_money }}</td>
 
                                     <td>
                                         <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
@@ -573,6 +575,7 @@
                                             <th>Valor</th>
                                         {% endif %}
                                         <th>Itens do Lote</th>
+                                        <th>Opções</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -583,13 +586,16 @@
                                                 {% if lote.ganhou_com_valor_acima %}
                                                     <br>* Venceu com valor acima do valor máximo.
                                                 {% endif %}
+                                                {% if lote.tem_empate %}
+                                                    <br>* Este item possui classificados com empate. Consulte a classificação completa.
+                                                {% endif %}
                                                 </font>
                                             {% else %}
                                                 {{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
                                         </td>
                                         {% if eh_maior_desconto %}
-                                            <td>{{ lote.get_total_lance_ganhador }}%</td>
+                                            <td>{{ lote.get_total_lance_ganhador|format_money }}%</td>
 
                                         {% else %}
                                             <td>{{ lote.get_total_lance_ganhador|format_money }}</td>
@@ -606,7 +612,6 @@
                                                         <th>Valor Total Proposto</th>
                                                         <th>Valor Unitário Final</th>
                                                         <th>Valor Total Final</th>
-                                                        <th>Opções</th>
 
                                                     </tr>
                                                 </thead>
@@ -616,19 +621,32 @@
                                                             <td>{{ item }}</td>
                                                             <td>{{ item.quantidade }}</td>
                                                             <td>{{ item.valor_medio }}</td>
-                                                            <td>{{ item.get_valor_unitario_proposto }}</td>
-                                                            <td>{{ item.get_valor_total_proposto }}</td>
-                                                            <td>{{ item.get_valor_unitario_final|default_if_none:"não informado" }} {% if item.get_valor_unitario_final %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/">(Editar)</a>{% endif %}</td>
-                                                            <td>{{ item.get_valor_item_lote|default_if_none:"não informado" }} </td>
-                                                            <td>
-                                                                {% if not item.get_valor_item_lote %}
-                                                                    <a href="/base/informar_valor_final_item_lote/{{item.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
-                                                                {% endif %}
-                                                            </td>
+                                                            <td>{{ item.get_valor_unitario_proposto|format_money }}</td>
+                                                            <td>{{ item.get_valor_total_proposto|format_money }}</td>
+                                                            <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
+                                                            <td>{{ item.get_valor_item_lote|format_money|default_if_none:"não informado" }} </td>
+
                                                         </tr>
                                                     {% endfor %}
+                                                    <tr>
+                                                        <td colspan="6"><b>Total</b></td><td>{{ lote.get_valor_total_item_lote|format_money }}</td>
+                                                    </tr>
                                                 </tbody>
                                            </table>
+                                        </td>
+                                        <td>
+
+
+                                            <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
+
+
+                                            {% if lote.tem_empate %}
+                                                <a href="/base/desempatar_item/{{ lote.id }}/" class="btn btn-success btn-sm">Desempatar</a>
+                                            {% endif %}
+                                            {% if lote.tem_resultado %}
+                                                <a class="btn btn-info btn-sm" href="/base/resultado_classificacao/{{ lote.id }}/"  title="Classificação">Classificação Completa</a>
+                                            {% endif %}
+
                                         </td>
                                     </tr>
                                 </tbody>
@@ -807,6 +825,9 @@
 
                     <tbody>
                         <tr>
+                            <td><a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" target="_blank">Dados da Licitação/Procedimento</a></td>
+                        </tr>
+                        <tr>
                             <td><a href="/base/extrato_inicial/{{ pregao.pk }}/" target="_blank">Extrato Inicial</a></td>
                         </tr>
 
@@ -817,6 +838,18 @@
                         <tr>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
                         </tr>
+                        {% if pregao.tem_proposta %}
+                            <tr>
+                                <td><a href="/base/relatorio_propostas_pregao/{{ pregao.id }}/" target="_blank">Relatório de Propostas</a></td>
+                            </tr>
+                        {% endif %}
+
+
+                        {% if pregao.visitantepregao_set.exists %}
+                            <tr>
+                                <td><a href="/base/relatorio_lista_visitantes/{{ pregao.id }}/" target="_blank">Lista de Visitantes</a></td>
+                            </tr>
+                        {% endif %}
                         {% if pregao.eh_pregao and pregao.tem_lance_registrado %}
                             <tr>
                                 <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>
