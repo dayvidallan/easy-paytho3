@@ -179,6 +179,68 @@ class Processo(models.Model):
     def get_memorando(self):
         return SolicitacaoLicitacao.objects.filter(processo=self)[0]
 
+class SolicitacaoLicitacaoTmp(models.Model):
+
+    CADASTRADO = u'Cadastrado'
+    DEVOLVIDO = u'Devolvido'
+    RECEBIDO = u'Recebido'
+    ENVIADO_LICITACAO = u'Enviado para Licitação'
+    ENVIADO_COMPRA = u'Enviado para Compra'
+    ENVIADO = u'Aguardando Recebimento'
+    EM_LICITACAO = u'Em Licitação'
+    NEGADA = u'Negada'
+
+    SITUACAO_CHOICES = (
+        (CADASTRADO, CADASTRADO),
+        (ENVIADO, ENVIADO),
+        (RECEBIDO, RECEBIDO),
+        (DEVOLVIDO, DEVOLVIDO),
+        (ENVIADO_LICITACAO, ENVIADO_LICITACAO),
+        (EM_LICITACAO, EM_LICITACAO),
+        (NEGADA, NEGADA),
+    )
+
+    COMPRA = u'Compra'
+    LICITACAO = u'Licitação'
+    ADESAO_ARP = u'Adesão à ARP'
+    TIPO_CHOICES = (
+        (COMPRA, COMPRA),
+        (LICITACAO, LICITACAO),
+
+    )
+
+    TIPO_AQUISICAO_LICITACAO = u'Licitação'
+    TIPO_AQUISICAO_DISPENSA = u'Dispensa'
+    TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
+    TIPO_AQUISICAO_COMPRA = u'Compra'
+    TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
+
+    TIPO_AQUISICAO_CHOICES = (
+        (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
+        (TIPO_AQUISICAO_DISPENSA, TIPO_AQUISICAO_DISPENSA),
+        (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
+    )
+    num_memorando = models.CharField(u'Número do Memorando', max_length=80)
+    objeto = models.TextField(u'Descrição do Objeto')
+    objetivo = models.TextField(u'Objetivo')
+
+    situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
+    tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=LICITACAO)
+    tipo_aquisicao = models.CharField(u'Tipo de Aquisição', max_length=50, choices=TIPO_AQUISICAO_CHOICES, default=TIPO_AQUISICAO_LICITACAO)
+    data_cadastro = models.DateTimeField(u'Cadastrada em')
+    cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    setor_origem = models.ForeignKey(Setor, verbose_name=u'Setor de Origem', related_name='setor_origem_tmp', null=True, blank=True)
+    setor_atual = models.ForeignKey(Setor, verbose_name=u'Setor Atual', related_name='setor_atual_tmp', null=True, blank=True)
+    arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao_tmp')
+    contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao_tmp')
+
+
+    def __unicode__(self):
+        return u'Solicitação Temp N°: %s' % self.num_memorando
+
+    class Meta:
+        verbose_name = u'Solicitação Temp'
+        verbose_name_plural = u'Solicitações temp'
 
 
 class SolicitacaoLicitacao(models.Model):
@@ -495,8 +557,8 @@ class ItemSolicitacaoLicitacao(models.Model):
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     quantidade = models.PositiveIntegerField(u'Quantidade')
-    valor_medio = models.DecimalField(u'Valor Médio', max_digits=10, decimal_places=2, null=True, blank=True)
-    total = models.DecimalField(u'Total', decimal_places=2, max_digits=10, null=True, blank=True)
+    valor_medio = models.DecimalField(u'Valor Médio', max_digits=20, decimal_places=2, null=True, blank=True)
+    total = models.DecimalField(u'Total', decimal_places=2, max_digits=20, null=True, blank=True)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
     obs = models.CharField(u'Observação', max_length=3000, null=True, blank=True)
     ativo = models.BooleanField(u'Ativo', default=True)
@@ -1340,8 +1402,8 @@ class ItemPregao(models.Model):
     material = models.ForeignKey('base.MaterialConsumo')
     unidade = models.CharField(u'Unidade de Medida', max_length=500)
     quantidade = models.PositiveIntegerField(u'Quantidade')
-    valor_medio = models.DecimalField(u'Valor Médio', max_digits=12, decimal_places=2)
-    total = models.DecimalField(u'Total', max_digits=12, decimal_places=2)
+    valor_medio = models.DecimalField(u'Valor Médio', max_digits=20, decimal_places=2)
+    total = models.DecimalField(u'Total', max_digits=20, decimal_places=2)
 
     class Meta:
         verbose_name = u'Item do Pregão'
@@ -1426,14 +1488,14 @@ class PropostaItemPregao(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação')
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
     participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
-    valor = models.DecimalField(u'Valor', max_digits=12, decimal_places=2)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     desclassificado = models.BooleanField(u'Desclassificado', default=False)
     motivo_desclassificacao = models.CharField(u'Motivo da Desclassificação', max_length=2000, null=True, blank=True)
     desistencia = models.BooleanField(u'Desistência', default=False)
     motivo_desistencia= models.CharField(u'Motivo da Desistência', max_length=2000, null=True, blank=True)
     concorre = models.BooleanField(u'Concorre', default=True)
-    valor_item_lote = models.DecimalField(u'Valor do Item do Lote', max_digits=12, decimal_places=2, null=True, blank=True)
+    valor_item_lote = models.DecimalField(u'Valor do Item do Lote', max_digits=20, decimal_places=2, null=True, blank=True)
 
 
     class Meta:
@@ -1493,7 +1555,7 @@ class LanceItemRodadaPregao(models.Model):
     item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item da Solicitação')
     participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
     rodada = models.ForeignKey(RodadaPregao,verbose_name=u'Rodada')
-    valor = models.DecimalField(u'Valor', max_digits=12, decimal_places=2, null=True, blank=True)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
     declinio = models.BooleanField(u'Declínio', default=False)
     ordem_lance = models.IntegerField(u'Ordem')
 
@@ -1754,7 +1816,7 @@ class ItemPesquisaMercadologica(models.Model):
     pesquisa = models.ForeignKey(PesquisaMercadologica, verbose_name=u'Pesquisa')
     item = models.ForeignKey(ItemSolicitacaoLicitacao)
     marca = models.CharField(u'Marca', max_length=255, null=True, blank=True)
-    valor_maximo = models.DecimalField(u'Valor Máximo', max_digits=10, decimal_places=2, null=True, blank=True)
+    valor_maximo = models.DecimalField(u'Valor Máximo', max_digits=20, decimal_places=2, null=True, blank=True)
     ativo = models.BooleanField(u'Ativo', default=True)
     motivo_rejeicao = models.CharField(u'Motivo da Rejeição', max_length=1000, null=True, blank=True)
     rejeitado_por = models.ForeignKey(User, null=True)
@@ -1788,7 +1850,7 @@ class ResultadoItemPregao(models.Model):
 
     item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação')
     participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
-    valor = models.DecimalField(u'Valor', max_digits=12, decimal_places=2)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     ordem = models.IntegerField(u'Classificação')
     situacao = models.CharField(u'Situação', max_length=100, choices=RESULTADO_CHOICES)
@@ -2047,7 +2109,7 @@ class OrdemCompra(models.Model):
 
 class AtaRegistroPreco(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
-    valor = models.DecimalField(decimal_places=2,max_digits=12, null=True)
+    valor = models.DecimalField(decimal_places=2,max_digits=20, null=True)
     data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
     data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True)
@@ -2114,7 +2176,7 @@ class Contrato(models.Model):
         (INCISO_V, TEXTO_INCISO_V),
     )
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
-    valor = models.DecimalField(decimal_places=2,max_digits=12)
+    valor = models.DecimalField(decimal_places=2,max_digits=20)
     data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
     data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
     continuado = models.BooleanField(default=False)
@@ -2181,7 +2243,7 @@ class Aditivo(models.Model):
     contrato = models.ForeignKey(Contrato)
     ordem = models.PositiveSmallIntegerField(default=0)
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
-    valor = models.DecimalField(decimal_places=2,max_digits=9, null=True, blank=True)
+    valor = models.DecimalField(decimal_places=2,max_digits=20, null=True, blank=True)
     data_inicio = models.DateField(db_column='data_inicio', verbose_name=u'Data de Início', null=True, blank=True)
     data_fim = models.DateField(db_column='data_fim', verbose_name=u'Data de Vencimento', null=True, blank=True)
     de_prazo = models.BooleanField(verbose_name=u'Aditivo de Prazo', default=False)

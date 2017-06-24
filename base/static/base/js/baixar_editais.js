@@ -1,5 +1,4 @@
 $(document).ready(function() {
-	$("#dados").hide();
 	$('#mensagem_erro').hide();
 
 
@@ -16,7 +15,6 @@ $(document).ready(function() {
 			url: "/busca_pessoa/",
 			data: { "pessoa": pessoa },
 			success: function(result, textStatus, jqXHR) {
-				$("#dados").show();
 				$("#id_cnpj").val(result[0].fields.cnpj);
 				$("#id_cpf").val(result[0].fields.cpf);
 				$("#id_nome").val(result[0].fields.nome);
@@ -24,6 +22,7 @@ $(document).ready(function() {
 				$("#id_endereco").val(result[0].fields.endereco);
 				$("#id_email").val(result[0].fields.email);
 				$("#id_telefone").val(result[0].fields.telefone);
+				$("#id_municipio").val(result[0].fields.municipio);
 
 				botao.html(valor_antigo);
 			},

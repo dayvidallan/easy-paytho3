@@ -6,7 +6,7 @@ from os.path import abspath, dirname
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_PATH = abspath(dirname(dirname(__file__)))
 SECRET_KEY = '0$p#v)*(zb22za#6c=7yg$=$v-7xh8w12f2gbd9*mezlsr*3*o'
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
@@ -110,15 +110,6 @@ MESSAGE_TAGS = {
 
 
 
-EMAIL_USE_TLS = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = 'l1c1t@c@0' #my gmail password
-EMAIL_HOST_USER = 'easylicitacao@gmail.com' #my gmail username
-EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
@@ -150,7 +141,6 @@ TEMPLATES = [
     },
 ]
 
-URL = u'http://159.203.181.26/'
 
 try:
     from settings_base import *

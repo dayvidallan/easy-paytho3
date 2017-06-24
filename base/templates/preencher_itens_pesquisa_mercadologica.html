@@ -13,6 +13,25 @@
 {% endif %}
 {% block content %}
 
+    <fieldset>
+        <legend>Enviar planilha da proposta</legend>
+        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form|bootstrap }}
+                    </div>
+		        </div>
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+
+             </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <legend>Preencher Proposta Manualmente</legend>
 
     <form action="." method="post" class="form-horizontal" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
             {% csrf_token %}
@@ -51,7 +70,7 @@
 
              </div>
         </form>
-
+    </fieldset>
 
 
 

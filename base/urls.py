@@ -15,6 +15,9 @@ urlpatterns = [
     url(r'^auditoria/$', views.auditoria, name='auditoria'),
     url(r'^pregao/(?P<pregao_id>\d+)/$', views.pregao, name='pregao'),
     url(r'^itens_solicitacao/(?P<solicitacao_id>\d+)/$', views.itens_solicitacao, name='itens_solicitacao'),
+    url(r'^planilha_propostas_solicitacao/(?P<solicitacao_id>\d+)/$', views.planilha_propostas_solicitacao, name='planilha_propostas_solicitacao'),
+
+
     url(r'^cadastrar_item_solicitacao/(?P<solicitacao_id>\d+)/$', views.cadastrar_item_solicitacao, name='cadastrar_item_solicitacao'),
     url(r'^cadastra_proposta_pregao/(?P<pregao_id>\d+)/$', views.cadastra_proposta_pregao, name='cadastra_proposta_pregao'),
     url(r'^propostas_item/(?P<item_id>\d+)/$', views.propostas_item, name='propostas_item'),

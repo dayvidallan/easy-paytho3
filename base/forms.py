@@ -126,6 +126,10 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
         if self.cleaned_data.get('material') and ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, material=self.cleaned_data.get('material')).exists():
             self.add_error('material', u'Este material já foi cadastrado.')
 
+
+class UploadPropostaPesquisaForm(forms.Form):
+    arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
+
 class CadastraPrecoParticipantePregaoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(ParticipantePregao.objects, label=u'Fornecedor', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
     preencher = forms.BooleanField(label=u'Preencher Manualmente', initial=False, required=False)
@@ -402,7 +406,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
       required=False
     )
     cpf = utils.CpfFormField(label=u'CPF', required=True)
-    cnpj = BRCNPJField(label=u'CNPJ', help_text=u'Informe apenas números.')
+    cnpj = BRCNPJField(label=u'CNPJ')
     class Meta:
         model = LogDownloadArquivo
         fields = ['cnpj', 'nome','responsavel', 'cpf', 'email', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']
@@ -730,7 +734,7 @@ class CriarContratoForm(forms.Form):
 
 class NovoPedidoCompraForm(forms.ModelForm):
     class Meta:
-        model = SolicitacaoLicitacao
+        model = SolicitacaoLicitacaoTmp
         fields = ('num_memorando', 'objeto', 'objetivo')
 
 class RejeitarPesquisaForm(forms.ModelForm):

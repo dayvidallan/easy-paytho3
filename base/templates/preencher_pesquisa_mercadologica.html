@@ -18,7 +18,8 @@ $(function() {
     {% endblock %}
 {% endif %}
 {% block content %}
-
+    <div id="mensagem_erro" class="alert alert-warning">Para sua comodidade, baixe a planilha de itens, preencha os dados e posteriormente acesse este endereço para preenchimento do formulário abaixo e envio da planilha.</div>
+    <a href="/base/planilha_propostas_solicitacao/{{ solicitacao.id }}/" class="btn btn-success">Baixar Planilha</a>
      <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
              <div class="miolo">
