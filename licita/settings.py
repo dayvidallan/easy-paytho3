@@ -110,12 +110,6 @@ MESSAGE_TAGS = {
 
 
 
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    ADMINS = (
-        ('Walkyso', 'walkyso@gmail.com'),
-    )
 
 
 TEMPLATES = [
