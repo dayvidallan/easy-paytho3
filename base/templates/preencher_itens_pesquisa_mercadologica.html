@@ -11,8 +11,40 @@
         <a href="javascript:void(0);">{{ title }}</a>
     {% endblock %}
 {% endif %}
-{% block content %}
+{% block extrajs %}
+<script>
+function exibir_esconder_campo() {
+    if ($('#preencher').is(':checked')) {
+        $("#preencher_manualmente").show();
+        $("#upload").hide();
 
+
+
+    } else {
+        $("#preencher_manualmente").hide();
+        $("#upload").show();
+
+    }
+
+ }
+
+
+  $(document).ready(function() {
+
+     exibir_esconder_campo();
+
+     $('#preencher').on('change', function(){
+        exibir_esconder_campo();
+    });
+});
+
+
+</script>
+{% endblock %}
+{% block content %}
+    <input type="checkbox" name="preencher" id="preencher"><font size="4"> Preencher Manualmente</font></input>
+    <br><br>
+    <div id="upload">
     <fieldset>
         <legend>Enviar planilha da proposta</legend>
         <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
@@ -31,6 +63,9 @@
         </form>
     </fieldset>
     <br>
+    </div>
+
+    <div id="preencher_manualmente">
     <fieldset>
         <legend>Preencher Proposta Manualmente</legend>
 
@@ -72,6 +107,7 @@
              </div>
         </form>
     </fieldset>
+    </div>
 
 
 

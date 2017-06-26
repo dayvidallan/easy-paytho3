@@ -1939,6 +1939,7 @@ class LogDownloadArquivo(models.Model):
     cnpj = models.CharField(u'CNPJ Empresarial', max_length=500)
     endereco = models.CharField(u'Endereço', max_length=500)
     municipio = models.ForeignKey(Municipio, verbose_name=u'Cidade')
+    estado = models.ForeignKey(Estado, verbose_name=u'Estado', null=True)
     telefone = models.CharField(u'Telefone', max_length=500)
     email =models.CharField(u'Email', max_length=500)
     interesse = models.CharField(u'Interesse', max_length=100, choices=INTERESSE_CHOICES)
@@ -1951,6 +1952,11 @@ class LogDownloadArquivo(models.Model):
 
     def __unicode__(self):
         return u'Download por %s do Arquivo: %s' % (self.nome, self.arquivo)
+
+    def save(self):
+        self.estado = self.municipio.estado
+
+        super(LogDownloadArquivo, self).save()
 
 
 class HistoricoPregao(models.Model):

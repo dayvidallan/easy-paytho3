@@ -55,16 +55,18 @@ ul{
 
                 </tr>
                 <tr>
-                    <td align="left" width="25%">Pregão</td>
                     {% if solicitacao.arp_origem.solicitacao.get_pregao %}
+                        <td align="left" width="25%">Pregão</td>
                         <td align="left"><b>{{ solicitacao.arp_origem.solicitacao.get_pregao }}</b></td>
                     {% elif solicitacao.contrato_origem.solicitacao.get_pregao %}
+                        <td align="left" width="25%">Pregão</td>
                         <td align="left"><b>{{ solicitacao.contrato_origem.solicitacao.get_pregao }}</b></td>
                     {% else %}
-                        <td align="left"><b>Adesão à {{ solicitacao }}</b></td>
+                        <td align="left" width="25%">Origem</td>
+                        <td align="left"><b>{{ solicitacao }}</b></td>
                     {% endif %}
                 </tr>
-s                <tr>
+                <tr>
                     <td align="left" width="25%">Assunto</td>
                     <td align="left"><b>{{ ordem.solicitacao.objeto }}</b></td>
 

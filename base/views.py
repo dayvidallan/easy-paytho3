@@ -994,8 +994,8 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
                 for row in range(9, sheet.nrows):
 
                     item = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 5)).strip() or None
-                    valor = unicode(sheet.cell_value(row, 6)).strip()
+                    marca = unicode(sheet.cell_value(row, 4)).strip() or None
+                    valor = unicode(sheet.cell_value(row, 5)).strip()
 
                     if item and valor:
                         item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pesquisa.solicitacao,item=int(sheet.cell_value(row, 0)))
@@ -1191,7 +1191,6 @@ def planilha_propostas_solicitacao(request, solicitacao_id):
         w_sheet.write(row_index, 1, item.material.nome, style)
         w_sheet.write(row_index, 2, item.unidade.nome)
         w_sheet.write(row_index, 3, item.quantidade)
-        w_sheet.write(row_index, 4, item.valor_medio)
 
     salvou = nome + u'_%s' % solicitacao.id + '.xls'
     wb.save(salvou)
@@ -1637,8 +1636,7 @@ def busca_pessoa(request):
         pessoa = request.GET.get('pessoa')
         medicos = LogDownloadArquivo.objects.filter(Q(cpf=pessoa) | Q(cnpj=pessoa)).order_by('-id')
         if medicos:
-            data = serializers.serialize('json', list(medicos), fields=('nome','cpf', 'municipio', 'municipio__estado', 'responsavel', 'cnpj', 'endereco', 'municipio', 'telefone', 'email',))
-            print data
+            data = serializers.serialize('json', list(medicos), fields=('nome','cpf', 'municipio', 'estado', 'municipio__estado', 'responsavel', 'cnpj', 'endereco', 'municipio', 'telefone', 'email',))
         else:
             data = []
 

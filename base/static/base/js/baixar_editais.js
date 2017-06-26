@@ -22,6 +22,9 @@ $(document).ready(function() {
 				$("#id_endereco").val(result[0].fields.endereco);
 				$("#id_email").val(result[0].fields.email);
 				$("#id_telefone").val(result[0].fields.telefone);
+				//$("#id_estado option:eq("+result[0].fields.estado+")").attr("selected", "selected");
+				$("#id_estado").val(result[0].fields.estado).change();
+				//$('#id_estado option')[result[0].fields.estado].selected = true;
 				$("#id_municipio").val(result[0].fields.municipio);
 
 				botao.html(valor_antigo);
