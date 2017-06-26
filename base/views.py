@@ -989,7 +989,7 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
 
                 validade = unicode(sheet.cell_value(6, 1)).strip()
                 if not validade:
-                    messages.error(request, u'Preencha a validade da proposta.')
+                    messages.error(request, u'Preencha a validade da proposta na planilha.')
                     return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
                 for row in range(9, sheet.nrows):
 
@@ -3697,7 +3697,7 @@ def novo_pedido_compra_contrato(request, contrato_id):
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
-        o.tipo_aquisicao = contrato.solicitacao.tipo_aquisicao
+        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_COMPRA
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
@@ -3716,7 +3716,7 @@ def novo_pedido_compra_arp(request, ata_id):
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
-        o.tipo_aquisicao = ata.solicitacao.tipo_aquisicao
+        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_COMPRA
         o.setor_origem = request.user.pessoafisica.setor
         o.setor_atual = request.user.pessoafisica.setor
         o.data_cadastro = datetime.datetime.now()
