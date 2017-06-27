@@ -5856,7 +5856,7 @@ def editar_item_pedido(request, pedido_id, tipo):
     title = u'Editar Item do Pedido'
     if tipo == u'1':
         pedido = get_object_or_404(PedidoContrato, pk=pedido_id)
-        if pedido.contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        if pedido.solicitacao.recebida_setor(request.user.pessoafisica.setor):
             form = EditarPedidoContratoForm(request.POST or None, instance=pedido)
             if form.is_valid():
                 form.save()
@@ -5867,7 +5867,7 @@ def editar_item_pedido(request, pedido_id, tipo):
 
     else:
         pedido = get_object_or_404(PedidoAtaRegistroPreco, pk=pedido_id)
-        if pedido.ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        if pedido.solicitacao.recebida_setor(request.user.pessoafisica.setor):
             form = EditarPedidoARPForm(request.POST or None, instance=pedido)
             if form.is_valid():
                 form.save()
