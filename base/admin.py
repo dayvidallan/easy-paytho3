@@ -243,6 +243,20 @@ class TipoUnidadeAdmin(NewModelAdmin):
 
 admin.site.register(TipoUnidade, TipoUnidadeAdmin)
 
+
+class AtaRegistroPrecoAdmin(NewModelAdmin):
+    form = AtaRegistroPrecoForm
+    list_display = ('numero',)
+    ordering = ('numero',)
+
+    def response_change(self, request, obj):
+        self.message_user(request, u'ARP alterado com sucesso.')
+        return HttpResponseRedirect('/base/visualizar_ata_registro_preco/%s/' % str(obj.pk))
+
+
+admin.site.register(AtaRegistroPreco, AtaRegistroPrecoAdmin)
+
+
 class ContratoAdmin(NewModelAdmin):
     form = ContratoForm
     list_display = ('numero',)

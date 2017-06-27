@@ -329,6 +329,7 @@
                             <th>Empresa</th>
                             <th>Valor</th>
                             <th>Quantidade Solicitada</th>
+                            <th>Opções</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -352,7 +353,21 @@
                                     <td>{{ pedido.item.participante }}</td>
                                     <td>{{ pedido.item.valor }}</td>
                                     <td>{{ pedido.quantidade }}</td>
-
+                                    <td>
+                                        {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra  %}
+                                            {% if not solicitacao.tem_ordem_compra %}
+                                                <ul class="action-bar">
+                                                    {% if pedido.contrato %}
+                                                        <li><a href="/base/editar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-info">Editar</a></li>
+                                                        <li><a href="/base/apagar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-danger">Apagar</a></li>
+                                                    {% else %}
+                                                        <li><a href="/base/editar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-info">Editar</a></li>
+                                                        <li><a href="/base/apagar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-danger">Apagar</a></li>
+                                                    {% endif %}
+                                                </ul>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endif %}
                         {% endfor %}

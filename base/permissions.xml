@@ -26,6 +26,14 @@
                     <permission>change_contrato</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>ataregistropreco</name>
+                <permissions>
+                    <permission>add_ataregistropreco</permission>
+                    <permission>change_ataregistropreco</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
