@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="suap" />
     <orderEntry type="module" module-name="telediagnostico" />
+    <orderEntry type="module" module-name="integra" />
   </component>
 </module>
