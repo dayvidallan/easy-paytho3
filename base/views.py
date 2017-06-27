@@ -1012,27 +1012,26 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
                 return HttpResponseRedirect(u'/base/upload_pesquisa_mercadologica/%s/' % pesquisa.id)
 
 
+        if request.POST.get('validade') in [''] and pesquisa.origem == PesquisaMercadologica.FORNECEDOR:
+            messages.error(request, u'Preencha a validade da proposta.')
+            return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
+        for idx, item in enumerate(request.POST.getlist('itens'), 1):
+            if item:
+                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, id=request.POST.getlist('id_item')[idx-1])
+                novo_preco = ItemPesquisaMercadologica()
+                novo_preco.pesquisa = pesquisa
+                novo_preco.item = item_do_pregao
+                novo_preco.valor_maximo = item.replace('.','').replace(',','.')
+                novo_preco.marca = request.POST.getlist('marcas')[idx-1]
+                novo_preco.save()
+        if request.POST.get('validade'):
+            pesquisa.validade_proposta = request.POST.get('validade')
+            pesquisa.save()
+            messages.success(request, u'Valores cadastrados com sucesso.')
+            return HttpResponseRedirect(u'/base/upload_pesquisa_mercadologica/%s/' % pesquisa.id)
         else:
-            if request.POST.get('validade') in [''] and pesquisa.origem == PesquisaMercadologica.FORNECEDOR:
-                messages.error(request, u'Preencha a validade da proposta.')
-                return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
-            for idx, item in enumerate(request.POST.getlist('itens'), 1):
-                if item:
-                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, id=request.POST.getlist('id_item')[idx-1])
-                    novo_preco = ItemPesquisaMercadologica()
-                    novo_preco.pesquisa = pesquisa
-                    novo_preco.item = item_do_pregao
-                    novo_preco.valor_maximo = item.replace('.','').replace(',','.')
-                    novo_preco.marca = request.POST.getlist('marcas')[idx-1]
-                    novo_preco.save()
-            if request.POST.get('validade'):
-                pesquisa.validade_proposta = request.POST.get('validade')
-                pesquisa.save()
-                messages.success(request, u'Valores cadastrados com sucesso.')
-                return HttpResponseRedirect(u'/base/upload_pesquisa_mercadologica/%s/' % pesquisa.id)
-            else:
-                messages.success(request, u'Valores cadastrados com sucesso.')
-                return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
+            messages.success(request, u'Valores cadastrados com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
 
 
     return render(request, 'preencher_itens_pesquisa_mercadologica.html', locals(), RequestContext(request))
@@ -4877,9 +4876,9 @@ def remover_participante_pregao(request, participante_id):
 def editar_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     solicitacao = pregao.solicitacao
-    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if (request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor)) or request.user.is_superuser:
         title = u'Editar %s' % pregao.modalidade
-        form = PregaoForm(request.POST or None, instance=pregao, solicitacao=pregao.solicitacao)
+        form = PregaoForm(request.POST or None, instance=pregao, solicitacao=pregao.solicitacao, request=request)
         if form.is_valid():
             form.save()
             if not solicitacao.processo and form.cleaned_data.get('num_processo'):

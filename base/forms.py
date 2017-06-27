@@ -162,7 +162,7 @@ class PregaoForm(forms.ModelForm):
     )
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel', 'situacao']
 
 
     class Media:
@@ -171,11 +171,15 @@ class PregaoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
+        self.request = kwargs.pop('request', None)
         super(PregaoForm, self).__init__(*args, **kwargs)
         self.fields['aplicacao_lcn_123_06'].label = u'MPE – Aplicação Da LCN 123/06'
         self.fields['aplicacao_lcn_123_06'].help_text = u'<a href="http://www.planalto.gov.br/ccivil_03/leis/LCP/Lcp123.htm" target="_blank">De acordo com a Lei 123/06</a>'
         self.initial['valor_total'] = format_money(self.solicitacao.get_valor_da_solicitacao())
         self.fields['valor_total'].widget.attrs = {'readonly': 'True'}
+
+        if not self.request.user.is_superuser:
+            del self.fields['situacao']
         if not self.instance.id:
             self.fields['solicitacao'] = forms.ModelChoiceField(label=u'Solicitação', queryset=SolicitacaoLicitacao.objects.filter(id=self.solicitacao.id), initial=0)
             self.fields['solicitacao'].widget.attrs = {'readonly': 'True'}
@@ -229,7 +233,7 @@ class SolicitacaoForm(forms.ModelForm):
     prazo_resposta_interessados = forms.DateField(label=u'Prazo para retorno dos interessados', widget=AdminDateWidget(), required=False)
     class Meta:
         model = SolicitacaoLicitacao
-        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'outros_interessados', 'interessados', 'todos_interessados',  'prazo_resposta_interessados']
+        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'tipo', 'outros_interessados', 'interessados', 'todos_interessados',  'prazo_resposta_interessados']
 
     class Media:
             js = ['/static/base/js/solicitacao.js']
@@ -238,8 +242,12 @@ class SolicitacaoForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         super(SolicitacaoForm, self).__init__(*args, **kwargs)
         self.fields['prazo_resposta_interessados'].widget.attrs = {'class': 'vDateField'}
-        self.fields['interessados'].queryset = Secretaria.objects.exclude(id=self.request.user.pessoafisica.setor.secretaria.id)
-        if self.instance.tipo == SolicitacaoLicitacao.COMPRA:
+        if self.request:
+            self.fields['interessados'].queryset = Secretaria.objects.exclude(id=self.request.user.pessoafisica.setor.secretaria.id)
+            del self.fields['tipo']
+
+
+        if self.instance.tipo == SolicitacaoLicitacao.COMPRA and self.request:
             del self.fields['justificativa']
             del self.fields['tipo_aquisicao']
             del self.fields['todos_interessados']

@@ -153,6 +153,11 @@ class SolicitacaoLicitacaoAdmin(NewModelAdmin):
     ordering = ('num_memorando',)
     list_filter = ('num_memorando',)
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(SolicitacaoLicitacaoAdmin, self).get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
+
     def save_model(self, request, obj, form, change):
         obj.data_cadastro = datetime.datetime.now()
         obj.cadastrado_por = request.user
@@ -171,9 +176,6 @@ class SolicitacaoLicitacaoAdmin(NewModelAdmin):
     def get_opcoes(self, obj):
         texto = '''
             <a href="/itens_solicitacao/%s/" class="btn btn-info">Ver Itens</a>
-            ''' % obj.id
-        if obj.situacao == SolicitacaoLicitacao.CADASTRADO:
-            texto = texto + '''<a href="/enviar_para_licitacao/%s/" class="btn btn-success">Enviar para Licitação</a>
             ''' % obj.id
 
         return texto
