@@ -5884,7 +5884,7 @@ def apagar_item_pedido(request, pedido_id, tipo):
     if tipo == u'1':
         pedido = get_object_or_404(PedidoContrato, pk=pedido_id)
         solicitacao = pedido.solicitacao
-        if request.user.has_perm('base.pode_cadastrar_solicitacao') and solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        if solicitacao.recebida_setor(request.user.pessoafisica.setor):
             pedido.delete()
             messages.success(request, u'Item excluído com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  solicitacao.id)
