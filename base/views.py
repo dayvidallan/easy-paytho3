@@ -2604,7 +2604,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     secretaria = pregao.solicitacao.setor_origem.secretaria
     configuracao = get_config(secretaria)
     config_geral = get_config_geral()
-    municipio = config_geral.municipio.nome
+    municipio = config_geral.municipio
 
     if pregao.comissao:
         configuracao_logo = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
@@ -2907,7 +2907,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     p.add_run(texto)
 
 
-    texto = u'%s/%s, %s' % (municipio, municipio.estado.sigla, ata.data_inicio.strftime('%d/%m/%y'))
+    texto = u'%s/%s, %s' % (municipio.nome, municipio.estado.sigla, ata.data_inicio.strftime('%d/%m/%y'))
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
