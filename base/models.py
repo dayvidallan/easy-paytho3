@@ -848,6 +848,15 @@ class ItemSolicitacaoLicitacao(models.Model):
                 if item.valor > (melhor_valor + (10*melhor_valor)/100) or ( len(valores) > 2 and item.valor > valores[2]['valor']):
                     item.concorre = False
                     item.save()
+            concorrentes = participantes.filter(concorre=True).count()
+            if  concorrentes >= 3:
+                return
+            else:
+                for item in participantes.filter(concorre=False).order_by('valor'):
+                    if concorrentes < 3:
+                        item.concorre = True
+                        item.save()
+                        concorrentes += 1
             return
 
     def filtrar_todos_ativos(self):

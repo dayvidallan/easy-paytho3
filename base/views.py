@@ -229,7 +229,7 @@ def cadastra_proposta_pregao(request, pregao_id):
         participante = None
         selecionou = False
         total = ParticipantePregao.objects.filter(pregao=pregao).count()
-        informados = PropostaItemPregao.objects.filter(pregao=pregao).aggregate(total=Count('participante'))['total']
+        informados = PropostaItemPregao.objects.filter(pregao=pregao).values('participante').distinct().count()
         if request.GET.get('participante'):
             selecionou = True
             participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
