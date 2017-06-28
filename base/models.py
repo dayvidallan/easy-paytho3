@@ -853,7 +853,7 @@ class ItemSolicitacaoLicitacao(models.Model):
                 return
             else:
                 for item in participantes.filter(concorre=False).order_by('valor'):
-                    if concorrentes < 3:
+                    if concorrentes < 3 or item.valor <= valores[2]['valor']:
                         item.concorre = True
                         item.save()
                         concorrentes += 1
