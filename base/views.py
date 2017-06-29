@@ -767,7 +767,7 @@ def cadastrar_pregao(request, solicitacao_id):
     title=u'Cadastrar Licitação'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao') and solicitacao.recebida_setor(request.user.pessoafisica.setor):
-        form = PregaoForm(request.POST or None, solicitacao=solicitacao)
+        form = PregaoForm(request.POST or None, solicitacao=solicitacao, request=request)
         if form.is_valid():
             form.save()
             solicitacao.situacao = SolicitacaoLicitacao.EM_LICITACAO
