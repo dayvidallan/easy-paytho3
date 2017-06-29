@@ -7,14 +7,14 @@
     <br><h3>Editais - Licitações</h3><br>
     <form action="." method="POST" class="form-horizontal">
         {% csrf_token %}
-        <div class="col-xs-3 col-md-3">
+        <div class="col-xs-5 col-md-3">
             <div class="controls">{{ form.modalidade|bootstrap }}
                 {% if form.modalidade.help_text %}
                     <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
                 {% endif %}
             </div>
         </div>
-        <div class="col-xs-3 col-md-3">
+        <div class="col-xs-5 col-md-3">
             <div class="controls">{{ form.numero|bootstrap }}
                 {% if form.numero.help_text %}
                     <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>

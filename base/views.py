@@ -253,7 +253,7 @@ def cadastra_proposta_pregao(request, pregao_id):
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-                for row in range(8, sheet.nrows):
+                for row in range(9, sheet.nrows):
                     try:
                         item = unicode(sheet.cell_value(row, 0)).strip()
                         marca = unicode(sheet.cell_value(row, 5)).strip() or None
@@ -987,11 +987,11 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-                validade = unicode(sheet.cell_value(6, 1)).strip()
+                validade = unicode(sheet.cell_value(7, 1)).strip()
                 if not validade:
                     messages.error(request, u'Preencha a validade da proposta na planilha.')
                     return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
-                for row in range(9, sheet.nrows):
+                for row in range(10, sheet.nrows):
 
                     item = unicode(sheet.cell_value(row, 0)).strip()
                     marca = unicode(sheet.cell_value(row, 4)).strip() or None
@@ -1134,12 +1134,12 @@ def planilha_propostas(request, solicitacao_id):
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
 
     sheet = rb.sheet_by_name("Sheet1")
-    w_sheet.write(0, 1, pregao.get_titulo())
-    w_sheet.write(1, 1, pregao.solicitacao.objeto)
-    w_sheet.write(2, 1, pregao.get_local())
+    w_sheet.write(1, 1, pregao.get_titulo())
+    w_sheet.write(2, 1, pregao.solicitacao.objeto)
+    w_sheet.write(3, 1, pregao.get_local())
 
     for idx, item in enumerate(itens, 0):
-        row_index = idx + 8
+        row_index = idx + 9
         style = xlwt.XFStyle()
         style.alignment.wrap = 1
 
@@ -1176,13 +1176,13 @@ def planilha_propostas_solicitacao(request, solicitacao_id):
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
 
     sheet = rb.sheet_by_name("Sheet1")
-    w_sheet.write(0, 1, u'Solicitação %s - %s' % (solicitacao.num_memorando, solicitacao.setor_origem))
-    w_sheet.write(1, 1, solicitacao.objeto)
+    w_sheet.write(1, 1, u'Solicitação %s - %s' % (solicitacao.num_memorando, solicitacao.setor_origem))
+    w_sheet.write(2, 1, solicitacao.objeto)
 
 
 
     for idx, item in enumerate(itens, 0):
-        row_index = idx + 9
+        row_index = idx + 10
         style = xlwt.XFStyle()
         style.alignment.wrap = 1
 
