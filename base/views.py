@@ -605,10 +605,10 @@ def ver_pregoes(request):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
 
         if form.cleaned_data.get('data_inicial'):
-            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
+            pregoes = pregoes.filter(Q(data_abertura__gte=form.cleaned_data.get('data_inicial')) | Q(data_retorno__gte=form.cleaned_data.get('data_inicial')))
 
         if form.cleaned_data.get('data_final'):
-            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
+            pregoes = pregoes.filter(Q(data_abertura__lte=form.cleaned_data.get('data_final')) |  Q(data_retorno__lte=form.cleaned_data.get('data_final')))
 
         if form.cleaned_data.get('situacao'):
             pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
@@ -2034,7 +2034,7 @@ def importar_itens(request, solicitacao_id):
                                 material.save()
                             novo_item.material = material
                             novo_item.unidade = un
-                            novo_item.quantidade = int(sheet.cell_value(row, 3))
+                            novo_item.quantidade = sheet.cell_value(row, 3)
                             novo_item.save()
 
                             novo_item_qtd = ItemQuantidadeSecretaria()
