@@ -190,6 +190,9 @@
         {% if perms.base.pode_cadastrar_pregao and recebida_setor  or request.user.is_superuser %}
             <a class="btn btn-default" href="/base/editar_pregao/{{ pregao.id }}/">Editar Licitação</a>
         {% endif %}
+        {% if request.user.is_superuser and not pregao.eh_ativo %}
+            <a class="btn btn-success" href="/base/encerrar_pregao/{{ pregao.pk }}/3/">Ativar Pregão</a>
+        {% endif %}
         {% if pregao.eh_ativo and not pregao.eh_suspenso %}
             <a class="btn btn-info" href="/base/registrar_ocorrencia_pregao/{{ pregao.pk }}/" target="_blank">Registrar Ocorrência</a>
             {% if pregao.eh_pregao %}
@@ -364,9 +367,7 @@
                     <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
                     <a class="btn btn-danger" href="/base/encerrar_pregao/{{ pregao.pk }}/2/">Fracassado</a>
                 {% endif %}
-                {% if request.user.is_superuser and not pregao.eh_ativo %}
-                    <a class="btn btn-success" href="/base/encerrar_pregao/{{ pregao.pk }}/3/">Ativar Pregão</a>
-                {% endif %}
+
                 <br><br>
             </div>
             <h3>Lista de Presentes - Fornecedores Participantes</h3>

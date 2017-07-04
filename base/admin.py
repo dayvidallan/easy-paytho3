@@ -50,10 +50,12 @@ class FornecedorAdmin(NewModelAdmin):
 admin.site.register(Fornecedor, FornecedorAdmin)
 
 class PregaoAdmin(NewModelAdmin):
-    form = PregaoForm
+    #form = PregaoForm
     list_display = ('solicitacao', 'modalidade', 'tipo','data_abertura', 'local', 'get_opcoes')
     ordering = ('solicitacao',)
     list_filter = ('solicitacao', 'modalidade', 'tipo')
+
+
 
     def response_change(self, request, obj):
         self.message_user(request, u'Pregão alterado com sucesso.')

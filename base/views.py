@@ -1729,7 +1729,7 @@ def editar_proposta(request, proposta_id):
 @login_required()
 def encerrar_pregao(request, pregao_id, motivo):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if (request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor)) or request.user.is_superuser:
         title=u'Alterar Situação - %s' % pregao
         form = EncerrarPregaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
