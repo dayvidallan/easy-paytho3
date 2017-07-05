@@ -685,7 +685,7 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
 def baixar_editais(request):
     hoje = datetime.date.today()
     pregoes = Pregao.objects.all().order_by('-num_pregao')
-    form = BaixarEditaisForm(request.POST or None)
+    form = BaixarEditaisForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
@@ -697,7 +697,7 @@ def baixar_editais(request):
 def baixar_atas(request):
     hoje = datetime.date.today()
     atas = AtaRegistroPreco.objects.all().order_by('-numero')
-    form = BaixarAtasForm(request.POST or None)
+    form = BaixarAtasForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('numero'):
             atas = atas.filter(numero__icontains=form.cleaned_data.get('numero'))
@@ -4294,6 +4294,7 @@ def ver_ordem_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
     configuracao = get_config(solicitacao.setor_origem.secretaria)
+    config_geral = get_config_geral()
     logo = None
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
@@ -4349,7 +4350,7 @@ def ver_ordem_compra(request, solicitacao_id):
 
     cpf_ordenador = configuracao.ordenador_despesa.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
-    data = {'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 
@@ -4367,7 +4368,7 @@ def ver_ordem_compra(request, solicitacao_id):
 @login_required()
 def ver_ordem_compra_dispensa(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-
+    config_geral = get_config_geral()
     configuracao = get_config(solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
@@ -4401,7 +4402,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
 
     cpf_ordenador = configuracao.ordenador_despesa.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
-    data = {'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
+    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
 

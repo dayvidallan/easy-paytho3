@@ -1,11 +1,11 @@
 {% extends super_template|default:"admin/base_publica.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
-
+{% load pagination_tags %}
 {% block content %}
 
     <br><h3>Editais - Licitações</h3><br>
-    <form action="." method="POST" class="form-horizontal">
+    <form action="." method="GET" class="form-horizontal">
         {% csrf_token %}
         <div class="col-xs-5 col-md-3">
             <div class="controls">{{ form.modalidade|bootstrap }}
@@ -36,6 +36,8 @@
 
     {%  if pregoes.exists %}
         <h4>{{ pregoes.count }} registro(s) encontrado(s).</h4>
+        {% autopaginate pregoes 10 %}
+        {% paginate %}
         {%  for pregao in pregoes %}
 
             <table class="table table-bordered table-condensed table-striped">

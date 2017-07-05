@@ -1,11 +1,11 @@
 {% extends super_template|default:"admin/base_publica.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
-
+{% load pagination_tags %}
 {% block content %}
 
     <br><h3>Atas de Registro de Preços</h3><br>
-    <form action="." method="POST" class="form-horizontal">
+    <form action="." method="GET" class="form-horizontal">
         {% csrf_token %}
          <div class="miolo">
              <div class="row-fluid">
@@ -38,7 +38,8 @@
          </div>
     </form>
     {%  if atas.exists %}
-
+        {% autopaginate atas 5 %}
+        {% paginate %}
         {%  for ata in atas %}
 
             <table class="table table-bordered table-condensed table-striped">

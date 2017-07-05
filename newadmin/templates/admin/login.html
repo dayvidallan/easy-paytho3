@@ -1,9 +1,62 @@
 {% extends "base_login.html" %}
 
+
 {% block content %}
+
+<style>
+   .modal-content {
+  position: fixed;
+  display: none;
+  z-index: 1000;
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 2px 16px;
+    background-color: #4A708B;
+    color: white;
+}
+
+/* Modal Body */
+.modal-body {padding: 2px 16px;}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #4A708B;
+    color: white;
+}
+
+/* Modal Content */
+.modal-content {
+    position: absolute;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 40%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+
+}
+
+
+</style>
 <center>
 
-
+    <!-- right after body tag -->
+<div class="modal-content">
+  <div class="modal-header">
+      <span class="close"><font color="red" size="8">&times;</font></span>
+    <h2>Easy Gestão Pública</h2>
+  </div>
+  <div class="modal-body">
+     <br>
+      <p><b>Contato:</b> cpl.guamare@gmail.com</p>
+  </div>
+  <div class="modal-footer">
+    <center><p>2017 - Todos os Direitos Reservados.</p></center>
+  </div>
+</div>
 
 	<div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 		<div class="panel">
@@ -102,15 +155,37 @@
 
             <tr>
                 <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
-                <td width="80%"><font color="#4A708B" size="4"><br><a href="/base/baixar_atas/">Contatos</a></font></td>
+                <td width="80%"><font color="#4A708B" size="4"><br><a class="button-to-click" href="#">Contatos</a></font></td>
             </tr>
 
         </table>
 </div>
 
-    </center>
-<script type="text/javascript">
-	document.getElementById('id_username').focus()
 
+    </center>
+<script>
+    $(document).ready(function() {
+    // config
+        popup = $('.modal-content');
+        clickme = $('.button-to-click');
+
+    // pop-up
+        vh = $(window).height();
+        vw = $(window).width();
+        bw = popup.width();
+        bh = popup.height();
+        clickme.click(function(e) {
+            e.preventDefault();
+            popup.fadeOut();
+            popup.css('left', vw/2 - bw/2);
+            popup.css('top', vh/2 - bh/2);
+            popup.fadeIn();
+        });
+   //close button
+      $('.close').click(function() {
+            $('.modal-content').fadeOut();
+        });
+});
 </script>
+
 {% endblock %}
