@@ -1424,7 +1424,7 @@ def cadastrar_anexo_pregao(request, pregao_id):
 @login_required()
 def cadastrar_anexo_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
-    if request.user.has_perm('base.pode_gerenciar_contrato') and contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
         title=u'Cadastrar Anexo - %s' % contrato
         form = AnexoContratoForm(request.POST or None, request.FILES or None)
         if form.is_valid():
@@ -4086,7 +4086,7 @@ def editar_anexo_contrato(request, item_id):
 @login_required()
 def cadastrar_anexo_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    if request.user.has_perm('base.pode_gerenciar_contrato') and ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
         title=u'Cadastrar Anexo - %s' % ata
         form = AnexoARPForm(request.POST or None, request.FILES or None)
         if form.is_valid():
