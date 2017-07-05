@@ -54,7 +54,7 @@
 
              {% if perms.base.pode_cadastrar_solicitacao %}
                 {% if solicitacao.situacao == solicitacao.CADASTRADO %}
-                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado and not solicitacao.prazo_aberto %}
+                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto %}
 
                         <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
                         <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
@@ -221,7 +221,7 @@
 
                             <td>
                                 {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
-                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado and not solicitacao.prazo_aberto %}
+                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto %}
                                         <a href="/base/editar_item/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
                                         <a href="/base/apagar_item/{{item.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                     {% endif %}

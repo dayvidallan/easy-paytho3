@@ -2150,7 +2150,10 @@ class AtaRegistroPreco(models.Model):
         return u'Aditivo: %s - %s' % (self.numero, self.contrato)
 
     def __unicode__(self):
-        return 'ARP N° %s' % (self.numero)
+        if self.adesao:
+            return 'Adesão à ARP N° %s' % (self.numero)
+        else:
+            return 'ARP N° %s' % (self.numero)
 
     def get_situacao(self):
         if self.concluido:
