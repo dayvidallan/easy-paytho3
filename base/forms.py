@@ -995,3 +995,45 @@ class RelatoriosGerenciaisForm(forms.Form):
             ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
         self.fields['ano'].initial = ano_limite
+
+
+class CriarContratoAdesaoAtaForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        self.ata = kwargs.pop('ata', None)
+        super(CriarContratoAdesaoAtaForm, self).__init__(*args, **kwargs)
+        ultima = Contrato.objects.latest('id')
+        if ultima.numero:
+            lista = ultima.numero.split('/')
+        valor_contrato = None
+        nome_campos = u''
+        if len(lista) > 1:
+            valor_contrato = int(lista[0])+1
+
+        for i in self.ata.get_fornecedores():
+            label = u'Número do Contrato - Fornecedor: %s' % (i)
+            self.fields["contrato_%d" % i.id] = forms.CharField(label=label, required=True)
+            if valor_contrato:
+                self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
+                valor_contrato += 1
+            nome_campos = nome_campos + '%s, ' % i.id
+            label = u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)'
+            self.fields["aplicacao_artigo_57_%d" % i.id] = forms.ChoiceField(label=label, required=False, choices=Contrato.INCISOS_ARTIGO_57_CHOICES)
+            label = u'Garantia de Execução do Objeto (%)'
+            self.fields["garantia_%d" % i.id] = forms.IntegerField(label=label, required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
+
+            label = u'Data Inicial'
+            self.fields["data_inicial_%d" % i.id] = forms.DateField(label=label, required=True)
+            self.fields["data_inicial_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+            nome_campos = nome_campos + '%s, ' % i.id
+            label = u'Data Final'
+            self.fields["data_final_%d" % i.id] = forms.DateField(label=label, required=True)
+            self.fields["data_final_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+            nome_campos = nome_campos + '%s, ' % i.id
+
+    def clean(self):
+        for i in self.ata.get_fornecedores():
+            nome_campo = u'garantia_%d' %  i.id
+            if self.cleaned_data.get(nome_campo):
+                if self.cleaned_data.get(nome_campo) > 5:
+                    self.add_error('%s' % nome_campo, u'O limite máximo é de 5%.')

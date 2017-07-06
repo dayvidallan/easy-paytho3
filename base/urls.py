@@ -207,6 +207,9 @@ urlpatterns = [
     url(r'^apagar_anexo_arp/(?P<item_id>\d+)/$', views.apagar_anexo_arp, name='apagar_anexo_arp'),
     url(r'^aderir_arp/$', views.aderir_arp, name='aderir_arp'),
     url(r'^adicionar_item_adesao_arp/(?P<ata_id>\d+)/$', views.adicionar_item_adesao_arp, name='adicionar_item_adesao_arp'),
+    url(r'^criar_contrato_adesao_ata/(?P<ata_id>\d+)/$', views.criar_contrato_adesao_ata, name='criar_contrato_adesao_ata'),
+
+
     url(r'^informar_quantidades_do_pedido_adesao_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_adesao_arp, name='informar_quantidades_do_pedido_adesao_arp'),
 
 

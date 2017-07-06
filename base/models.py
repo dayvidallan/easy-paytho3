@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models, transaction
 from newadmin.utils import CepModelField
 from decimal import Decimal
-from django.db.models import Sum
+from django.db.models import Sum, Q
 import datetime
 from ckeditor.fields import RichTextField
 from base.templatetags.app_filters import format_money
@@ -2172,6 +2172,19 @@ class AtaRegistroPreco(models.Model):
         if Contrato.objects.filter(solicitacao=self.solicitacao).exists():
             return Contrato.objects.filter(solicitacao=self.solicitacao)[0]
         return False
+
+    def get_fornecedores(self):
+        itens = ItemAtaRegistroPreco.objects.filter(ata=self)
+        return Fornecedor.objects.filter(Q(id__in=itens.values_list('fornecedor', flat=True)) | Q(id__in=itens.values_list('participante__fornecedor', flat=True)))
+
+    def get_valor_total(self, ganhador=None):
+        itens = ItemAtaRegistroPreco.objects.filter(ata=self)
+        if ganhador:
+            itens = itens.filter(fornecedor=ganhador)
+        total = 0
+        for item in itens:
+            total = total + (item.quantidade * item.valor)
+        return total
 
 class Contrato(models.Model):
 

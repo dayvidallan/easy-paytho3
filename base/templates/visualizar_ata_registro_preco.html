@@ -166,14 +166,22 @@
 
 {% block content %}
     <div class="pull-right">
+
+
+        {% if not ata.adesao %}
+            {% if not ata.liberada_compra and eh_gerente %}
+                <a href="/base/liberar_solicitacao_ata/{{ata.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
+            {% elif eh_gerente %}
+                    <a href="/base/liberar_solicitacao_ata/{{ata.id}}/2/" class="btn btn-danger">Cancelar Solicitação</a>
+            {% endif %}
+        {% else %}
+
+            {% if ata.itemataregistropreco_set.exists and eh_gerente %}
+                <a href="/base/criar_contrato_adesao_ata/{{ ata.id }}/" class="btn btn-success">Criar Contrato</a>
+            {% endif %}
+        {% endif %}
         {% if eh_gerente %}
             <a class="btn btn-info" href="/admin/base/ataregistropreco/{{ ata.pk }}/change/">Editar</a>
-        {% endif %}
-
-        {% if not ata.liberada_compra and eh_gerente %}
-            <a href="/base/liberar_solicitacao_ata/{{ata.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
-        {% elif eh_gerente %}
-                <a href="/base/liberar_solicitacao_ata/{{ata.id}}/2/" class="btn btn-danger">Cancelar Solicitação</a>
         {% endif %}
 
 
@@ -294,7 +302,7 @@
                                                         {% endif %}
                                                         <td>{{ opcao.valor|format_money }}</td>
                                                         <td>{{ opcao.quantidade|format_quantidade }}</td>
-                                                        <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                        <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                                     </tr>
@@ -351,7 +359,7 @@
                                                     {% endif %}
                                                     <td>{{ opcao.valor|format_money }}</td>
                                                     <td>{{ opcao.quantidade|format_quantidade }}</td>
-                                                    <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                    <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                                 </tr>

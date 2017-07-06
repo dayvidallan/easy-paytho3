@@ -4592,7 +4592,7 @@ def liberar_solicitacao_contrato(request, solicitacao_id, origem):
 @login_required()
 def liberar_solicitacao_ata(request, ata_id, origem):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    if request.user.has_perm('base.pode_gerenciar_contrato') and ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if not ata.adesao and request.user.has_perm('base.pode_gerenciar_contrato') and ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
 
         if origem == u'1':
             ata.liberada_compra = True
@@ -6087,3 +6087,39 @@ def relatorio_dados_licitacao(request, pregao_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+
+@login_required()
+def criar_contrato_adesao_ata(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    title = u'Criar Contrato - %s' % ata
+    form = CriarContratoAdesaoAtaForm(request.POST or None, request.FILES or None, ata=ata)
+    if form.is_valid():
+        for participante in ata.get_fornecedores():
+
+            o = Contrato()
+            o.solicitacao = ata.solicitacao
+            o.valor = ata.get_valor_total(participante)
+            o.numero = form.cleaned_data.get('contrato_%d' % participante.id)
+            o.aplicacao_artigo_57 = form.cleaned_data.get('aplicacao_artigo_57_%d' % participante.id)
+            o.garantia_execucao_objeto = form.cleaned_data.get('garantia_%d' % participante.id)
+
+            o.data_inicio = form.cleaned_data.get('data_inicial_%d' % participante.id)
+            o.data_fim = form.cleaned_data.get('data_final_%d' % participante.id)
+            o.save()
+            for resultado in ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=participante):
+                novo_item = ItemContrato()
+                novo_item.contrato = o
+                novo_item.item = resultado.item
+                novo_item.material = resultado.material
+                novo_item.marca = resultado.marca
+                novo_item.fornecedor = resultado.fornecedor
+                novo_item.valor = resultado.valor
+                novo_item.quantidade = resultado.quantidade
+                novo_item.unidade = resultado.unidade
+                novo_item.save()
+
+
+        messages.success(request, u'Contrato(s) criado(s) com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' %  o.id)
+    return render(request, 'criar_contrato_adesao_ata.html', locals(), RequestContext(request))
