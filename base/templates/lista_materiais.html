@@ -80,15 +80,15 @@ ul{
                 <tr>
                     <td width="6%">{{ item.item }}</td>
                     {% if pode_ver_preco %}
-                        <td width="55%">{{ item.material }}</td>
+                        <td width="40%">{{ item.material }}</td>
                         <td width="12%">{{ item.unidade }}</td>
-                        <td width="8%">{{ item.quantidade|format_quantidade  }}</td>
+                        <td width="10%">{{ item.quantidade|format_quantidade  }}</td>
                         <td align="right" width="15%">{{ item.valor_medio|format_money }}</td>
                         <td align="right" width="15%">{{ item.get_total|format_money }}</td>
                     {% else %}
                         <td width="75%">{{ item.material }}</td>
                         <td width="12%">{{ item.unidade }}</td>
-                        <td width="8%">{{ item.quantidade|format_quantidade  }}</td>
+                        <td width="13%">{{ item.quantidade|format_quantidade  }}</td>
                     {% endif %}
                 </tr>
 
