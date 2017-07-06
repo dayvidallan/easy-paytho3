@@ -640,6 +640,8 @@ def itens_solicitacao(request, solicitacao_id):
     ja_aprovou = ja_registrou_preco.filter(aprovado=True).exists()
     setor_do_usuario = request.user.pessoafisica.setor
     recebida_no_setor = solicitacao.recebida_setor(setor_do_usuario)
+    pode_gerenciar = solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
 
 
 

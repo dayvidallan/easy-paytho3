@@ -378,6 +378,7 @@
 
             {% endif %}
         {% elif solicitacao.tipo_aquisicao == solicitacao.TIPO_AQUISICAO_ADESAO_ARP %}
+
             {% if pedidos.exists %}
                 <br>
                 <h3>Itens do Pedido</h3>
@@ -453,6 +454,9 @@
             {% endif %}
             {% if recebida_no_setor and not solicitacao.tem_ordem_compra %}
                 <a href="/base/excluir_solicitacao_pedido/{{solicitacao.id}}/" class="btn btn-danger">Excluir Solicitação</a>
+            {% endif %}
+            {% if solicitacao.get_ata.itemataregistropreco_set.exists and eh_gerente %}
+                <a href="/base/criar_contrato_adesao_ata/{{ solicitacao.get_ata.id }}/" class="btn btn-success">Criar Contrato</a>
             {% endif %}
 
             <a class="btn btn-default" href="/base/lista_documentos/{{ solicitacao.pk }}/">Documentos</a>
