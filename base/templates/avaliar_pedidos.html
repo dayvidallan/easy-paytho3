@@ -1,5 +1,6 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
+{% load app_filters %}
 {% load bootstrap %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
@@ -62,7 +63,7 @@
                    <tr>
 
                        <td>{{ pedido.item }}</td>
-                       <td>{{ pedido.quantidade }}</td>
+                       <td>{{ pedido.quantidade|format_quantidade  }}</td>
                        <td>
                            {% if pedido.avaliado_em %}
                                {% if pedido.aprovado %}

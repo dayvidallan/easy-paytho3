@@ -124,7 +124,7 @@ ul{
                                     <td>{{ item.item }}</td>
                                     <td style="text-align: left;">{{ item.material }} - MARCA: {{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                     <td>{{ item.unidade }}</td>
-                                    <td>{{ item.quantidade }}</td>
+                                    <td>{{ item.quantidade|format_quantidade  }}</td>
                                     {% if eh_maior_desconto %}
                                         <td>R$ {{ item.valor_medio|format_money }}</td>
                                         <td>{{ item.get_vencedor.get_valor }}</td>

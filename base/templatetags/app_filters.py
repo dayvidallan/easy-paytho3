@@ -41,3 +41,24 @@ def format_money(value):
         centavos = '00'
     reais = split_thousands(reais)
     return unicode(reais + ',' + centavos)
+
+
+@register.filter(is_safe=True)
+def format_quantidade(value):
+    """
+    format_money(1) -> '1,00'
+    format_money(1000) -> '1.000,00'
+    format_money(1000.99) -> '1.000,99'
+    """
+    value = str(value)
+
+    if value == u'None':
+        return u'-'
+    if '.' in value:
+        reais, centavos = value.split('.')
+        if centavos != '00':
+            return unicode(reais + ',' + centavos)
+        else:
+            return unicode(reais)
+    return u'-'
+

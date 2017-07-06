@@ -137,7 +137,7 @@ ul{
                                     <td>{{ proposta.item }}</td>
                                     <td  style="text-align: left;">{{ proposta.item.material }} - MARCA: {{ proposta.marca}}</td>
                                     <td>{{ proposta.item.unidade}}</td>
-                                    <td>{{ proposta.item.quantidade }}</td>
+                                    <td>{{ proposta.item.quantidade|format_quantidade  }}</td>
                                     <td>R$ {{ proposta.valor_maximo|format_money  }}</td>
                                     <td>R$ {{ proposta.get_total|format_money  }}</td>
                                 </tr>

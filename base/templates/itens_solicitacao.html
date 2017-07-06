@@ -213,7 +213,7 @@
                             <td>{{ item.item }}</td>
                             <td>{{ item.material }}</td>
                             <td>{{ item.unidade }}</td>
-                            <td>{{ item.quantidade }}</td>
+                            <td>{{ item.quantidade|format_quantidade  }}</td>
                             {% if perms.base.pode_cadastrar_pregao or  perms.base.pode_cadastrar_pesquisa_mercadologica and not solicitacao.eh_dispensa %}
                                 <td>{{ item.valor_medio|format_money }}</td>
                                 <td>{{ item.get_total|format_money }}</td>
@@ -341,7 +341,7 @@
                                     <td>{{ pedido.item.get_marca_item_lote }}</td>
                                     <td>{{ pedido.item.get_empresa_item_lote }}</td>
                                     <td>{{ pedido.item.get_valor_item_lote }}</td>
-                                    <td>{{ pedido.quantidade }}</td>
+                                    <td>{{ pedido.quantidade|format_quantidade  }}</td>
 
                                 </tr>
 
@@ -352,7 +352,7 @@
                                     <td>{{ pedido.item.marca }}</td>
                                     <td>{{ pedido.item.participante }}</td>
                                     <td>{{ pedido.item.valor }}</td>
-                                    <td>{{ pedido.quantidade }}</td>
+                                    <td>{{ pedido.quantidade|format_quantidade  }}</td>
                                     <td>
                                         {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra  %}
                                             {% if not solicitacao.tem_ordem_compra %}
@@ -414,7 +414,7 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ pedido.item.valor }}</td>
-                                <td>{{ pedido.quantidade }}</td>
+                                <td>{{ pedido.quantidade|format_quantidade  }}</td>
                                 <td>
                                     {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra  %}
                                         {% if not solicitacao.tem_ordem_compra %}
