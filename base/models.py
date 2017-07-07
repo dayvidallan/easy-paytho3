@@ -313,6 +313,7 @@ class SolicitacaoLicitacao(models.Model):
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
 
 
+
     def __unicode__(self):
         return u'Solicitação N°: %s' % self.num_memorando
 
@@ -2141,6 +2142,7 @@ class AtaRegistroPreco(models.Model):
     num_oficio = models.CharField(u'Número do Ofício', null=True, max_length=100)
     objeto = models.TextField(u'Objeto', null=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
+    fornecedor_adesao_arp = models.ForeignKey('base.Fornecedor', null=True, related_name=u'fornecedor_contrato_adesao', verbose_name=u'Fornecedor')
 
     class Meta:
         verbose_name = u'Ata de Registro de Preço'

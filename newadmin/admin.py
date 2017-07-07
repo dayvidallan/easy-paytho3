@@ -57,7 +57,7 @@ class NewModelAdmin(admin.ModelAdmin):
         actions = super(NewModelAdmin, self).get_actions(request)
         if not self.has_delete_permission(request, obj=None) and 'delete_selected' in actions:
             del actions['delete_selected']
-        return actions
+        return False
 
     def admin_view(self, view, cacheable=False, perm=None):
         """

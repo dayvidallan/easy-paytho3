@@ -662,7 +662,7 @@ class AtaRegistroPrecoForm(forms.ModelForm):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
-        ultima = AtaRegistroPreco.objects.latest('id')
+        ultima = AtaRegistroPreco.objects.filter(adesao=False).latest('id')
         if ultima.numero:
             lista = ultima.numero.split('/')
             if len(lista) > 1:
@@ -921,7 +921,7 @@ class AderirARPForm(forms.ModelForm):
 
     class Meta:
         model = AtaRegistroPreco
-        fields = ('num_memorando', 'objeto', 'objetivo', 'justificativa', 'numero', 'orgao_origem', 'num_oficio',  'data_inicio', 'data_fim',)
+        fields = ('num_memorando', 'objeto', 'objetivo', 'justificativa', 'numero', 'orgao_origem', 'num_oficio',   'data_inicio', 'data_fim', 'fornecedor_adesao_arp')
 
     def __init__(self, *args, **kwargs):
         super(AderirARPForm, self).__init__(*args, **kwargs)
@@ -931,10 +931,10 @@ class AderirARPForm(forms.ModelForm):
 
 class AdicionarItemAtaForm(forms.ModelForm):
     material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
-    fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
+    #fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
     class Meta:
         model = ItemAtaRegistroPreco
-        fields = ('material', 'fornecedor', 'marca', 'unidade', 'quantidade', 'valor', )
+        fields = ('material', 'marca', 'unidade', 'quantidade', 'valor', )
 
 
 class RevogarPregaoForm(forms.ModelForm):
@@ -1010,30 +1010,30 @@ class CriarContratoAdesaoAtaForm(forms.Form):
         if len(lista) > 1:
             valor_contrato = int(lista[0])+1
 
-        for i in self.ata.get_fornecedores():
-            label = u'Número do Contrato - Fornecedor: %s' % (i)
-            self.fields["contrato_%d" % i.id] = forms.CharField(label=label, required=True)
-            if valor_contrato:
-                self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
-                valor_contrato += 1
-            nome_campos = nome_campos + '%s, ' % i.id
-            label = u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)'
-            self.fields["aplicacao_artigo_57_%d" % i.id] = forms.ChoiceField(label=label, required=False, choices=Contrato.INCISOS_ARTIGO_57_CHOICES)
-            label = u'Garantia de Execução do Objeto (%)'
-            self.fields["garantia_%d" % i.id] = forms.IntegerField(label=label, required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
+        i = self.ata.fornecedor_adesao_arp
+        label = u'Número do Contrato - Fornecedor: %s' % (i)
+        self.fields["contrato_%d" % i.id] = forms.CharField(label=label, required=True)
+        if valor_contrato:
+            self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
+            valor_contrato += 1
+        nome_campos = nome_campos + '%s, ' % i.id
+        label = u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)'
+        self.fields["aplicacao_artigo_57_%d" % i.id] = forms.ChoiceField(label=label, required=False, choices=Contrato.INCISOS_ARTIGO_57_CHOICES)
+        label = u'Garantia de Execução do Objeto (%)'
+        self.fields["garantia_%d" % i.id] = forms.IntegerField(label=label, required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
 
-            label = u'Data Inicial'
-            self.fields["data_inicial_%d" % i.id] = forms.DateField(label=label, required=True)
-            self.fields["data_inicial_%d" % i.id].widget.attrs = {'class': 'vDateField'}
-            nome_campos = nome_campos + '%s, ' % i.id
-            label = u'Data Final'
-            self.fields["data_final_%d" % i.id] = forms.DateField(label=label, required=True)
-            self.fields["data_final_%d" % i.id].widget.attrs = {'class': 'vDateField'}
-            nome_campos = nome_campos + '%s, ' % i.id
+        label = u'Data Inicial'
+        self.fields["data_inicial_%d" % i.id] = forms.DateField(label=label, required=True)
+        self.fields["data_inicial_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+        nome_campos = nome_campos + '%s, ' % i.id
+        label = u'Data Final'
+        self.fields["data_final_%d" % i.id] = forms.DateField(label=label, required=True)
+        self.fields["data_final_%d" % i.id].widget.attrs = {'class': 'vDateField'}
+        nome_campos = nome_campos + '%s, ' % i.id
 
     def clean(self):
-        for i in self.ata.get_fornecedores():
-            nome_campo = u'garantia_%d' %  i.id
-            if self.cleaned_data.get(nome_campo):
-                if self.cleaned_data.get(nome_campo) > 5:
-                    self.add_error('%s' % nome_campo, u'O limite máximo é de 5%.')
+        i = self.ata.fornecedor_adesao_arp
+        nome_campo = u'garantia_%d' %  i.id
+        if self.cleaned_data.get(nome_campo):
+            if self.cleaned_data.get(nome_campo) > 5:
+                self.add_error('%s' % nome_campo, u'O limite máximo é de 5%.')

@@ -5674,6 +5674,7 @@ def adicionar_item_adesao_arp(request, ata_id):
         if form.is_valid():
             o = form.save(False)
             o.ata = ata
+            o.fornecedor = ata.fornecedor_adesao_arp
             o.save()
             total = 0
             for item in ItemAtaRegistroPreco.objects.filter(ata=ata):
