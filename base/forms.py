@@ -102,7 +102,8 @@ class PessoaFisicaForm(forms.ModelForm):
             if self.instance.municipio:
                 self.fields['estado'].initial = self.instance.municipio.estado
 
-            self.fields['grupo'].initial = self.instance.user.groups.all()[0]
+            if self.instance.user.groups.exists():
+                self.fields['grupo'].initial = self.instance.user.groups.all()[0]
 
 
 
