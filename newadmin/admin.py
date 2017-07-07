@@ -2,8 +2,8 @@
 
 from functools import update_wrapper
 
-from django.contrib import admin
-from django.contrib.auth import get_user_model
+from django.contrib import admin, messages
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.admin import UserAdmin, GroupAdmin, csrf_protect_m
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
@@ -13,7 +13,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 import xlwt
-
 from newadmin.utils import DateTimeFormField, DateFormField
 
 
@@ -106,6 +105,24 @@ class NewModelAdmin(admin.ModelAdmin):
         """Torna o ``request`` disponível em métodos invocados no changelist."""
         self.request = request
         return super(NewModelAdmin, self).get_changelist(request, **kwargs)
+
+    @csrf_protect_m
+    #@transaction.atomic
+    def delete_view(self, request, object_id, extra_context=None):
+        extra_context = dict(
+            title=u'Remover %s' % self.model._meta.verbose_name,
+        )
+        #utils.breadcrumbs_add(request, extra_context)
+        if request.POST:
+            password = request.POST.get('password', None)
+            if not password:
+                messages.error(request, u'Preencha sua senha para confirmar a remoção.')
+                return HttpResponseRedirect('.')
+
+            elif not authenticate(username=request.user.username, password=password):
+                messages.error(request, u'Senha incorreta.')
+                return HttpResponseRedirect('.')
+        return super(NewModelAdmin, self).delete_view(request, object_id, extra_context)
 
 
 class UserNewAdmin(UserAdmin, NewModelAdmin):

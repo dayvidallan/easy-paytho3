@@ -347,10 +347,28 @@
 
                             {% else %}
                                 <tr>
-                                    <td>{{ pedido.item.item }}</td>
-                                    <td>{{ pedido.item.item.material }}</td>
+                                    <td>
+                                        {% if pedido.item.item %}
+                                            {{ pedido.item.item }}
+                                        {% else %}
+                                            {{ forloop.counter }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if pedido.item.item.material %}
+                                            {{ pedido.item.item.material }}
+                                        {% else %}
+                                            {{ pedido.item.material }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ pedido.item.marca }}</td>
-                                    <td>{{ pedido.item.participante }}</td>
+                                    <td>
+                                        {% if pedido.item.participante %}
+                                            {{ pedido.item.participante }}
+                                        {% else %}
+                                            {{ pedido.item.fornecedor }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ pedido.item.valor }}</td>
                                     <td>{{ pedido.quantidade|format_quantidade  }}</td>
                                     <td>
