@@ -3602,7 +3602,7 @@ def aprovar_todos_pedidos(request, item_id):
 @login_required()
 def gestao_pedidos(request):
     setor = request.user.pessoafisica.setor
-    title=u'Gestão de Pedidos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
+    title=u'Gestão de Pedidos - %s' % (setor.secretaria)
     meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
 
     atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))

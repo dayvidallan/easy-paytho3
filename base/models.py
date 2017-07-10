@@ -2256,6 +2256,18 @@ class Contrato(models.Model):
         return ItemContrato.objects.filter(contrato=self)[0].fornecedor
 
 
+    def get_lotes(self):
+        if ItemContrato.objects.filter(contrato=self).exists():
+            fornecedor = ItemContrato.objects.filter(contrato=self)[0].fornecedor
+            ids = list()
+            for lote in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True):
+                if lote.get_vencedor().participante.fornecedor == fornecedor:
+                    ids.append(lote.id)
+
+            return ItemSolicitacaoLicitacao.objects.filter(id__in=ids)
+        return None
+
+
 
 class Aditivo(models.Model):
     contrato = models.ForeignKey(Contrato)

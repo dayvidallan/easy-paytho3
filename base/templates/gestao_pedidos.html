@@ -203,7 +203,7 @@
                                 <tr>
                                     <td>
                                         <div id="demoa{{contrato.id}}" class="collapse">
-                                            {% for lote in contrato.solicitacao.get_lotes %}
+                                            {% for lote in contrato.get_lotes %}
 
                                                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                     <thead>
@@ -355,27 +355,24 @@
                                                     </thead>
                                                     <tbody>
                                                         {% for opcao in ata.itemataregistropreco_set.all %}
-                                                    <tr>
-                                                        {% if ata.adesao %}
-                                                            <td>{{ forloop.counter }}</td>
-                                                            <td>{{ opcao.material|truncatechars:500 }}</td>
-                                                        {% else %}
-                                                            <td>{{ opcao.item }}</td>
-                                                            <td>{{ opcao.item.material|truncatechars:500 }}</td>
-                                                        {% endif %}
-                                                        <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                        {% if ata.adesao %}
-                                                            <td>{{ opcao.fornecedor }}</td>
-                                                        {% else %}
-                                                            <td>{{ opcao.participante }}</td>
-                                                        {% endif %}
-                                                        <td>{{ opcao.valor }}</td>
-                                                        <td>{{ opcao.get_quantidade_disponivel }}</td>
-
-
-                                                    </tr>
-                                                {% endfor %}
-
+                                                            <tr>
+                                                                {% if ata.adesao %}
+                                                                    <td>{{ forloop.counter }}</td>
+                                                                    <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                                {% else %}
+                                                                    <td>{{ opcao.item }}</td>
+                                                                    <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                                {% endif %}
+                                                                <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                                {% if ata.adesao %}
+                                                                    <td>{{ opcao.fornecedor }}</td>
+                                                                {% else %}
+                                                                    <td>{{ opcao.participante }}</td>
+                                                                {% endif %}
+                                                                <td>{{ opcao.valor }}</td>
+                                                                <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                            </tr>
+                                                        {% endfor %}
                                                     </tbody>
                                                 </table>
                                             {% endfor %}
