@@ -51,18 +51,15 @@
               <div class="col-lg-12 col-md-12">
                 <div class="logo">
                   <a href="/">
-
                     <p>E@sy Gestão Pública</p>
                   </a>
                 </div>
-                {% if request.user.pessoafisica %}
-                    <div class="links">
-                      <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
-                      <a href="{% url 'admin:password_change' %}"><i class="fa fa-lock"></i>Alterar Senha</a>
-                      <a href='/admin/logout/?next=/'><i class="fa fa-times"></i>Encerrar Sessão</a><br>
-                      <font color="white"><b>Bem Vindo, {{ user.pessoafisica.nome }}<br> {% if user.pessoafisica.setor.sigla %}{{ user.pessoafisica.setor.sigla }}{% else %}{{ user.pessoafisica.setor.nome|truncatechars:50 }}{% endif %} / {% if user.pessoafisica.setor.secretaria.sigla %} {{ user.pessoafisica.setor.secretaria.sigla }}{% else %}{{ user.pessoafisica.setor.secretaria.nome|truncatechars:50 }}{% endif %}</b></font>
-                     </div>
-                 {% endif %}
+                <div class="links">
+                  <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
+                  <a href="{% url 'admin:password_change' %}"><i class="fa fa-lock"></i>Alterar Senha</a>
+                  <a href='/admin/logout/?next=/'><i class="fa fa-times"></i>Encerrar Sessão</a><br>
+                  <font color="white"><b>Bem Vindo, {{ user.pessoafisica.nome }}<br> {% if user.pessoafisica.setor.sigla %}{{ user.pessoafisica.setor.sigla }}{% else %}{{ user.pessoafisica.setor.nome|truncatechars:50 }}{% endif %} / {% if user.pessoafisica.setor.secretaria.sigla %} {{ user.pessoafisica.setor.secretaria.sigla }}{% else %}{{ user.pessoafisica.setor.secretaria.nome|truncatechars:50 }}{% endif %}</b></font>
+                 </div>
               </div>
             </div>
           </div>
