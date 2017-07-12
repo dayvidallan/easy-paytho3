@@ -412,7 +412,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
       empty_label          = u'Selecione o Estado',
       obj_label            = 'nome',
       form_filters         = [('estado', 'estado_id')],
-      required=False
+      required=True
     )
     cpf = utils.CpfFormField(label=u'CPF', required=True)
     cnpj = BRCNPJField(label=u'CNPJ')
