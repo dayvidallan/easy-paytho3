@@ -495,17 +495,21 @@ def lances_item(request, item_id):
             else:
                 participante = item.get_proximo_lance() or item.get_participante_desempate()
             rodada_anterior = int(rodada_atual.rodada) - 1
+
+            valor_anterior_registrado = LanceItemRodadaPregao.objects.filter(item=item, participante=participante, rodada__rodada__lt=rodada_atual.rodada, valor__isnull=False).order_by('-rodada__rodada')[0].valor
             if not eh_modalidade_desconto:
                 if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
-                    messages.error(request, u'Você não pode dar uma lance maior do que sua proposta.')
+                    messages.error(request, u'Você não pode dar um lance maior do que sua proposta.')
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
-                    messages.error(request, u'Você não pode dar uma lance maior do que o lance da rodada anterior.')
+
+
+                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= valor_anterior_registrado:
+                    messages.error(request, u'Você não pode dar um lance maior do que o seu último lance registrado: <b>R$: %s</b>.' % format_money(valor_anterior_registrado))
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
                 if form.cleaned_data.get('lance') > item.valor_medio:
-                    messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
+                    messages.error(request, u'Você não pode dar um lance maior do que o valor máximo do item.')
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
                 if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
@@ -519,11 +523,11 @@ def lances_item(request, item_id):
 
             else:
                 if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') <= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
-                    messages.error(request, u'Você não pode dar uma lance menor do que sua proposta.')
+                    messages.error(request, u'Você não pode dar um lance menor do que sua proposta.')
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') <= LanceItemRodadaPregao.objects.get(item=item, participante=participante, rodada__rodada=rodada_anterior).valor:
-                    messages.error(request, u'Você não pode dar uma lance menor do que o lance da rodada anterior.')
+                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= valor_anterior_registrado:
+                    messages.error(request, u'Você não pode dar um lance maior do que o seu último lance registrado: <b>R$: %s</b>.' % format_money(valor_anterior_registrado))
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
                 # if form.cleaned_data.get('lance') >= item.valor_medio:
