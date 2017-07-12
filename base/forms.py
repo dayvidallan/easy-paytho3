@@ -926,7 +926,10 @@ class AderirARPForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AderirARPForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_inicio'].label = u'Data Inicial da Vigência da ARP a Ser Aderida'
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].label = u'Data Final da Vigência da ARP a Ser Aderida'
+        self.fields['num_oficio'].label = u'Número do Pregão Originário da ARP'
 
 
 class AdicionarItemAtaForm(forms.ModelForm):
