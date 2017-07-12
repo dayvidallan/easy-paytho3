@@ -347,10 +347,28 @@
 
                             {% else %}
                                 <tr>
-                                    <td>{{ pedido.item.item }}</td>
-                                    <td>{{ pedido.item.item.material }}</td>
+                                    <td>
+                                        {% if pedido.item.item %}
+                                            {{ pedido.item.item }}
+                                        {% else %}
+                                            {{ forloop.counter }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if pedido.item.item.material %}
+                                            {{ pedido.item.item.material }}
+                                        {% else %}
+                                            {{ pedido.item.material }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ pedido.item.marca }}</td>
-                                    <td>{{ pedido.item.participante }}</td>
+                                    <td>
+                                        {% if pedido.item.participante %}
+                                            {{ pedido.item.participante }}
+                                        {% else %}
+                                            {{ pedido.item.fornecedor }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ pedido.item.valor }}</td>
                                     <td>{{ pedido.quantidade|format_quantidade  }}</td>
                                     <td>
@@ -378,6 +396,7 @@
 
             {% endif %}
         {% elif solicitacao.tipo_aquisicao == solicitacao.TIPO_AQUISICAO_ADESAO_ARP %}
+
             {% if pedidos.exists %}
                 <br>
                 <h3>Itens do Pedido</h3>
@@ -454,6 +473,9 @@
             {% if recebida_no_setor and not solicitacao.tem_ordem_compra %}
                 <a href="/base/excluir_solicitacao_pedido/{{solicitacao.id}}/" class="btn btn-danger">Excluir Solicitação</a>
             {% endif %}
+            {% if solicitacao.get_ata.itemataregistropreco_set.exists and eh_gerente %}
+                <a href="/base/criar_contrato_adesao_ata/{{ solicitacao.get_ata.id }}/" class="btn btn-success">Criar Contrato</a>
+            {% endif %}
 
             <a class="btn btn-default" href="/base/lista_documentos/{{ solicitacao.pk }}/">Documentos</a>
         </div>
@@ -502,7 +524,7 @@
                     <td>{{ solicitacao.justificativa|truncatechars:500  }}</td>
 
 
-                    <td><a href="/base/visualizar_ata_registro_preco/{{ solicitacao.get_ata.id }}/">{{ solicitacao.get_ata }}</a></td>
+                    <td><a class="btn btn-info" href="/base/visualizar_ata_registro_preco/{{ solicitacao.get_ata.id }}/">Consultar os Itens</a></td>
 
 
                 </tr>

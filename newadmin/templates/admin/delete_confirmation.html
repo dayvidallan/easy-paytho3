@@ -31,13 +31,31 @@
         </ul>
     {% endif %}
 {% else %}
-    <p>{% blocktrans with escaped_object=object %}Are you sure you want to delete the {{ object_name }} "{{ escaped_object }}"? All of the following related items will be deleted:{% endblocktrans %}</p>
+    <p>{% blocktrans with object as escaped_object %}Are you sure you want to delete the {{ object_name }} "{{ escaped_object }}"? All of the following related items will be deleted:{% endblocktrans %}</p>
     <ul>{{ deleted_objects|unordered_list }}</ul>
-    <form action="" method="post">{% csrf_token %}
-    <div>
+    <form action="" method="post" id="delete_form">{% csrf_token %}
+    <h3>Informe sua senha para confirmar a remoção:</h3>
+    <fieldset class="module aligned ">
+    <div class="form-row">
+        <label for="name" class="required">{% blocktrans %}Password{% endblocktrans %}:</label>
+        <input type="password" name="password" title=""/>
+    </div>
+    </fieldset>
+    <div class="submit-row">
     <input type="hidden" name="post" value="yes" />
-    <input type="submit" class="btn btn-danger" value="{% trans "Yes, I'm sure" %}" />
+    <input class="btn danger" type="submit" value="{% trans "Yes, I'm sure" %}" />
+    <input class="btn" type="button" onclick="javascript:history.back(-1)" value="Cancelar" />
     </div>
     </form>
+    <script>
+    // evitar que o enter apague o objeto
+    $('#delete_form').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) {
+        e.preventDefault();
+        return false;
+      }
+    });
+    </script>
 {% endif %}
 {% endblock %}

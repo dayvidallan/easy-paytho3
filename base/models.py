@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models, transaction
 from newadmin.utils import CepModelField
 from decimal import Decimal
-from django.db.models import Sum
+from django.db.models import Sum, Q
 import datetime
 from ckeditor.fields import RichTextField
 from base.templatetags.app_filters import format_money
@@ -311,6 +311,7 @@ class SolicitacaoLicitacao(models.Model):
     liberada_para_pedido = models.BooleanField(u'Liberada para Pedido', default=False)
     arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao')
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
+
 
 
     def __unicode__(self):
@@ -2143,6 +2144,7 @@ class AtaRegistroPreco(models.Model):
     num_oficio = models.CharField(u'Número do Ofício', null=True, max_length=100)
     objeto = models.TextField(u'Objeto', null=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
+    fornecedor_adesao_arp = models.ForeignKey('base.Fornecedor', null=True, related_name=u'fornecedor_contrato_adesao', verbose_name=u'Fornecedor')
 
     class Meta:
         verbose_name = u'Ata de Registro de Preço'
@@ -2174,6 +2176,19 @@ class AtaRegistroPreco(models.Model):
         if Contrato.objects.filter(solicitacao=self.solicitacao).exists():
             return Contrato.objects.filter(solicitacao=self.solicitacao)[0]
         return False
+
+    def get_fornecedores(self):
+        itens = ItemAtaRegistroPreco.objects.filter(ata=self)
+        return Fornecedor.objects.filter(Q(id__in=itens.values_list('fornecedor', flat=True)) | Q(id__in=itens.values_list('participante__fornecedor', flat=True)))
+
+    def get_valor_total(self, ganhador=None):
+        itens = ItemAtaRegistroPreco.objects.filter(ata=self)
+        if ganhador:
+            itens = itens.filter(fornecedor=ganhador)
+        total = 0
+        for item in itens:
+            total = total + (item.quantidade * item.valor)
+        return total
 
 class Contrato(models.Model):
 

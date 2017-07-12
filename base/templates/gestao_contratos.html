@@ -226,42 +226,43 @@
     <div class="tab-content">
         <div id="contratos" class="tab-pane in active">
             {%  if contratos.exists %}
-                 <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                <thead>
-                    <tr>
-                        <th>Nº do Contrato</th>
-                        <th>Nº Processo</th>
-                        <th>Solicitação de Origem</th>
-                        <th>Objeto</th>
-                        <th>Data da Assinatura do Contrato</th>
-                        <th>Vigência</th>
-                        <th>Valor</th>
-                        <th>Situação</th>
-                        <th>Opções</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in contratos %}
+                <h4>{{ contratos.count }} registro(s) encontrado(s).</h4>
+                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                    <thead>
                         <tr>
-                            <td>{{ item.numero }}</td>
-                            <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
-                            <td>{{ item.solicitacao.num_memorando }}</td>
-                            <td>{{ item.solicitacao.objeto }}</td>
-                            <td>{{ item.data_inicio }}</td>
-                            <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
-                            <td>R$ {{ item.valor|format_money }}</td>
-                            <td>{{ item.get_situacao }}</td>
-                            <td>
-                                <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info btn-sm">Visualizar</a>
-
-                            </td>
-
-
+                            <th>Nº do Contrato</th>
+                            <th>Nº Processo</th>
+                            <th>Solicitação de Origem</th>
+                            <th>Objeto</th>
+                            <th>Data da Assinatura do Contrato</th>
+                            <th>Vigência</th>
+                            <th>Valor</th>
+                            <th>Situação</th>
+                            <th>Opções</th>
                         </tr>
-                    {% endfor%}
+                    </thead>
+                    <tbody>
+                        {% for item in contratos %}
+                            <tr>
+                                <td>{{ item.numero }}</td>
+                                <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
+                                <td>{{ item.solicitacao.num_memorando }}</td>
+                                <td>{{ item.solicitacao.objeto }}</td>
+                                <td>{{ item.data_inicio }}</td>
+                                <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
+                                <td>R$ {{ item.valor|format_money }}</td>
+                                <td>{{ item.get_situacao }}</td>
+                                <td>
+                                    <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info btn-sm">Visualizar</a>
 
-                </tbody>
-            </table>
+                                </td>
+
+
+                            </tr>
+                        {% endfor%}
+
+                    </tbody>
+                </table>
             {% else %}
                     <p class="alert alert-warning">Nenhum contrato cadastrado.</p>
             {% endif %}
@@ -271,6 +272,7 @@
 
 
         {%  if atas.exists %}
+            <h4>{{ atas.count }} registro(s) encontrado(s).</h4>
             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
