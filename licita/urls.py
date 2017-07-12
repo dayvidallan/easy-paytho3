@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.contrib.auth.views import login
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 admin.autodiscover()
 
 urlpatterns = [
@@ -20,14 +21,4 @@ urlpatterns = [
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# urlpatterns += [
-#     # Servindo os arquivos estáticos
-#     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
-#         'document_root': settings.STATIC_ROOT,
-#         'show_indexes': True,
-#     }),
-#     # Servindo os arquivos estáticos
-#     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-#         'document_root': settings.MEDIA_ROOT,
-#     })
-# ]
+urlpatterns += [ url(r'^media/(?P<path>.*)$', serve, { 'document_root': settings.MEDIA_ROOT, }), url(r'^static/(?P<path>.*)$', serve, { 'document_root': settings.STATIC_ROOT }), ]
