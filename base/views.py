@@ -5704,6 +5704,83 @@ def adicionar_item_adesao_arp(request, ata_id):
 
 
 @login_required()
+def carregar_planilha_itens_adesao_arp(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    title = u'Carregar Itens'
+    if ata.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+
+        form = ImportarItensForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            arquivo_up = form.cleaned_data.get('arquivo')
+            if arquivo_up:
+                sheet = None
+                try:
+                    workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
+                    sheet = workbook.sheet_by_index(0)
+
+                except XLRDError:
+                    raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+
+                for row in range(3, sheet.nrows):
+
+                    #codigo = unicode(sheet.cell_value(row, 0)).strip()
+                    especificacao = unicode(sheet.cell_value(row, 0)).strip()
+                    marca = unicode(sheet.cell_value(row, 1)).strip()
+                    unidade = unicode(sheet.cell_value(row, 2)).strip()
+                    qtd = unicode(sheet.cell_value(row, 3)).strip()
+                    valor = unicode(sheet.cell_value(row, 4)).strip()
+                    if row == 3:
+                        if especificacao != u'MATERIAL' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
+                            raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
+                    else:
+                        if especificacao and unidade and qtd:
+                            if TipoUnidade.objects.filter(nome=unidade).exists():
+                                un = TipoUnidade.objects.filter(nome=unidade)[0]
+                            else:
+                                un = TipoUnidade.objects.get_or_create(nome=unidade)[0]
+
+
+                            if MaterialConsumo.objects.filter(nome=especificacao).exists():
+                                material = MaterialConsumo.objects.filter(nome=especificacao)[0]
+                            else:
+                                material = MaterialConsumo()
+                                if MaterialConsumo.objects.exists():
+                                    id = MaterialConsumo.objects.latest('id')
+                                    material.id = id.pk+1
+                                    material.codigo = id.pk+1
+                                else:
+                                    material.id = 1
+                                    material.codigo = 1
+                                material.nome = especificacao
+                                material.save()
+
+                            novo_item = ItemAtaRegistroPreco()
+                            novo_item.material = material
+                            novo_item.marca = marca
+                            novo_item.unidade = un
+                            novo_item.quantidade = qtd
+                            novo_item.valor = valor
+                            novo_item.ata = ata
+                            novo_item.fornecedor = ata.fornecedor_adesao_arp
+                            novo_item.ata = ata
+                            novo_item.fornecedor = ata.fornecedor_adesao_arp
+                            novo_item.save()
+
+
+                total = 0
+                for item in ItemAtaRegistroPreco.objects.filter(ata=ata):
+                    total = total + (item.valor * item.quantidade)
+                ata.valor = total
+                ata.save()
+
+            messages.success(request, u'Itens cadastrados com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
+        return render(request, 'carregar_planilha_itens_adesao_arp.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+
+@login_required()
 def cadastrar_material_arp(request, ata_id):
     title = u'Cadastrar Material'
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
