@@ -57,7 +57,9 @@
                     {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto %}
 
                         <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
-                        <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
+                        {% if not solicitacao.itemsolicitacaolicitacao_set.exists %}
+                            <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
+                        {% endif %}
                         {% if solicitacao.pode_receber_pedidos_secretarias %}
                             {% if solicitacao.liberada_para_pedido %}
                                 <a class="btn btn-danger" href="/base/liberar_pedidos_solicitacao/{{ solicitacao.pk }}/">Encerrar Pedidos</a>

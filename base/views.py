@@ -2005,6 +2005,9 @@ def importar_itens(request, solicitacao_id):
         texto = texto + item.nome +', '
     texto = texto[:-2]
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).exists():
+        messages.error(request, u'Esta funcionalidade só pode ser usada quando a solicitação não tem nenhum item cadastrado.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
     if request.user.has_perm('base.pode_cadastrar_solicitacao') and  solicitacao.situacao == solicitacao.CADASTRADO and solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado() and not solicitacao.prazo_aberto:
 
