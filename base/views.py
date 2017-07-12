@@ -6222,3 +6222,6 @@ def criar_contrato_adesao_ata(request, ata_id):
         messages.success(request, u'Contrato(s) criado(s) com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' %  o.id)
     return render(request, 'criar_contrato_adesao_ata.html', locals(), RequestContext(request))
+
+def erro_500(request):
+    return render(request, '500.html', locals(), RequestContext(request))
