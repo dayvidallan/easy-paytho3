@@ -443,6 +443,9 @@ class EditarPropostaForm(forms.ModelForm):
     class Meta:
         model = PropostaItemPregao
         fields = ['marca', 'valor']
+    def __init__(self, *args, **kwargs):
+        super(EditarPropostaForm, self).__init__(*args, **kwargs)
+        self.fields['marca'].required = False
 
 class EncerrarPregaoForm(forms.ModelForm):
     obs = forms.CharField(label=u'Observações', widget=forms.Textarea)
