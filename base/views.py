@@ -6228,3 +6228,6 @@ def criar_contrato_adesao_ata(request, ata_id):
 
 def erro_500(request):
     return render(request, '500.html', locals(), RequestContext(request))
+
+def erro_404(request):
+    return render(request, '404.html', locals(), RequestContext(request))
