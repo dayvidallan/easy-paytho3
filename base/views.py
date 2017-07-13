@@ -252,7 +252,7 @@ def cadastra_proposta_pregao(request, pregao_id):
                     sheet = workbook.sheet_by_index(0)
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
-
+                PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor).delete()
                 for row in range(9, sheet.nrows):
                     try:
                         item = unicode(sheet.cell_value(row, 0)).strip()
