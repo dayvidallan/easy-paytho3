@@ -7,7 +7,7 @@
     {% block breadcrumbs %}
         <a href="/">Início <i class="fa fa-angle-right"></i></a>
         <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
-        <a href="/base/itens_solicitacao/{{pesquisa.solicitacao.id}}/">{{ pesquisa.solicitacao }}<i class="fa fa-angle-right"></i></a>
+        <a href="/base/itens_solicitacao/{{ solicitacao.id }}/">{{  solicitacao }}<i class="fa fa-angle-right"></i></a>
         <a href="javascript:void(0);">{{ title }}</a>
     {% endblock %}
 {% endif %}
@@ -17,12 +17,18 @@ function exibir_esconder_campo() {
     if ($('#preencher').is(':checked')) {
         $("#preencher_manualmente").show();
         $("#upload").hide();
+        $("#validade").prop('required',true);
+        $("#id_arquivo").prop('required',false);
 
 
 
     } else {
         $("#preencher_manualmente").hide();
         $("#upload").show();
+        $("#validade").prop('required',false);
+        $("#id_arquivo").prop('required',true);
+
+
 
     }
 
@@ -42,73 +48,89 @@ function exibir_esconder_campo() {
 </script>
 {% endblock %}
 {% block content %}
-    <input type="checkbox" name="preencher" id="preencher"><font size="4"> Preencher Manualmente</font></input>
-    <br><br>
-    <div id="upload">
-    <fieldset>
-        <legend>Enviar planilha da proposta</legend>
-        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
+    <form action="." method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');">
+        <fieldset>
+            <legend>Dados do {{ texto }}</legend>
             {% csrf_token %}
              <div class="miolo">
-				<div class="row-fluid">
+                <div class="row-fluid">
                     <div class="col-xs-12">
                         {{ form|bootstrap }}
                     </div>
-		        </div>
-                <div class="controls">
-                    <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </div>
 
              </div>
-        </form>
-    </fieldset>
-    <br>
-    </div>
+         </fieldset>
 
-    <div id="preencher_manualmente">
     <fieldset>
-        <legend>Preencher Proposta Manualmente</legend>
+        <legend>Dados da Pesquisa</legend>
+        <div id="mensagem_erro" class="alert alert-warning">Para sua comodidade, baixe a planilha de itens, preencha os dados e importe o arquivo no campo abaixo ou preencha manualmente a proposta clicando na opção abaixo.</div>
+        <input type="checkbox" name="preencher" id="preencher"><font size="4"> Preencher Manualmente</font></input>
+        <br><br>
+        <div id="upload">
 
-    <form action="." method="post" class="form-horizontal" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
-            {% csrf_token %}
-             <div class="miolo">
-                    <table class="table table-bordered table-condensed table-striped">
-                        <thead>
-                            <th>Item</th>
-                            <th>Material/Serviço</th>
-                            <th>Unidade</th>
-                            <th>Marca</th>
-                            <th>Valor</th>
-                        </thead>
-                        <tbody>
-                        {% for item in itens %}
-                            <tr>
-                                <td>{{ item.item }}</td>
-                                <td>{{ item.material }}</td>
-                                <td>{{ item.unidade }}</td>
-                                <td><input name="marcas"></td>
-                                <td><input name="itens"></td>
-                                <input name="id_item" type="hidden" value="{{ item.id }}">
-                            </tr>
-
-
-                        {% endfor %}
-                        <tr><td colspan="5"><br><br></b><b>Validade da Proposta (em dias): <input type="text" name="validade" id="validade" required></b></td><td></td></tr>
-                        </tbody>
-                    </table>
-
+            <a href="/base/planilha_propostas_solicitacao/{{ solicitacao.id }}/" class="btn btn-success">Baixar Planilha</a>
+            <div class="miolo">
+                <div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form2|bootstrap }}
+                    </div>
                 </div>
 
+             </div>
 
-                        <div class="controls">
-                            <button type="submit" class="btn btn-primary" >Cadastrar</button>
-                        </div>
+        </div>
+
+        <div id="preencher_manualmente">
+        <fieldset>
+            <legend>Preencher Proposta Manualmente</legend>
+
+
+
+             <div class="miolo">
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <th>Item</th>
+                        <th>Material/Serviço</th>
+                        <th>Unidade</th>
+                        <th>Marca</th>
+                        <th>Valor</th>
+                    </thead>
+                    <tbody>
+                    {% for item in itens %}
+                        <tr>
+                            <td>{{ item.item }}</td>
+                            <td>{{ item.material }}</td>
+                            <td>{{ item.unidade }}</td>
+                            <td><input name="marcas"></td>
+                            <td><input name="itens"></td>
+                            <input name="id_item" type="hidden" value="{{ item.id }}">
+                        </tr>
+
+
+                    {% endfor %}
+                    <tr><td colspan="5"><br><br></b><b>Validade da Proposta (em dias): <input type="text" name="validade" id="validade"></b></td><td></td></tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+
 
              </div>
-        </form>
-    </fieldset>
+
+        </fieldset>
+    <div class="controls">
+        <button type="submit" class="btn btn-primary" >Cadastrar</button>
+    </div>
+    </form>
     </div>
 
 
 
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
 {% endblock %}
