@@ -289,45 +289,85 @@ class RegistrarPrecoItemForm(forms.ModelForm):
         fields = ['valor_medio', 'arquivo_referencia_valor_medio']
 
 
-class PesquisaMercadologicaForm(forms.ModelForm):
+class PesquisaMercadologicaForm(forms.Form):
 
     origem_opcao = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor'),(False, u'Ata de Registro de Preço')]))
-    ie = forms.CharField(label=u'Inscrição Estadual', required=False)
-    email = forms.EmailField(label=u'Email', required=False)
-    cpf_representante = utils.CpfFormField(label=u'CPF do Representante Legal', required=False)
+    # ie = forms.CharField(label=u'Inscrição Estadual', required=False)
+    # email = forms.EmailField(label=u'Email', required=False)
+    # cpf_representante = utils.CpfFormField(label=u'CPF do Representante Legal', required=False)
 
-    class Meta:
-        model = PesquisaMercadologica
-        fields = ['origem_opcao', 'numero_ata','vigencia_ata', 'orgao_gerenciador_ata', 'razao_social', 'cnpj', 'endereco', 'ie', 'telefone', 'email', 'nome_representante', 'cpf_representante', 'rg_representante', 'endereco_representante']
-
-    class Media:
-            js = ['/static/base/js/pesquisa.js']
+    # class Meta:
+    #     model = PesquisaMercadologica
+    #     fields = ['origem_opcao', 'numero_ata','vigencia_ata', 'orgao_gerenciador_ata', 'razao_social', 'cnpj', 'endereco', 'ie', 'telefone', 'email', 'nome_representante', 'cpf_representante', 'rg_representante', 'endereco_representante']
+    #
+    # class Media:
+    #         js = ['/static/base/js/pesquisa.js']
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PesquisaMercadologicaForm, self).__init__(*args, **kwargs)
-        self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
+        #self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
         if not self.request.user.is_authenticated() or (self.solicitacao.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]):
             self.fields['origem_opcao'] = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor')]), initial=True)
 
-    def clean(self):
-        if self.cleaned_data.get('origem_opcao') is False:
-            if not self.cleaned_data.get('numero_ata'):
-                self.add_error('numero_ata', u'Este campo é obrigatório')
+    # def clean(self):
+    #     if self.cleaned_data.get('origem_opcao') is False:
+    #         if not self.cleaned_data.get('numero_ata'):
+    #             self.add_error('numero_ata', u'Este campo é obrigatório')
+    #
+    #         if not self.cleaned_data.get('vigencia_ata'):
+    #             self.add_error('vigencia_ata', u'Este campo é obrigatório')
+    #
+    #         if not self.cleaned_data.get('orgao_gerenciador_ata'):
+    #             self.add_error('orgao_gerenciador_ata', u'Este campo é obrigatório')
+    #
+    #     elif self.cleaned_data.get('origem_opcao') is True:
+    #         if not self.cleaned_data.get('razao_social'):
+    #             self.add_error('razao_social', u'Este campo é obrigatório')
 
-            if not self.cleaned_data.get('vigencia_ata'):
-                self.add_error('vigencia_ata', u'Este campo é obrigatório')
 
-            if not self.cleaned_data.get('orgao_gerenciador_ata'):
-                self.add_error('orgao_gerenciador_ata', u'Este campo é obrigatório')
+class ContinuaPesquisaMercadologicaForm(forms.ModelForm):
 
-        elif self.cleaned_data.get('origem_opcao') is True:
-            if not self.cleaned_data.get('razao_social'):
-                self.add_error('razao_social', u'Este campo é obrigatório')
+    #origem_opcao = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor'),(False, u'Ata de Registro de Preço')]))
+    ie = forms.CharField(label=u'Inscrição Estadual', required=False)
+    email = forms.EmailField(label=u'Email', required=False)
+    cpf_representante = utils.CpfFormField(label=u'CPF do Representante Legal', required=False)
+    #arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
+    class Meta:
+        model = PesquisaMercadologica
+        fields = ['numero_ata','vigencia_ata', 'orgao_gerenciador_ata', 'razao_social', 'cnpj', 'endereco', 'ie', 'telefone', 'email', 'nome_representante', 'cpf_representante', 'rg_representante', 'endereco_representante']
+    #
+    # class Media:
+    #         js = ['/static/base/js/pesquisa.js']
 
-
-
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        #self.solicitacao = kwargs.pop('solicitacao', None)
+        self.origem = kwargs.pop('origem', None)
+        super(ContinuaPesquisaMercadologicaForm, self).__init__(*args, **kwargs)
+        if self.origem == u'2':
+            del self.fields['numero_ata']
+            del self.fields['vigencia_ata']
+            del self.fields['orgao_gerenciador_ata']
+            self.fields['razao_social'].required = True
+        else:
+            del self.fields['razao_social']
+            del self.fields['cnpj']
+            del self.fields['endereco']
+            del self.fields['ie']
+            del self.fields['telefone']
+            del self.fields['email']
+            del self.fields['nome_representante']
+            del self.fields['cpf_representante']
+            del self.fields['rg_representante']
+            del self.fields['endereco_representante']
+            self.fields['numero_ata'].required = True
+            self.fields['vigencia_ata'].required = True
+            self.fields['orgao_gerenciador_ata'].required = True
+           # self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
+        # if not self.request.user.is_authenticated() or (self.solicitacao.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]):
+        #     self.fields['origem_opcao'] = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor')]), initial=True)
 
 
 class DesclassificaParticipantePregao(forms.ModelForm):
@@ -429,7 +469,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
         self.fields['email'].help_text = u'Digite um email válido. O link para download do arquivo será enviado para este email.'
 
 class UploadPesquisaForm(forms.ModelForm):
-    arquivo = forms.FileField(label=u'Arquivo com a Proposta Assinada', required=True)
+    arquivo = forms.FileField(label=u'Arquivo com a Proposta Assinada', required=False)
     class Meta:
         model = PesquisaMercadologica
         fields = ['arquivo']

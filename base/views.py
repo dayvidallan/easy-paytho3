@@ -958,37 +958,47 @@ def preencher_pesquisa_mercadologica(request, solicitacao_id):
 
     form = PesquisaMercadologicaForm(request.POST or None, request=request, solicitacao=solicitacao)
     if form.is_valid():
-        o = form.save(False)
-        o.solicitacao = solicitacao
+
         if form.cleaned_data.get('origem_opcao') is False:
-            o.origem = PesquisaMercadologica.ATA_PRECO
+            #o.origem = PesquisaMercadologica.ATA_PRECO
+            return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/1/' % solicitacao.id)
         elif form.cleaned_data.get('origem_opcao') is True:
-            o.origem = PesquisaMercadologica.FORNECEDOR
+            #o.origem = PesquisaMercadologica.FORNECEDOR
+            return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/2/' % solicitacao.id)
         else:
             messages.error(request, u'Selecione a origem.')
             return HttpResponseRedirect(u'/base/preencher_pesquisa_mercadologica/%s/' % solicitacao.id)
 
 
-        o.save()
-        if form.cleaned_data.get('origem_opcao') is False:
-            messages.success(request, u'Cadastro realizado com sucesso.')
-            return HttpResponseRedirect(u'/base/upload_itens_pesquisa_mercadologica/%s/' % o.id)
 
-        else:
-            messages.success(request, u'Cadastro realizado com sucesso. Envie a planilha abaixo com os valores dos itens.')
-            return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % o.id)
+        # if form.cleaned_data.get('origem_opcao') is False:
+        #     messages.success(request, u'Cadastro realizado com sucesso.')
+        #     return HttpResponseRedirect(u'/base/upload_itens_pesquisa_mercadologica/%s/' % o.id)
+        #
+        # else:
+        #     messages.success(request, u'Cadastro realizado com sucesso. Envie a planilha abaixo com os valores dos itens.')
+        #     return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % o.id)
 
     return render(request, 'preencher_pesquisa_mercadologica.html', locals(), RequestContext(request))
 
-def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
+def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
     title=u'Preencher Itens da Pesquisa Mercadológica'
-    pesquisa = get_object_or_404(PesquisaMercadologica, pk=pesquisa_id)
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pesquisa.solicitacao)
-    form = UploadPropostaPesquisaForm(request.POST or None, request.FILES or None)
+    #pesquisa = get_object_or_404(PesquisaMercadologica, pk=pesquisa_id)
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao)
+    if origem == u'1':
+        texto = u'Ata de Registro de Preço'
+    else:
+        texto = u'Fornecedor'
+    form = ContinuaPesquisaMercadologicaForm(request.POST or None, request.FILES or None, origem=origem)
+    form2 = UploadPesquisaForm(request.POST or None, request.FILES or None)
     if request.POST:
 
-        if form.is_valid():
-            arquivo_up = form.cleaned_data.get('arquivo')
+        if form.is_valid() and form2.is_valid():
+            pesquisa = form.save(False)
+            pesquisa.solicitacao = solicitacao
+            pesquisa.save()
+            arquivo_up = form2.cleaned_data.get('arquivo')
             if arquivo_up:
                 sheet = None
                 try:
@@ -1000,7 +1010,7 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
                 validade = unicode(sheet.cell_value(7, 1)).strip()
                 if not validade:
                     messages.error(request, u'Preencha a validade da proposta na planilha.')
-                    return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
+                    return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
                 for row in range(10, sheet.nrows):
 
                     item = unicode(sheet.cell_value(row, 0)).strip()
@@ -1008,7 +1018,7 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
                     valor = unicode(sheet.cell_value(row, 5)).strip()
 
                     if item and valor:
-                        item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pesquisa.solicitacao,item=int(sheet.cell_value(row, 0)))
+                        item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=solicitacao,item=int(sheet.cell_value(row, 0)))
                         novo_preco = ItemPesquisaMercadologica()
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
@@ -1022,26 +1032,26 @@ def preencher_itens_pesquisa_mercadologica(request, pesquisa_id):
                 return HttpResponseRedirect(u'/base/upload_pesquisa_mercadologica/%s/' % pesquisa.id)
 
 
-        if request.POST.get('validade') in [''] and pesquisa.origem == PesquisaMercadologica.FORNECEDOR:
-            messages.error(request, u'Preencha a validade da proposta.')
-            return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
-        for idx, item in enumerate(request.POST.getlist('itens'), 1):
-            if item:
-                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, id=request.POST.getlist('id_item')[idx-1])
-                novo_preco = ItemPesquisaMercadologica()
-                novo_preco.pesquisa = pesquisa
-                novo_preco.item = item_do_pregao
-                novo_preco.valor_maximo = item.replace('.','').replace(',','.')
-                novo_preco.marca = request.POST.getlist('marcas')[idx-1]
-                novo_preco.save()
-        if request.POST.get('validade'):
-            pesquisa.validade_proposta = request.POST.get('validade')
-            pesquisa.save()
-            messages.success(request, u'Valores cadastrados com sucesso.')
-            return HttpResponseRedirect(u'/base/upload_pesquisa_mercadologica/%s/' % pesquisa.id)
-        else:
-            messages.success(request, u'Valores cadastrados com sucesso.')
-            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
+            if request.POST.get('validade') in [''] and pesquisa.origem == PesquisaMercadologica.FORNECEDOR:
+                messages.error(request, u'Preencha a validade da proposta.')
+                return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/' % pesquisa.id)
+            for idx, item in enumerate(request.POST.getlist('itens'), 1):
+                if item:
+                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, id=request.POST.getlist('id_item')[idx-1])
+                    novo_preco = ItemPesquisaMercadologica()
+                    novo_preco.pesquisa = pesquisa
+                    novo_preco.item = item_do_pregao
+                    novo_preco.valor_maximo = item.replace('.','').replace(',','.')
+                    novo_preco.marca = request.POST.getlist('marcas')[idx-1]
+                    novo_preco.save()
+            if request.POST.get('validade'):
+                pesquisa.validade_proposta = request.POST.get('validade')
+                pesquisa.save()
+                messages.success(request, u'Valores cadastrados com sucesso.')
+                return HttpResponseRedirect(u'/base/upload_pesquisa_mercadologica/%s/' % pesquisa.id)
+            else:
+                messages.success(request, u'Valores cadastrados com sucesso.')
+                return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
 
 
     return render(request, 'preencher_itens_pesquisa_mercadologica.html', locals(), RequestContext(request))
