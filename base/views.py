@@ -1961,7 +1961,7 @@ def retomar_lances(request, item_id):
 @login_required()
 def informar_quantidades(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if request.user.pessoafisica.setor.secretaria in solicitacao.interessados.all() and solicitacao.dentro_prazo_resposta() and not ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria, aprovado=True).exists() and solicitacao.itemsolicitacaolicitacao_set.exists() and solicitacao.liberada_para_pedido:
+    if True:
         title=u'Informar quantidade dos itens - %s' % solicitacao
         itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
 
@@ -1974,7 +1974,7 @@ def informar_quantidades(request, solicitacao_id):
                     novo_preco.solicitacao = solicitacao
                     novo_preco.item = item_do_pregao
                     novo_preco.secretaria = request.user.pessoafisica.setor.secretaria
-                    novo_preco.quantidade = request.POST.getlist('quantidade')[idx-1]
+                    novo_preco.quantidade = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
                     novo_preco.save()
 
             messages.success(request, u'Quantidades cadastradas com sucesso. Faça o upload do memorando de solicitação.')
