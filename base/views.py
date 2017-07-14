@@ -1397,7 +1397,7 @@ def movimentar_solicitacao(request, solicitacao_id, tipo):
             solicitacao.situacao = SolicitacaoLicitacao.ENVIADO
             solicitacao.setor_atual = form.cleaned_data.get('setor')
 
-
+        solicitacao.prazo_aberto = False
         solicitacao.save()
         nova_movimentacao = MovimentoSolicitacao()
         nova_movimentacao.solicitacao = solicitacao
