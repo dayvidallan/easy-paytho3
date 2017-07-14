@@ -996,6 +996,10 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
 
         if form.is_valid() and form2.is_valid():
             pesquisa = form.save(False)
+            if origem == u'1':
+                pesquisa.origem = PesquisaMercadologica.ATA_PRECO
+            else:
+                pesquisa.origem = PesquisaMercadologica.FORNECEDOR
             pesquisa.solicitacao = solicitacao
             pesquisa.save()
             arquivo_up = form2.cleaned_data.get('arquivo')

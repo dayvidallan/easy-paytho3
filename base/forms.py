@@ -469,7 +469,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
         self.fields['email'].help_text = u'Digite um email válido. O link para download do arquivo será enviado para este email.'
 
 class UploadPesquisaForm(forms.ModelForm):
-    arquivo = forms.FileField(label=u'Arquivo com a Proposta Assinada', required=False)
+    arquivo = forms.FileField(label=u'Importar Planilha Preenchida', required=False)
     class Meta:
         model = PesquisaMercadologica
         fields = ['arquivo']
