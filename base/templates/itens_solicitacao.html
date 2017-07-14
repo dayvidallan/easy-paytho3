@@ -237,7 +237,7 @@
                                         <a href="/media/{{ item.arquivo_referencia_valor_medio }}" class="btn btn-default btn-sm" target="_blank">Ver Arquivo de Referência</a>
                                     {% endif %}
 
-                                    {% if item.tem_pesquisa_registrada %}
+                                    {% if item.tem_pesquisa_registrada and solicitacao.prazo_aberto %}
                                         <a href="/ver_pesquisa_mercadologica/{{item.id}}/" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
                                     {% endif %}
                                 {% endif %}
