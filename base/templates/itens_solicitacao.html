@@ -102,7 +102,7 @@
              {% if perms.base.pode_cadastrar_pregao and recebida_no_setor and solicitacao.eh_apta and solicitacao.minuta_aprovada %}
 
                 {% if not solicitacao.tem_pregao_cadastrado %}
-                    <a class="btn btn-success" href="/base/cadastrar_pregao/{{solicitacao.id}}/">Criar Licitação</a>
+                    <a class="btn btn-success" href="/base/cadastrar_pregao/{{solicitacao.id}}/">Criar Licitação/Procedimento</a>
                     <a class="btn btn-danger" href="/rejeitar_solicitacao/{{ solicitacao.id }}/">Rejeitar</a>
                 {% endif %}
              {% endif %}
@@ -144,14 +144,15 @@
         <table class="table table-bordered table-condensed table-striped">
             <thead>
                 <tr>
-                    <th width="8%">Memorando</th>
-                    <th width="10%">Setor Atual</th>
+                    <th width="10%">Memorando</th>
+                    <th width="15%">Setor Atual</th>
                     {% if solicitacao.processo %}
                         <th>Processo</th>
                     {% endif %}
-                    <th>Descrição do Objeto</th>
-
+                    <th width="30%">Descrição do Objeto</th>
+                    <th>Tipo de Aquisição</th>
                     <th>Data de Cadastro</th>
+
 
                     <th>Situação</th>
                     {% if perms.base.pode_ver_minuta %}
@@ -167,10 +168,8 @@
                         <td>{{ solicitacao.processo }}</td>
                     {% endif %}
                     <td>{{ solicitacao.objeto|truncatechars:250  }}</td>
-
-
+                    <td>{{ solicitacao.tipo_aquisicao }}</td>
                     <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</td>
-
                     <td>{{ solicitacao.get_situacao }}</td>
                     {% if perms.base.pode_ver_minuta %}
                         <td>
@@ -196,6 +195,10 @@
                 </tr>
             </thead>
         </table>
+
+        {% if solicitacao.tem_valor_acima_permitido %}
+            <p class="alert alert-danger">O valor total da solicitação é maior do que o valor máximo permitido.</p>
+        {% endif %}
         {% if itens.exists %}
             <br>
              <h4>Itens da Solicitação</h4>
@@ -206,10 +209,8 @@
                         <th>Material/Serviço</th>
                         <th>Unidade</th>
                         <th>Quantidade</th>
-                        {% if perms.base.pode_cadastrar_pregao or perms.base.pode_cadastrar_pesquisa_mercadologica and not solicitacao.eh_dispensa %}
-                            <th>Valor Médio</th>
-                            <th>Total</th>
-                        {% endif %}
+                        <th>Valor Médio</th>
+                        <th>Total</th>
 
                         <th>Opções</th>
                     </tr>
@@ -221,10 +222,9 @@
                             <td>{{ item.material }}</td>
                             <td>{{ item.unidade }}</td>
                             <td>{{ item.quantidade|format_quantidade  }}</td>
-                            {% if perms.base.pode_cadastrar_pregao or  perms.base.pode_cadastrar_pesquisa_mercadologica and not solicitacao.eh_dispensa %}
-                                <td>{{ item.valor_medio|format_money }}</td>
-                                <td>{{ item.get_total|format_money }}</td>
-                            {% endif %}
+                            <td>{{ item.valor_medio|format_money }}</td>
+                            <td>{{ item.get_total|format_money }}</td>
+
 
                             <td>
                                 {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
@@ -235,7 +235,7 @@
 
                                 {% endif %}
                                 {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                                    {% if  not solicitacao.eh_dispensa and solicitacao.prazo_aberto %}
+                                    {% if solicitacao.prazo_aberto %}
                                         <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
                                     {% endif %}
                                     {% if item.arquivo_referencia_valor_medio %}
@@ -301,7 +301,6 @@
                     <th width="10%">Memorando</th>
                     <th width="10%">Setor Atual</th>
                     <th width="50%">Descrição do Objeto</th>
-
                     <th>Data de Cadastro</th>
 
                     <th>Situação</th>
@@ -315,10 +314,7 @@
                     </td>
                     <td>{{ solicitacao.setor_atual.nome }}</td>
                     <td>{{ solicitacao.objeto|truncatechars:500  }}</td>
-
-
                     <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</td>
-
                     <td>{{ solicitacao.get_situacao }}</td>
                 </tr>
             </thead>

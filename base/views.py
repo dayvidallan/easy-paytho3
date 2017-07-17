@@ -182,9 +182,10 @@ def pregao(request, pregao_id):
         #     pregao.situacao = Pregao.CADASTRADO
         #     pregao.save()
 
-
+        eh_credenciamento = pregao.solicitacao.eh_credenciamento()
         eh_lote = pregao.criterio.id == CriterioPregao.LOTE
-        eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+
+        eh_maior_desconto = pregao.eh_maior_desconto()
         title = u'%s ' % pregao
         if eh_lote:
             lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
@@ -911,7 +912,7 @@ def enviar_para_licitacao(request, solicitacao_id):
 def registrar_preco_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
 
-    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor) and not item.solicitacao.eh_dispensa() and item.solicitacao.prazo_aberto:
+    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor) and item.solicitacao.prazo_aberto:
         title = u'Registrar Valor - %s' % item
         form = RegistrarPrecoItemForm(request.POST or None, request.FILES or None, instance=item)
         if form.is_valid():
@@ -1393,6 +1394,7 @@ def resultado_ajustar_preco(request, resultado_id):
 def desempatar_item(request, item_id):
     title=u'Desempatar Item'
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    eh_credenciamento = item.solicitacao.eh_credenciamento()
     if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         resultados = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
         pregao = item.get_licitacao()
@@ -3682,6 +3684,7 @@ def gestao_contratos(request):
 
         atas = AtaRegistroPreco.objects.all().order_by('id')
         contratos = Contrato.objects.all().order_by('id')
+        credenciamentos = Pregao.objects.filter(modalidade=ModalidadePregao.CREDENCIAMENTO)
         pode_editar = True
         form = GestaoContratoForm(request.GET or None)
         if form.is_valid():
@@ -5029,6 +5032,29 @@ def gerar_resultado_licitacao(request, pregao_id):
     else:
         raise PermissionDenied
 
+
+@login_required()
+def gerar_resultado_credenciamento(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+
+        itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
+        for item in itens:
+            for participante in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False):
+                novo_resultado = ResultadoItemPregao()
+                novo_resultado.item = item
+                novo_resultado.participante = participante
+                novo_resultado.valor = item.valor_medio
+                #novo_resultado.marca = item.marca
+                novo_resultado.ordem = 1
+                novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                novo_resultado.save()
+
+
+        messages.success(request, u'Resultado gerado com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+    else:
+        raise PermissionDenied
 
 @login_required()
 def lista_materiais(request, solicitacao_id):

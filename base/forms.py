@@ -197,7 +197,13 @@ class PregaoForm(forms.ModelForm):
         if self.solicitacao.processo:
             self.fields['num_processo'].initial = self.solicitacao.processo
             self.fields['num_processo'].widget.attrs = {'readonly': 'True'}
-
+        if not (self.solicitacao.tipo_aquisicao == self.solicitacao.TIPO_AQUISICAO_LICITACAO):
+            self.fields['num_pregao'].label = u'Número do Credenciamento'
+        if self.solicitacao.eh_credenciamento():
+            self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CREDENCIAMENTO)
+            self.fields['modalidade'].initial = ModalidadePregao.CREDENCIAMENTO
+            del self.fields['tipo']
+            del self.fields['aplicacao_lcn_123_06']
     def clean(self):
         if not self.instance.pk and Pregao.objects.filter(solicitacao=self.solicitacao).exists():
             self.add_error('solicitacao', u'Já existe um pregão para esta solicitação.')
@@ -308,7 +314,7 @@ class PesquisaMercadologicaForm(forms.Form):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PesquisaMercadologicaForm, self).__init__(*args, **kwargs)
         #self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
-        if not self.request.user.is_authenticated() or (self.solicitacao.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]):
+        if not self.request.user.is_authenticated() or not (self.solicitacao.tipo_aquisicao == self.solicitacao.TIPO_AQUISICAO_LICITACAO):
             self.fields['origem_opcao'] = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor')]), initial=True)
 
     # def clean(self):

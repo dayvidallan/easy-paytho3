@@ -82,6 +82,7 @@ class ModalidadePregao(models.Model):
     CONCURSO = 3
     PREGAO = 4
     TOMADA_PRECO = 5
+    CREDENCIAMENTO = 6
 
 
     nome = models.CharField(u'Nome', max_length=80)
@@ -214,11 +215,22 @@ class SolicitacaoLicitacaoTmp(models.Model):
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
     TIPO_AQUISICAO_COMPRA = u'Compra'
     TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
-
+    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 8.000,00)'
+    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 15.000,00)'
+    CREDENCIAMENTO = u'Credenciamento'
+    CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = u'Chamada Pública - Alimentação Escolar'
+    CHAMADA_PUBLICA_OUTROS = u'Chamada Pública - Outros'
+    CHAMADA_PUBLICA_PRONATER = u'Chamada Pública - PRONATER'
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
-        (TIPO_AQUISICAO_DISPENSA, TIPO_AQUISICAO_DISPENSA),
-        (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
+        (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
+        (CREDENCIAMENTO, CREDENCIAMENTO),
+        (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
+        (CHAMADA_PUBLICA_OUTROS, CHAMADA_PUBLICA_OUTROS),
+        (CHAMADA_PUBLICA_PRONATER, CHAMADA_PUBLICA_PRONATER),
     )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.TextField(u'Descrição do Objeto')
@@ -274,15 +286,28 @@ class SolicitacaoLicitacao(models.Model):
     )
 
     TIPO_AQUISICAO_LICITACAO = u'Licitação'
+
     TIPO_AQUISICAO_DISPENSA = u'Dispensa'
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
     TIPO_AQUISICAO_COMPRA = u'Compra'
     TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
+    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 8.000,00)'
+    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 15.000,00)'
+    CREDENCIAMENTO = u'Credenciamento'
+    CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = u'Chamada Pública - Alimentação Escolar'
+    CHAMADA_PUBLICA_OUTROS = u'Chamada Pública - Outros'
+    CHAMADA_PUBLICA_PRONATER = u'Chamada Pública - PRONATER'
 
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
-        (TIPO_AQUISICAO_DISPENSA, TIPO_AQUISICAO_DISPENSA),
-        (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
+        (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
+        (CREDENCIAMENTO, CREDENCIAMENTO),
+        (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
+        (CHAMADA_PUBLICA_OUTROS, CHAMADA_PUBLICA_OUTROS),
+        (CHAMADA_PUBLICA_PRONATER, CHAMADA_PUBLICA_PRONATER),
     )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.TextField(u'Descrição do Objeto')
@@ -320,6 +345,19 @@ class SolicitacaoLicitacao(models.Model):
     class Meta:
         verbose_name = u'Solicitação de Licitação'
         verbose_name_plural = u'Solicitações de Licitação'
+
+
+    def tem_valor_acima_permitido(self):
+        if self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO:
+            return False
+        if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao() >= 8000:
+            return True
+        elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao() >= 15000:
+            return True
+        return False
+
+    def eh_credenciamento(self):
+        return self.tipo_aquisicao in [self.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.CHAMADA_PUBLICA_OUTROS, self.CHAMADA_PUBLICA_PRONATER, self.CREDENCIAMENTO]
 
     def recebida_setor(self, setor_do_usuario):
         movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=self)
@@ -361,7 +399,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def eh_dispensa(self):
-        return self.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]
+        return not (self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO)
 
     def tem_proposta(self):
         for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):
@@ -1141,7 +1179,7 @@ class Pregao(models.Model):
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
     modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade / Procedimento')
     fundamento_legal = models.CharField(u'Fundamento Legal', max_length=5000, null=True, blank=True)
-    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento')
+    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento', null=True, blank=True)
     criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação')
     aplicacao_lcn_123_06 = models.ForeignKey(OpcaoLCN, verbose_name=u'MPE – Aplicação Da LCN 123/06 (Lei 123/06)', null=True, blank=True)
     data_inicio = models.DateField(u'Data de Início da Retirada do Edital', null=True, blank=True)
@@ -1188,6 +1226,13 @@ class Pregao(models.Model):
             self.eh_ata_registro_preco = False
         super(Pregao, self).save()
 
+
+    def eh_maior_desconto(self):
+        if not self.tipo:
+            return False
+        if self.tipo.id == TipoPregao.DESCONTO:
+            return True
+        return False
     def get_local(self):
         return u'Dia %s às %s, no(a) %s' % (self.data_abertura.strftime('%d/%m/%y'), self.hora_abertura, self.local)
 
