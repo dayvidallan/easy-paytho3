@@ -54,12 +54,14 @@
                     <p>E@sy Gestão Pública</p>
                   </a>
                 </div>
-                <div class="links">
-                  <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
-                  <a href="{% url 'admin:password_change' %}"><i class="fa fa-lock"></i>Alterar Senha</a>
-                  <a href='/admin/logout/?next=/'><i class="fa fa-times"></i>Encerrar Sessão</a><br>
-                  <font color="white"><b>Bem Vindo, {{ user.pessoafisica.nome }}<br> {% if user.pessoafisica.setor.sigla %}{{ user.pessoafisica.setor.sigla }}{% else %}{{ user.pessoafisica.setor.nome|truncatechars:50 }}{% endif %} / {% if user.pessoafisica.setor.secretaria.sigla %} {{ user.pessoafisica.setor.secretaria.sigla }}{% else %}{{ user.pessoafisica.setor.secretaria.nome|truncatechars:50 }}{% endif %}</b></font>
-                 </div>
+                {% if request.user.is_authenticated %}
+                    <div class="links">
+                      <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
+                      <a href="{% url 'admin:password_change' %}"><i class="fa fa-lock"></i>Alterar Senha</a>
+                      <a href='/admin/logout/?next=/'><i class="fa fa-times"></i>Encerrar Sessão</a><br>
+                      <font color="white"><b>Bem Vindo, {{ user.pessoafisica.nome }}<br> {% if user.pessoafisica.setor.sigla %}{{ user.pessoafisica.setor.sigla }}{% else %}{{ user.pessoafisica.setor.nome|truncatechars:50 }}{% endif %} / {% if user.pessoafisica.setor.secretaria.sigla %} {{ user.pessoafisica.setor.secretaria.sigla }}{% else %}{{ user.pessoafisica.setor.secretaria.nome|truncatechars:50 }}{% endif %}</b></font>
+                     </div>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -74,20 +76,21 @@
 
       </div>
 
-
-  {% block breadcrumbs_container %}
-      <section id="migalhas" class="{% block breadcrumbs_class %}administracao{% endblock %}">
-          <div class="container-fluid">
-              <div class="row">
-                  <div class="col-lg-12 col-md-12">
-                      {% block breadcrumbs %}
-                        <a href="/">Início</a>
-                      {% endblock %}
+  {% if request.user.is_authenticated %}
+      {% block breadcrumbs_container %}
+          <section id="migalhas" class="{% block breadcrumbs_class %}administracao{% endblock %}">
+              <div class="container-fluid">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12">
+                          {% block breadcrumbs %}
+                            <a href="/">Início</a>
+                          {% endblock %}
+                      </div>
                   </div>
               </div>
-          </div>
-      </section>
-  {% endblock %}
+          </section>
+      {% endblock %}
+  {% endif %}
 
   <section id="conteudo">
     <div class="container-fluid">

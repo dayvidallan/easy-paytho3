@@ -803,13 +803,17 @@ class ItemSolicitacaoLicitacao(models.Model):
             lances_da_rodada = LanceItemRodadaPregao.objects.filter(declinio=False, item=self).order_by('valor')
             rodada_atual = RodadaPregao.objects.filter(item=self, atual=True)[0]
             for item in lances_da_rodada:
-                if item.participante.me_epp and item.valor <= limite_lance and LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count() and not LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante, rodada=rodada_atual, valor__isnull=True).exists():
+                declinou_antes = LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante, rodada__rodada__lt=rodada_atual.rodada, valor__isnull=True).exists()
+
+
+                if item.participante.me_epp and item.valor <= limite_lance and LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count() and ((declinou_antes and not LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante, rodada=rodada_atual, valor__isnull=True).exists()) or (not declinou_antes and not LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante, rodada=rodada_atual, valor__isnull=True).count() > 1)):
+
                     return item.participante
 
             propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, desistencia=False, desclassificado=False)
             for proposta in propostas:
-
-                if proposta.participante.me_epp and proposta.valor <= limite_lance and (LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count()):
+                declinou_antes = LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante, rodada__rodada__lt=rodada_atual.rodada, valor__isnull=True).exists()
+                if proposta.participante.me_epp and proposta.valor <= limite_lance and (LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count()) and ((declinou_antes and not LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante, rodada=rodada_atual, valor__isnull=True).exists()) or (not declinou_antes and not LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante, rodada=rodada_atual, valor__isnull=True).count() > 1)):
                     return proposta.participante
         return False
 
