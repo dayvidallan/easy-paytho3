@@ -73,8 +73,9 @@ urlpatterns = [
     url(r'^gerar_resultado_credenciamento/(?P<pregao_id>\d+)/$', views.gerar_resultado_credenciamento, name='gerar_resultado_credenciamento'),
 
 
+    url(r'^cadastrar_credenciamento/(?P<solicitacao_id>\d+)/$', views.cadastrar_credenciamento, name='cadastrar_credenciamento'),
     url(r'^imprimir_fornecedor/(?P<fornecedor_id>\d+)/$', views.imprimir_fornecedor, name='imprimir_fornecedor'),
-
+    url(r'^visualizar_credenciamento/(?P<credenciamento_id>\d+)/$', views.visualizar_credenciamento, name='visualizar_credenciamento'),
 
 
     url(r'^modelo_memorando/(?P<solicitacao_id>\d+)/$', views.modelo_memorando, name='modelo_memorando'),
@@ -128,6 +129,7 @@ urlpatterns = [
     url(r'^termo_homologacao/(?P<pregao_id>\d+)/$', views.termo_homologacao, name='termo_homologacao'),
     url(r'^visualizar_contrato/(?P<solicitacao_id>\d+)/$', views.visualizar_contrato, name='visualizar_contrato'),
     url(r'^liberar_solicitacao_contrato/(?P<solicitacao_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_contrato, name='liberar_solicitacao_contrato'),
+    url(r'^liberar_solicitacao_credenciamento/(?P<credenciamento_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_credenciamento, name='liberar_solicitacao_credenciamento'),
     url(r'^definir_vigencia_contrato/(?P<contrato_id>\d+)/$', views.definir_vigencia_contrato, name='definir_vigencia_contrato'),
     url(r'^aditivar_contrato/(?P<contrato_id>\d+)/$', views.aditivar_contrato, name='aditivar_contrato'),
     url(r'^memorando/(?P<solicitacao_id>\d+)/$', views.memorando, name='memorando'),
@@ -179,6 +181,7 @@ urlpatterns = [
 
     url(r'^novo_pedido_compra_contrato/(?P<contrato_id>\d+)/$', views.novo_pedido_compra_contrato, name='novo_pedido_compra_contrato'),
     url(r'^novo_pedido_compra_arp/(?P<ata_id>\d+)/$', views.novo_pedido_compra_arp, name='novo_pedido_compra_arp'),
+    url(r'^novo_pedido_compra_credenciamento/(?P<credenciamento_id>\d+)/$', views.novo_pedido_compra_credenciamento, name='novo_pedido_compra_credenciamento'),
 
 
 
@@ -186,6 +189,9 @@ urlpatterns = [
 
 
     url(r'^informar_quantidades_do_pedido_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_arp, name='informar_quantidades_do_pedido_arp'),
+    url(r'^informar_quantidades_do_pedido_credenciamento/(?P<credenciamento_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_credenciamento, name='informar_quantidades_do_pedido_credenciamento'),
+
+
     url(r'^cadastrar_ata_registro_preco/(?P<solicitacao_id>\d+)/$', views.cadastrar_ata_registro_preco, name='cadastrar_ata_registro_preco'),
 
 

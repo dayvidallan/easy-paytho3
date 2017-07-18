@@ -348,7 +348,7 @@
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
                             <td>{{ item.data_fim|default_if_none:"-" }}</td>
-                            <td>R$ {{ item.get_total_global|format_money }}</td>
+                            <td>R$ {{ item.valor|format_money }}</td>
                             <td>{{ item.get_situacao }}</td>
                             <td>
                                 <a href="/base/visualizar_ata_registro_preco/{{item.id}}/" class="btn btn-info">Visualizar</a>

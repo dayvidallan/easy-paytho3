@@ -713,12 +713,28 @@ class AtaRegistroPrecoForm(forms.ModelForm):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
-        ultima = AtaRegistroPreco.objects.filter(adesao=False).latest('id')
-        if ultima.numero:
-            lista = ultima.numero.split('/')
-            if len(lista) > 1:
-                self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+        if AtaRegistroPreco.objects.exists():
+            ultima = AtaRegistroPreco.objects.filter(adesao=False).latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
+                if len(lista) > 1:
+                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
+class CredenciamentoForm(forms.ModelForm):
+    class Meta:
+        model = Credenciamento
+        fields = ('numero', 'data_inicio', 'data_fim')
+
+    def __init__(self, *args, **kwargs):
+        super(CredenciamentoForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        if Credenciamento.objects.exists():
+            ultima = Credenciamento.objects.all().latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
+                if len(lista) > 1:
+                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
 class ContratoForm(forms.ModelForm):
     garantia_execucao_objeto = forms.IntegerField(label=u'Garantia de Execução do Objeto (%)', required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
@@ -731,11 +747,12 @@ class ContratoForm(forms.ModelForm):
         super(ContratoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
-        ultima = Contrato.objects.latest('id')
-        if ultima.numero:
-            lista = ultima.numero.split('/')
-            if len(lista) > 1:
-                self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+        if Contrato.objects.exists():
+            ultima = Contrato.objects.latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
+                if len(lista) > 1:
+                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
     def clean(self):
         if self.cleaned_data.get('garantia_execucao_objeto'):

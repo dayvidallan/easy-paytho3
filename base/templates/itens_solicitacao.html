@@ -10,7 +10,7 @@
 {% block content %}
     <div class="pull-right">
          {% if recebida_no_setor %}
-            {% if solicitacao.setor_origem == request.user.pessoafisica.setor %}
+            {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.get_pregao.data_homologacao  %}
                 <a class="btn btn-default" href="/base/editar_solicitacao/{{ solicitacao.pk }}/">Editar Solicitação</a>
             {% endif %}
             <a class="btn btn-success" href="/base/movimentar_solicitacao/{{ solicitacao.pk }}/1/">Enviar</a>
@@ -52,8 +52,10 @@
                 {% if solicitacao.get_pregao.eh_ata_registro_preco and not solicitacao.get_ata %}
                     <a href="/base/cadastrar_ata_registro_preco/{{solicitacao.id}}/" class="btn btn-success">Criar Ata de Registro de Preço</a>
 
-                {% elif not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists %}
+                {% elif not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists and not solicitacao.eh_credenciamento %}
                     <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
+                {% elif not solicitacao.credenciamento_set.exists and solicitacao.eh_credenciamento %}
+                    <a href="/base/cadastrar_credenciamento/{{solicitacao.id}}/" class="btn btn-success">Criar Credenciamento</a>
                 {% endif %}
              {% endif %}
 
@@ -368,8 +370,10 @@
                                     <td>
                                         {% if pedido.item.participante %}
                                             {{ pedido.item.participante }}
-                                        {% else %}
+                                        {% elif pedido.item.fornecedor %}
                                             {{ pedido.item.fornecedor }}
+                                        {% else %}
+                                            {{ pedido.fornecedor }}
                                         {% endif %}
                                     </td>
                                     <td>{{ pedido.item.valor }}</td>

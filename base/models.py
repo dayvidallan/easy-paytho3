@@ -245,6 +245,7 @@ class SolicitacaoLicitacaoTmp(models.Model):
     setor_atual = models.ForeignKey(Setor, verbose_name=u'Setor Atual', related_name='setor_atual_tmp', null=True, blank=True)
     arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao_tmp')
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao_tmp')
+    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao_tmp')
 
 
     def __unicode__(self):
@@ -336,6 +337,7 @@ class SolicitacaoLicitacao(models.Model):
     liberada_para_pedido = models.BooleanField(u'Liberada para Pedido', default=False)
     arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao')
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
+    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao')
 
 
 
@@ -372,6 +374,8 @@ class SolicitacaoLicitacao(models.Model):
             elif self.tipo == SolicitacaoLicitacao.COMPRA or self.tipo == SolicitacaoLicitacao.ADESAO_ARP:
                 return True
         return False
+
+
 
     def pode_receber_pedidos_secretarias(self):
         if self.prazo_resposta_interessados:
@@ -2203,9 +2207,6 @@ class AtaRegistroPreco(models.Model):
         verbose_name_plural = u'Atas de Registro de Preço'
 
     def __unicode__(self):
-        return u'Aditivo: %s - %s' % (self.numero, self.contrato)
-
-    def __unicode__(self):
         if self.adesao:
             return 'Adesão à ARP N° %s' % (self.numero)
         else:
@@ -2241,6 +2242,131 @@ class AtaRegistroPreco(models.Model):
         for item in itens:
             total = total + (item.quantidade * item.valor)
         return total
+
+
+class Credenciamento(models.Model):
+    numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
+    valor = models.DecimalField(decimal_places=2,max_digits=20, null=True)
+    data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
+    data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True)
+    pregao = models.ForeignKey(Pregao, null=True)
+    secretaria = models.ForeignKey(Secretaria, null=True)
+    concluido = models.BooleanField(default=False)
+    suspenso = models.BooleanField(default=False)
+    cancelado = models.BooleanField(default=False)
+    motivo_cancelamento = models.TextField(blank=True)
+    dh_cancelamento = models.DateTimeField(blank=True, null=True)
+    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+    orgao_origem = models.CharField(u'Órgão de Origem', null=True, max_length=100)
+    num_oficio = models.CharField(u'Número do Ofício', null=True, max_length=100)
+    objeto = models.TextField(u'Objeto', null=True)
+    liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
+
+    class Meta:
+        verbose_name = u'Credenciamento'
+        verbose_name_plural = u'Credenciamentos'
+
+    def __unicode__(self):
+        return u'Credenciamento: %s' % (self.numero)
+
+    def get_situacao(self):
+        if self.concluido:
+            return u'Concluído'
+        elif self.suspenso:
+            return u'Suspenso'
+        elif self.cancelado:
+            return u'Cancelado'
+        else:
+            return u'Ativo'
+
+
+    def get_fornecedores(self):
+        participantes = ParticipantePregao.objects.filter(desclassificado=False, pregao=self.pregao)
+        return Fornecedor.objects.filter(Q(id__in=participantes.values_list('fornecedor', flat=True)))
+
+    def get_valor_total(self, ganhador=None):
+        itens = ItemCredenciamento.objects.filter(ata=self)
+        if ganhador:
+            itens = itens.filter(fornecedor=ganhador)
+        total = 0
+        for item in itens:
+            total = total + (item.quantidade * item.valor)
+        return total
+
+
+class ItemCredenciamento(models.Model):
+    credenciamento = models.ForeignKey(Credenciamento)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
+    marca = models.CharField(u'Marca', max_length=200, null=True)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
+    quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    material = models.ForeignKey('base.MaterialConsumo', null=True)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+
+    class Meta:
+        ordering = ['item__item']
+        verbose_name = u'Item do Credenciamento'
+        verbose_name_plural = u'Itens do Credenciamento'
+
+
+    def __unicode__(self):
+        return u'Item %s do Credenciamento: %s' % (self.item, self.credenciamento)
+
+    def get_quantidade_disponivel(self):
+        usuario = tl.get_user()
+        if usuario.groups.filter(name=u'Gerente').exists():
+            pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True)
+            if pedidos.exists():
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            else:
+                return self.quantidade
+
+        else:
+
+
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+            pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
+            if pedidos.exists():
+                return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            return total
+
+        return 0
+
+    def get_saldo_atual_secretaria(self, setor):
+        pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=setor.secretaria)
+        if pedidos.exists():
+            return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+        else:
+            return self.quantidade
+
+class PedidoCredenciamento(models.Model):
+    credenciamento = models.ForeignKey(Credenciamento)
+    item = models.ForeignKey(ItemCredenciamento)
+    fornecedor = models.ForeignKey(Fornecedor, null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    setor = models.ForeignKey(Setor)
+    pedido_por = models.ForeignKey(User)
+    pedido_em = models.DateTimeField(u'Pedido em')
+    ativo = models.BooleanField(u'Ativo', default=True)
+
+
+    class Meta:
+        verbose_name = u'Pedido do Credenciamento'
+        verbose_name_plural = u'Pedidos do Credenciamento'
+
+    def __unicode__(self):
+        return u'Pedido %s do Credenciamento: %s' % (self.id, self.credenciamento)
+
+
+    def get_total(self):
+        return self.quantidade * self.item.valor
+
+    def get_saldo_atual(self):
+        return self.item.get_saldo_atual_secretaria(self.setor)
+
 
 class Contrato(models.Model):
 
