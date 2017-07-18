@@ -1,0 +1,68 @@
+{% extends super_template|default:"admin/base_modal.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block content %}
+{% if pesquisas.exists %}
+        <h3>Valores das Pesquisas</h3>
+        <table border="2" class="table table-bordered table-condensed table-striped">
+            <thead>
+                <th>Origem</th>
+                <th>Marca</th>
+                <th>Valor Máximo</th>
+                <th>Situação</th>
+                <th>Arquivo da Proposta</th>
+                <th>Opções</th>
+            </thead>
+            <tbody>
+                {% for pesquisa in pesquisas %}
+                    <tr>
+                        <td>
+                            {{ pesquisa.pesquisa.origem }}:
+                            {% if pesquisa.pesquisa.origem == pesquisa.pesquisa.ATA_PRECO %}
+                                <b>N° {{ pesquisa.pesquisa.numero_ata}} (Vigência: {{ pesquisa.pesquisa.vigencia_ata|date:'d/m/Y' }})</b> - <b>Órgão Gerenciador:</b> {{ pesquisa.pesquisa.orgao_gerenciador_ata }}
+                            {% else %}
+                                <b>{{ pesquisa.pesquisa.razao_social }}</b>
+                            {% endif %}
+                        </td>
+                        <td>{{ pesquisa.marca|default_if_none:"-" }}</td>
+                        <td>{{ pesquisa.valor_maximo }}</td>
+                        <td>
+                            {% if pesquisa.ativo %}
+                                <font color="green">Ativo</font>
+                            {% else %}
+                                <font color="red">Rejeitado ({{pesquisa.motivo_rejeicao}})</font>
+                            {% endif%}
+                        </td>
+                        <td>
+                            {% if pesquisa.pesquisa.arquivo %}
+                                <a href="/media/{{ pesquisa.pesquisa.arquivo }}" class="btn btn-default btn-sm" target="_blank">Visualizar</a>
+
+                            {% endif %}
+
+                        </td>
+                        <td>
+                            {% if pesquisa.ativo and pesquisa.item.solicitacao.prazo_aberto %}
+                                <ul class="action-bar">
+                                    <li><a href="/base/excluir_item_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Excluir</a></li>
+                                    <li><a href="/base/rejeitar_pesquisa/{{pesquisa.id}}/" class="btn btn-danger btn-sm">Rejeitar</a></li>
+                                </ul>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <th colspan="2"><b>Valor Médio Calculado</b></th>
+                    <td><font color="blue"><b>{{ item.get_valor_medio_pesquisa|format_money|default_if_none:'-' }}</b></font></td>
+                </tr>
+                <tr>
+                    <th colspan="2"><b>Valor Médio Calculado - Envio de Proposta</b> (*considera apenas propostas com arquivo anexado.)</th>
+                    <td><font color="blue"><b>{{ item.get_valor_medio_envio_pesquisa|format_money|default_if_none:'-' }}</b></font></td>
+                </tr>
+
+            </tbody>
+        </table>
+    {% else %}
+        <p class="alert alert-warning">Nenhuma proposta cadastrada.</p>
+    {% endif %}
+{% endblock %}

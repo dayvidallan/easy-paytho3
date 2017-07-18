@@ -59,12 +59,14 @@
                             <td>{{ lance.observacoes|default_if_none:'-' }}</td>
                             <td>{{ lance.situacao }}</td>
                             <td>
-                                {% if lance.pode_alterar %}
-                                    <a href="/base/resultado_ajustar_preco/{{ lance.id }}/" class="btn btn-success btn-sm">Ajustar Preço</a>
-                                    <a href="/base/resultado_alterar/{{ lance.id }}/1/" class="btn btn-warning btn-sm">Inabilitar</a>
-                                    <a href="/base/resultado_alterar/{{ lance.id }}/2/" class="btn btn-danger btn-sm">Desclassificar</a>
-                                {% else %}
-                                    <a href="/base/resultado_alterar/{{ lance.id }}/3/" class="btn btn-success btn-sm">Reintegrar</a>
+                                {% if not item.get_licitacao.solicitacao.eh_credenciamento %}
+                                    {% if lance.pode_alterar %}
+                                        <a href="/base/resultado_ajustar_preco/{{ lance.id }}/" class="btn btn-success btn-sm">Ajustar Preço</a>
+                                        <a href="/base/resultado_alterar/{{ lance.id }}/1/" class="btn btn-warning btn-sm">Inabilitar</a>
+                                        <a href="/base/resultado_alterar/{{ lance.id }}/2/" class="btn btn-danger btn-sm">Desclassificar</a>
+                                    {% else %}
+                                        <a href="/base/resultado_alterar/{{ lance.id }}/3/" class="btn btn-success btn-sm">Reintegrar</a>
+                                    {% endif %}
                                 {% endif %}
                             </td>
 

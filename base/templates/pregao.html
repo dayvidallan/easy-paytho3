@@ -525,7 +525,7 @@
 
                                     <td>
                                         {% if eh_credenciamento %}
-                                            <a class="btn btn-info btn-sm" target="_blank" href="/base/ver_pesquisa_mercadologica/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
+                                            <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item_credenciamento/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
                                         {% else %}
                                             <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" href="/base/propostas_item/{{ item.id }}/"  title="Propostas">Ver Propostas</a>
                                         {% endif %}
@@ -567,7 +567,7 @@
                 {% endif %}
             {% endif %}
             {%  if pregao.solicitacao.itemsolicitacaolicitacao_set.exists %}
-                {% if not eh_credenciamento %}
+
                     <form action="." method="post" class="form-horizontal">
                         {% csrf_token %}
                          <div class="miolo">
@@ -578,11 +578,11 @@
                             </div>
                          </div>
                     </form>
-                {% endif %}
+
                 {% if itens_pregao.exists %}
                     {% if buscou and pregao.eh_ativo and recebida_setor %}
                         <div class="pull-right">
-                            {% if pregao.eh_pregao %}
+                            {% if pregao.eh_pregao or eh_credenciamento %}
                                 <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
                             {% endif %}
                             {% if not eh_credenciamento %}

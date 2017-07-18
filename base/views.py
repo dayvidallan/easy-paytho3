@@ -194,7 +194,7 @@ def pregao(request, pregao_id):
             itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
         #title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
         itens_pregao_unidades = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
-        participantes = ParticipantePregao.objects.filter(pregao=pregao,desclassificado=False)
+        participantes = ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False)
         resultados = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id',flat=True))
         buscou = False
         ids_ganhador = list()
@@ -208,7 +208,9 @@ def pregao(request, pregao_id):
                 resultados = ResultadoItemPregao.objects.filter(item=opcao, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
                 if resultados.exists() and resultados[0].participante == participante:
                     ids_ganhador.append(resultados[0].item.id)
-            itens_pregao = itens_pregao.filter(id__in=ids_ganhador)
+
+            if not pregao.solicitacao.eh_credenciamento():
+                itens_pregao = itens_pregao.filter(id__in=ids_ganhador)
 
             form = GanhadoresForm(request.POST or None, participantes = participantes, initial=dict(ganhador=participante))
         else:
@@ -339,6 +341,13 @@ def propostas_item(request, item_id):
     eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
 
     return render(request, 'propostas_item.html', locals(), RequestContext(request))
+
+@login_required()
+def propostas_item_credenciamento(request, item_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
+    pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
+
+    return render(request, 'propostas_item_credenciamento.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastra_participante_pregao(request, pregao_id):

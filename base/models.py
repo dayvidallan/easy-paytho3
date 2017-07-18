@@ -482,7 +482,7 @@ class SolicitacaoLicitacao(models.Model):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()
 
     def tem_pedidos_compra(self):
-        return PedidoContrato.objects.filter(solicitacao=self, ativo=True).exists() or PedidoAtaRegistroPreco.objects.filter(solicitacao=self, ativo=True).exists()
+        return PedidoContrato.objects.filter(solicitacao=self, ativo=True).exists() or PedidoAtaRegistroPreco.objects.filter(solicitacao=self, ativo=True).exists() or PedidoCredenciamento.objects.filter(solicitacao=self, ativo=True).exists()
 
     def get_pregao(self):
         if Pregao.objects.filter(solicitacao=self).exists():
