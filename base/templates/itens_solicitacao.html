@@ -125,10 +125,12 @@
 
              {% endif %}
               {% if solicitacao.eh_dispensa %}
-                {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_proposta and not solicitacao.prazo_aberto %}
-                <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
-                {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
-                    <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
+                {% if not solicitacao.eh_credenciamento %}
+                    {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_proposta and not solicitacao.prazo_aberto %}
+                    <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
+                    {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
+                        <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
+                    {% endif %}
                 {% endif %}
 
             {% endif %}
