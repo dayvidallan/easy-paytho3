@@ -3862,6 +3862,11 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
 
 
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
                         if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_arp().get_quantidade_disponivel():
@@ -3870,6 +3875,11 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
             else:
                 resultados = itens_ata.filter(participante=participante)
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
 
                     if valor_pedido > 0:
@@ -3895,6 +3905,7 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
             solicitacao_atual.delete()
 
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+
                 valor_pedido = int(valor)
                 if valor_pedido > 0:
                     novo_pedido = PedidoAtaRegistroPreco()
@@ -3947,6 +3958,11 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
 
             resultados = itens_ata.filter(fornecedor=participante)
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                try:
+                    int(valor)
+                except:
+                    messages.error(request, u'o valor %s é inválido.' % (valor))
+                    return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
                 valor_pedido = int(valor)
 
                 if valor_pedido > 0:
@@ -4060,6 +4076,11 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
 
 
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
                         if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_contrato().get_quantidade_disponivel():
@@ -4071,6 +4092,11 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                 else:
                     resultados = itens_contrato.filter(fornecedor=participante)
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
 
                     if valor_pedido > 0:
