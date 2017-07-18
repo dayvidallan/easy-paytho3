@@ -701,7 +701,7 @@ class EditarPedidoForm(forms.ModelForm):
 class AtaRegistroPrecoForm(forms.ModelForm):
     class Meta:
         model = AtaRegistroPreco
-        fields = ('numero', 'data_inicio', 'data_fim')
+        fields = ('numero', 'data_inicio', 'data_fim', 'fornecedor_adesao_arp')
 
     def __init__(self, *args, **kwargs):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
@@ -712,6 +712,10 @@ class AtaRegistroPrecoForm(forms.ModelForm):
             lista = ultima.numero.split('/')
             if len(lista) > 1:
                 self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+
+        if not self.instance.pk or not self.instance.adesao:
+            del self.fields['fornecedor_adesao_arp']
+
 
 
 class ContratoForm(forms.ModelForm):
