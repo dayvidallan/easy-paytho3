@@ -271,6 +271,11 @@ def cadastra_proposta_pregao(request, pregao_id):
                                     novo_preco.item = item_do_pregao
                                     novo_preco.pregao = pregao
                                     novo_preco.participante = fornecedor
+                                    try:
+                                        Decimal(valor)
+                                    except:
+                                        messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                        return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
                                     novo_preco.valor = valor
                                     novo_preco.marca = marca
                                     novo_preco.save()
@@ -1048,7 +1053,11 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
                         novo_preco = ItemPesquisaMercadologica()
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
-
+                        try:
+                            Decimal(valor)
+                        except:
+                            messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                            return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
                         novo_preco.valor_maximo = valor
                         novo_preco.marca = marca
                         novo_preco.save()
@@ -2148,6 +2157,11 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                         novo_preco = ItemPesquisaMercadologica()
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
+                        try:
+                            Decimal(valor)
+                        except:
+                            messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
                         novo_preco.valor_maximo = valor
                         if marca:
                             novo_preco.marca = marca
@@ -5802,6 +5816,11 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                             novo_item.marca = marca
                             novo_item.unidade = un
                             novo_item.quantidade = qtd
+                            try:
+                                Decimal(valor)
+                            except:
+                                messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
                             novo_item.valor = valor
                             novo_item.ata = ata
                             novo_item.fornecedor = ata.fornecedor_adesao_arp
