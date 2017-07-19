@@ -3930,7 +3930,7 @@ def informar_quantidades_do_pedido_credenciamento(request, credenciamento_id, so
     itens_credenciamento = credenciamento.itemcredenciamento_set.all()
     solicitacao = credenciamento.solicitacao
     title=u'Pedido de Compra - %s' % credenciamento
-    participantes = ParticipantePregao.objects.filter(pregao=credenciamento.pregao, desclassificado=False)
+    participantes = ParticipantePregao.objects.filter(pregao=credenciamento.pregao, desclassificado=False, excluido_dos_itens=False)
     form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
     eh_lote = False
     origem_pregao = credenciamento.solicitacao.get_pregao()
