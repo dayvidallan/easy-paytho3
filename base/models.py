@@ -1247,6 +1247,9 @@ class Pregao(models.Model):
     def tem_download(self):
         return LogDownloadArquivo.objects.filter(arquivo__pregao=self).exists()
 
+    def tem_participante_ativo(self):
+        return ParticipantePregao.objects.filter(pregao=self, desclassificado=False, excluido_dos_itens=False).exists()
+
     def eh_ativo(self):
         return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
 

@@ -92,11 +92,7 @@ ul{
 
                                 </tr>
                             {% endfor %}
-                            {% if eh_lote %}
-                                <tr><td colspan="4" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
-                            {% else %}
-                                <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
-                            {% endif %}
+                            <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
                         </tbody>
                     </table>
 

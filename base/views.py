@@ -3592,7 +3592,7 @@ def criar_lote(request, pregao_id):
             ids.append(item.id)
             valor_medio = valor_medio +  (item.valor_medio * item.quantidade)
 
-        
+
         novo_lote = ItemSolicitacaoLicitacao()
         novo_lote.solicitacao = pregao.solicitacao
         novo_lote.item = pregao.solicitacao.get_proximo_item(eh_lote=True)
@@ -4471,24 +4471,31 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
         pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
     elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
-
+    elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoCredenciamento.objects.filter(solicitacao=solicitacao).order_by('item')
 
 
     tabela = {}
 
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
+        if solicitacao.credenciamento_origem:
+            chave = u'%s' % pedido.fornecedor
         else:
-            chave = u'%s' % pedido.item.fornecedor
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
         tabela[chave] = dict(pedidos = list(), total = 0)
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
+        if solicitacao.credenciamento_origem:
+            chave = u'%s' % pedido.fornecedor
         else:
-            chave = u'%s' % pedido.item.fornecedor
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
         tabela[chave]['pedidos'].append(pedido)
         valor = tabela[chave]['total']
         valor = valor + (pedido.item.valor*pedido.quantidade)
@@ -6668,3 +6675,63 @@ def cadastrar_termo_inexigibilidade(request, solicitacao_id):
         return render(request, 'cadastrar_minuta.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
+
+@login_required()
+def relatorio_propostas(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    configuracao = get_config(solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    destino_arquivo = u'upload/resultados/%s.pdf' % solicitacao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    tabela = {}
+
+    resultado = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
+
+    for num in resultado.order_by('item'):
+        chave = '%s' % str(num.item)
+        tabela[chave] = dict(lance = list(), total = 0)
+
+
+    for item in resultado.order_by('item'):
+
+        chave = '%s' % str(item.item)
+        valor = 0
+        total = ItemPesquisaMercadologica.objects.filter(item=item).count()
+        for proposta in ItemPesquisaMercadologica.objects.filter(item=item):
+            tabela[chave]['lance'].append(proposta)
+            valor = valor + proposta.valor_maximo
+
+        tabela[chave]['total'] = valor / total
+
+    from blist import sorteddict
+
+    def my_key(dict_key):
+           try:
+                  return int(dict_key)
+           except ValueError:
+                  return dict_key
+
+
+    resultado =  sorteddict(my_key, **tabela)
+
+
+    data = { 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'solicitacao':solicitacao, 'resultado':resultado}
+
+    template = get_template('relatorio_propostas.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')

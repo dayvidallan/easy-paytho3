@@ -368,7 +368,9 @@
                 {% if pregao.eh_ativo %}
                     <a class="btn btn-success" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
                     <a class="btn btn-primary" href="/base/gerenciar_visitantes/{{ pregao.pk }}/">Gerenciar Visitante</a>
-                    <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
+                    {% if not pregao.tem_participante_ativo %}
+                        <a class="btn btn-warning" href="/base/encerrar_pregao/{{ pregao.pk }}/1/">Deserto</a>
+                    {% endif %}
                     <a class="btn btn-danger" href="/base/encerrar_pregao/{{ pregao.pk }}/2/">Fracassado</a>
                 {% endif %}
 
