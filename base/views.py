@@ -3945,6 +3945,9 @@ def informar_quantidades_do_pedido_credenciamento(request, credenciamento_id, so
 
 
         if 'quantidades' in request.POST:
+            if not fornecedor:
+                messages.error(request, u'Selecione um fornecedor')
+                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_credenciamento/%s/%s/' % (credenciamento_id, solicitacao_atual.id))
 
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                 valor_pedido = int(valor)
