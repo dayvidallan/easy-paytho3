@@ -493,6 +493,26 @@ class EncerrarPregaoForm(forms.ModelForm):
         model = Pregao
         fields = ['obs']
 
+
+    class Media:
+            js = ['/static/base/js/deserta.js']
+
+    def __init__(self, *args, **kwargs):
+        self.deserta = kwargs.pop('deserta', None)
+        super(EncerrarPregaoForm, self).__init__(*args, **kwargs)
+        if self.deserta:
+            self.fields['republicar'] = forms.BooleanField(label=u'Republicar Licitação', required=False)
+            self.fields['data'] = forms.DateField(label=u'Data da Nova Sessão', required=False)
+            self.fields['hora'] = forms.TimeField(label=u'Hora da Nova Sessão', required=False)
+            self.fields['data'].widget.attrs = {'class': 'vDateField'}
+
+    def clean(self):
+        if self.cleaned_data.get('republicar') and not self.cleaned_data.get('data'):
+            self.add_error('data', u'Informe a data.')
+
+        if self.cleaned_data.get('republicar') and not self.cleaned_data.get('hora'):
+            self.add_error('hora', u'Informe a hora.')
+
 class EncerrarItemPregaoForm(forms.ModelForm):
     obs = forms.CharField(label=u'Observações', widget=forms.Textarea)
     class Meta:
