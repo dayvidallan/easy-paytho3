@@ -509,6 +509,26 @@ class EncerrarPregaoForm(forms.ModelForm):
         model = Pregao
         fields = ['obs']
 
+
+    class Media:
+            js = ['/static/base/js/deserta.js']
+
+    def __init__(self, *args, **kwargs):
+        self.deserta = kwargs.pop('deserta', None)
+        super(EncerrarPregaoForm, self).__init__(*args, **kwargs)
+        if self.deserta:
+            self.fields['republicar'] = forms.BooleanField(label=u'Republicar Licitação', required=False)
+            self.fields['data'] = forms.DateField(label=u'Data da Nova Sessão', required=False)
+            self.fields['hora'] = forms.TimeField(label=u'Hora da Nova Sessão', required=False)
+            self.fields['data'].widget.attrs = {'class': 'vDateField'}
+
+    def clean(self):
+        if self.cleaned_data.get('republicar') and not self.cleaned_data.get('data'):
+            self.add_error('data', u'Informe a data.')
+
+        if self.cleaned_data.get('republicar') and not self.cleaned_data.get('hora'):
+            self.add_error('hora', u'Informe a hora.')
+
 class EncerrarItemPregaoForm(forms.ModelForm):
     obs = forms.CharField(label=u'Observações', widget=forms.Textarea)
     class Meta:
@@ -717,7 +737,7 @@ class EditarPedidoForm(forms.ModelForm):
 class AtaRegistroPrecoForm(forms.ModelForm):
     class Meta:
         model = AtaRegistroPreco
-        fields = ('numero', 'data_inicio', 'data_fim')
+        fields = ('numero', 'data_inicio', 'data_fim', 'fornecedor_adesao_arp')
 
     def __init__(self, *args, **kwargs):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
@@ -730,10 +750,15 @@ class AtaRegistroPrecoForm(forms.ModelForm):
                 if len(lista) > 1:
                     self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
+        if not self.instance.pk or not self.instance.adesao:
+            del self.fields['fornecedor_adesao_arp']
+
+
 class CredenciamentoForm(forms.ModelForm):
     class Meta:
         model = Credenciamento
         fields = ('numero', 'data_inicio', 'data_fim')
+
 
     def __init__(self, *args, **kwargs):
         super(CredenciamentoForm, self).__init__(*args, **kwargs)
@@ -745,6 +770,7 @@ class CredenciamentoForm(forms.ModelForm):
                 lista = ultima.numero.split('/')
                 if len(lista) > 1:
                     self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+
 
 class ContratoForm(forms.ModelForm):
     garantia_execucao_objeto = forms.IntegerField(label=u'Garantia de Execução do Objeto (%)', required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')

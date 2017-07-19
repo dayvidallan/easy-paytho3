@@ -433,18 +433,9 @@
         </div>
         <div id="anexos" class="tab-pane">
             {% if pode_gerenciar %}
-
-                {% if not ata.adesao %}
-                    <div class="pull-right">
-                        <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
-
-                    </div>
-                {% elif ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor  %}
-                    <div class="pull-right">
-                        <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
-
-                    </div>
-                {% endif %}
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="/base/cadastrar_anexo_arp/{{ata.id}}/">Cadastrar Anexo</a>
+                </div>
             {% endif %}
             <br><br>
 

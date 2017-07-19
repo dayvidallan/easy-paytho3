@@ -274,6 +274,11 @@ def cadastra_proposta_pregao(request, pregao_id):
                                     novo_preco.item = item_do_pregao
                                     novo_preco.pregao = pregao
                                     novo_preco.participante = fornecedor
+                                    try:
+                                        Decimal(valor)
+                                    except:
+                                        messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                        return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
                                     novo_preco.valor = valor
                                     novo_preco.marca = marca
                                     novo_preco.save()
@@ -1060,7 +1065,11 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
                         novo_preco = ItemPesquisaMercadologica()
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
-
+                        try:
+                            Decimal(valor)
+                        except:
+                            messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                            return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
                         novo_preco.valor_maximo = valor
                         novo_preco.marca = marca
                         novo_preco.save()
@@ -1876,11 +1885,19 @@ def encerrar_pregao(request, pregao_id, motivo):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if (request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor)) or request.user.is_superuser:
         title=u'Alterar Situação - %s' % pregao
-        form = EncerrarPregaoForm(request.POST or None, instance=pregao)
+
+        deserta = False
+        if motivo == u'1':
+            deserta = True
+        form = EncerrarPregaoForm(request.POST or None, instance=pregao, deserta=deserta)
         if form.is_valid():
             o = form.save(False)
             if motivo == u'1':
-                o.situacao = Pregao.DESERTO
+                if form.cleaned_data.get('republicar'):
+                    o.data_abertura = form.cleaned_data.get('data')
+                    o.hora_abertura = form.cleaned_data.get('hora')
+                else:
+                    o.situacao = Pregao.DESERTO
             elif motivo == u'2':
                 o.situacao = Pregao.FRACASSADO
             elif motivo == u'3':
@@ -2236,6 +2253,11 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                         novo_preco = ItemPesquisaMercadologica()
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
+                        try:
+                            Decimal(valor)
+                        except:
+                            messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
                         novo_preco.valor_maximo = valor
                         if marca:
                             novo_preco.marca = marca
@@ -3753,7 +3775,7 @@ def gestao_pedidos(request):
     title=u'Gestão de Pedidos - %s' % (setor.secretaria)
     meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
 
-    atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
+    atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
     #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
     contratos = Contrato.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
     credenciamentos = Credenciamento.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
@@ -4025,6 +4047,11 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
 
 
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
                         if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_arp().get_quantidade_disponivel():
@@ -4033,6 +4060,11 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
             else:
                 resultados = itens_ata.filter(participante=participante)
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
 
                     if valor_pedido > 0:
@@ -4058,6 +4090,7 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
             solicitacao_atual.delete()
 
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+
                 valor_pedido = int(valor)
                 if valor_pedido > 0:
                     novo_pedido = PedidoAtaRegistroPreco()
@@ -4110,6 +4143,11 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
 
             resultados = itens_ata.filter(fornecedor=participante)
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                try:
+                    int(valor)
+                except:
+                    messages.error(request, u'o valor %s é inválido.' % (valor))
+                    return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
                 valor_pedido = int(valor)
 
                 if valor_pedido > 0:
@@ -4223,6 +4261,11 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
 
 
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
                     if valor_pedido > 0:
                         if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_contrato().get_quantidade_disponivel():
@@ -4234,6 +4277,11 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                 else:
                     resultados = itens_contrato.filter(fornecedor=participante)
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                    try:
+                        int(valor)
+                    except:
+                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
                     valor_pedido = int(valor)
 
                     if valor_pedido > 0:
@@ -5785,21 +5833,23 @@ def ata_sessao(request, pregao_id):
     '''
     p = document.add_paragraph(texto)
 
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'DOS LANCES').bold = True
 
-    p = document.add_paragraph()
-    p.alignment = 3
+    if pregao.tem_resultado():
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DOS LANCES').bold = True
 
-
-    if pregao.criterio.nome == u'Por Item':
-        nome_tipo = u'item(ns)'
-    else:
-        nome_tipo = u'lote(s)'
+        p = document.add_paragraph()
+        p.alignment = 3
 
 
-    p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % nome_tipo)
+        if pregao.criterio.nome == u'Por Item':
+            nome_tipo = u'item(ns)'
+        else:
+            nome_tipo = u'lote(s)'
+
+
+        p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % nome_tipo)
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -5810,22 +5860,22 @@ def ata_sessao(request, pregao_id):
 
     p.add_run(u'Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.')
 
+    if pregao.tem_resultado():
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DO RESULTADO').bold = True
 
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'DO RESULTADO').bold = True
+        p = document.add_paragraph()
+        p.alignment = 3
 
-    p = document.add_paragraph()
-    p.alignment = 3
-
-    p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Pregoeiro e equipe declararam como vencedora(s) do certame, a(s) empresa(s): ')
+        p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Pregoeiro e equipe declararam como vencedora(s) do certame, a(s) empresa(s): ')
 
 
-    p.add_run(resultado_pregao)
+        p.add_run(resultado_pregao)
 
-    p = document.add_paragraph()
-    p.alignment = 3
-    p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s, respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), tipo))
+        p = document.add_paragraph()
+        p.alignment = 3
+        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s, respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), tipo))
 
 
     p = document.add_paragraph()
@@ -5845,7 +5895,10 @@ def ata_sessao(request, pregao_id):
 
     p = document.add_paragraph()
     p.alignment = 3
-    p.add_run(u'O Pregoeiro, após encerramento desta fase, concedeu aos proponentes vistas ao processo e a todos os documentos. Franqueada a palavra, para observações, questionamentos e/ou interposição de recursos, caso alguém assim desejasse, como nenhum dos proponentes manifestou intenção de recorrer, pelo que renunciam, desde logo, em caráter irrevogável e irretratável, ao direito de interposição de recurso. Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes.')
+    if pregao.tem_resultado():
+        p.add_run(u'O Pregoeiro, após encerramento desta fase, concedeu aos proponentes vistas ao processo e a todos os documentos. Franqueada a palavra, para observações, questionamentos e/ou interposição de recursos, caso alguém assim desejasse, como nenhum dos proponentes manifestou intenção de recorrer, pelo que renunciam, desde logo, em caráter irrevogável e irretratável, ao direito de interposição de recurso. Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes.')
+    else:
+        p.add_run(u'Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes')
 
 
 
@@ -6094,6 +6147,11 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                             novo_item.marca = marca
                             novo_item.unidade = un
                             novo_item.quantidade = qtd
+                            try:
+                                Decimal(valor)
+                            except:
+                                messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
                             novo_item.valor = valor
                             novo_item.ata = ata
                             novo_item.fornecedor = ata.fornecedor_adesao_arp
