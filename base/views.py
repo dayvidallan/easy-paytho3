@@ -4809,11 +4809,11 @@ def visualizar_credenciamento(request, credenciamento_id):
         chave = '%s' % num['setor__secretaria__nome']
         tabela[chave] = materiais
         for item in pedidos.filter(setor__secretaria__nome=chave):
-            nome = u'Fornecedor: %s' % (item.item.fornecedor.razao_social)
+            nome = u'Fornecedor: %s' % (item.fornecedor.razao_social)
             materiais[nome] = dict(pedidos=list())
 
     for pedido in pedidos:
-        nome = u'Fornecedor: %s' % (pedido.item.fornecedor.razao_social)
+        nome = u'Fornecedor: %s' % (pedido.fornecedor.razao_social)
         materiais[nome]['pedidos'].append(pedido)
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
