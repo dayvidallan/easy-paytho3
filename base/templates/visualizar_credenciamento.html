@@ -232,7 +232,9 @@
             <li>
                 <a href="#pedidos">Pedidos</a>
             </li>
-
+            <li>
+                <a href="#anexos">Anexos</a>
+            </li>
 
 
         </ul>
@@ -380,6 +382,61 @@
             {% else %}
                 <p class="alert alert-warning">Nenhum pedido.</p>
             {% endif %}
+        </div>
+       <div id="anexos" class="tab-pane">
+            {% if pode_gerenciar %}
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="/base/cadastrar_anexo_credenciamento/{{credenciamento.id}}/">Cadastrar Anexo</a>
+                </div>
+            {% endif %}
+            <br><br>
+
+
+            {% if credenciamento.anexocredenciamento_set.exists %}
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th width="10%">Data</th>
+                            <th>Arquivo</th>
+                            <th>Documento Público</th>
+                            <th>Cadastrado Por</th>
+                            <th>Cadastrado Em</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {%  for item in credenciamento.anexocredenciamento_set.all %}
+
+                            <tr>
+                                <td>{{ item.nome }}</td>
+                                <td>{{ item.data }}</td>
+                                <td><a href="/media/{{ item.arquivo }}">Ver arquivo</a></td>
+                                <td>
+                                    {% if item.publico %}
+                                        <font color="green">Sim</font>
+                                    {% else %}
+                                        <font color="red">Não</font>
+                                    {% endif%}
+                                </td>
+                                <td>{{ item.cadastrado_por.pessoafisica.nome }}</td>
+                                <td>{{ item.cadastrado_em }}</td>
+                                <td>
+                                    {% if item.cadastrado_por == request.user %}
+                                        <a href="/base/editar_anexo_credenciamento/{{ item.id}}/" class="btn btn-sm btn-info">Editar</a>
+                                        <a onclick="return confirm('Você tem certeza que desejar apagar?')" href="/base/apagar_anexo_credenciamento/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum anexo.</p>
+            {% endif %}
+
+
         </div>
 
    </div>

@@ -2370,6 +2370,22 @@ class PedidoCredenciamento(models.Model):
         return self.item.get_saldo_atual_secretaria(self.setor)
 
 
+class AnexoCredenciamento(models.Model):
+    credenciamento = models.ForeignKey('base.Credenciamento')
+    nome = models.CharField(u'Nome', max_length=500)
+    data = models.DateField(u'Data')
+    arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
+    cadastrado_por = models.ForeignKey(User)
+    cadastrado_em = models.DateTimeField(u'Cadastrado em')
+    publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
+
+    class Meta:
+        verbose_name = u'Anexo do Credenciamento'
+        verbose_name_plural = u'Anexos do Credenciamento'
+
+    def __unicode__(self):
+        return '%s - %s' % (self.nome, self.credenciamento)
+
 class Contrato(models.Model):
 
 

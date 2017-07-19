@@ -439,6 +439,16 @@ class AnexoContratoForm(forms.ModelForm):
         if self.instance.pk:
             self.fields['arquivo'].required = False
 
+class AnexoCredenciamentoForm(forms.ModelForm):
+    class Meta:
+        model = AnexoCredenciamento
+        fields = ['nome', 'data', 'arquivo', 'publico']
+
+    def __init__(self, *args, **kwargs):
+        super(AnexoCredenciamentoForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}
+        if self.instance.pk:
+            self.fields['arquivo'].required = False
 
 class AnexoARPForm(forms.ModelForm):
     class Meta:

@@ -301,7 +301,7 @@
                                     <td>{{ item.cadastrado_em }}</td>
                                     <td>
                                         {% if item.cadastrado_por == request.user %}
-                                            <a href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-danger">Apagar</a>
+                                            <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-danger">Apagar</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -326,7 +326,7 @@
                     {% for lote in lotes %}
                         <h3>Lote {{ lote.item }}
                             {% if pregao.eh_ativo %}
-                            <a class="btn btn-danger btn-sm" href="/base/apagar_lote/{{ lote.pk }}/{{pregao.id}}/">Apagar Lote</a>
+                            <a onclick="return confirm('Você tem certeza que desejar apagar ?')" class="btn btn-danger btn-sm" href="/base/apagar_lote/{{ lote.pk }}/{{pregao.id}}/">Apagar Lote</a>
                         {% endif %}
                         </h3>
 

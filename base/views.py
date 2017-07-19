@@ -1516,6 +1516,24 @@ def cadastrar_anexo_contrato(request, contrato_id):
 
 
 @login_required()
+def cadastrar_anexo_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        title=u'Cadastrar Anexo - %s' % credenciamento
+        form = AnexoCredenciamentoForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            o = form.save(False)
+            o.credenciamento = credenciamento
+            o.cadastrado_por = request.user
+            o.cadastrado_em = datetime.datetime.now()
+            o.save()
+            messages.success(request, u'Anexo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/#anexos' % credenciamento.id)
+
+        return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+@login_required()
 def cadastrar_ata_registro_preco(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
@@ -4302,6 +4320,39 @@ def editar_anexo_contrato(request, item_id):
         raise PermissionDenied
 
 
+
+
+
+@login_required()
+def apagar_anexo_credenciamento(request, item_id):
+    anexo = get_object_or_404(AnexoCredenciamento, pk=item_id)
+    credenciamento = anexo.credenciamento
+    if request.user.has_perm('base.pode_gerenciar_contrato') and credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        anexo.delete()
+        messages.success(request, u'Anexo removido com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/#anexos' % credenciamento.id)
+    else:
+        raise PermissionDenied
+
+@login_required()
+def editar_anexo_credenciamento(request, item_id):
+    anexo = get_object_or_404(AnexoCredenciamento, pk=item_id)
+    credenciamento = anexo.credenciamento
+    if request.user.has_perm('base.pode_gerenciar_contrato') and credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Editar Anexo - %s' % credenciamento
+        form = AnexoContratoForm(request.POST or None, request.FILES or None, instance=anexo)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Anexo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/#anexos' % credenciamento.id)
+
+        return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+
+
+
 @login_required()
 def cadastrar_anexo_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
@@ -4530,32 +4581,46 @@ def ver_ordem_compra(request, solicitacao_id):
     tabela = {}
     pregao = contrato = ata = None
     pregao = solicitacao.get_pregao()
-
+    credenciamento = None
     if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
         ata = get_object_or_404(AtaRegistroPreco, pk=pedidos[0].ata.id)
     elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
         contrato = get_object_or_404(Contrato, pk=pedidos[0].contrato.id)
+    elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoCredenciamento.objects.filter(solicitacao=solicitacao).order_by('item')
+        credenciamento = get_object_or_404(Credenciamento, pk=pedidos[0].credenciamento.id)
 
 
     tabela = {}
 
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
-            fornecedor = pedido.item.participante.fornecedor
+        if credenciamento:
+            chave = u'%s' % pedido.fornecedor
+            fornecedor = pedido.fornecedor
+
         else:
-            chave = u'%s' % pedido.item.fornecedor
-            fornecedor = pedido.item.fornecedor
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+                fornecedor = pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
+                fornecedor = pedido.item.fornecedor
         tabela[chave] = dict(pedidos = list(), total = 0)
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
+        if credenciamento:
+            chave = u'%s' % pedido.fornecedor
+            fornecedor = pedido.fornecedor
+
         else:
-            chave = u'%s' % pedido.item.fornecedor
+
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
         tabela[chave]['pedidos'].append(pedido)
         valor = tabela[chave]['total']
         valor = valor + (pedido.item.valor*pedido.quantidade)
@@ -4569,7 +4634,7 @@ def ver_ordem_compra(request, solicitacao_id):
 
     cpf_ordenador = configuracao.ordenador_despesa.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
-    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'credenciamento': credenciamento, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 

@@ -234,7 +234,7 @@
                                 {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
                                     {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto %}
                                         <a href="/base/editar_item/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
-                                        <a href="/base/apagar_item/{{item.id}}/" class="btn btn-danger btn-sm">Apagar</a>
+                                        <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item/{{item.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                     {% endif %}
 
                                 {% endif %}
@@ -386,10 +386,10 @@
                                                 <ul class="action-bar">
                                                     {% if pedido.contrato %}
                                                         <li><a href="/base/editar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-info">Editar</a></li>
-                                                        <li><a href="/base/apagar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-danger">Apagar</a></li>
+                                                        <li><a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-danger">Apagar</a></li>
                                                     {% else %}
                                                         <li><a href="/base/editar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-info">Editar</a></li>
-                                                        <li><a href="/base/apagar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-danger">Apagar</a></li>
+                                                        <li><a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-danger">Apagar</a></li>
                                                     {% endif %}
                                                 </ul>
                                             {% endif %}
@@ -449,10 +449,10 @@
                                             <ul class="action-bar">
                                                 {% if pedido.contrato %}
                                                     <li><a href="/base/editar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-info">Editar</a></li>
-                                                    <li><a href="/base/apagar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-danger">Apagar</a></li>
+                                                    <li><a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-danger">Apagar</a></li>
                                                 {% else %}
                                                     <li><a href="/base/editar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-info">Editar</a></li>
-                                                    <li><a href="/base/apagar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-danger">Apagar</a></li>
+                                                    <li><a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_pedido/{{ pedido.id }}/2/" class="btn btn-sm btn-danger">Apagar</a></li>
                                                 {% endif %}
                                             </ul>
                                         {% endif %}
