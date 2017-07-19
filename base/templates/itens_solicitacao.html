@@ -373,7 +373,7 @@
                                             {{ pedido.item.material }}
                                         {% endif %}
                                     </td>
-                                    <td>{{ pedido.item.marca }}</td>
+                                    <td>{{ pedido.item.marca|default_if_none:"" }}</td>
                                     <td>
                                         {% if pedido.item.participante %}
                                             {{ pedido.item.participante }}
@@ -439,7 +439,7 @@
                                     {% endif %}
 
                                 </td>
-                                <td>{{ pedido.item.marca }}</td>
+                                <td>{{ pedido.item.marca|default_if_none:"" }}</td>
                                 <td>{% if pedido.item.fornecedor %}
                                         {{ pedido.item.fornecedor }}
                                     {% else %}
