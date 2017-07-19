@@ -1365,6 +1365,7 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
             if situacao ==u'1':
                 ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.INABILITADO, observacoes=form.cleaned_data.get('motivo'))
 
+
             elif situacao == u'2':
                 ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.DESCLASSIFICADO, observacoes=form.cleaned_data.get('motivo'))
 
@@ -1377,6 +1378,8 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
                 historico.obs = u'Desclassificação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
 
             historico.save()
+            participante.excluido_dos_itens = True
+            participante.save()
             return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
         return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
     else:

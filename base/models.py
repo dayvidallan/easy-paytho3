@@ -1517,6 +1517,8 @@ class ParticipantePregao(models.Model):
     desclassificado = models.BooleanField(u'Desclassificado', default=False)
     motivo_desclassificacao = models.CharField(u'Motivo da Desclassificação', max_length=2000, null=True, blank=True)
     arquivo_propostas = models.FileField(u'Arquivo com as Propostas', null=True, blank=True, upload_to=u'upload/propostas/')
+    excluido_dos_itens = models.BooleanField(u'Excluído dos Itens', default=False)
+
     class Meta:
         verbose_name = u'Participante do Pregão'
         verbose_name_plural = u'Participantes do Pregão'
@@ -2282,7 +2284,7 @@ class Credenciamento(models.Model):
 
 
     def get_fornecedores(self):
-        participantes = ParticipantePregao.objects.filter(desclassificado=False, pregao=self.pregao)
+        participantes = ParticipantePregao.objects.filter(desclassificado=False, excluido_dos_itens=False, pregao=self.pregao)
         return Fornecedor.objects.filter(Q(id__in=participantes.values_list('fornecedor', flat=True)))
 
     def get_valor_total(self, ganhador=None):
