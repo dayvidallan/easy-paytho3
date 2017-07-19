@@ -288,17 +288,31 @@
 
         </div>
         <div id="empresas" class="tab-pane">
+            {% if pode_gerenciar %}
+                <div class="pull-right">
+                    <a class="btn btn-success" href="/base/cadastrar_empresa_credenciamento/{{ credenciamento.id }}/">Cadastrar Empresa</a>
+                </div>
+            {% endif %}
+            <br><br>
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
-                        <th width="80%">Fornecedor</th>
+                        <th width="20%">Razão Social</th>
+                        <th width="20%">CNPJ</th>
+                        <th width="20%">Endereço</th>
+                        <th width="20%">Telefone</th>
+                        <th width="20%">Email</th>
 
                     </tr>
                 </thead>
                 <tbody>
                         {% for empresa in credenciamento.get_fornecedores %}
                             <tr>
-                                <td>{{ empresa }}</td>
+                                <td>{{ empresa.razao_social }}</td>
+                                <td>{{ empresa.cnpj }}</td>
+                                <td>{{ empresa.endereco }}</td>
+                                <td>{{ empresa.telefone }}</td>
+                                <td>{{ empresa.email }}</td>
 
                             </tr>
                         {% endfor %}

@@ -761,7 +761,7 @@
                                                 {% endif %}
                                                 {% if item.tem_empate and recebida_setor %}
                                                     <a href="/base/desempatar_item/{{ item.id }}/" class="btn btn-success btn-sm">Desempatar</a>
-                                                {% elif recebida_setor and  eh_credenciamento %}
+                                                {% elif recebida_setor and  eh_credenciamento and item.tem_resultado %}
                                                     <a href="/base/desempatar_item/{{ item.id }}/" class="btn btn-success btn-sm">Definir Ordem</a>
                                                 {% endif %}
                                             {% endif %}

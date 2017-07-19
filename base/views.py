@@ -1417,6 +1417,7 @@ def desempatar_item(request, item_id):
 @login_required()
 def definir_colocacao(request, resultado_id):
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
+    title = u'Informar Colocação do Participante'
     if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.item.get_licitacao().solicitacao.recebida_setor(request.user.pessoafisica.setor):
         form = DefinirColocacaoForm(request.POST or None, instance=resultado)
         if form.is_valid():
@@ -6490,3 +6491,40 @@ def erro_500(request):
 
 def erro_404(request):
     return render(request, '404.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_empresa_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    if pode_gerenciar:
+        title = u'Cadastrar Empresa'
+        form = EmpresaCredenciamentoForm(request.POST or None)
+        if form.is_valid():
+            if ParticipantePregao.objects.filter(pregao=credenciamento.pregao, fornecedor=form.cleaned_data.get('fornecedor')).exists():
+                messages.error(request, u'Esta empresa já é fornecedora.')
+                return HttpResponseRedirect(u'/base/cadastrar_empresa_credenciamento/%s/' %  credenciamento.id)
+
+            novo_participante = ParticipantePregao()
+            novo_participante.fornecedor = form.cleaned_data.get('fornecedor')
+            novo_participante.pregao = credenciamento.pregao
+            novo_participante.me_epp = form.cleaned_data.get('me_epp')
+            novo_participante.nome_representante = ''
+            novo_participante.save()
+
+            for item in credenciamento.solicitacao.itemsolicitacaolicitacao_set.all():
+                ordem_atual = ResultadoItemPregao.objects.filter(item=item).order_by('-ordem')[0].ordem
+                resultado = ResultadoItemPregao()
+                resultado.item = item
+                resultado.participante = novo_participante
+                resultado.valor = item.valor_medio
+                resultado.ordem = ordem_atual + 1
+                resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                resultado.save()
+            messages.success(request, u'Empresa cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/' %  credenciamento.id)
+
+    else:
+        raise PermissionDenied
+    return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))

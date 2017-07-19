@@ -1108,3 +1108,8 @@ class CriarContratoAdesaoAtaForm(forms.Form):
         if self.cleaned_data.get(nome_campo):
             if self.cleaned_data.get(nome_campo) > 5:
                 self.add_error('%s' % nome_campo, u'O limite máximo é de 5%.')
+
+
+class EmpresaCredenciamentoForm(forms.Form):
+    fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
+    me_epp = forms.BooleanField(label=u'Micro Empresa/Empresa de Peq.Porte', required=False)

@@ -220,7 +220,7 @@ urlpatterns = [
     url(r'^criar_contrato_adesao_ata/(?P<ata_id>\d+)/$', views.criar_contrato_adesao_ata, name='criar_contrato_adesao_ata'),
     url(r'^carregar_planilha_itens_adesao_arp/(?P<ata_id>\d+)/$', views.carregar_planilha_itens_adesao_arp, name='carregar_planilha_itens_adesao_arp'),
 
-
+    url(r'^cadastrar_empresa_credenciamento/(?P<credenciamento_id>\d+)/$', views.cadastrar_empresa_credenciamento, name='cadastrar_empresa_credenciamento'),
     url(r'^informar_quantidades_do_pedido_adesao_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_adesao_arp, name='informar_quantidades_do_pedido_adesao_arp'),
 
 
