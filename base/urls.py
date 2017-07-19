@@ -212,6 +212,7 @@ urlpatterns = [
 
     url(r'^cadastrar_material_arp/(?P<ata_id>\d+)/$', views.cadastrar_material_arp, name='cadastrar_material_arp'),
     url(r'^liberar_pedidos_solicitacao/(?P<solicitacao_id>\d+)/$', views.liberar_pedidos_solicitacao, name='liberar_pedidos_solicitacao'),
+    url(r'^cadastrar_termo_inexigibilidade/(?P<solicitacao_id>\d+)/$', views.cadastrar_termo_inexigibilidade, name='cadastrar_termo_inexigibilidade'),
 
 
     url(r'^apagar_anexo_arp/(?P<item_id>\d+)/$', views.apagar_anexo_arp, name='apagar_anexo_arp'),

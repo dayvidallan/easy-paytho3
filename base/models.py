@@ -338,6 +338,7 @@ class SolicitacaoLicitacao(models.Model):
     arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao')
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
     credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao')
+    termo_inexigibilidade = models.FileField(u'Termo de Inexigibilidade', null=True, blank=True, upload_to=u'upload/minutas/')
 
 
 

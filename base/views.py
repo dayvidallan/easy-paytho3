@@ -6654,3 +6654,17 @@ def cadastrar_empresa_credenciamento(request, credenciamento_id):
     else:
         raise PermissionDenied
     return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_termo_inexigibilidade(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if request.user.has_perm('base.pode_avaliar_minuta') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.termo_inexigibilidade:
+        title=u'Cadastrar Termo de Inexigibilidade - %s' % solicitacao
+        form = CadastroTermoInexigibilidadeForm(request.POST or None, request.FILES or None, instance=solicitacao)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Termo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+        return render(request, 'cadastrar_minuta.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied

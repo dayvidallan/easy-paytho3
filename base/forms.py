@@ -589,6 +589,12 @@ class CadastroMinutaForm(forms.ModelForm):
         model = SolicitacaoLicitacao
         fields = ['arquivo_minuta']
 
+class CadastroTermoInexigibilidadeForm(forms.ModelForm):
+    termo_inexigibilidade = forms.FileField(label=u'Termo de Inexigibilidade', required=True)
+    class Meta:
+        model = SolicitacaoLicitacao
+        fields = ['termo_inexigibilidade']
+
 
 class ObsForm(forms.Form):
     obs = forms.CharField(label=u'Observação', required=False, widget=forms.Textarea)
