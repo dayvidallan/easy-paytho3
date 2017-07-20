@@ -17,7 +17,7 @@ from xhtml2pdf import pisa
 from django.db.models import Q, F, Count
 from dal import autocomplete
 from django.contrib.auth.models import Group
-from templatetags.app_filters import format_money
+from templatetags.app_filters import format_money, format_quantidade
 from django.db.transaction import atomic
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
@@ -2944,7 +2944,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[0].text = u'Lote %s / %s' % (lance.item, componente)
                         row_cells[1].text = u'%s' % componente.material.nome
                         row_cells[2].text = u'%s' % (marca)
-                        row_cells[3].text = u'%s / %s' % (componente.unidade, componente.quantidade)
+                        row_cells[3].text = u'%s / %s' % (componente.unidade, format_quantidade(componente.quantidade))
                         row_cells[4].text = u'%s' % format_money(lance.get_vencedor().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
@@ -3017,7 +3017,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[0].text = u'%s' % (lance.item)
                         row_cells[1].text = u'%s' % lance.material.nome
                         row_cells[2].text = u'%s' % (marca)
-                        row_cells[3].text = u'%s / %s' % (lance.unidade, lance.quantidade)
+                        row_cells[3].text = u'%s / %s' % (lance.unidade, format_quantidade(lance.quantidade))
                         row_cells[4].text = u'%s' % format_money(lance.get_vencedor().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
