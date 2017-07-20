@@ -5365,7 +5365,7 @@ def gerar_resultado_credenciamento(request, pregao_id):
 
         itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
         for item in itens:
-            for participante in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False):
+            for participante in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False, excluido_dos_itens=False):
                 novo_resultado = ResultadoItemPregao()
                 novo_resultado.item = item
                 novo_resultado.participante = participante
