@@ -33,7 +33,7 @@ from django.core.exceptions import PermissionDenied
 from licita import settings
 LARGURA = 210*mm
 ALTURA = 297*mm
-
+from django.utils.formats import localize
 
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
@@ -5784,7 +5784,7 @@ def ata_sessao(request, pregao_id):
     texto = u'''
     Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
     Antes da abertura da sessão, realizou-se o credenciamento do (os) representante (es), feito a partir da apresentação da cédula de identidade ou documento equivalente, e procuração por instrumento público ou particular com firma reconhecida em cartório (documentos do outorgante, poderão ser conferidos na habilitação), atos esses documentados conforme listagem do (os) presente (es), que foram numeradas e juntadas aos autos às fls
-    ''' % (pregao.hora_abertura, pregao.data_abertura.strftime('%d/%m/%y'), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
+    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()

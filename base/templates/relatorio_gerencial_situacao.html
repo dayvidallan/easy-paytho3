@@ -84,7 +84,7 @@ ul{
                        <td>{{ pregao.get_valor_total|format_money }}</td>
                    </tr>
                 {% endfor %}
-                <tr><td colspan="6">Total</td><td>{{ total|format_money }}</td></tr>
+                <tr><td colspan="6">Total</td><td>{{ total|format_money }} ({{ total|format_numero_extenso }})</td></tr>
             </tbody>
         </table>
 

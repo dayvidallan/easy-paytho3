@@ -3,10 +3,6 @@
 
         $("#id_hora").parent().parent().show();
         $("#id_data").parent().parent().show();
-
-
-
-
     }
 
     else {
@@ -15,19 +11,11 @@
 
     }
 
-
  }
-
-
   $(document).ready(function() {
-
-
-     $("#id_hora").parent().parent().hide();
-     $("#id_data").parent().parent().hide();
-
      exibir_esconder_campo();
 
-     $("id_republicar").on('change', function(){
+     $("#id_republicar").on('change', function(){
       exibir_esconder_campo();
     });
 });

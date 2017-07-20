@@ -93,7 +93,7 @@ ul{
                         {% endfor %}
                         <tr>
                             <td colspan="2">Valor Médio</td>
-                            <td>{{ lances.total|format_money }}</td>
+                            <td>{{ lances.total|format_money }} ({{ lances.total|format_numero_extenso }})</td>
                         </tr>
 
                     </tbody>
