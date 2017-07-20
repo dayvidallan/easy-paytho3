@@ -907,10 +907,11 @@
                                 <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>
                             </tr>
                         {% endif %}
+                        <tr>
+                            <td><a href="/base/ata_sessao/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
+                        </tr>
                         {%  if pregao.tem_resultado %}
-                            <tr>
-                                <td><a href="/base/ata_sessao/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
-                            </tr>
+
                             <tr>
                                 <td><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a></td>
                             </tr>

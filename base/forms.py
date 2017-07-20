@@ -197,11 +197,25 @@ class PregaoForm(forms.ModelForm):
         if self.solicitacao.processo:
             self.fields['num_processo'].initial = self.solicitacao.processo
             self.fields['num_processo'].widget.attrs = {'readonly': 'True'}
-        if not (self.solicitacao.tipo_aquisicao == self.solicitacao.TIPO_AQUISICAO_LICITACAO):
+        if self.solicitacao.tipo_aquisicao == self.solicitacao.CREDENCIAMENTO:
             self.fields['num_pregao'].label = u'Número do Credenciamento'
-        if self.solicitacao.eh_credenciamento():
             self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CREDENCIAMENTO)
             self.fields['modalidade'].initial = ModalidadePregao.CREDENCIAMENTO
+
+        elif self.solicitacao.tipo_aquisicao in [self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.solicitacao.CHAMADA_PUBLICA_OUTROS, self.solicitacao.CHAMADA_PUBLICA_PRONATER]:
+            self.fields['num_pregao'].label = u'Número da Chamada Pública'
+            if self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR
+            elif self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_OUTROS:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_OUTROS)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_OUTROS
+            elif self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_PRONATER:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_PRONATER)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_PRONATER
+
+        if self.solicitacao.eh_credenciamento():
+
             del self.fields['tipo']
             del self.fields['aplicacao_lcn_123_06']
     def clean(self):

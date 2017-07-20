@@ -649,10 +649,10 @@ def ver_pregoes(request):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
 
         if form.cleaned_data.get('data_inicial'):
-            pregoes = pregoes.filter(Q(data_abertura__gte=form.cleaned_data.get('data_inicial')) | Q(data_retorno__gte=form.cleaned_data.get('data_inicial')))
+            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
 
         if form.cleaned_data.get('data_final'):
-            pregoes = pregoes.filter(Q(data_abertura__lte=form.cleaned_data.get('data_final')) |  Q(data_retorno__lte=form.cleaned_data.get('data_final')))
+            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
 
         if form.cleaned_data.get('situacao'):
             pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
@@ -1985,6 +1985,7 @@ def suspender_pregao(request, pregao_id):
             else:
                 pregao.sine_die = False
                 pregao.data_retorno = form.cleaned_data.get('data_retorno')
+                pregao.data_abertura = form.cleaned_data.get('data_retorno')
             pregao.save()
 
             messages.success(request, u'Pregão suspenso com sucesso.')
@@ -3017,7 +3018,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[1].text = u'%s' % lance.material.nome
                         row_cells[2].text = u'%s' % (marca)
                         row_cells[3].text = u'%s / %s' % (lance.unidade, lance.quantidade)
-                        row_cells[4].text = u'%s' % format(lance.get_vencedor().valor)
+                        row_cells[4].text = u'%s' % format_money(lance.get_vencedor().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
                 row_cells = table.add_row().cells

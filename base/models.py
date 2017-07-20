@@ -83,6 +83,9 @@ class ModalidadePregao(models.Model):
     PREGAO = 4
     TOMADA_PRECO = 5
     CREDENCIAMENTO = 6
+    CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = 7
+    CHAMADA_PUBLICA_OUTROS = 8
+    CHAMADA_PUBLICA_PRONATER = 9
 
 
     nome = models.CharField(u'Nome', max_length=80)
@@ -298,6 +301,7 @@ class SolicitacaoLicitacao(models.Model):
     CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = u'Chamada Pública - Alimentação Escolar'
     CHAMADA_PUBLICA_OUTROS = u'Chamada Pública - Outros'
     CHAMADA_PUBLICA_PRONATER = u'Chamada Pública - PRONATER'
+
 
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
