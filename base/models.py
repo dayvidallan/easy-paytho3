@@ -495,7 +495,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def eh_maior_desconto(self):
-        return self.get_pregao().tipo.id == TipoPregao.DESCONTO
+        return self.get_pregao().eh_maior_desconto()
 
     def eh_lote(self):
         if self.get_pregao():
@@ -1235,7 +1235,8 @@ class Pregao(models.Model):
             self.eh_ata_registro_preco = False
         super(Pregao, self).save()
 
-
+    def eh_credenciamento(self):
+        return self.solicitacao.tipo_aquisicao in [self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.solicitacao.CHAMADA_PUBLICA_OUTROS, self.solicitacao.CHAMADA_PUBLICA_PRONATER, self.solicitacao.CREDENCIAMENTO]
     def eh_maior_desconto(self):
         if not self.tipo:
             return False
@@ -1946,7 +1947,7 @@ class ResultadoItemPregao(models.Model):
         return self.situacao == ResultadoItemPregao.CLASSIFICADO
 
     def get_valor(self):
-        if self.item.solicitacao.get_pregao().tipo.id == TipoPregao.DESCONTO:
+        if self.item.solicitacao.get_pregao().eh_maior_desconto():
             return u'%s %%' % self.valor
         else:
             return 'R$ %s' % format_money(self.valor)

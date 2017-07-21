@@ -131,7 +131,7 @@ def extenso(reais,centavos):
             ret.append(cent(s, grand))
         grand += 1
     ret.reverse()
-    
+
     lista = list()
     contador = 1
 
@@ -148,7 +148,7 @@ def extenso(reais,centavos):
                 lista.append('e')
         contador += 1
 
-    return ' e '.join(lista)
+    return ''.join(lista)
 
     return ' e '.join([r for r in ret if r])
 

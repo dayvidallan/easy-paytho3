@@ -2287,7 +2287,7 @@ def relatorio_resultado_final(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
 
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
@@ -2333,7 +2333,7 @@ def relatorio_economia(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
     tabela = {}
     total = {}
 
@@ -2429,7 +2429,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
     tabela = {}
     total = {}
 
@@ -2555,7 +2555,7 @@ def relatorio_classificacao_por_item(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
     tabela = {}
     itens = {}
     resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item__item')
@@ -5689,7 +5689,6 @@ def ata_sessao(request, pregao_id):
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
 
 
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
     tabela = {}
     total = {}
 
@@ -5886,7 +5885,7 @@ def ata_sessao(request, pregao_id):
 
         p = document.add_paragraph()
         p.alignment = 3
-        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s, respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), tipo))
+        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), format_numero_extenso(total_geral), tipo))
 
 
     p = document.add_paragraph()

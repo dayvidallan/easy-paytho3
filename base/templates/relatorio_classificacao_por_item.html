@@ -88,7 +88,7 @@ ul{
                                 <td>{{ item.participante }}</td>
 
                                 {% if not eh_lote %}
-                                    <td>{{ item.marca }}</td>
+                                    <td>{{ item.marca|default_if_none:"-" }}</td>
                                 {% endif %}
                                 <td>{{ item.get_valor }}</td>
                                 <td>{{ item.situacao }}</td>
