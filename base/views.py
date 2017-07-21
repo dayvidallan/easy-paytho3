@@ -17,7 +17,7 @@ from xhtml2pdf import pisa
 from django.db.models import Q, F, Count
 from dal import autocomplete
 from django.contrib.auth.models import Group
-from templatetags.app_filters import format_money, format_quantidade
+from templatetags.app_filters import format_money, format_quantidade, format_numero_extenso
 from django.db.transaction import atomic
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
@@ -526,7 +526,7 @@ def lances_item(request, item_id):
             #if not eh_modalidade_desconto:
             if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
                 messages.error(request, u'Você não pode dar um lance maior do que sua proposta.')
-                print ">>>>>>>>>>>", tem_empate_beneficio
+
                 if tem_empate_beneficio:
                     return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
                 else:
@@ -5729,7 +5729,7 @@ def ata_sessao(request, pregao_id):
                 lista.append(item.item)
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s, ' % (result[0], nome_tipo, lista, format_money(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
             total_geral = total_geral + result[1]['total']
 
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
