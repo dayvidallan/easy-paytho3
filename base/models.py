@@ -844,30 +844,30 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def filtrar_por_10_porcento(self):
         participantes = self.get_lista_participantes(ativos=True)
-        if participantes.count()<=3:
+        # if participantes.count()<=3:
+        #     return
+        # else:
+        valores = participantes.order_by('valor').values('valor').distinct()
+        melhor_valor = participantes[0].valor
+        participantes.update(desclassificado=False, desistencia=False, concorre=True)
+        ordenado = participantes.order_by('-valor')
+
+        for item in ordenado:
+            # if ordenado.filter(concorre=True).count()<=3:
+            #     continue
+            if item.valor > (melhor_valor + (10*melhor_valor)/100) or ( len(valores) > 2 and item.valor > valores[2]['valor']):
+                item.concorre = False
+                item.save()
+        concorrentes = participantes.filter(concorre=True).count()
+        if  concorrentes >= 3:
             return
         else:
-            valores = participantes.order_by('valor').values('valor').distinct()
-            melhor_valor = participantes[0].valor
-            participantes.update(desclassificado=False, desistencia=False, concorre=True)
-            ordenado = participantes.order_by('-valor')
-
-            for item in ordenado:
-                # if ordenado.filter(concorre=True).count()<=3:
-                #     continue
-                if item.valor > (melhor_valor + (10*melhor_valor)/100) or ( len(valores) > 2 and item.valor > valores[2]['valor']):
-                    item.concorre = False
+            for item in participantes.filter(concorre=False).order_by('valor'):
+                if concorrentes < 3 or item.valor <= valores[2]['valor']:
+                    item.concorre = True
                     item.save()
-            concorrentes = participantes.filter(concorre=True).count()
-            if  concorrentes >= 3:
-                return
-            else:
-                for item in participantes.filter(concorre=False).order_by('valor'):
-                    if concorrentes < 3 or item.valor <= valores[2]['valor']:
-                        item.concorre = True
-                        item.save()
-                        concorrentes += 1
-            return
+                    concorrentes += 1
+        return
 
     def filtrar_todos_ativos(self):
         participantes = self.get_lista_participantes()
