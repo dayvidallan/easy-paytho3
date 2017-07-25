@@ -843,7 +843,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return PropostaItemPregao.objects.filter(item=self, participante__in = self.get_excluidos_do_item())
 
     def filtrar_por_10_porcento(self):
-        participantes = self.get_lista_participantes()
+        participantes = self.get_lista_participantes(ativos=True)
         if participantes.count()<=3:
             return
         else:
