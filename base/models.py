@@ -844,10 +844,13 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def filtrar_por_10_porcento(self):
         participantes = self.get_lista_participantes(ativos=True)
+        valor_maximo_aceito = None
         if participantes.count()<=3:
             return
         else:
             valores = participantes.order_by('valor').values('valor').distinct()
+            if len(valores) > 2:
+                valor_maximo_aceito = valores[2]['valor']
             melhor_valor = participantes[0].valor
             participantes.update(desclassificado=False, desistencia=False, concorre=True)
             ordenado = participantes.order_by('-valor')
@@ -855,14 +858,15 @@ class ItemSolicitacaoLicitacao(models.Model):
             for item in ordenado:
                 # if ordenado.filter(concorre=True).count()<=3:
                 #     continue
-                if item.valor > (melhor_valor + (10*melhor_valor)/100) or ( len(valores) > 2 and item.valor > valores[2]['valor']):
-                    item.concorre = False
-                    item.save()
+                if item.valor > (melhor_valor + (10*melhor_valor)/100):
+                    if valor_maximo_aceito and item.valor > valor_maximo_aceito:
+                        item.concorre = False
+                        item.save()
             concorrentes = participantes.filter(concorre=True).count()
             if  concorrentes >= 3:
                 return
             else:
-                
+
                 for item in PropostaItemPregao.objects.filter(item=self, concorre=False, desclassificado=False, desistencia=False).order_by('valor'):
                     if concorrentes < 3 or item.valor <= valores[len(valores)-1]['valor']:
                         item.concorre = True
