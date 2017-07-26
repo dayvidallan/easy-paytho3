@@ -25,6 +25,17 @@
     <br><br>
     <b>{{ informados }}</b> fornecedor(es) do total de <b>{{  total }}</b> já registraram suas propostas.</h3>
     <p class="alert alert-info">Faça upload do arquivo com as propostas ou preencha os campos abaixo.</p>
+    {% if participante %}
+        {% if not participante.desclassificado %}
+            <div class="pull-right">
+                {% if pregao.eh_pregao %}
+                    <a href="/base/desclassificar_do_pregao/{{ participante.id }}/" class="btn btn-danger btn-sm">Desclassificar</a>
+                {% else %}
+                    <a href="/base/desclassificar_do_pregao/{{ participante.id }}/" class="btn btn-danger btn-sm">Inabilitar</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
      <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">
@@ -42,6 +53,8 @@
 
                     </div>
 		        </div>
+
+
                 <div id="preencher_itens">
                     {% if not edicao and selecionou %}
                         <h3>Preencher Proposta Manualmente</h3>
@@ -98,8 +111,9 @@
                                         <td>{{ item.marca|default_if_none:"-" }}</td>
                                         <td>{{ item.valor }}</td>
                                         <td>
-                                            {% if not item.item.tem_lance_registrado %}
+                                            {% if not item.item.tem_lance_registrado and item.ativo %}
                                                 <a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a>
+                                                <a href="/base/remover_participante/{{ item.id }}/3/" class="btn btn-danger btn-sm">Desclassificar</a>
                                             {% endif %}
                                         </td>
                                     </tr>

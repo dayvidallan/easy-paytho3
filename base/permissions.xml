@@ -154,7 +154,6 @@
                 <name>participantepregao</name>
                 <permissions>
                     <permission>add_participantepregao</permission>
-                    <permission>delete_participantepregao</permission>
                     <permission>change_participantepregao</permission>
                 </permissions>
             </model>

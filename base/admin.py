@@ -230,11 +230,11 @@ class ParticipantePregaoAdmin(NewModelAdmin):
 
     def response_change(self, request, obj):
         self.message_user(request, u'Participante alterado com sucesso.')
-        return HttpResponseRedirect('/base/pregao/%s/' % str(obj.pregao.pk))
+        return HttpResponseRedirect('/base/pregao/%s/#fornecedores' % str(obj.pregao.pk))
 
     def response_add(self, request, obj):
         self.message_user(request, u'Participante cadastrado com sucesso.', level=messages.SUCCESS)
-        return HttpResponseRedirect('/base/pregao/%s/' % str(obj.pregao.pk))
+        return HttpResponseRedirect('/base/pregao/%s/#fornecedores' % str(obj.pregao.pk))
 
 admin.site.register(ParticipantePregao, ParticipantePregaoAdmin)
 

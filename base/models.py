@@ -1540,6 +1540,9 @@ class PropostaItemPregao(models.Model):
         else:
             return u'<font color=red>Valor Máximo não informado.</font>'
 
+    def ativo(self):
+        return not self.desclassificado and not self.desistencia
+
 
 class RodadaPregao(models.Model):
     rodada = models.IntegerField(verbose_name=u'Rodada de Lances')

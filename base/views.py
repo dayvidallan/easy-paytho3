@@ -1272,7 +1272,7 @@ def remover_participante(request, proposta_id, situacao):
 
         form = RemoverParticipanteForm(request.POST or None)
         if form.is_valid():
-            if situacao == u'1':
+            if situacao in [u'1', u'3']:
                 proposta.desclassificado = True
                 proposta.motivo_desclassificacao = form.cleaned_data.get('motivo')
 
@@ -1286,13 +1286,16 @@ def remover_participante(request, proposta_id, situacao):
             historico = HistoricoPregao()
             historico.pregao = proposta.pregao
             historico.data = datetime.datetime.now()
-            if situacao == u'1':
+            if situacao in [u'1', u'3']:
                 historico.obs = u'Desclassificação do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
             elif situacao == u'2':
                 historico.obs = u'Desistência do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
             historico.save()
-            messages.success(request, u'Remoção feita com sucesso.')
-            return HttpResponseRedirect(u'/base/lances_item/%s/' % proposta.item.id)
+            messages.success(request, u'Desistência/Desclassificação registrada com sucesso.')
+            if situacao == u'3':
+                return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (proposta.pregao.id, proposta.participante.id))
+            else:
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % proposta.item.id)
         return render(request, 'remover_participante.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied

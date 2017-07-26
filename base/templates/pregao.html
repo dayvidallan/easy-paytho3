@@ -418,13 +418,7 @@
                                             {% if item.pode_remover %}
                                                 <a href="/base/remover_participante_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Remover</a>
                                             {% endif %}
-                                            {% if not item.desclassificado %}
-                                                {% if pregao.eh_pregao %}
-                                                    <a href="/base/desclassificar_do_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Desclassificar</a>
-                                                {% else %}
-                                                    <a href="/base/desclassificar_do_pregao/{{ item.id }}/" class="btn btn-danger btn-sm">Inabilitar</a>
-                                                {% endif %}
-                                            {% endif %}
+
                                         {% endif %}
                                     </td>
 
