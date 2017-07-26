@@ -166,66 +166,56 @@
 
 {% block content %}
     <div class="pull-right">
+
+
+
+        {% if not credenciamento.liberada_compra and eh_gerente %}
+            <a href="/base/liberar_solicitacao_credenciamento/{{credenciamento.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
+        {% elif eh_gerente %}
+                <a href="/base/liberar_solicitacao_credenciamento/{{credenciamento.id}}/2/" class="btn btn-danger">Cancelar Solicitação</a>
+        {% endif %}
+
         {% if eh_gerente %}
-            <a class="btn btn-info" href="/admin/base/contrato/{{ contrato.pk }}/change/">Editar</a>
-            {% if not contrato.data_fim %}
-                <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
-            {% endif %}
-            {% if not contrato.liberada_compra %}
-                <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
-            {% else %}
-                <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger">Suspender Solicitação</a>
-
-            {% endif %}
-
+            <a class="btn btn-info" href="/admin/base/credenciamento/{{ credenciamento.pk }}/change/">Editar</a>
         {% endif %}
 
 
-
     </div>
-    <br><br><br>
+    <br><br>
 
    <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
         <thead>
             <tr>
+
                 <th>Nº da Solicitação</th>
+                <th>Procedimento/Licitação</th>
                 <th>Nº Processo</th>
-                <th>Data da Assinatura do Contrato</th>
-                <th>Vigência</th>
-                <th>Valor Global</th>
+                <th>Início da Vigência</th>
+                <th>Término da Vigência</th>
                 <th>Situação</th>
+
             </tr>
         </thead>
         <tbody>
-
             <tr>
-                <td><a href="/base/itens_solicitacao/{{ contrato.solicitacao.id }}/">{{ contrato.solicitacao.num_memorando }}</td>
-                <td>{{ contrato.solicitacao.processo|default_if_none:"-" }}</td>
+                <td><a href="/base/itens_solicitacao/{{ credenciamento.solicitacao.id }}/">{{ credenciamento.solicitacao.num_memorando }}</a></td>
+                <td><a href="/base/pregao/{{ credenciamento.pregao.id }}/">{{ credenciamento.pregao.id }}</a></td>
+                <td>{{ credenciamento.solicitacao.processo|default_if_none:"-" }}</td>
 
-                <td>{{ contrato.data_inicio }}</td>
-                <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
-                <td>{{ contrato.valor|format_money }}</td>
-                <td>{{ contrato.get_situacao }}</td>
+
+                <td>{{ credenciamento.data_inicio }}</td>
+                <td>{{ credenciamento.data_fim|default_if_none:"-" }}</td>
+                <td>{{ credenciamento.get_situacao }}</td>
             </tr>
+
         </tbody>
    </table>
    <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
         <thead>
-            <tr>
-
-                <th>Objeto</th>
-                <th>Aplicação do Art. 57 da Lei 8666/93</th>
-            </tr>
+            <tr><th>Objeto</th></tr>
         </thead>
         <tbody>
-
-
-            <tr>
-                <td>{{ contrato.solicitacao.objeto }}</td>
-                <td>{{ contrato.get_aplicacao_artigo_57_display|default_if_none:"-" }}</td>
-            </tr>
-
-
+            <tr><td>{{ credenciamento.solicitacao.objeto }}</td></tr>
         </tbody>
    </table>
    <br><br>
@@ -237,19 +227,21 @@
                 <a data-toggle="tab" href="#itens">Itens</a>
             </li>
             <li>
-                <a href="#pedidos">Pedidos</a>
+                <a href="#empresas">Empresas Credenciadas</a>
             </li>
             <li>
-                <a href="#aditivos">Aditivos</a>
+                <a href="#pedidos">Pedidos</a>
             </li>
             <li>
                 <a href="#anexos">Anexos</a>
             </li>
 
+
         </ul>
    </div>
    <div class="tab-content">
         <div id="itens" class="tab-pane in active">
+
 
             <table class="table table-bordered table-condensed table-striped">
 
@@ -258,45 +250,37 @@
                     <tr>
                         <td>
 
-                                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                                    <thead>
+                            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                <thead>
 
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Material/Serviço</th>
+                                        <th>Marca</th>
+                                        <th>Unidade</th>
+                                        <th>Valor</th>
+                                        <th>Quantidade Inicial</th>
+                                        <th>Quantidade Disponível</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for opcao in credenciamento.itemcredenciamento_set.all %}
                                         <tr>
-                                            <th>Item</th>
-                                            <th>Material/Serviço</th>
-                                            <th>Marca</th>
-                                            <th>Unidade</th>
-                                            <th>Valor Unitário</th>
-                                            <th>Valor Total</th>
-                                            <th>Quantidade Inicial</th>
-                                            <th>Quantidade Disponível</th>
+                                            <td>{{ opcao.item }}</td>
+                                            <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                            <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                            <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                                            <td>{{ opcao.valor|format_money }}</td>
+                                            <td>{{ opcao.quantidade|format_quantidade }}</td>
+                                            <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for opcao in contrato.itemcontrato_set.all %}
-                                            <tr>
-                                                {% if opcao.item %}
-                                                    <td>{{ opcao.item }}</td>
-                                                    <td>{{ opcao.item.material|truncatechars:500 }}</td>
-                                                {% else %}
-                                                    <td>{{ forloop.counter }}</td>
-                                                    <td>{{ opcao.material|truncatechars:500 }}</td>
-
-                                                {% endif %}
-                                                <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                <td>{{ opcao.unidade|default_if_none:"-" }}</td>
-                                                <td>{{ opcao.valor|format_money }}</td>
-                                                <td>{{ opcao.get_valor_total|format_money }}</td>
-                                                <td>{{ opcao.quantidade|format_quantidade }}</td>
-                                                <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
-
-
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
 
                         </td>
                     </tr>
@@ -305,6 +289,41 @@
 
 
         </div>
+        <div id="empresas" class="tab-pane">
+            {% if pode_gerenciar %}
+                <div class="pull-right">
+                    <a class="btn btn-success" href="/base/cadastrar_empresa_credenciamento/{{ credenciamento.id }}/">Cadastrar Empresa</a>
+                </div>
+            {% endif %}
+            <br><br>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Razão Social</th>
+                        <th width="20%">CNPJ</th>
+                        <th width="20%">Endereço</th>
+                        <th width="20%">Telefone</th>
+                        <th width="20%">Email</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for empresa in credenciamento.get_fornecedores %}
+                            <tr>
+                                <td>{{ empresa.razao_social }}</td>
+                                <td>{{ empresa.cnpj }}</td>
+                                <td>{{ empresa.endereco }}</td>
+                                <td>{{ empresa.telefone }}</td>
+                                <td>{{ empresa.email }}</td>
+
+                            </tr>
+                        {% endfor %}
+
+                 </tbody>
+            </table>
+
+        </div>
+
         <div id="pedidos" class="tab-pane">
             {% if pedidos.exists %}
 
@@ -326,8 +345,8 @@
                                         <thead>
                                             <tr><th colspan="4">Pedidos</th></tr>
                                             <tr>
-                                                <th>Material/Serviço</th>
-                                                <th>Quantidade Pedida</th>
+                                                <th width="80%">Material/Serviço</th>
+                                                <th>Quantidade Solicitada</th>
                                                 <th>Saldo Atual da Secretaria</th>
                                                 <th>Opções</th>
                                             </tr>
@@ -364,60 +383,23 @@
                 <p class="alert alert-warning">Nenhum pedido.</p>
             {% endif %}
         </div>
-        <div id="aditivos" class="tab-pane">
+       <div id="anexos" class="tab-pane">
             {% if pode_gerenciar %}
                 <div class="pull-right">
-                    <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
+                    <a class="btn btn-primary" href="/base/cadastrar_anexo_credenciamento/{{credenciamento.id}}/">Cadastrar Anexo</a>
                 </div>
-                <br><br>
             {% endif %}
-
-        {% if contrato.aditivo_set.exists %}
-            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                    <thead>
-
-                        <tr>
-                            <th>Número</th>
-                            <th>Data Início</th>
-                            <th>Data Fim</th>
+            <br><br>
 
 
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in contrato.aditivo_set.all %}
-                            <tr>
-                                <td>{{ item.ordem }}</td>
-                                <td>{{ item.data_inicio }}</td>
-                                <td>{{ item.data_fim }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-        {% else %}
-
-            <p class="alert alert-warning">Nenhum aditivo cadastrado.</p>
-        {% endif %}
-        </div>
-        <div id="anexos" class="tab-pane">
-            {% if pode_gerenciar %}
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="/base/cadastrar_anexo_contrato/{{contrato.id}}/">Cadastrar Anexo</a>
-
-                </div>
-                <br><br>
-            {% endif %}
-
-
-
-            <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+            {% if credenciamento.anexocredenciamento_set.exists %}
+                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
                     <thead>
                         <tr>
                             <th>Nome</th>
                             <th width="10%">Data</th>
                             <th>Arquivo</th>
-                            <td>Documento Público</td>
+                            <th>Documento Público</th>
                             <th>Cadastrado Por</th>
                             <th>Cadastrado Em</th>
                             <th>Opções</th>
@@ -425,17 +407,7 @@
                     </thead>
                     <tbody>
 
-                        <tr>
-                            <td>Modelo de Contrato</td>
-                            <td> - </td>
-                            <td><a href="">Ver arquivo</a></td>
-                            <td><font color="red">Não</font></td>
-                            <td>Gerado Automaticamente Pelo Sistema</td>
-                            <td>-</td>
-                            <td>-</td>
-                        </tr>
-
-                        {%  for item in contrato.anexocontrato_set.all %}
+                        {%  for item in credenciamento.anexocredenciamento_set.all %}
 
                             <tr>
                                 <td>{{ item.nome }}</td>
@@ -452,17 +424,21 @@
                                 <td>{{ item.cadastrado_em }}</td>
                                 <td>
                                     {% if item.cadastrado_por == request.user %}
-                                        <a href="/base/editar_anexo_contrato/{{ item.id}}/" class="btn btn-sm btn-info">Editar</a>
-                                        <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_anexo_contrato/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
+                                        <a href="/base/editar_anexo_credenciamento/{{ item.id}}/" class="btn btn-sm btn-info">Editar</a>
+                                        <a onclick="return confirm('Você tem certeza que desejar apagar?')" href="/base/apagar_anexo_credenciamento/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
                                     {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum anexo.</p>
+            {% endif %}
 
 
         </div>
+
    </div>
 
 

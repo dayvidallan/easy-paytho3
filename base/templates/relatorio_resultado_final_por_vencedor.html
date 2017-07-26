@@ -91,9 +91,9 @@ ul{
                                 </tr>
                             {% endfor %}
                             {% if eh_lote %}
-                                <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                                <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
                             {% else %}
-                                <tr><td colspan="7" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                                <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="6"><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
                             {% endif %}
                         </tbody>
                     </table>
@@ -137,7 +137,7 @@ ul{
                                 </tr>
                             {% endfor %}
                             {% if not eh_maior_desconto %}
-                                <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td></tr>
+                                <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="4"><b>R$ {{ lances.total|format_money }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
                             {% endif %}
                         </tbody>
                     </table>

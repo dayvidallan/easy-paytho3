@@ -485,7 +485,7 @@
                                 <td>
                                     {% if item.cadastrado_por == request.user %}
                                         <a href="/base/editar_anexo_arp/{{ item.id}}/" class="btn btn-sm btn-info">Editar</a>
-                                        <a href="/base/apagar_anexo_arp/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
+                                        <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_anexo_arp/{{ item.id}}/" class="btn btn-sm btn-danger">Apagar</a>
                                     {% endif %}
                                 </td>
                             </tr>

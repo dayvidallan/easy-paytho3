@@ -148,7 +148,7 @@ ul{
 
                                 </tr>
                             {% endfor %}
-                            <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ lances.total_previsto|format_money  }}</b></td><td><b>R$ {{ lances.total|format_money  }}</b></td><td><b>{{ lances.total_desconto_porcento  }}</b></td><td><b>R$ {{ lances.total_final|format_money  }}</b></td></tr>
+                            <tr><td colspan="3" align="right"><b>Total</b></td><td><b>R$ {{ lances.total_previsto|format_money  }} ({{ lances.total_previsto|format_numero_extenso }})</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td><td><b>{{ lances.total_desconto_porcento  }} ({{ lances.total_desconto_porcento|format_numero_extenso }})</b></td><td><b>R$ {{ lances.total_final|format_money  }} ({{ lances.total_final|format_numero_extenso }})</b></td></tr>
 
                         </tbody>
                     </table>

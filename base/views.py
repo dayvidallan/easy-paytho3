@@ -17,7 +17,7 @@ from xhtml2pdf import pisa
 from django.db.models import Q, F, Count
 from dal import autocomplete
 from django.contrib.auth.models import Group
-from templatetags.app_filters import format_money
+from templatetags.app_filters import format_money, format_quantidade, format_numero_extenso
 from django.db.transaction import atomic
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
@@ -33,7 +33,7 @@ from django.core.exceptions import PermissionDenied
 from licita import settings
 LARGURA = 210*mm
 ALTURA = 297*mm
-
+from django.utils.formats import localize
 
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
@@ -182,9 +182,10 @@ def pregao(request, pregao_id):
         #     pregao.situacao = Pregao.CADASTRADO
         #     pregao.save()
 
-
+        eh_credenciamento = pregao.solicitacao.eh_credenciamento()
         eh_lote = pregao.criterio.id == CriterioPregao.LOTE
-        eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+
+        eh_maior_desconto = pregao.eh_maior_desconto()
         title = u'%s ' % pregao
         if eh_lote:
             lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True)
@@ -193,7 +194,7 @@ def pregao(request, pregao_id):
             itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
         #title = u'Pregão: %s (Processo: %s) - Situação: %s' % (pregao.num_pregao, pregao.num_processo, pregao.situacao)
         itens_pregao_unidades = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False)
-        participantes = ParticipantePregao.objects.filter(pregao=pregao,desclassificado=False)
+        participantes = ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False)
         resultados = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id',flat=True))
         buscou = False
         ids_ganhador = list()
@@ -207,7 +208,9 @@ def pregao(request, pregao_id):
                 resultados = ResultadoItemPregao.objects.filter(item=opcao, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
                 if resultados.exists() and resultados[0].participante == participante:
                     ids_ganhador.append(resultados[0].item.id)
-            itens_pregao = itens_pregao.filter(id__in=ids_ganhador)
+
+            if not pregao.solicitacao.eh_credenciamento():
+                itens_pregao = itens_pregao.filter(id__in=ids_ganhador)
 
             form = GanhadoresForm(request.POST or None, participantes = participantes, initial=dict(ganhador=participante))
         else:
@@ -343,6 +346,13 @@ def propostas_item(request, item_id):
     eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
 
     return render(request, 'propostas_item.html', locals(), RequestContext(request))
+
+@login_required()
+def propostas_item_credenciamento(request, item_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
+    pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
+
+    return render(request, 'propostas_item_credenciamento.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastra_participante_pregao(request, pregao_id):
@@ -516,7 +526,7 @@ def lances_item(request, item_id):
             #if not eh_modalidade_desconto:
             if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
                 messages.error(request, u'Você não pode dar um lance maior do que sua proposta.')
-                print ">>>>>>>>>>>", tem_empate_beneficio
+
                 if tem_empate_beneficio:
                     return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
                 else:
@@ -624,7 +634,7 @@ def ver_fornecedores(request, fornecedor_id=None):
 @login_required()
 def ver_pregoes(request):
     title=u'Licitações'
-    pregoes = Pregao.objects.all().order_by('num_pregao')
+    pregoes = Pregao.objects.all().order_by('-id')
     eh_ordenador_despesa = False
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa
@@ -639,10 +649,10 @@ def ver_pregoes(request):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
 
         if form.cleaned_data.get('data_inicial'):
-            pregoes = pregoes.filter(Q(data_abertura__gte=form.cleaned_data.get('data_inicial')) | Q(data_retorno__gte=form.cleaned_data.get('data_inicial')))
+            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
 
         if form.cleaned_data.get('data_final'):
-            pregoes = pregoes.filter(Q(data_abertura__lte=form.cleaned_data.get('data_final')) |  Q(data_retorno__lte=form.cleaned_data.get('data_final')))
+            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
 
         if form.cleaned_data.get('situacao'):
             pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
@@ -668,6 +678,8 @@ def itens_solicitacao(request, solicitacao_id):
         contrato = True
     elif PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
+    elif solicitacao.credenciamento_origem:
+        pedidos = PedidoCredenciamento.objects.filter(solicitacao=solicitacao).order_by('item')
 
     eh_lote = solicitacao.eh_lote()
     ja_registrou_preco = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao, secretaria=request.user.pessoafisica.setor.secretaria)
@@ -916,7 +928,7 @@ def enviar_para_licitacao(request, solicitacao_id):
 def registrar_preco_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
 
-    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor) and not item.solicitacao.eh_dispensa() and item.solicitacao.prazo_aberto:
+    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor) and item.solicitacao.prazo_aberto:
         title = u'Registrar Valor - %s' % item
         form = RegistrarPrecoItemForm(request.POST or None, request.FILES or None, instance=item)
         if form.is_valid():
@@ -1365,6 +1377,7 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
             if situacao ==u'1':
                 ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.INABILITADO, observacoes=form.cleaned_data.get('motivo'))
 
+
             elif situacao == u'2':
                 ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.DESCLASSIFICADO, observacoes=form.cleaned_data.get('motivo'))
 
@@ -1377,6 +1390,8 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
                 historico.obs = u'Desclassificação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
 
             historico.save()
+            participante.excluido_dos_itens = True
+            participante.save()
             return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
         return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
     else:
@@ -1405,6 +1420,7 @@ def resultado_ajustar_preco(request, resultado_id):
 def desempatar_item(request, item_id):
     title=u'Desempatar Item'
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    eh_credenciamento = item.solicitacao.eh_credenciamento()
     if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         resultados = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
         pregao = item.get_licitacao()
@@ -1416,6 +1432,7 @@ def desempatar_item(request, item_id):
 @login_required()
 def definir_colocacao(request, resultado_id):
     resultado = get_object_or_404(ResultadoItemPregao, pk=resultado_id)
+    title = u'Informar Colocação do Participante'
     if request.user.has_perm('base.pode_cadastrar_pregao') and resultado.item.get_licitacao().solicitacao.recebida_setor(request.user.pessoafisica.setor):
         form = DefinirColocacaoForm(request.POST or None, instance=resultado)
         if form.is_valid():
@@ -1510,6 +1527,24 @@ def cadastrar_anexo_contrato(request, contrato_id):
         raise PermissionDenied
 
 
+@login_required()
+def cadastrar_anexo_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        title=u'Cadastrar Anexo - %s' % credenciamento
+        form = AnexoCredenciamentoForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            o = form.save(False)
+            o.credenciamento = credenciamento
+            o.cadastrado_por = request.user
+            o.cadastrado_em = datetime.datetime.now()
+            o.save()
+            messages.success(request, u'Anexo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/#anexos' % credenciamento.id)
+
+        return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 @login_required()
 def cadastrar_ata_registro_preco(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
@@ -1668,11 +1703,64 @@ def cadastrar_contrato(request, solicitacao_id):
                         novo_item.unidade = resultado.item.unidade
                         novo_item.save()
 
+                elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
+                    for resultado in PedidoCredenciamento.objects.filter(solicitacao=solicitacao):
+                        novo_item = ItemContrato()
+                        novo_item.contrato = o
+                        if resultado.item.item:
+                            novo_item.item = resultado.item.item
+                        novo_item.material = resultado.item.material
+
+                        novo_item.marca = resultado.item.marca
+                        novo_item.fornecedor = resultado.fornecedor
+                        novo_item.valor = resultado.item.valor
+                        novo_item.quantidade = resultado.quantidade
+                        novo_item.unidade = resultado.item.unidade
+                        novo_item.save()
+
+                    o.pregao = solicitacao.credenciamento_origem.pregao
+                    o.save()
+
 
             messages.success(request, u'Cadastrado realizado com sucesso.')
             return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
 
         return render(request, 'cadastrar_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+
+@login_required()
+def cadastrar_credenciamento(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    pregao = solicitacao.get_pregao()
+    if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and pregao and pregao.data_homologacao and solicitacao.eh_credenciamento():
+
+        title=u'Cadastrar Credenciamento'
+
+        form = CredenciamentoForm(request.POST or None)
+        if form.is_valid():
+            o = form.save(False)
+            o.solicitacao = solicitacao
+            o.pregao = pregao
+            o.valor = pregao.get_valor_total()
+            o.save()
+
+            for resultado in solicitacao.get_resultado():
+                novo_item = ItemCredenciamento()
+                novo_item.credenciamento = o
+                novo_item.item = resultado.item
+                novo_item.marca = resultado.marca
+                novo_item.valor = resultado.valor
+                novo_item.quantidade = resultado.item.quantidade
+                novo_item.unidade = resultado.item.unidade
+                novo_item.material = resultado.item.material
+                novo_item.save()
+
+
+            messages.success(request, u'Credenciamento cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/' % o.id)
+        return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -1900,6 +1988,7 @@ def suspender_pregao(request, pregao_id):
             else:
                 pregao.sine_die = False
                 pregao.data_retorno = form.cleaned_data.get('data_retorno')
+                pregao.data_abertura = form.cleaned_data.get('data_retorno')
             pregao.save()
 
             messages.success(request, u'Pregão suspenso com sucesso.')
@@ -2201,7 +2290,7 @@ def relatorio_resultado_final(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
 
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
@@ -2247,7 +2336,7 @@ def relatorio_economia(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
     tabela = {}
     total = {}
 
@@ -2343,7 +2432,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
     tabela = {}
     total = {}
 
@@ -2469,7 +2558,7 @@ def relatorio_classificacao_por_item(request, pregao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
+    eh_maior_desconto = pregao.eh_maior_desconto()
     tabela = {}
     itens = {}
     resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item__item')
@@ -2858,7 +2947,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[0].text = u'Lote %s / %s' % (lance.item, componente)
                         row_cells[1].text = u'%s' % componente.material.nome
                         row_cells[2].text = u'%s' % (marca)
-                        row_cells[3].text = u'%s / %s' % (componente.unidade, componente.quantidade)
+                        row_cells[3].text = u'%s / %s' % (componente.unidade, format_quantidade(componente.quantidade))
                         row_cells[4].text = u'%s' % format_money(lance.get_vencedor().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
@@ -2931,8 +3020,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[0].text = u'%s' % (lance.item)
                         row_cells[1].text = u'%s' % lance.material.nome
                         row_cells[2].text = u'%s' % (marca)
-                        row_cells[3].text = u'%s / %s' % (lance.unidade, lance.quantidade)
-                        row_cells[4].text = u'%s' % format(lance.get_vencedor().valor)
+                        row_cells[3].text = u'%s / %s' % (lance.unidade, format_quantidade(lance.quantidade))
+                        row_cells[4].text = u'%s' % format_money(lance.get_vencedor().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
                 row_cells = table.add_row().cells
@@ -3507,7 +3596,7 @@ def criar_lote(request, pregao_id):
             ids.append(item.id)
             valor_medio = valor_medio +  (item.valor_medio * item.quantidade)
 
-        
+
         novo_lote = ItemSolicitacaoLicitacao()
         novo_lote.solicitacao = pregao.solicitacao
         novo_lote.item = pregao.solicitacao.get_proximo_item(eh_lote=True)
@@ -3693,6 +3782,7 @@ def gestao_pedidos(request):
     atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
     #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
     contratos = Contrato.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
+    credenciamentos = Credenciamento.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
 
     pode_editar = request.user.groups.filter(name=u'Gerente')
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
@@ -3707,19 +3797,23 @@ def gestao_contratos(request):
 
         atas = AtaRegistroPreco.objects.all().order_by('id')
         contratos = Contrato.objects.all().order_by('id')
+        credenciamentos = Credenciamento.objects.all().order_by('id')
         pode_editar = True
         form = GestaoContratoForm(request.GET or None)
         if form.is_valid():
             if form.cleaned_data.get('info'):
                 atas = atas.filter(numero__icontains=form.cleaned_data.get('info'))
                 contratos = contratos.filter(numero__icontains=form.cleaned_data.get('info'))
+                credenciamentos = credenciamentos.filter(numero__icontains=form.cleaned_data.get('info'))
             if form.cleaned_data.get('ano'):
                 atas = atas.filter(data_inicio__year=form.cleaned_data.get('ano'))
                 contratos = contratos.filter(data_inicio__year=form.cleaned_data.get('ano'))
+                credenciamentos = credenciamentos.filter(data_inicio__year=form.cleaned_data.get('ano'))
 
             if form.cleaned_data.get('secretaria'):
                 atas = atas.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
                 contratos = contratos.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+                credenciamentos = credenciamentos.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
     else:
         return HttpResponseRedirect(u'/')
@@ -3814,7 +3908,94 @@ def novo_pedido_compra_arp(request, ata_id):
             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, o.id))
     return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
 
+@login_required()
+def novo_pedido_compra_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    title=u'Novo Pedido de Compra - %s' % credenciamento
+    form = NovoPedidoCompraForm(request.POST or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.tipo = SolicitacaoLicitacao.COMPRA
+        o.tipo_aquisicao = SolicitacaoLicitacao.TIPO_AQUISICAO_COMPRA
+        o.setor_origem = request.user.pessoafisica.setor
+        o.setor_atual = request.user.pessoafisica.setor
+        o.data_cadastro = datetime.datetime.now()
+        o.cadastrado_por = request.user
+        o.credenciamento_origem = credenciamento
+        o.save()
+        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_credenciamento/%s/%s/' % (credenciamento_id, o.id))
+    return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
 
+@login_required()
+def informar_quantidades_do_pedido_credenciamento(request, credenciamento_id, solicitacao_id):
+    setor = request.user.pessoafisica.setor
+    solicitacao_atual = get_object_or_404(SolicitacaoLicitacaoTmp, pk=solicitacao_id)
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    itens_credenciamento = credenciamento.itemcredenciamento_set.all()
+    solicitacao = credenciamento.solicitacao
+    title=u'Pedido de Compra - %s' % credenciamento
+    participantes = ParticipantePregao.objects.filter(pregao=credenciamento.pregao, desclassificado=False, excluido_dos_itens=False)
+    form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
+    eh_lote = False
+    origem_pregao = credenciamento.solicitacao.get_pregao()
+    resultados = itens_credenciamento
+    buscou = False
+
+    if form.is_valid():
+        buscou = True
+
+
+        fornecedor = form.cleaned_data.get('vencedor')
+
+
+        if 'quantidades' in request.POST:
+            if not fornecedor:
+                messages.error(request, u'Selecione um fornecedor')
+                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_credenciamento/%s/%s/' % (credenciamento_id, solicitacao_atual.id))
+
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                valor_pedido = int(valor)
+
+                if valor_pedido > 0:
+                    if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                        messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_credenciamento/%s/%s/' % (credenciamento_id, solicitacao_atual.id))
+
+
+            nova_solicitacao = SolicitacaoLicitacao()
+            nova_solicitacao.num_memorando = solicitacao_atual.num_memorando
+            nova_solicitacao.objeto = solicitacao_atual.objeto
+            nova_solicitacao.objetivo = solicitacao_atual.objetivo
+            nova_solicitacao.situacao = solicitacao_atual.situacao
+            nova_solicitacao.tipo = solicitacao_atual.tipo
+            nova_solicitacao.tipo_aquisicao = solicitacao_atual.tipo_aquisicao
+            nova_solicitacao.data_cadastro = solicitacao_atual.data_cadastro
+            nova_solicitacao.cadastrado_por = solicitacao_atual.cadastrado_por
+            nova_solicitacao.setor_origem = solicitacao_atual.setor_origem
+            nova_solicitacao.setor_atual = solicitacao_atual.setor_atual
+            nova_solicitacao.arp_origem = solicitacao_atual.arp_origem
+            nova_solicitacao.contrato_origem = solicitacao_atual.contrato_origem
+            nova_solicitacao.credenciamento_origem = solicitacao_atual.credenciamento_origem
+            nova_solicitacao.save()
+            solicitacao_atual.delete()
+
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                valor_pedido = int(valor)
+                if valor_pedido > 0:
+                    novo_pedido = PedidoCredenciamento()
+                    novo_pedido.credenciamento = credenciamento
+                    novo_pedido.solicitacao = nova_solicitacao
+                    novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                    novo_pedido.fornecedor = fornecedor.fornecedor
+                    novo_pedido.quantidade = valor_pedido
+                    novo_pedido.setor = setor
+                    novo_pedido.pedido_por = request.user
+                    novo_pedido.pedido_em = datetime.datetime.now()
+                    novo_pedido.save()
+
+            messages.success(request, u'Pedido cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
+    return render(request, 'informar_quantidades_do_pedido_credenciamento.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -4194,6 +4375,39 @@ def editar_anexo_contrato(request, item_id):
         raise PermissionDenied
 
 
+
+
+
+@login_required()
+def apagar_anexo_credenciamento(request, item_id):
+    anexo = get_object_or_404(AnexoCredenciamento, pk=item_id)
+    credenciamento = anexo.credenciamento
+    if request.user.has_perm('base.pode_gerenciar_contrato') and credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        anexo.delete()
+        messages.success(request, u'Anexo removido com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/#anexos' % credenciamento.id)
+    else:
+        raise PermissionDenied
+
+@login_required()
+def editar_anexo_credenciamento(request, item_id):
+    anexo = get_object_or_404(AnexoCredenciamento, pk=item_id)
+    credenciamento = anexo.credenciamento
+    if request.user.has_perm('base.pode_gerenciar_contrato') and credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        title=u'Editar Anexo - %s' % credenciamento
+        form = AnexoContratoForm(request.POST or None, request.FILES or None, instance=anexo)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Anexo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/#anexos' % credenciamento.id)
+
+        return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+
+
+
 @login_required()
 def cadastrar_anexo_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
@@ -4264,24 +4478,31 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
         pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
     elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
-
+    elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoCredenciamento.objects.filter(solicitacao=solicitacao).order_by('item')
 
 
     tabela = {}
 
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
+        if solicitacao.credenciamento_origem:
+            chave = u'%s' % pedido.fornecedor
         else:
-            chave = u'%s' % pedido.item.fornecedor
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
         tabela[chave] = dict(pedidos = list(), total = 0)
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
+        if solicitacao.credenciamento_origem:
+            chave = u'%s' % pedido.fornecedor
         else:
-            chave = u'%s' % pedido.item.fornecedor
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
         tabela[chave]['pedidos'].append(pedido)
         valor = tabela[chave]['total']
         valor = valor + (pedido.item.valor*pedido.quantidade)
@@ -4422,32 +4643,46 @@ def ver_ordem_compra(request, solicitacao_id):
     tabela = {}
     pregao = contrato = ata = None
     pregao = solicitacao.get_pregao()
-
+    credenciamento = None
     if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
         ata = get_object_or_404(AtaRegistroPreco, pk=pedidos[0].ata.id)
     elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
         contrato = get_object_or_404(Contrato, pk=pedidos[0].contrato.id)
+    elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
+        pedidos = PedidoCredenciamento.objects.filter(solicitacao=solicitacao).order_by('item')
+        credenciamento = get_object_or_404(Credenciamento, pk=pedidos[0].credenciamento.id)
 
 
     tabela = {}
 
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
-            fornecedor = pedido.item.participante.fornecedor
+        if credenciamento:
+            chave = u'%s' % pedido.fornecedor
+            fornecedor = pedido.fornecedor
+
         else:
-            chave = u'%s' % pedido.item.fornecedor
-            fornecedor = pedido.item.fornecedor
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+                fornecedor = pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
+                fornecedor = pedido.item.fornecedor
         tabela[chave] = dict(pedidos = list(), total = 0)
 
     for pedido in pedidos:
-        if pedido.item.participante:
-            chave = u'%s' % pedido.item.participante.fornecedor
+        if credenciamento:
+            chave = u'%s' % pedido.fornecedor
+            fornecedor = pedido.fornecedor
+
         else:
-            chave = u'%s' % pedido.item.fornecedor
+
+            if pedido.item.participante:
+                chave = u'%s' % pedido.item.participante.fornecedor
+            else:
+                chave = u'%s' % pedido.item.fornecedor
         tabela[chave]['pedidos'].append(pedido)
         valor = tabela[chave]['total']
         valor = valor + (pedido.item.valor*pedido.quantidade)
@@ -4461,7 +4696,7 @@ def ver_ordem_compra(request, solicitacao_id):
 
     cpf_ordenador = configuracao.ordenador_despesa.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
-    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'credenciamento': credenciamento, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 
@@ -4684,6 +4919,35 @@ def visualizar_ata_registro_preco(request, ata_id):
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
 @login_required()
+def visualizar_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    title = u'Credenciamento N° %s' % credenciamento.numero
+
+    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+
+
+    pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('item__material', 'setor')
+    tabela  = {}
+
+    materiais  = dict()
+    secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
+    for num in secretarias:
+        chave = '%s' % num['setor__secretaria__nome']
+        tabela[chave] = materiais
+        for item in pedidos.filter(setor__secretaria__nome=chave):
+            nome = u'Fornecedor: %s' % (item.fornecedor.razao_social)
+            materiais[nome] = dict(pedidos=list())
+
+    for pedido in pedidos:
+        nome = u'Fornecedor: %s' % (pedido.fornecedor.razao_social)
+        materiais[nome]['pedidos'].append(pedido)
+
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+
+    return render(request, 'visualizar_credenciamento.html', locals(), RequestContext(request))
+
+@login_required()
 def liberar_solicitacao_contrato(request, solicitacao_id, origem):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
     if request.user.has_perm('base.pode_gerenciar_contrato') and contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor):
@@ -4713,6 +4977,22 @@ def liberar_solicitacao_ata(request, ata_id, origem):
             ata.suspenso = True
         ata.save()
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
+    else:
+        raise PermissionDenied
+
+@login_required()
+def liberar_solicitacao_credenciamento(request, credenciamento_id, origem):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    if request.user.has_perm('base.pode_gerenciar_contrato') and credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+
+        if origem == u'1':
+            credenciamento.liberada_compra = True
+            credenciamento.suspenso = False
+        elif origem == u'2':
+            credenciamento.liberada_compra = False
+            credenciamento.suspenso = True
+        credenciamento.save()
+        return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/' % credenciamento.id)
     else:
         raise PermissionDenied
 
@@ -5082,6 +5362,29 @@ def gerar_resultado_licitacao(request, pregao_id):
 
 
 @login_required()
+def gerar_resultado_credenciamento(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+
+        itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao)
+        for item in itens:
+            for participante in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False, excluido_dos_itens=False):
+                novo_resultado = ResultadoItemPregao()
+                novo_resultado.item = item
+                novo_resultado.participante = participante
+                novo_resultado.valor = item.valor_medio
+                #novo_resultado.marca = item.marca
+                novo_resultado.ordem = 1
+                novo_resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                novo_resultado.save()
+
+
+        messages.success(request, u'Resultado gerado com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+    else:
+        raise PermissionDenied
+
+@login_required()
 def lista_materiais(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
 
@@ -5389,7 +5692,6 @@ def ata_sessao(request, pregao_id):
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
 
 
-    eh_maior_desconto = pregao.tipo.id == TipoPregao.DESCONTO
     tabela = {}
     total = {}
 
@@ -5429,7 +5731,7 @@ def ata_sessao(request, pregao_id):
                 lista.append(item.item)
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s, ' % (result[0], nome_tipo, lista, format_money(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
             total_geral = total_geral + result[1]['total']
 
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
@@ -5484,7 +5786,7 @@ def ata_sessao(request, pregao_id):
     texto = u'''
     Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
     Antes da abertura da sessão, realizou-se o credenciamento do (os) representante (es), feito a partir da apresentação da cédula de identidade ou documento equivalente, e procuração por instrumento público ou particular com firma reconhecida em cartório (documentos do outorgante, poderão ser conferidos na habilitação), atos esses documentados conforme listagem do (os) presente (es), que foram numeradas e juntadas aos autos às fls
-    ''' % (pregao.hora_abertura, pregao.data_abertura.strftime('%d/%m/%y'), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
+    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()
@@ -5586,7 +5888,7 @@ def ata_sessao(request, pregao_id):
 
         p = document.add_paragraph()
         p.alignment = 3
-        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s, respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), tipo))
+        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), format_numero_extenso(total_geral), tipo))
 
 
     p = document.add_paragraph()
@@ -6328,3 +6630,114 @@ def erro_500(request):
 
 def erro_404(request):
     return render(request, '404.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_empresa_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    if pode_gerenciar:
+        title = u'Cadastrar Empresa'
+        form = EmpresaCredenciamentoForm(request.POST or None)
+        if form.is_valid():
+            if ParticipantePregao.objects.filter(pregao=credenciamento.pregao, fornecedor=form.cleaned_data.get('fornecedor')).exists():
+                messages.error(request, u'Esta empresa já é fornecedora.')
+                return HttpResponseRedirect(u'/base/cadastrar_empresa_credenciamento/%s/' %  credenciamento.id)
+
+            novo_participante = ParticipantePregao()
+            novo_participante.fornecedor = form.cleaned_data.get('fornecedor')
+            novo_participante.pregao = credenciamento.pregao
+            novo_participante.me_epp = form.cleaned_data.get('me_epp')
+            novo_participante.nome_representante = ''
+            novo_participante.save()
+
+            for item in credenciamento.solicitacao.itemsolicitacaolicitacao_set.all():
+                ordem_atual = ResultadoItemPregao.objects.filter(item=item).order_by('-ordem')[0].ordem
+                resultado = ResultadoItemPregao()
+                resultado.item = item
+                resultado.participante = novo_participante
+                resultado.valor = item.valor_medio
+                resultado.ordem = ordem_atual + 1
+                resultado.situacao = ResultadoItemPregao.CLASSIFICADO
+                resultado.save()
+            messages.success(request, u'Empresa cadastrada com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/' %  credenciamento.id)
+
+    else:
+        raise PermissionDenied
+    return render(request, 'cadastra_visitante_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_termo_inexigibilidade(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if request.user.has_perm('base.pode_avaliar_minuta') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.termo_inexigibilidade:
+        title=u'Cadastrar Termo de Inexigibilidade - %s' % solicitacao
+        form = CadastroTermoInexigibilidadeForm(request.POST or None, request.FILES or None, instance=solicitacao)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Termo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+        return render(request, 'cadastrar_minuta.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def relatorio_propostas(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    configuracao = get_config(solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    destino_arquivo = u'upload/resultados/%s.pdf' % solicitacao_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    tabela = {}
+
+    resultado = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
+
+    for num in resultado.order_by('item'):
+        chave = '%s' % str(num.item)
+        tabela[chave] = dict(lance = list(), total = 0)
+
+
+    for item in resultado.order_by('item'):
+
+        chave = '%s' % str(item.item)
+        valor = 0
+        total = ItemPesquisaMercadologica.objects.filter(item=item).count()
+        for proposta in ItemPesquisaMercadologica.objects.filter(item=item):
+            tabela[chave]['lance'].append(proposta)
+            valor = valor + proposta.valor_maximo
+
+        tabela[chave]['total'] = valor / total
+
+    from blist import sorteddict
+
+    def my_key(dict_key):
+           try:
+                  return int(dict_key)
+           except ValueError:
+                  return dict_key
+
+
+    resultado =  sorteddict(my_key, **tabela)
+
+
+    data = { 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'solicitacao':solicitacao, 'resultado':resultado}
+
+    template = get_template('relatorio_propostas.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')

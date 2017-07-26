@@ -186,6 +186,12 @@
             $('.modal-content').fadeOut();
         });
 });
+
+$('#id_username').focus();
+$('#id_username').blur(function() {
+    var valor = $('#id_username').val();
+    $('#id_username').val(valor.replace(/[\.-]/g, ""));
+});
 </script>
 
 {% endblock %}

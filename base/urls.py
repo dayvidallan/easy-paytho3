@@ -21,6 +21,9 @@ urlpatterns = [
     url(r'^cadastrar_item_solicitacao/(?P<solicitacao_id>\d+)/$', views.cadastrar_item_solicitacao, name='cadastrar_item_solicitacao'),
     url(r'^cadastra_proposta_pregao/(?P<pregao_id>\d+)/$', views.cadastra_proposta_pregao, name='cadastra_proposta_pregao'),
     url(r'^propostas_item/(?P<item_id>\d+)/$', views.propostas_item, name='propostas_item'),
+    url(r'^propostas_item_credenciamento/(?P<item_id>\d+)/$', views.propostas_item_credenciamento, name='propostas_item_credenciamento'),
+
+
     url(r'^lances_item/(?P<item_id>\d+)/$', views.lances_item, name='lances_item'),
     url(r'^rodada_pregao/(?P<item_id>\d+)/$', views.rodada_pregao, name='rodada_pregao'),
     url(r'^declinar_lance/(?P<rodada_id>\d+)/(?P<item_id>\d+)/(?P<participante_id>\d+)/$', views.declinar_lance, name='declinar_lance'),
@@ -70,10 +73,12 @@ urlpatterns = [
     url(r'^gerenciar_visitantes/(?P<pregao_id>\d+)/$', views.gerenciar_visitantes, name='gerenciar_visitantes'),
     url(r'^editar_visitante/(?P<visitante_id>\d+)/$', views.editar_visitante, name='editar_visitante'),
     url(r'^excluir_visitante/(?P<visitante_id>\d+)/$', views.excluir_visitante, name='excluir_visitante'),
+    url(r'^gerar_resultado_credenciamento/(?P<pregao_id>\d+)/$', views.gerar_resultado_credenciamento, name='gerar_resultado_credenciamento'),
 
 
+    url(r'^cadastrar_credenciamento/(?P<solicitacao_id>\d+)/$', views.cadastrar_credenciamento, name='cadastrar_credenciamento'),
     url(r'^imprimir_fornecedor/(?P<fornecedor_id>\d+)/$', views.imprimir_fornecedor, name='imprimir_fornecedor'),
-
+    url(r'^visualizar_credenciamento/(?P<credenciamento_id>\d+)/$', views.visualizar_credenciamento, name='visualizar_credenciamento'),
 
 
     url(r'^modelo_memorando/(?P<solicitacao_id>\d+)/$', views.modelo_memorando, name='modelo_memorando'),
@@ -127,6 +132,7 @@ urlpatterns = [
     url(r'^termo_homologacao/(?P<pregao_id>\d+)/$', views.termo_homologacao, name='termo_homologacao'),
     url(r'^visualizar_contrato/(?P<solicitacao_id>\d+)/$', views.visualizar_contrato, name='visualizar_contrato'),
     url(r'^liberar_solicitacao_contrato/(?P<solicitacao_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_contrato, name='liberar_solicitacao_contrato'),
+    url(r'^liberar_solicitacao_credenciamento/(?P<credenciamento_id>\d+)/(?P<origem>\d+)/$', views.liberar_solicitacao_credenciamento, name='liberar_solicitacao_credenciamento'),
     url(r'^definir_vigencia_contrato/(?P<contrato_id>\d+)/$', views.definir_vigencia_contrato, name='definir_vigencia_contrato'),
     url(r'^aditivar_contrato/(?P<contrato_id>\d+)/$', views.aditivar_contrato, name='aditivar_contrato'),
     url(r'^memorando/(?P<solicitacao_id>\d+)/$', views.memorando, name='memorando'),
@@ -178,6 +184,7 @@ urlpatterns = [
 
     url(r'^novo_pedido_compra_contrato/(?P<contrato_id>\d+)/$', views.novo_pedido_compra_contrato, name='novo_pedido_compra_contrato'),
     url(r'^novo_pedido_compra_arp/(?P<ata_id>\d+)/$', views.novo_pedido_compra_arp, name='novo_pedido_compra_arp'),
+    url(r'^novo_pedido_compra_credenciamento/(?P<credenciamento_id>\d+)/$', views.novo_pedido_compra_credenciamento, name='novo_pedido_compra_credenciamento'),
 
 
 
@@ -185,6 +192,9 @@ urlpatterns = [
 
 
     url(r'^informar_quantidades_do_pedido_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_arp, name='informar_quantidades_do_pedido_arp'),
+    url(r'^informar_quantidades_do_pedido_credenciamento/(?P<credenciamento_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_credenciamento, name='informar_quantidades_do_pedido_credenciamento'),
+
+
     url(r'^cadastrar_ata_registro_preco/(?P<solicitacao_id>\d+)/$', views.cadastrar_ata_registro_preco, name='cadastrar_ata_registro_preco'),
 
 
@@ -202,6 +212,8 @@ urlpatterns = [
 
     url(r'^cadastrar_material_arp/(?P<ata_id>\d+)/$', views.cadastrar_material_arp, name='cadastrar_material_arp'),
     url(r'^liberar_pedidos_solicitacao/(?P<solicitacao_id>\d+)/$', views.liberar_pedidos_solicitacao, name='liberar_pedidos_solicitacao'),
+    url(r'^cadastrar_termo_inexigibilidade/(?P<solicitacao_id>\d+)/$', views.cadastrar_termo_inexigibilidade, name='cadastrar_termo_inexigibilidade'),
+    url(r'^relatorio_propostas/(?P<solicitacao_id>\d+)/$', views.relatorio_propostas, name='relatorio_propostas'),
 
 
     url(r'^apagar_anexo_arp/(?P<item_id>\d+)/$', views.apagar_anexo_arp, name='apagar_anexo_arp'),
@@ -210,10 +222,12 @@ urlpatterns = [
     url(r'^criar_contrato_adesao_ata/(?P<ata_id>\d+)/$', views.criar_contrato_adesao_ata, name='criar_contrato_adesao_ata'),
     url(r'^carregar_planilha_itens_adesao_arp/(?P<ata_id>\d+)/$', views.carregar_planilha_itens_adesao_arp, name='carregar_planilha_itens_adesao_arp'),
 
-
+    url(r'^cadastrar_anexo_credenciamento/(?P<credenciamento_id>\d+)/$', views.cadastrar_anexo_credenciamento, name='cadastrar_anexo_credenciamento'),
+    url(r'^cadastrar_empresa_credenciamento/(?P<credenciamento_id>\d+)/$', views.cadastrar_empresa_credenciamento, name='cadastrar_empresa_credenciamento'),
     url(r'^informar_quantidades_do_pedido_adesao_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_adesao_arp, name='informar_quantidades_do_pedido_adesao_arp'),
 
-
+    url(r'^editar_anexo_credenciamento/(?P<item_id>\d+)/$', views.editar_anexo_credenciamento, name='editar_anexo_credenciamento'),
+    url(r'^apagar_anexo_credenciamento/(?P<item_id>\d+)/$', views.apagar_anexo_credenciamento, name='apagar_anexo_credenciamento'),
 
 
     url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),

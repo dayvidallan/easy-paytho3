@@ -61,6 +61,9 @@ ul{
                     {% elif solicitacao.contrato_origem.solicitacao.get_pregao %}
                         <td align="left" width="25%">Pregão</td>
                         <td align="left"><b>{{ solicitacao.contrato_origem.solicitacao.get_pregao }}</b></td>
+                    {% elif solicitacao.credenciamento_origem.solicitacao.get_pregao %}
+                        <td align="left" width="25%">Pregão</td>
+                        <td align="left"><b>{{ solicitacao.credenciamento_origem.solicitacao.get_pregao }}</b></td>
                     {% else %}
                         <td align="left" width="25%">Origem</td>
                         <td align="left"><b>{{ solicitacao }}</b></td>
@@ -180,6 +183,8 @@ ul{
                         <th>Contrato N °</th><td>{{ contrato.numero }}</td>
                 {% elif ata %}
                     <th>Ata N °</th><td>{{ ata.numero }}</td>
+                {% elif credenciamento %}
+                    <th>Credenciamento N °</th><td>{{ credenciamento.numero }}</td>
                 {% endif %}
 
             </tr>

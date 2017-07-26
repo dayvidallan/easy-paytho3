@@ -65,7 +65,9 @@ ul{
                 <tr>
                     <th width="7%">Lote</th>
                     <th>Itens do Lote</th>
-                    <th>Empresa Vencedora</th>
+                    {% if not pregao.eh_credenciamento %}
+                        <th>Empresa Vencedora</th>
+                    {% endif %}
                     <th width="20%">Total</th>
 
                 </tr>
@@ -76,7 +78,9 @@ ul{
                     <th>Material/Serviço</th>
                     <th width="15%">Unidade</th>
                     <th width="13%">Qtd</th>
-                    <th width="25%">Vencedora</th>
+                    {% if not pregao.eh_credenciamento %}
+                        <th width="25%">Vencedora</th>
+                    {% endif %}
 
                     {% if eh_maior_desconto %}
                         <th width="20%">Valor Médio</th>
@@ -114,13 +118,20 @@ ul{
                         <td style="text-align: left;">{{ item.material }} - MARCA: {{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                         <td>{{ item.unidade }}</td>
                         <td>{{ item.quantidade|format_quantidade  }}</td>
-                        <td>{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</td>
+                        {% if not pregao.eh_credenciamento %}
+                            <td>{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</td>
+                        {% endif %}
                         {% if eh_maior_desconto %}
                             <td>R$ {{ item.valor_medio|format_money }}</td>
                             <td>{{ item.get_vencedor.get_valor }}</td>
                         {% else %}
-                            <td>{{ item.get_vencedor.get_valor }}</td>
-                            <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                            {% if not pregao.eh_credenciamento %}
+                                <td>{{ item.get_vencedor.get_valor }}</td>
+                                <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                            {% else %}
+                                <td>R$ {{ item.valor_medio|format_money }}</td>
+                                <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                            {% endif %}
                        {% endif %}
 
 
@@ -129,9 +140,17 @@ ul{
             {% endfor %}
             {% if not eh_maior_desconto %}
                 {% if eh_lote %}
-                    <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                    {% if not pregao.eh_credenciamento %}
+                        <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="2"><b>R$ {{ total|format_money }} ({{ total|format_numero_extenso }})</b></td></tr>
+                    {% else %}
+                        <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money }} ({{ total|format_numero_extenso }})</b></td></tr>
+                    {% endif %}
                 {% else %}
-                    <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
+                    {% if not pregao.eh_credenciamento %}
+                        <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="5"><b>R$ {{ total|format_money  }} ({{ total|format_numero_extenso }})</b></td></tr>
+                    {% else %}
+                        <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="4"><b>R$ {{ total|format_money  }} ({{ total|format_numero_extenso }})</b></td></tr>
+                    {% endif %}
                 {% endif %}
             {% endif %}
 

@@ -54,7 +54,7 @@
                     <p>E@sy Gestão Pública</p>
                   </a>
                 </div>
-                {% if request.user.is_authenticated %}
+                {% if user.is_authenticated %}
                     <div class="links">
                       <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
                       <a href="{% url 'admin:password_change' %}"><i class="fa fa-lock"></i>Alterar Senha</a>

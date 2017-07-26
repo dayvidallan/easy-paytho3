@@ -82,6 +82,10 @@ class ModalidadePregao(models.Model):
     CONCURSO = 3
     PREGAO = 4
     TOMADA_PRECO = 5
+    CREDENCIAMENTO = 6
+    CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = 7
+    CHAMADA_PUBLICA_OUTROS = 8
+    CHAMADA_PUBLICA_PRONATER = 9
 
 
     nome = models.CharField(u'Nome', max_length=80)
@@ -214,11 +218,22 @@ class SolicitacaoLicitacaoTmp(models.Model):
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
     TIPO_AQUISICAO_COMPRA = u'Compra'
     TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
-
+    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 8.000,00)'
+    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 15.000,00)'
+    CREDENCIAMENTO = u'Credenciamento'
+    CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = u'Chamada Pública - Alimentação Escolar'
+    CHAMADA_PUBLICA_OUTROS = u'Chamada Pública - Outros'
+    CHAMADA_PUBLICA_PRONATER = u'Chamada Pública - PRONATER'
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
-        (TIPO_AQUISICAO_DISPENSA, TIPO_AQUISICAO_DISPENSA),
-        (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
+        (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
+        (CREDENCIAMENTO, CREDENCIAMENTO),
+        (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
+        (CHAMADA_PUBLICA_OUTROS, CHAMADA_PUBLICA_OUTROS),
+        (CHAMADA_PUBLICA_PRONATER, CHAMADA_PUBLICA_PRONATER),
     )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.TextField(u'Descrição do Objeto')
@@ -233,6 +248,7 @@ class SolicitacaoLicitacaoTmp(models.Model):
     setor_atual = models.ForeignKey(Setor, verbose_name=u'Setor Atual', related_name='setor_atual_tmp', null=True, blank=True)
     arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao_tmp')
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao_tmp')
+    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao_tmp')
 
 
     def __unicode__(self):
@@ -274,15 +290,29 @@ class SolicitacaoLicitacao(models.Model):
     )
 
     TIPO_AQUISICAO_LICITACAO = u'Licitação'
+
     TIPO_AQUISICAO_DISPENSA = u'Dispensa'
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
     TIPO_AQUISICAO_COMPRA = u'Compra'
     TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
+    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 8.000,00)'
+    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 15.000,00)'
+    CREDENCIAMENTO = u'Credenciamento'
+    CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = u'Chamada Pública - Alimentação Escolar'
+    CHAMADA_PUBLICA_OUTROS = u'Chamada Pública - Outros'
+    CHAMADA_PUBLICA_PRONATER = u'Chamada Pública - PRONATER'
+
 
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
-        (TIPO_AQUISICAO_DISPENSA, TIPO_AQUISICAO_DISPENSA),
-        (TIPO_AQUISICAO_INEXIGIBILIDADE, TIPO_AQUISICAO_INEXIGIBILIDADE),
+        (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
+        (CREDENCIAMENTO, CREDENCIAMENTO),
+        (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
+        (CHAMADA_PUBLICA_OUTROS, CHAMADA_PUBLICA_OUTROS),
+        (CHAMADA_PUBLICA_PRONATER, CHAMADA_PUBLICA_PRONATER),
     )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.TextField(u'Descrição do Objeto')
@@ -311,6 +341,8 @@ class SolicitacaoLicitacao(models.Model):
     liberada_para_pedido = models.BooleanField(u'Liberada para Pedido', default=False)
     arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao')
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
+    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao')
+    termo_inexigibilidade = models.FileField(u'Termo de Inexigibilidade', null=True, blank=True, upload_to=u'upload/minutas/')
 
 
 
@@ -320,6 +352,19 @@ class SolicitacaoLicitacao(models.Model):
     class Meta:
         verbose_name = u'Solicitação de Licitação'
         verbose_name_plural = u'Solicitações de Licitação'
+
+
+    def tem_valor_acima_permitido(self):
+        if self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO:
+            return False
+        if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao() >= 8000:
+            return True
+        elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao() >= 15000:
+            return True
+        return False
+
+    def eh_credenciamento(self):
+        return self.tipo_aquisicao in [self.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.CHAMADA_PUBLICA_OUTROS, self.CHAMADA_PUBLICA_PRONATER, self.CREDENCIAMENTO]
 
     def recebida_setor(self, setor_do_usuario):
         movimentacao = MovimentoSolicitacao.objects.filter(solicitacao=self)
@@ -334,6 +379,8 @@ class SolicitacaoLicitacao(models.Model):
             elif self.tipo == SolicitacaoLicitacao.COMPRA or self.tipo == SolicitacaoLicitacao.ADESAO_ARP:
                 return True
         return False
+
+
 
     def pode_receber_pedidos_secretarias(self):
         if self.prazo_resposta_interessados:
@@ -361,7 +408,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def eh_dispensa(self):
-        return self.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]
+        return not (self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO)
 
     def tem_proposta(self):
         for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):
@@ -440,7 +487,7 @@ class SolicitacaoLicitacao(models.Model):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self, avaliado_em__isnull=True).exists()
 
     def tem_pedidos_compra(self):
-        return PedidoContrato.objects.filter(solicitacao=self, ativo=True).exists() or PedidoAtaRegistroPreco.objects.filter(solicitacao=self, ativo=True).exists()
+        return PedidoContrato.objects.filter(solicitacao=self, ativo=True).exists() or PedidoAtaRegistroPreco.objects.filter(solicitacao=self, ativo=True).exists() or PedidoCredenciamento.objects.filter(solicitacao=self, ativo=True).exists()
 
     def get_pregao(self):
         if Pregao.objects.filter(solicitacao=self).exists():
@@ -448,7 +495,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def eh_maior_desconto(self):
-        return self.get_pregao().tipo.id == TipoPregao.DESCONTO
+        return self.get_pregao().eh_maior_desconto()
 
     def eh_lote(self):
         if self.get_pregao():
@@ -1146,7 +1193,7 @@ class Pregao(models.Model):
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
     modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade / Procedimento')
     fundamento_legal = models.CharField(u'Fundamento Legal', max_length=5000, null=True, blank=True)
-    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento')
+    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento', null=True, blank=True)
     criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação')
     aplicacao_lcn_123_06 = models.ForeignKey(OpcaoLCN, verbose_name=u'MPE – Aplicação Da LCN 123/06 (Lei 123/06)', null=True, blank=True)
     data_inicio = models.DateField(u'Data de Início da Retirada do Edital', null=True, blank=True)
@@ -1193,6 +1240,14 @@ class Pregao(models.Model):
             self.eh_ata_registro_preco = False
         super(Pregao, self).save()
 
+    def eh_credenciamento(self):
+        return self.solicitacao.tipo_aquisicao in [self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.solicitacao.CHAMADA_PUBLICA_OUTROS, self.solicitacao.CHAMADA_PUBLICA_PRONATER, self.solicitacao.CREDENCIAMENTO]
+    def eh_maior_desconto(self):
+        if not self.tipo:
+            return False
+        if self.tipo.id == TipoPregao.DESCONTO:
+            return True
+        return False
     def get_local(self):
         return u'Dia %s às %s, no(a) %s' % (self.data_abertura.strftime('%d/%m/%y'), self.hora_abertura, self.local)
 
@@ -1201,6 +1256,9 @@ class Pregao(models.Model):
 
     def tem_download(self):
         return LogDownloadArquivo.objects.filter(arquivo__pregao=self).exists()
+
+    def tem_participante_ativo(self):
+        return ParticipantePregao.objects.filter(pregao=self, desclassificado=False, excluido_dos_itens=False).exists()
 
     def eh_ativo(self):
         return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
@@ -1473,6 +1531,8 @@ class ParticipantePregao(models.Model):
     desclassificado = models.BooleanField(u'Desclassificado', default=False)
     motivo_desclassificacao = models.CharField(u'Motivo da Desclassificação', max_length=2000, null=True, blank=True)
     arquivo_propostas = models.FileField(u'Arquivo com as Propostas', null=True, blank=True, upload_to=u'upload/propostas/')
+    excluido_dos_itens = models.BooleanField(u'Excluído dos Itens', default=False)
+
     class Meta:
         verbose_name = u'Participante do Pregão'
         verbose_name_plural = u'Participantes do Pregão'
@@ -1895,7 +1955,7 @@ class ResultadoItemPregao(models.Model):
         return self.situacao == ResultadoItemPregao.CLASSIFICADO
 
     def get_valor(self):
-        if self.item.solicitacao.get_pregao().tipo.id == TipoPregao.DESCONTO:
+        if self.item.solicitacao.get_pregao().eh_maior_desconto():
             return u'%s %%' % self.valor
         else:
             return 'R$ %s' % format_money(self.valor)
@@ -2166,9 +2226,6 @@ class AtaRegistroPreco(models.Model):
         verbose_name_plural = u'Atas de Registro de Preço'
 
     def __unicode__(self):
-        return u'Aditivo: %s - %s' % (self.numero, self.contrato)
-
-    def __unicode__(self):
         if self.adesao:
             return 'Adesão à ARP N° %s' % (self.numero)
         else:
@@ -2204,6 +2261,147 @@ class AtaRegistroPreco(models.Model):
         for item in itens:
             total = total + (item.quantidade * item.valor)
         return total
+
+
+class Credenciamento(models.Model):
+    numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
+    valor = models.DecimalField(decimal_places=2,max_digits=20, null=True)
+    data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
+    data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True)
+    pregao = models.ForeignKey(Pregao, null=True)
+    secretaria = models.ForeignKey(Secretaria, null=True)
+    concluido = models.BooleanField(default=False)
+    suspenso = models.BooleanField(default=False)
+    cancelado = models.BooleanField(default=False)
+    motivo_cancelamento = models.TextField(blank=True)
+    dh_cancelamento = models.DateTimeField(blank=True, null=True)
+    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+    orgao_origem = models.CharField(u'Órgão de Origem', null=True, max_length=100)
+    num_oficio = models.CharField(u'Número do Ofício', null=True, max_length=100)
+    objeto = models.TextField(u'Objeto', null=True)
+    liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
+
+    class Meta:
+        verbose_name = u'Credenciamento'
+        verbose_name_plural = u'Credenciamentos'
+
+    def __unicode__(self):
+        return u'Credenciamento: %s' % (self.numero)
+
+    def get_situacao(self):
+        if self.concluido:
+            return u'Concluído'
+        elif self.suspenso:
+            return u'Suspenso'
+        elif self.cancelado:
+            return u'Cancelado'
+        else:
+            return u'Ativo'
+
+
+    def get_fornecedores(self):
+        participantes = ParticipantePregao.objects.filter(desclassificado=False, excluido_dos_itens=False, pregao=self.pregao)
+        return Fornecedor.objects.filter(Q(id__in=participantes.values_list('fornecedor', flat=True)))
+
+    def get_valor_total(self, ganhador=None):
+        itens = ItemCredenciamento.objects.filter(ata=self)
+        if ganhador:
+            itens = itens.filter(fornecedor=ganhador)
+        total = 0
+        for item in itens:
+            total = total + (item.quantidade * item.valor)
+        return total
+
+
+class ItemCredenciamento(models.Model):
+    credenciamento = models.ForeignKey(Credenciamento)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
+    marca = models.CharField(u'Marca', max_length=200, null=True)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
+    quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    material = models.ForeignKey('base.MaterialConsumo', null=True)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+
+    class Meta:
+        ordering = ['item__item']
+        verbose_name = u'Item do Credenciamento'
+        verbose_name_plural = u'Itens do Credenciamento'
+
+
+    def __unicode__(self):
+        return u'Item %s do Credenciamento: %s' % (self.item, self.credenciamento)
+
+    def get_quantidade_disponivel(self):
+        usuario = tl.get_user()
+        if usuario.groups.filter(name=u'Gerente').exists():
+            pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True)
+            if pedidos.exists():
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            else:
+                return self.quantidade
+
+        else:
+
+
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+            pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
+            if pedidos.exists():
+                return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            return total
+
+        return 0
+
+    def get_saldo_atual_secretaria(self, setor):
+        pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=setor.secretaria)
+        if pedidos.exists():
+            return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+        else:
+            return self.quantidade
+
+class PedidoCredenciamento(models.Model):
+    credenciamento = models.ForeignKey(Credenciamento)
+    item = models.ForeignKey(ItemCredenciamento)
+    fornecedor = models.ForeignKey(Fornecedor, null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    setor = models.ForeignKey(Setor)
+    pedido_por = models.ForeignKey(User)
+    pedido_em = models.DateTimeField(u'Pedido em')
+    ativo = models.BooleanField(u'Ativo', default=True)
+
+
+    class Meta:
+        verbose_name = u'Pedido do Credenciamento'
+        verbose_name_plural = u'Pedidos do Credenciamento'
+
+    def __unicode__(self):
+        return u'Pedido %s do Credenciamento: %s' % (self.id, self.credenciamento)
+
+
+    def get_total(self):
+        return self.quantidade * self.item.valor
+
+    def get_saldo_atual(self):
+        return self.item.get_saldo_atual_secretaria(self.setor)
+
+
+class AnexoCredenciamento(models.Model):
+    credenciamento = models.ForeignKey('base.Credenciamento')
+    nome = models.CharField(u'Nome', max_length=500)
+    data = models.DateField(u'Data')
+    arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
+    cadastrado_por = models.ForeignKey(User)
+    cadastrado_em = models.DateTimeField(u'Cadastrado em')
+    publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
+
+    class Meta:
+        verbose_name = u'Anexo do Credenciamento'
+        verbose_name_plural = u'Anexos do Credenciamento'
+
+    def __unicode__(self):
+        return '%s - %s' % (self.nome, self.credenciamento)
 
 class Contrato(models.Model):
 

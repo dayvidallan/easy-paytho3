@@ -197,7 +197,27 @@ class PregaoForm(forms.ModelForm):
         if self.solicitacao.processo:
             self.fields['num_processo'].initial = self.solicitacao.processo
             self.fields['num_processo'].widget.attrs = {'readonly': 'True'}
+        if self.solicitacao.tipo_aquisicao == self.solicitacao.CREDENCIAMENTO:
+            self.fields['num_pregao'].label = u'Número do Credenciamento'
+            self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CREDENCIAMENTO)
+            self.fields['modalidade'].initial = ModalidadePregao.CREDENCIAMENTO
 
+        elif self.solicitacao.tipo_aquisicao in [self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.solicitacao.CHAMADA_PUBLICA_OUTROS, self.solicitacao.CHAMADA_PUBLICA_PRONATER]:
+            self.fields['num_pregao'].label = u'Número da Chamada Pública'
+            if self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR
+            elif self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_OUTROS:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_OUTROS)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_OUTROS
+            elif self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_PRONATER:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_PRONATER)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_PRONATER
+
+        if self.solicitacao.eh_credenciamento():
+
+            del self.fields['tipo']
+            del self.fields['aplicacao_lcn_123_06']
     def clean(self):
         if not self.instance.pk and Pregao.objects.filter(solicitacao=self.solicitacao).exists():
             self.add_error('solicitacao', u'Já existe um pregão para esta solicitação.')
@@ -308,7 +328,7 @@ class PesquisaMercadologicaForm(forms.Form):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PesquisaMercadologicaForm, self).__init__(*args, **kwargs)
         #self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
-        if not self.request.user.is_authenticated() or (self.solicitacao.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]):
+        if not self.request.user.is_authenticated() or not (self.solicitacao.tipo_aquisicao == self.solicitacao.TIPO_AQUISICAO_LICITACAO):
             self.fields['origem_opcao'] = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor')]), initial=True)
 
     # def clean(self):
@@ -433,6 +453,16 @@ class AnexoContratoForm(forms.ModelForm):
         if self.instance.pk:
             self.fields['arquivo'].required = False
 
+class AnexoCredenciamentoForm(forms.ModelForm):
+    class Meta:
+        model = AnexoCredenciamento
+        fields = ['nome', 'data', 'arquivo', 'publico']
+
+    def __init__(self, *args, **kwargs):
+        super(AnexoCredenciamentoForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}
+        if self.instance.pk:
+            self.fields['arquivo'].required = False
 
 class AnexoARPForm(forms.ModelForm):
     class Meta:
@@ -572,6 +602,12 @@ class CadastroMinutaForm(forms.ModelForm):
     class Meta:
         model = SolicitacaoLicitacao
         fields = ['arquivo_minuta']
+
+class CadastroTermoInexigibilidadeForm(forms.ModelForm):
+    termo_inexigibilidade = forms.FileField(label=u'Termo de Inexigibilidade', required=True)
+    class Meta:
+        model = SolicitacaoLicitacao
+        fields = ['termo_inexigibilidade']
 
 
 class ObsForm(forms.Form):
@@ -727,15 +763,33 @@ class AtaRegistroPrecoForm(forms.ModelForm):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
-        ultima = AtaRegistroPreco.objects.filter(adesao=False).latest('id')
-        if ultima.numero:
-            lista = ultima.numero.split('/')
-            if len(lista) > 1:
-                self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+        if AtaRegistroPreco.objects.exists():
+            ultima = AtaRegistroPreco.objects.filter(adesao=False).latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
+                if len(lista) > 1:
+                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
         if not self.instance.pk or not self.instance.adesao:
             del self.fields['fornecedor_adesao_arp']
 
+
+class CredenciamentoForm(forms.ModelForm):
+    class Meta:
+        model = Credenciamento
+        fields = ('numero', 'data_inicio', 'data_fim')
+
+
+    def __init__(self, *args, **kwargs):
+        super(CredenciamentoForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        if Credenciamento.objects.exists():
+            ultima = Credenciamento.objects.all().latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
+                if len(lista) > 1:
+                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
 
 class ContratoForm(forms.ModelForm):
@@ -749,11 +803,12 @@ class ContratoForm(forms.ModelForm):
         super(ContratoForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
-        ultima = Contrato.objects.latest('id')
-        if ultima.numero:
-            lista = ultima.numero.split('/')
-            if len(lista) > 1:
-                self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+        if Contrato.objects.exists():
+            ultima = Contrato.objects.latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
+                if len(lista) > 1:
+                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
     def clean(self):
         if self.cleaned_data.get('garantia_execucao_objeto'):
@@ -1109,3 +1164,8 @@ class CriarContratoAdesaoAtaForm(forms.Form):
         if self.cleaned_data.get(nome_campo):
             if self.cleaned_data.get(nome_campo) > 5:
                 self.add_error('%s' % nome_campo, u'O limite máximo é de 5%.')
+
+
+class EmpresaCredenciamentoForm(forms.Form):
+    fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
+    me_epp = forms.BooleanField(label=u'Micro Empresa/Empresa de Peq.Porte', required=False)
