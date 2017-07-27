@@ -1899,6 +1899,7 @@ def encerrar_pregao(request, pregao_id, motivo):
                 if form.cleaned_data.get('republicar'):
                     o.data_abertura = form.cleaned_data.get('data')
                     o.hora_abertura = form.cleaned_data.get('hora')
+                    o.republicado = True
                 else:
                     o.situacao = Pregao.DESERTO
             elif motivo == u'2':
@@ -1980,6 +1981,7 @@ def suspender_pregao(request, pregao_id):
             registro.obs = form.cleaned_data.get('motivo')
             registro.pregao = pregao
             registro.save()
+            pregao.categoria_suspensao = form.cleaned_data.get('categoria_suspensao')
             pregao.situacao = Pregao.SUSPENSO
             pregao.data_suspensao = datetime.datetime.now().date()
             if form.cleaned_data.get('sine_die'):
@@ -3625,6 +3627,37 @@ def criar_lote(request, pregao_id):
 
 @login_required()
 def extrato_inicial(request, pregao_id):
+    # pregao = get_object_or_404(Pregao, pk=pregao_id)
+    # if pregao.comissao:
+    #     configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    # else:
+    #     configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+    # logo = None
+    # if configuracao.logo:
+    #     logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    #
+    # destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
+    # if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
+    #     os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
+    # caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    #
+    #
+    # data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo}
+    #
+    # template = get_template('extrato_inicial.html')
+    #
+    # html  = template.render(Context(data))
+    #
+    # pdf_file = open(caminho_arquivo, "w+b")
+    # pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+    #         encoding='utf-8')
+    # pdf_file.close()
+    #
+    #
+    # file = open(caminho_arquivo, "r")
+    # pdf = file.read()
+    # file.close()
+    # return HttpResponse(pdf, 'application/pdf')
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
         configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
@@ -3634,28 +3667,111 @@ def extrato_inicial(request, pregao_id):
     if configuracao.logo:
         logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-    destino_arquivo = u'upload/extratos/%s.pdf' % pregao.id
-    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
-    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    municipio = None
+    if get_config_geral():
+        municipio = get_config_geral().municipio
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx import Document
+    from docx.shared import Inches, Pt
+
+    document = Document()
+    table = document.add_table(rows=2, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells2 = table.rows[1].cells
 
 
-    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo}
-
-    template = get_template('extrato_inicial.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
 
 
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    style2 = document.styles['Normal']
+    font = style2.font
+    font.name = 'Arial'
+    font.size = Pt(6)
+
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(11)
+
+
+
+    paragraph = hdr_cells[0].paragraphs[0]
+    run = paragraph.add_run()
+    run.add_picture(logo, width=Inches(1.75))
+
+    paragraph2 = hdr_cells[1].paragraphs[0]
+    paragraph2.style = document.styles['Normal']
+    hdr_cells[1].text =  u'%s' % (configuracao.nome)
+
+
+    paragraph3 = hdr_cells2[1].paragraphs[0]
+    paragraph3.style2 = document.styles['Normal']
+
+
+
+    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+
+    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+    a, b = hdr_cells2[:2]
+    a.merge(b)
+    document.add_paragraph()
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'Extrato Inicial -  %s' % pregao).bold = True
+
+
+
+
+    texto = u'''
+    O Pregoeiro Oficial da %s, objetivando o grau de competitividade preconizado pela administração pública, torna público que estará realizando a(s) licitação(ões) abaixo descrita(s), a saber:
+
+     - %s - Processo Administrativo nº %s
+
+    A(s) referida(s) sessão(ões) será(ão) realizada(s) em: %s
+    O(s) Edital(is) e seus anexos, com as condições e especificações, encontra(m)-se à disposição dos interessados no Setor de Licitações, no endereço acima indicado, das 07:00h às 13:00h, de segunda a sexta-feira, em dias de expediente. O(s) Edital(is) poderão ser requeridos por meio do email %s, através de solicitação contendo o timbrado da requerente e assinado por representante habilitado.
+    Quaisquer esclarecimentos poderão ser prestados no endereço indicado ou através dos telefones: %s.
+
+
+    ''' % (configuracao.nome, pregao, pregao.solicitacao.processo, pregao.local, configuracao.email, configuracao.telefones)
+
+    p = document.add_paragraph()
+    p.add_run(texto)
+
+
+    texto = u'''
+    %s, %s
+    ''' % (municipio, localize(pregao.data_inicio))
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.add_run(texto)
+
+    texto = u'''
+    %s
+
+    Pregoeiro
+    ''' % (pregao.responsavel)
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(texto)
+
+
+
+
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/extrato_inicial_%s.docx' % pregao.id)
+    document.save(caminho_arquivo)
+
+
+
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
+    return response
 
 
 @login_required()
@@ -5774,7 +5890,8 @@ def ata_sessao(request, pregao_id):
 
     #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
     hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
-
+    a, b = hdr_cells2[:2]
+    a.merge(b)
     document.add_paragraph()
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -5785,7 +5902,7 @@ def ata_sessao(request, pregao_id):
     comissao = u', '.join(comissao)
     texto = u'''
     Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
-    Antes da abertura da sessão, realizou-se o credenciamento do (os) representante (es), feito a partir da apresentação da cédula de identidade ou documento equivalente, e procuração por instrumento público ou particular com firma reconhecida em cartório (documentos do outorgante, poderão ser conferidos na habilitação), atos esses documentados conforme listagem do (os) presente (es), que foram numeradas e juntadas aos autos às fls
+
     ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
 
     #document.add_paragraph(texto)
@@ -5793,126 +5910,146 @@ def ata_sessao(request, pregao_id):
     p.alignment = 3
     p.add_run(texto)
 
-    #
-    # p = document.add_paragraph()
-    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    # p.add_run(u'DO CREDENCIAMENTO').bold = True
-    #
-    # p = document.add_paragraph(u'Na sequência, solicitou dos licitantes presentes a declaração de cumprimento dos requisitos de habilitação e dos documentos para credenciamento dos licitantes presentes:')
-
-    table = document.add_table(rows=1, cols=2)
-    hdr_cells = table.rows[0].cells
-    hdr_cells[0].text = 'Empresa'
-    hdr_cells[1].text = 'Representante'
+    if pregao.situacao == pregao.DESERTO:
 
 
+        texto = u'''
+            Aberta a sessão e atendidas todas as prescrições legais, o Sr. Pregoeiro registrou que nenhuma empresa compareceu ou remeteu os envelopes para participação do certame.
+            Observa-se que a publicação do Aviso de Licitação pertinente ocorreu no em Diário Oficial Local e de Grande Circulação.
+            Diante do ocorrido, o Sr. Pregoeiro decidiu considerar o presente certame como “DESERTO”, tendo em vista o não-comparecimento de empresas interessadas no certame, devendo tal resultado ser publicado no Diário Oficial.
+            Após a referida publicação, os autos serão remetidos ao Órgão solicitante para ciência e adoção das providências cabíveis, tendo em vista o não comparecendo interessados na sessão.
 
-    for item in ParticipantePregao.objects.filter(pregao=pregao):
-        me = u'Não Compareceu'
-        if item.nome_representante:
-            me = item.nome_representante
+            Nada mais havendo a tratar, deu o Sr. Pregoeiro por encerrado os trabalhos da reunião, com a lavratura da presente Ata, a qual depois de lida e aprovada, vai assinada pelo Sr. Pregoeiro e membros da Equipe de Apoio presentes à Sessão.
 
-        row_cells = table.add_row().cells
-        row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
-        row_cells[1].text = u'%s' % me
-
-
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-
-
-    texto = u'''
-    Aberta a sessão, o Sr. Pregoeiro deu início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:
-
-    a) Objetivos do Pregão;
-    b) Ordenação dos trabalhos;
-    c) Forma e ordem em que os licitantes pediriam a palavra;
-    d) Vedação a intervenções fora da ordem definida;
-    e) Forma como serão feitos os lances;
-    f) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;
-    g) Pedido para que não se retirasse (em) antes do término, em face à possibilidade de repregoar;
-    h) As penalidades previstas no art. 70 da lei no 10.520/2002 com a correção de redação do texto da lei, conforme exposto no subitem 2.8.2.2;
-    i)           Observou o pregoeiro que ele e a comissão de apoio têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e
-    j)           Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).
-
-    Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es).
-    Em seguida passou-se à abertura do (os) envelope (es) da (as) proposta (as) observando-se os seguintes passos:
-    Abertura;
-    Conferência do conteúdo; e
-    Numeração.
-    Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final.
-    Dando continuidade procedeu-se à análise da (as) proposta (as), quando foi verificado se cada proposta atendia aos requisitos do edital, quanto ao objeto, prazo de entrega, garantia. Como resultado da análise foi (ram) classificada a (as) empresa (as) que atenderam todos os requisitos do edital e seus anexos.
-    '''
-    p = document.add_paragraph(texto)
-
-
-    if pregao.tem_resultado():
-        p = document.add_paragraph()
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p.add_run(u'DOS LANCES').bold = True
-
-        p = document.add_paragraph()
+        '''
         p.alignment = 3
+        p.add_run(texto)
+    elif pregao.republicado:
+        texto = u'''
+
+        Aberta a sessão e atendidas todas as prescrições legais, o Sr. Pregoeiro registrou que nenhuma empresa compareceu ou remeteu os envelopes para participação do certame.
+        Observa-se que a publicação do Aviso de Licitação pertinente ocorreu no dia ______________ em Diário Oficial, o Sr. Pregoeiro, após entrar em contato com o titular da pasta solicitante, determinou o reagendamento do presente certame.
+        Destarte, estando aprovada a MINUTA do Edital anterior devidamente aprovada pela Assessoria Jurídica através do Parecer anexo, ficou avençado que a sessão inicial do %s (2ª CONVOCAÇÃO), será realizada no DIA %s, PELAS %s, no Setor de Licitações, localizado no térreo do prédio sede da %s, situado na %s. O extrato respectivo, objetivando a ampliação da divulgação, deverá ser publicado no DIÁRIO.
+            Na referida data, os termos do EDITAL e seus anexos, com as condições e especificações, devem estar disponibilizados aos interessados no Setor de Licitações, localizado no %s, situado na %s, das __/___h às __/___h, de segunda a sexta-feira, em dias de expediente. O(s) Edital(is) poderão ser requeridos por meio do Portal da Transparência do Município de Guamaré http://www.guamare.rn.gov.br/licitacao/ e do e-mail cpl.guamare@gmail.com e através de solicitação contendo o timbrado da requerente e assinado por representante habilitado. Quaisquer esclarecimentos poderão ser prestados no referido setor ou através dos telefones: %s.
+        Nada mais havendo a tratar, deu o Sr. Pregoeiro por encerrado os trabalhos da reunião, com a lavratura da presente Ata, a qual depois de lida e aprovada, vai assinada pelo Sr. Pregoeiro e membros da Equipe de Apoio presentes à Sessão.
+        ''' % (pregao, localize(pregao.data_abertura), pregao.hora_abertura, configuracao.nome, pregao.local, configuracao.nome, pregao.local, configuracao.telefones)
 
 
-        if pregao.criterio.nome == u'Por Item':
-            nome_tipo = u'item(ns)'
-        else:
-            nome_tipo = u'lote(s)'
-
-
-        p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % nome_tipo)
-
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'DA HABILITAÇÃO').bold = True
-
-    p = document.add_paragraph()
-    p.alignment = 3
-
-    p.add_run(u'Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.')
-
-    if pregao.tem_resultado():
-        p = document.add_paragraph()
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p.add_run(u'DO RESULTADO').bold = True
-
-        p = document.add_paragraph()
         p.alignment = 3
-
-        p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Pregoeiro e equipe declararam como vencedora(s) do certame, a(s) empresa(s): ')
-
-
-        p.add_run(resultado_pregao)
-
-        p = document.add_paragraph()
-        p.alignment = 3
-        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), format_numero_extenso(total_geral), tipo))
-
-
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
-
-
-    for item in ocorrencias:
-        p = document.add_paragraph()
-        #p.alignment = 3
-        p.add_run(item)
-
-
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'DO ENCERRAMENTO').bold = True
-
-    p = document.add_paragraph()
-    p.alignment = 3
-    if pregao.tem_resultado():
-        p.add_run(u'O Pregoeiro, após encerramento desta fase, concedeu aos proponentes vistas ao processo e a todos os documentos. Franqueada a palavra, para observações, questionamentos e/ou interposição de recursos, caso alguém assim desejasse, como nenhum dos proponentes manifestou intenção de recorrer, pelo que renunciam, desde logo, em caráter irrevogável e irretratável, ao direito de interposição de recurso. Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes.')
+        p.add_run(texto)
     else:
-        p.add_run(u'Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes')
 
+        texto = u'''
+        Antes da abertura da sessão, realizou-se o credenciamento do (os) representante (es), feito a partir da apresentação da cédula de identidade ou documento equivalente, e procuração por instrumento público ou particular com firma reconhecida em cartório (documentos do outorgante, poderão ser conferidos na habilitação), atos esses documentados conforme listagem do (os) presente (es), que foram numeradas e juntadas aos autos às fls
+        '''
+        p.alignment = 3
+        p.add_run(texto)
+        table = document.add_table(rows=1, cols=2)
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Empresa'
+        hdr_cells[1].text = 'Representante'
+
+
+
+        for item in ParticipantePregao.objects.filter(pregao=pregao):
+            me = u'Não Compareceu'
+            if item.nome_representante:
+                me = item.nome_representante
+
+            row_cells = table.add_row().cells
+            row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+            row_cells[1].text = u'%s' % me
+            texto = u'''
+
+        Aberta a sessão, o Sr. Pregoeiro deu início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:
+
+        a) Objetivos do Pregão;
+        b) Ordenação dos trabalhos;
+        c) Forma e ordem em que os licitantes pediriam a palavra;
+        d) Vedação a intervenções fora da ordem definida;
+        e) Forma como serão feitos os lances;
+        f) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;
+        g) Pedido para que não se retirasse (em) antes do término, em face à possibilidade de repregoar;
+        h) As penalidades previstas no art. 70 da lei no 10.520/2002 com a correção de redação do texto da lei, conforme exposto no subitem 2.8.2.2;
+        i)           Observou o pregoeiro que ele e a comissão de apoio têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e
+        j)           Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).
+
+        Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es).
+        Em seguida passou-se à abertura do (os) envelope (es) da (as) proposta (as) observando-se os seguintes passos:
+        Abertura;
+        Conferência do conteúdo; e
+        Numeração.
+        Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final.
+        Dando continuidade procedeu-se à análise da (as) proposta (as), quando foi verificado se cada proposta atendia aos requisitos do edital, quanto ao objeto, prazo de entrega, garantia. Como resultado da análise foi (ram) classificada a (as) empresa (as) que atenderam todos os requisitos do edital e seus anexos.
+        '''
+        p = document.add_paragraph(texto)
+
+
+        if pregao.tem_resultado():
+            p = document.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.add_run(u'DOS LANCES').bold = True
+
+            p = document.add_paragraph()
+            p.alignment = 3
+
+
+            if pregao.criterio.nome == u'Por Item':
+                nome_tipo = u'item(ns)'
+            else:
+                nome_tipo = u'lote(s)'
+
+
+            p.add_run(u'O Sr. Pregoeiro, com auxílio da Equipe de Pregão, deu início aos lances verbais, solicitando ao (os) representante (es) da (as) licitante (es) que ofertasse (em) seus lance (es) para o (os) %s em sequência, conforme mapa de lance (es) e classificação anexo.' % nome_tipo)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DA HABILITAÇÃO').bold = True
+
+        p = document.add_paragraph()
+        p.alignment = 3
+
+        p.add_run(u'Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.')
+
+        if pregao.tem_resultado():
+            p = document.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.add_run(u'DO RESULTADO').bold = True
+
+            p = document.add_paragraph()
+            p.alignment = 3
+
+            p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Pregoeiro e equipe declararam como vencedora(s) do certame, a(s) empresa(s): ')
+
+
+            p.add_run(resultado_pregao)
+
+            p = document.add_paragraph()
+            p.alignment = 3
+            p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), format_numero_extenso(total_geral), tipo))
+
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
+
+
+        for item in ocorrencias:
+            p = document.add_paragraph()
+            #p.alignment = 3
+            p.add_run(item)
+
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DO ENCERRAMENTO').bold = True
+
+        p = document.add_paragraph()
+        p.alignment = 3
+        if pregao.tem_resultado():
+            p.add_run(u'O Pregoeiro, após encerramento desta fase, concedeu aos proponentes vistas ao processo e a todos os documentos. Franqueada a palavra, para observações, questionamentos e/ou interposição de recursos, caso alguém assim desejasse, como nenhum dos proponentes manifestou intenção de recorrer, pelo que renunciam, desde logo, em caráter irrevogável e irretratável, ao direito de interposição de recurso. Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes.')
+        else:
+            p.add_run(u'Nada mais havendo a tratar, o Pregoeiro declarou encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes')
 
 
     for item in membros:
@@ -5934,6 +6071,288 @@ def ata_sessao(request, pregao_id):
 
 
     for item in ParticipantePregao.objects.filter(pregao=pregao):
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        texto = u'%s (%s)' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+        p.add_run(texto)
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        if item.nome_representante:
+            texto = item.nome_representante
+            if item.cpf_representante:
+                texto += u' (CPF: %s)' % item.cpf_representante
+            p.add_run(texto)
+
+
+    document.add_page_break()
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/ata_sessao_%s.docx' % pregao.id)
+    document.save(caminho_arquivo)
+
+
+
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
+    return response
+
+
+@login_required()
+def ata_sessao_credenciamento(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+
+    municipio = None
+    if get_config_geral():
+        municipio = get_config_geral().municipio
+
+    participantes = []
+    ocorrencias = []
+    comissao  = []
+    membros = []
+    licitantes = []
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+        nome = u'%s' % item.fornecedor
+        participantes.append(nome.replace('&',"e"))
+        me = u'Não'
+        if item.me_epp:
+            me = u'Sim'
+        texto = u'%s - %s - %s - %s - %s' % (item.fornecedor.cnpj, nome.replace('&',"e"), me, item.nome_representante, item.cpf_representante)
+        licitantes.append(texto)
+
+
+
+    #     unidades.append(item.unidade)
+    #     descricoes.append(item.material.nome)
+
+    for item in HistoricoPregao.objects.filter(pregao=pregao):
+        nome = u'%s'% item.obs
+        ocorrencias.append(nome.replace('&',"e"))
+    portaria = None
+    if pregao.comissao:
+        for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao).order_by('-funcao'):
+            nome = u'%s'% (item.membro.nome)
+            if not (item.funcao == MembroComissaoLicitacao.PREGOEIRO):
+                comissao.append(nome.replace('&',"e"))
+
+            texto = u'%s, %s,  %s ' % (nome, item.matricula, item.funcao)
+            membros.append(texto)
+
+        portaria = pregao.comissao.nome
+        tipo = u'%s %s' % (pregao.tipo, pregao.criterio)
+
+
+
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+
+
+    tabela = {}
+    total = {}
+
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO)
+    chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
+    for num in chaves:
+        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        chave = u'%s' % fornecedor
+        tabela[chave] = dict(lance = list(), total = 0)
+
+    for item in itens_pregao.order_by('item'):
+        if item.get_vencedor():
+            chave = u'%s' % item.get_vencedor().participante.fornecedor
+            tabela[chave]['lance'].append(item)
+            valor = tabela[chave]['total']
+            valor = valor + item.get_total_lance_ganhador()
+            tabela[chave]['total'] = valor
+
+    total_geral = Decimal()
+    resultado_pregao = u''
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+
+    if pregao.criterio.nome == u'Por Item':
+        nome_tipo = u'Itens'
+    else:
+        nome_tipo = u'Lotes'
+
+    for result in resultado.items():
+        if result[1]['total'] != 0:
+            result[0]
+            lista = []
+            for item in result[1]['lance']:
+                lista.append(item.item)
+
+
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            total_geral = total_geral + result[1]['total']
+
+    from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+    from docx import Document
+    from docx.shared import Inches, Pt
+
+    document = Document()
+    table = document.add_table(rows=2, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells2 = table.rows[1].cells
+
+
+
+
+    style2 = document.styles['Normal']
+    font = style2.font
+    font.name = 'Arial'
+    font.size = Pt(6)
+
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(11)
+
+
+
+    paragraph = hdr_cells[0].paragraphs[0]
+    run = paragraph.add_run()
+    run.add_picture(logo, width=Inches(1.75))
+
+    paragraph2 = hdr_cells[1].paragraphs[0]
+    paragraph2.style = document.styles['Normal']
+    hdr_cells[1].text =  u'%s' % (configuracao.nome)
+
+
+    paragraph3 = hdr_cells2[1].paragraphs[0]
+    paragraph3.style2 = document.styles['Normal']
+
+
+
+    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+    a, b = hdr_cells2[:2]
+    a.merge(b)
+    document.add_paragraph()
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'%s' % pregao).bold = True
+
+
+
+    comissao = u', '.join(comissao)
+    texto = u'''
+    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
+    Aberta a Sessão e atendidas todas as prescrições legais, o Sr. Presidente da CPL/PMG registrou que, de acordo com o prazo estabelecido, foi entregue o Envelope da (s) seguinte (s) licitante (s):
+
+    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
+
+    #document.add_paragraph(texto)
+    p = document.add_paragraph()
+    p.alignment = 3
+    p.add_run(texto)
+
+
+    table = document.add_table(rows=1, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Empresa'
+    hdr_cells[1].text = 'Representante'
+
+
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+        me = u'Não Compareceu'
+        if item.nome_representante:
+            me = item.nome_representante
+
+        row_cells = table.add_row().cells
+        row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+        row_cells[1].text = u'%s' % me
+        texto = u'''
+
+    Verificando que a publicação do Procedimento ocorreu na forma e no prazo previsto na legislação aplicável, inclusive com a disponibilização do Edital no Setor de Licitações da PMG, Portal da Transparência e Quadro de Avisos da PMG, deu o Sr. Presidente da CPL/PMG continuidade do procedimento.
+
+    Em ato contínuo, foi (ram) aberto (s) o (s) Envelope (s) (Documentação de Credenciamento) da (s) referida (s) empresa (s), sendo os documentos devidamente verificados e rubricados pelo (s) representante (s) da (s) empresa (s) presente à sessão, bem como pelos Membros da CPL/PMG.
+    '''
+    p = document.add_paragraph(texto)
+
+
+
+    if pregao.tem_resultado():
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DO RESULTADO').bold = True
+
+        p = document.add_paragraph()
+        p.alignment = 3
+
+        p.add_run(u'Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente da CPL/PMG e Membros da Equipe de Apoio, declararam como APTA (s) do procedimento, a (s) empresa (s):')
+
+        p.add_run(resultado_pregao)
+
+        table = document.add_table(rows=1, cols=2)
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Empresa'
+        hdr_cells[1].text = 'Representante'
+
+
+
+        for item in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False, excluido_dos_itens=False):
+            me = u'Não Compareceu'
+            if item.nome_representante:
+                me = item.nome_representante
+
+            row_cells = table.add_row().cells
+            row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+            row_cells[1].text = u'%s' % me
+
+        texto = u'''
+            Após o resultado, o Sr. Presidente da CPL/PMG concedeu a palavra a estes para os eventuais registros quanto a documentação de habilitação apresentada, tendo estes declarado que não há nada a registrar.
+
+            Em seguida, o Presidente da CPL/PMG comunicou aos presentes que encerraria a Sessão, informando que o resultado será publicado no Diário Oficial dos Municípios do Estado do Rio Grande do Norte – FEMURN, e após, o objeto do certame será adjudicado às empresas vencedoras.
+
+            Nada mais havendo a tratar, deu o Sr. Presidente por encerrado os trabalhos da reunião às 15h00min (quinze horas), com a lavratura da presente Ata, a qual depois de lida e aprovada, vai assinada pelo Presidente, Membros da CPL/PMG presentes à Sessão.
+        '''
+        p = document.add_paragraph(texto)
+
+
+
+    for item in membros:
+
+        texto = item.split(',')
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(texto[0])
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'Matrícula: %s' % texto[1])
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(texto[2])
+
+
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False, excluido_dos_itens=False):
 
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER

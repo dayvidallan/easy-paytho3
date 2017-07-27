@@ -866,73 +866,100 @@
         <div id="relatorios" class="tab-pane">
 
 
-            <h2>Relatórios</h2>
+            <table class="table table-bordered table-condensed table-striped" width="90%">
+                <tr>
+                    <td>
+                        <h2>Relatórios</h2>
 
-                <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                        <table class="table table-bordered table-condensed table-striped" width="90%">
 
-                    <tbody>
-                        <tr>
-                            <td><a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" target="_blank">Dados da Licitação/Procedimento</a></td>
-                        </tr>
-                        <tr>
-                            <td><a href="/base/extrato_inicial/{{ pregao.pk }}/" target="_blank">Extrato Inicial</a></td>
-                        </tr>
-
-                        <tr>
-                            <td><a href="/base/relatorio_lista_download_licitacao/{{ pregao.pk }}/" target="_blank">Lista de Interessados no Edital</a></td>
-                        </tr>
-
-                        <tr>
-                            <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
-                        </tr>
-                        {% if pregao.tem_proposta %}
-                            <tr>
-                                <td><a href="/base/relatorio_propostas_pregao/{{ pregao.id }}/" target="_blank">Relatório de Propostas</a></td>
-                            </tr>
-                        {% endif %}
-
-
-                        {% if pregao.visitantepregao_set.exists %}
-                            <tr>
-                                <td><a href="/base/relatorio_lista_visitantes/{{ pregao.id }}/" target="_blank">Lista de Visitantes</a></td>
-                            </tr>
-                        {% endif %}
-                        {% if pregao.eh_pregao and pregao.tem_lance_registrado %}
-                            <tr>
-                                <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>
-                            </tr>
-                        {% endif %}
-                        <tr>
-                            <td><a href="/base/ata_sessao/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
-                        </tr>
-                        {%  if pregao.tem_resultado %}
-
-                            <tr>
-                                <td><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a></td>
-                            </tr>
-                            {% if pregao.eh_pregao %}
+                            <tbody>
                                 <tr>
-                                    <td><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a></td>
+                                    <td><a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" target="_blank">Dados da Licitação/Procedimento</a></td>
                                 </tr>
-                            {% endif %}
-                            <tr>
-                                <td><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="/base/relatorio_economia/{{ pregao.id }}/" target="_blank">Relatório de Economia Alcançada</a></td>
-                            </tr>
+
+                                <tr>
+                                    <td><a href="/base/relatorio_lista_download_licitacao/{{ pregao.pk }}/" target="_blank">Lista de Interessados no Edital</a></td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
+                                </tr>
+                                {% if pregao.tem_proposta %}
+                                    <tr>
+                                        <td><a href="/base/relatorio_propostas_pregao/{{ pregao.id }}/" target="_blank">Relatório de Propostas</a></td>
+                                    </tr>
+                                {% endif %}
 
 
-                        {% endif %}
+                                {% if pregao.visitantepregao_set.exists %}
+                                    <tr>
+                                        <td><a href="/base/relatorio_lista_visitantes/{{ pregao.id }}/" target="_blank">Lista de Visitantes</a></td>
+                                    </tr>
+                                {% endif %}
+                                {% if pregao.eh_pregao and pregao.tem_lance_registrado %}
+                                    <tr>
+                                        <td><a href="/base/relatorio_lances_item/{{ pregao.id }}/" target="_blank">Relatório de Lances por Item</a></td>
+                                    </tr>
+                                {% endif %}
 
-                        {% if pregao.tem_ocorrencia %}
-                            <tr>
-                                <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante o Processo</a></td>
-                            </tr>
-                        {% endif %}
+                                {%  if pregao.tem_resultado %}
 
-                    </tbody>
-                </table>
+                                    <tr>
+                                        <td><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a></td>
+                                    </tr>
+                                    {% if pregao.eh_pregao %}
+                                        <tr>
+                                            <td><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a></td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="/base/relatorio_economia/{{ pregao.id }}/" target="_blank">Relatório de Economia Alcançada</a></td>
+                                    </tr>
+
+
+                                {% endif %}
+
+                                {% if pregao.tem_ocorrencia %}
+                                    <tr>
+                                        <td><a href="/base/relatorio_ocorrencias/{{ pregao.id }}/" target="_blank">Ocorrências Durante o Processo</a></td>
+                                    </tr>
+                                {% endif %}
+
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <h2>Modelos Pré-Preenchidos</h2>
+
+                        <table  width="90%" class="table table-bordered table-condensed table-striped">
+
+                            <tbody>
+
+                                <tr>
+                                    <td><a href="/base/extrato_inicial/{{ pregao.pk }}/" target="_blank">Extrato Inicial</a></td>
+                                </tr>
+
+
+                                <tr>
+                                    {% if pregao.eh_credenciamento %}
+                                        <td><a href="/base/ata_sessao_credenciamento/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
+                                    {% else %}
+                                        <td><a href="/base/ata_sessao/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
+                                    {% endif %}
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+
 
         </div>
     </div>

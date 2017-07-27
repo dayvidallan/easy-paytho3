@@ -401,6 +401,7 @@ class RemoverParticipanteForm(forms.Form):
 
 class SuspenderPregaoForm(forms.Form):
     motivo = forms.CharField(label=u'Motivo', required=True, widget=forms.Textarea)
+    categoria_suspensao = forms.ChoiceField(label=u'Categoria da Suspensão', required=False, choices=Pregao.CATEGORIA_SUSPENSAO_CHOICES)
     sine_die = forms.BooleanField(label=u'Sine die', required=False)
     data_retorno = forms.DateField(label=u'Data de Retorno', required=False)
 

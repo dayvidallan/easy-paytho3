@@ -3,6 +3,8 @@
 from __future__ import unicode_literals
 from django.contrib.auth.models import AbstractUser
 from django.db import models, transaction
+from django.utils.safestring import mark_safe
+
 from newadmin.utils import CepModelField
 from decimal import Decimal
 from django.db.models import Sum, Q
@@ -1186,8 +1188,17 @@ class Pregao(models.Model):
         (SERVICOS_REFORMA_E_EQUIPAMENTO, SERVICOS_REFORMA_E_EQUIPAMENTO),
         (SERVICOS_OUTRO, SERVICOS_OUTRO),
 
+    )
 
-
+    CATEGORIA_SUSPENSAO_CHOICES = (
+        (u'', '--------------'),
+        (u'Análise de Amostras', u'Análise de Amostras'),
+        (u'Documentação Complementar', u'Documentação Complementar'),
+        (u'Impugnação', u'Impugnação'),
+        (u'Parecer Técnico', u'Parecer Técnico'),
+        (u'Prazo de Recurso', u'Prazo de Recurso'),
+        (u'Proposta Final', u'Proposta Final'),
+        (u'Revisão do Processo', u'Revisão do Processo'),
     )
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
@@ -1203,6 +1214,7 @@ class Pregao(models.Model):
     local = models.CharField(u'Local', max_length=1500)
     responsavel = models.CharField(u'Responsável', max_length=255)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)
+    categoria_suspensao = models.CharField(u'Situação', max_length=100, choices=CATEGORIA_SUSPENSAO_CHOICES, null=True, blank=True)
     obs = models.CharField(u'Observação', max_length=3000, null=True, blank=True)
     data_adjudicacao = models.DateField(u'Data da Adjudicação', null=True, blank=True)
     data_homologacao = models.DateField(u'Data da Homologação', null=True, blank=True)
@@ -1215,6 +1227,7 @@ class Pregao(models.Model):
     comissao = models.ForeignKey('base.ComissaoLicitacao', verbose_name=u'Comissão de Licitação', null=True, blank=True)
     data_retorno = models.DateField(u'Data do Retorno', null=True, blank=True)
     sine_die = models.NullBooleanField(u'Sine Die', null=True, blank=True)
+    republicado = models.BooleanField(u'Republicado', default=False)
     objeto_tipo = models.CharField(u'Objeto - Tipo', choices=OBJETO_TIPO_CHOICES, max_length=200, default=COMPRA_MATERIAL_CONSUMO)
     valor_total = models.CharField(u'Valor Total Orçado', max_length=20, null=True, blank=True)
     recurso_proprio = models.CharField(u'Recurso Próprio', max_length=20, null=True, blank=True)
@@ -1241,7 +1254,7 @@ class Pregao(models.Model):
         super(Pregao, self).save()
 
     def eh_credenciamento(self):
-        return self.solicitacao.tipo_aquisicao in [self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.solicitacao.CHAMADA_PUBLICA_OUTROS, self.solicitacao.CHAMADA_PUBLICA_PRONATER, self.solicitacao.CREDENCIAMENTO]
+        return self.modalidade.id in [ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, ModalidadePregao.CHAMADA_PUBLICA_OUTROS, ModalidadePregao.CHAMADA_PUBLICA_PRONATER, ModalidadePregao.CREDENCIAMENTO]
     def eh_maior_desconto(self):
         if not self.tipo:
             return False
@@ -1286,7 +1299,9 @@ class Pregao(models.Model):
             elif self.data_retorno:
                 texto += u' Retorno em %s' % self.data_retorno.strftime('%d/%m/%y')
 
-            return texto
+            if self.categoria_suspensao:
+                texto += u'<br>Motivo: %s ' % self.categoria_suspensao
+            return mark_safe(texto)
 
         else:
             return self.situacao
