@@ -1,0 +1,192 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load pagination_tags %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_fornecedores/">Fornecedores<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+        <div class="pull-right">
+            {% if registro %}
+                <a class="btn btn-success" href="/base/cadastrar_crc/{{ fornecedor.id }}/">Editar CRC</a>
+                <a class="btn btn-info" href="/base/imprimir_crc/{{ fornecedor.id }}/">Imprimir CRC</a>
+            {% else %}
+            <a class="btn btn-success" href="/base/cadastrar_crc/{{ fornecedor.id }}/">Cadastrar CRC</a>
+            {% endif %}
+            <a class="btn btn-primary" href="/base/ver_fornecedores/">Voltar</a>
+            <br><br>
+        </div>
+
+
+
+        {% if registro %}
+            <h3><b>Validade: {{ registro.validade}}</b></h3>
+            <br><br>
+            <fieldset>
+                <legend>Dados do Fornecedor</legend>
+            </fieldset>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Porte da Empresa</th>
+                        <th>Data de Abertura da Empresa</th>
+                        <th>Inscrição Estadual</th>
+                        <th>Inscrição Municipal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                       <tr>
+                           <td>{{ registro.porte_empresa }}</td>
+                           <td>{{ registro.data_abertura }}</td>
+                           <td>{{ registro.inscricao_estadual }}</td>
+                           <td>{{ registro.inscricao_municipal }}</td>
+                       </tr>
+
+                </tbody>
+            </table>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Natureza Jurídica</th>
+                        <td>{{ registro.natureza_juridica }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ramo de Negócio</th>
+                        <td>{{ registro.ramo_negocio }}</td>
+                    </tr>
+                </thead>
+
+            </table>
+            <h4>CNAES Primário</h4>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Código</th>
+                        <td>{{ registro.cnae_primario_codigo }}</td>
+                        <th>Descrição</th>
+                        <td>{{ registro.cnae_primario_descricao }}</td>
+                    </tr>
+                </thead>
+
+            </table>
+            <h4>CNAES Secundário</h4>
+            <div class="pull-right">
+                <a class="btn btn-success" href="/base/cadastrar_cnaes_secundario/{{ registro.id }}/">Cadastrar CNAES Secundário</a>
+            </div>
+            <br><br>
+            {% if cnaes %}
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        {% for item in cnaes %}
+                            <tr>
+                                <th width="20%">Código</th>
+                                <td>{{ item.codigo }}</td>
+                                <th>Descrição</th>
+                                <td>{{ item.descricao }}</td>
+                            </tr>
+                        {% endfor %}
+                    </thead>
+
+                </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum CNAES Secundário.</p>
+            {% endif %}
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Objetivo Social</th>
+                        <td>{{ registro.objetivo_social }}</td>
+                    </tr>
+                </thead>
+            </table>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Capital Social</th>
+                        <td>R$ {{ registro.capital_social|format_money }}</td>
+                        <th>Data da Última Integralização</th>
+                        <td>{{ registro.data_ultima_integralizacao }}</td>
+                    </tr>
+                </thead>
+
+            </table>
+            <h4>Dados Bancários</h4>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Banco</th>
+                        <td>{{ registro.banco }}</td>
+                        <th  width="20%">Agência</th>
+                        <td>{{ registro.agencia }}</td>
+                        <th  width="20%">Conta</th>
+                        <td>{{ registro.conta }}</td>
+                    </tr>
+                </thead>
+
+            </table>
+            <h4>Responsável Legal</h4>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Nome</th>
+                        <td>{{ registro.nome }}</td>
+                        <th  width="20%">CPF</th>
+                        <td>{{ registro.cpf }}</td>
+                    </tr>
+                    <tr>
+                        <th width="20%">Carteira de identidade (RG)</th>
+                        <td>{{ registro.rg }} / {{ registro.rg_emissor }}</td>
+                        <th  width="20%">Data de Expedição</th>
+                        <td>{{ registro.data_expedicao }}</td>
+                    </tr>
+                    <tr>
+                        <th width="20%">Email</th>
+                        <td colspan="3">{{ registro.email }}</td>
+                    </tr>
+                </thead>
+
+            </table>
+            <h4>Sócios</h4>
+            <div class="pull-right">
+                <a class="btn btn-success" href="/base/cadastrar_socio/{{ registro.id }}/">Cadastrar Sócio</a>
+            </div>
+            <br><br>
+            {% if socios %}
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        {% for item in socios %}
+                             <tr>
+                                <th width="20%">Nome</th>
+                                <td>{{ item.nome }}</td>
+                                <th  width="20%">CPF</th>
+                                <td>{{ item.cpf }}</td>
+                            </tr>
+                            <tr>
+                                <th width="20%">Carteira de identidade (RG)</th>
+                                <td>{{ item.rg }} / {{ item.rg_emissor }}</td>
+                                <th  width="20%">Data de Expedição</th>
+                                <td>{{ item.data_expedicao }}</td>
+                            </tr>
+                            <tr>
+                                <th width="20%">Email</th>
+                                <td colspan="3">{{ item.email }}</td>
+                            </tr>
+                        {% endfor %}
+                    </thead>
+
+                </table>
+            {% else %}
+                <p class="alert alert-warning">Nenhum CNAES Secundário.</p>
+            {% endif %}
+        {% else %}
+            <br><br><br>
+            <p class="alert alert-warning">Nenhum CRC cadastrado para este fornecedor.</p>
+        {% endif %}
+
+{% endblock %}

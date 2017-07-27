@@ -1170,3 +1170,35 @@ class CriarContratoAdesaoAtaForm(forms.Form):
 class EmpresaCredenciamentoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
     me_epp = forms.BooleanField(label=u'Micro Empresa/Empresa de Peq.Porte', required=False)
+
+
+class CRCForm(forms.ModelForm):
+
+    class Meta:
+        model = FornecedorCRC
+        fields = ('porte_empresa', 'data_abertura', 'inscricao_estadual', 'inscricao_municipal', 'natureza_juridica', 'ramo_negocio', 'cnae_primario_codigo', 'cnae_primario_descricao', 'objetivo_social', 'capital_social', 'data_ultima_integralizacao', 'banco', 'agencia', 'conta', 'cpf', 'nome', 'rg', 'rg_emissor', 'data_expedicao', 'data_nascimento', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super(CRCForm, self).__init__(*args, **kwargs)
+        self.fields['data_abertura'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_ultima_integralizacao'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_expedicao'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_nascimento'].widget.attrs = {'class': 'vDateField'}
+
+
+class CNAESForm(forms.ModelForm):
+    class Meta:
+        model = CnaeSecundario
+        fields = ('codigo', 'descricao')
+
+
+class SocioForm(forms.ModelForm):
+    class Meta:
+        model = SocioCRC
+        fields = ('cpf', 'nome', 'rg', 'rg_emissor', 'data_expedicao', 'data_nascimento', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super(SocioForm, self).__init__(*args, **kwargs)
+        self.fields['data_expedicao'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_nascimento'].widget.attrs = {'class': 'vDateField'}
+

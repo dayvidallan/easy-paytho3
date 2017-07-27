@@ -59,7 +59,7 @@
                         <th>Endereço</th>
                         <th>Telefones</th>
                         <th>Email</th>
-                        <th>Dados Bancários</th>
+
                         <th>Opções</th>
 
                     </tr>
@@ -75,10 +75,11 @@
                            <td>{{ fornecedor.endereco }}</td>
                            <td>{{ fornecedor.telefones }}</td>
                            <td>{{ fornecedor.email }}</td>
-                           <td>{{ fornecedor.get_dados_bancarios|safe }}</td>
+
                            <td>
                                <a class="btn btn-default btn-sm" href="/base/editar_fornecedor/{{fornecedor.id}}/">Editar</a>
                                <a class="btn btn-info btn-sm" href="/base/imprimir_fornecedor/{{fornecedor.id}}/" target="_blank">Imprimir</a>
+                               <a class="btn btn-success btn-sm" href="/base/ver_crc/{{fornecedor.id}}/" target="_blank">CRC</a>
                            </td>
                        </tr>
                     {% endfor %}

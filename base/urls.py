@@ -181,6 +181,12 @@ urlpatterns = [
     url(r'^editar_item_pedido/(?P<pedido_id>\d+)/(?P<tipo>\d+)/$', views.editar_item_pedido, name='editar_item_pedido'),
     url(r'^apagar_item_pedido/(?P<pedido_id>\d+)/(?P<tipo>\d+)/$', views.apagar_item_pedido, name='apagar_item_pedido'),
 
+    url(r'^ver_crc/(?P<fornecedor_id>\d+)/$', views.ver_crc, name='ver_crc'),
+    url(r'^cadastrar_crc/(?P<fornecedor_id>\d+)/$', views.cadastrar_crc, name='cadastrar_crc'),
+    url(r'^imprimir_crc/(?P<fornecedor_id>\d+)/$', views.imprimir_crc, name='imprimir_crc'),
+    url(r'^cadastrar_cnaes_secundario/(?P<crc_id>\d+)/$', views.cadastrar_cnaes_secundario, name='cadastrar_cnaes_secundario'),
+    url(r'^cadastrar_socio/(?P<crc_id>\d+)/$', views.cadastrar_socio, name='cadastrar_socio'),
+
 
 
 

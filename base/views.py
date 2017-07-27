@@ -34,6 +34,7 @@ from licita import settings
 LARGURA = 210*mm
 ALTURA = 297*mm
 from django.utils.formats import localize
+from datetime import timedelta
 
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
@@ -7160,3 +7161,76 @@ def relatorio_propostas(request, solicitacao_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+
+@login_required()
+def ver_crc(request, fornecedor_id):
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    title = u'Certificado de Registro Cadastral - %s' % fornecedor
+    if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
+        registro = FornecedorCRC.objects.filter(fornecedor=fornecedor)[0]
+        cnaes = CnaeSecundario.objects.filter(crc=registro)
+        socios = SocioCRC.objects.filter(crc=registro)
+    return render(request, 'ver_crc.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_crc(request, fornecedor_id):
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    title = u'Cadastrar CRC - %s' % fornecedor
+    if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
+        registro = FornecedorCRC.objects.filter(fornecedor=fornecedor)[0]
+    else:
+        registro = FornecedorCRC()
+        registro.fornecedor = fornecedor
+        registro.validade = datetime.date.today() + timedelta(days=365)
+
+    form = CRCForm(request.POST or None, instance=registro)
+    if form.is_valid():
+        o = form.save(False)
+
+        o.save()
+        messages.success(request, u'CRC cadastrado/editado com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
+
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_cnaes_secundario(request, crc_id):
+    crc = get_object_or_404(FornecedorCRC, pk=crc_id)
+    title = u'Cadastrar CNAES Secundário - %s' % crc.fornecedor
+
+    registro = CnaeSecundario()
+    registro.crc = crc
+
+    form = CNAESForm(request.POST or None, instance=registro)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'CNAES Secundário com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
+
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_socio(request, crc_id):
+    crc = get_object_or_404(FornecedorCRC, pk=crc_id)
+    title = u'Cadastrar Sócio - %s' % crc.fornecedor
+
+    registro = SocioCRC()
+    registro.crc = crc
+    form = SocioForm(request.POST or None, instance=registro)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Sócio com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
+
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+
+@login_required()
+def imprimir_crc(request, fornecedor_id):
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
+
+
+    return render(request, 'ver_crc.html', locals(), RequestContext(request))

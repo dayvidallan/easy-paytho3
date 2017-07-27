@@ -1516,10 +1516,6 @@ class Fornecedor(models.Model):
     endereco = models.CharField(u'Endereço', max_length=255)
     telefones = models.CharField(u'Telefones', max_length=300)
     email = models.EmailField(u'Email')
-    banco = models.CharField(u'Banco', max_length=200, null=True, blank=True)
-    agencia = models.CharField(u'Agência', max_length=50, null=True, blank=True)
-    conta = models.CharField(u'Conta', max_length=200, null=True, blank=True)
-
 
     class Meta:
         verbose_name = u'Fornecedor'
@@ -2694,3 +2690,74 @@ class PedidoAtaRegistroPreco(models.Model):
 
     def get_saldo_atual(self):
         return self.item.get_saldo_atual_secretaria(self.setor)
+
+
+class FornecedorCRC(models.Model):
+
+    PORTE_EMPRESA_CHOICES = (
+        (u'MEI - Microempreendedor Individual', u'MEI - Microempreendedor Individual'),
+        (u'Pequena empresa', u'Pequena empresa'),
+        (u'Média empresa', u'Média empresa'),
+        (u'Média-grande empresa', u'Média-grande empresa'),
+        (u'Grande empresa', u'Grande empresa'),
+    )
+    fornecedor = models.ForeignKey(Fornecedor, verbose_name=u'Fornecedor')
+    porte_empresa = models.CharField(u'Porte da Empresa', max_length=100, choices=PORTE_EMPRESA_CHOICES)
+    data_abertura = models.DateField(u'Data de Abertura da Empresa')
+    inscricao_estadual = models.CharField(u'Inscrição Estadual', max_length=100, null=True, blank=True)
+    inscricao_municipal = models.CharField(u'Inscrição Municipal', max_length=100, null=True, blank=True)
+    natureza_juridica = models.CharField(u'Natureza Jurídica', max_length=500)
+    ramo_negocio = models.CharField(u'Ramo do Negócio', max_length=500)
+    cnae_primario_codigo = models.CharField(u'Código do CNAE Primário', max_length=30)
+    cnae_primario_descricao = models.CharField(u'Descrição do CNAE Primário', max_length=500)
+    objetivo_social = models.CharField(u'Objetivo Social', max_length=5000)
+    capital_social = models.CharField(u'Capital Social (R$)', max_length=100, null=True, blank=True)
+    data_ultima_integralizacao = models.DateField(u'Data da Última Integralização',  null=True, blank=True)
+    banco = models.CharField(u'Banco', max_length=200, null=True, blank=True)
+    agencia = models.CharField(u'Agência', max_length=50, null=True, blank=True)
+    conta = models.CharField(u'Conta', max_length=200, null=True, blank=True)
+    cpf = models.CharField(u'CPF', max_length=20)
+    nome = models.CharField(u'Nome', max_length=500)
+    rg = models.CharField(u'Carteira de Identidade', max_length=20)
+    rg_emissor = models.CharField(u'Órgão Expedidor ', max_length=20)
+    data_expedicao = models.DateField(u'Data de Expedição')
+    data_nascimento = models.DateField(u'Data de Nascimento')
+    email = models.CharField(u'Email ', max_length=200)
+    validade = models.DateField(u'Validade')
+
+    class Meta:
+        verbose_name = u'Certificado de Registro Cadastral'
+        verbose_name_plural = u'Certificados de Registros Cadastrais'
+
+    def __unicode__(self):
+        return u'%s - Validade: %s' % (self.fornecedor, self.validade)
+
+
+class CnaeSecundario(models.Model):
+    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC')
+    codigo = models.CharField(u'Código', max_length=30)
+    descricao = models.CharField(u'Descrição', max_length=500)
+
+    class Meta:
+        verbose_name = u'CNAE Secundário'
+        verbose_name_plural = u'CNAES Secundários'
+
+    def __unicode__(self):
+        return u'%s - CNAE Secundário: %s' % (self.crc, self.codigo)
+
+class SocioCRC(models.Model):
+    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC')
+    cpf = models.CharField(u'CPF', max_length=20)
+    nome = models.CharField(u'Nome', max_length=500)
+    rg = models.CharField(u'Carteira de Identidade', max_length=20)
+    rg_emissor = models.CharField(u'Órgão Expedidor ', max_length=20)
+    data_expedicao = models.DateField(u'Data de Expedição')
+    data_nascimento = models.DateField(u'Data de Nascimento')
+    email = models.CharField(u'Email ', max_length=200)
+
+    class Meta:
+        verbose_name = u'Sócio'
+        verbose_name_plural = u'Sócios'
+
+    def __unicode__(self):
+        return u'%s - Sócio: %s' % (self.crc, self.nome)
