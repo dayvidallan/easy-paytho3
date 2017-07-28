@@ -84,12 +84,19 @@
             {% if cnaes %}
                 <table class="table table-bordered table-condensed table-striped">
                     <thead>
-                        {% for item in cnaes %}
-                            <tr>
-                                <th width="20%">Código</th>
+                        <tr>
+                            <th width="20%">Código</th>
+                            <th>Descrição</th>
+                            <th>Opções</th>
+                        </tr>
+                            {% for item in cnaes %}
+                                <tr>
                                 <td>{{ item.codigo }}</td>
-                                <th>Descrição</th>
                                 <td>{{ item.descricao }}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-success" href="/base/editar_cnaes_secundario/{{ item.id }}/">Editar</a>
+                                    <a onclick="return confirm('Você tem certeza que deseja apagar?')" class="btn btn-sm btn-danger" href="/base/excluir_cnaes_secundario/{{ item.id }}/">Excluir</a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </thead>
@@ -98,6 +105,7 @@
             {% else %}
                 <p class="alert alert-warning">Nenhum CNAES Secundário.</p>
             {% endif %}
+            <h4>Informações</h4>
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -157,31 +165,42 @@
             <div class="pull-right">
                 <a class="btn btn-success" href="/base/cadastrar_socio/{{ registro.id }}/">Cadastrar Sócio</a>
             </div>
-            <br><br>
-            {% if socios %}
-                <table class="table table-bordered table-condensed table-striped">
-                    <thead>
-                        {% for item in socios %}
-                             <tr>
-                                <th width="20%">Nome</th>
-                                <td>{{ item.nome }}</td>
-                                <th  width="20%">CPF</th>
-                                <td>{{ item.cpf }}</td>
-                            </tr>
-                            <tr>
-                                <th width="20%">Carteira de identidade (RG)</th>
-                                <td>{{ item.rg }} / {{ item.rg_emissor }}</td>
-                                <th  width="20%">Data de Expedição</th>
-                                <td>{{ item.data_expedicao }}</td>
-                            </tr>
-                            <tr>
-                                <th width="20%">Email</th>
-                                <td colspan="3">{{ item.email }}</td>
-                            </tr>
-                        {% endfor %}
-                    </thead>
 
-                </table>
+            {% if socios %}
+                {% for item in socios %}
+                    <div class="pull-right">
+
+                    </div>
+                    <br><br>
+                    <table class="table table-bordered table-condensed table-striped">
+                        <thead>
+
+                                 <tr>
+                                    <th width="20%">Nome</th>
+                                    <td>{{ item.nome }}</td>
+                                    <th  width="20%">CPF</th>
+                                    <td>{{ item.cpf }}</td>
+                                     <td rowspan="3">
+                                        <a class="btn btn-sm btn-success" href="/base/editar_socio/{{ item.id }}/">Editar</a>
+                                        <a onclick="return confirm('Você tem certeza que deseja apagar?')" class="btn btn-sm btn-danger" href="/base/excluir_socio/{{ item.id }}/">Excluir</a>
+                                     </td>
+                                </tr>
+                                <tr>
+                                    <th width="20%">Carteira de identidade (RG)</th>
+                                    <td>{{ item.rg }} / {{ item.rg_emissor }}</td>
+                                    <th  width="20%">Data de Expedição</th>
+                                    <td>{{ item.data_expedicao }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="20%">Email</th>
+                                    <td colspan="3">{{ item.email }}</td>
+                                </tr>
+
+                        </thead>
+
+                    </table>
+                    <br><br>
+                {% endfor %}
             {% else %}
                 <p class="alert alert-warning">Nenhum CNAES Secundário.</p>
             {% endif %}

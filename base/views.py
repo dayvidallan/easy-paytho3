@@ -5606,7 +5606,7 @@ def documentos_credenciamentos(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
 
 
-    title= u'Documentos - %s' % contrato
+    title= u'Documentos - %s' % credenciamento
     return render(request, 'documentos_credenciamentos.html', locals(), RequestContext(request))
 
 @login_required()
@@ -7235,10 +7235,68 @@ def cadastrar_cnaes_secundario(request, crc_id):
         form = CNAESForm(request.POST or None, instance=registro)
         if form.is_valid():
             form.save()
-            messages.success(request, u'CNAES Secundário com sucesso.')
+            messages.success(request, u'CNAES Secundário cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
 
         return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def editar_cnaes_secundario(request, item_id):
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        item = get_object_or_404(CnaeSecundario, pk=item_id)
+        title = u'Editar CNAES Secundário - %s' % item.crc.fornecedor
+
+        form = CNAESForm(request.POST or None, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'CNAES Secundário editado com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_crc/%s/' % item.crc.fornecedor.id)
+
+        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def excluir_cnaes_secundario(request, item_id):
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        item = get_object_or_404(CnaeSecundario, pk=item_id)
+        crc = item.crc
+        item.delete()
+        messages.success(request, u'CNAES Secundário excluído com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
+
+
+    else:
+        raise PermissionDenied
+
+@login_required()
+def editar_socio(request, item_id):
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        item = get_object_or_404(SocioCRC, pk=item_id)
+        title = u'Editar Sócio - %s' % item.crc.fornecedor
+
+        form = SocioForm(request.POST or None, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Sócio editado com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_crc/%s/' % item.crc.fornecedor.id)
+
+        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def excluir_socio(request, item_id):
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        item = get_object_or_404(SocioCRC, pk=item_id)
+        crc = item.crc
+        item.delete()
+        messages.success(request, u'Sócio excluído com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
+
+
     else:
         raise PermissionDenied
 
