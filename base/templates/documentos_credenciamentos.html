@@ -1,0 +1,59 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/gestao_contratos/">Gestão de Contratos<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+    <div class="pull-right">
+        <a class="btn btn-success" href="/base/gestao_pedidos/">Voltar</a>
+    </div>
+    <br><br>
+
+    {%  if credenciamento.anexocredenciamento_set.exists %}
+        <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th width="10%">Data</th>
+                        <th>Arquivo</th>
+                        <td>Documento Público</td>
+                        <th>Cadastrado Por</th>
+                        <th>Cadastrado Em</th>
+                        <th>Opções</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {%  for item in credenciamento.anexocredenciamento_set.all %}
+
+                        <tr>
+                            <td>{{ item.nome }}</td>
+                            <td>{{ item.data }}</td>
+                            <td><a href="/media/{{ item.arquivo }}">Ver arquivo</a></td>
+                            <td>
+                                {% if item.publico %}
+                                    <font color="green">Sim</font>
+                                {% else %}
+                                    <font color="red">Não</font>
+                                {% endif%}
+                            </td>
+                            <td>{{ item.cadastrado_por.pessoafisica.nome }}</td>
+                            <td>{{ item.cadastrado_em }}</td>
+                            <td>
+                                {% if item.cadastrado_por == request.user %}
+                                    <a href="/base/apagar_anexo_pregao/{{ item.id}}/" class="btn btn-danger">Apagar</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    {% else %}
+        <p class="alert alert-warning">Nenhum anexo cadastrado.</p>
+    {% endif %}
+{% endblock %}

@@ -160,6 +160,10 @@ urlpatterns = [
 
     url(r'^apagar_anexo_contrato/(?P<item_id>\d+)/$', views.apagar_anexo_contrato, name='apagar_anexo_contrato'),
     url(r'^documentos_atas/(?P<ata_id>\d+)/$', views.documentos_atas, name='documentos_atas'),
+    url(r'^documentos_contratos/(?P<contrato_id>\d+)/$', views.documentos_contratos, name='documentos_contratos'),
+    url(r'^documentos_credenciamentos/(?P<credenciamento_id>\d+)/$', views.documentos_credenciamentos, name='documentos_credenciamentos'),
+
+
     url(r'^rejeitar_pesquisa/(?P<item_pesquisa_id>\d+)/$', views.rejeitar_pesquisa, name='rejeitar_pesquisa'),
     url(r'^excluir_item_pesquisa/(?P<item_pesquisa_id>\d+)/$', views.excluir_item_pesquisa, name='excluir_item_pesquisa'),
     url(r'^ver_pesquisas/(?P<solicitacao_id>\d+)/$', views.ver_pesquisas, name='ver_pesquisas'),

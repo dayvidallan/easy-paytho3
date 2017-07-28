@@ -5594,6 +5594,22 @@ def documentos_atas(request, ata_id):
     return render(request, 'documentos_atas.html', locals(), RequestContext(request))
 
 @login_required()
+def documentos_contratos(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+
+
+    title= u'Documentos - %s' % contrato
+    return render(request, 'documentos_contratos.html', locals(), RequestContext(request))
+
+@login_required()
+def documentos_credenciamentos(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+
+
+    title= u'Documentos - %s' % contrato
+    return render(request, 'documentos_credenciamentos.html', locals(), RequestContext(request))
+
+@login_required()
 def rejeitar_pesquisa(request, item_pesquisa_id):
     item = get_object_or_404(ItemPesquisaMercadologica, pk=item_pesquisa_id)
     if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and item.item.solicitacao.setor_atual == request.user.pessoafisica.setor:

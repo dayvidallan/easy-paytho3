@@ -212,7 +212,10 @@
                                                     <thead>
                                                         <tr>
                                                             <th colspan="5">{{lote}}</th>
-                                                            <th align="right"><a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a></th>
+                                                            <th align="right">
+                                                                <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
+                                                                <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
+                                                            </th>
                                                         </tr>
                                                         <tr>
                                                             <th  width="5%">Item</th>
@@ -266,7 +269,10 @@
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <td colspan="7" align="right"><a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a></td>
+                                                        <td colspan="7" align="right">
+                                                            <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
+                                                            <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
+                                                        </td>
 
                                                     </tr>
                                                     <tr>
@@ -344,6 +350,7 @@
                                                         <tr>
                                                             <th colspan="5">{{lote}}</th>
                                                             <th align="right"><a class="btn btn-success"  href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a></th>
+                                                            <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
                                                         </tr>
                                                         <tr>
                                                             <th>Item</th>
@@ -479,6 +486,7 @@
                                             <tr>
                                                 <td colspan="6" align="right">
                                                     <a class="btn btn-success" href="/base/novo_pedido_compra_credenciamento/{{ credenciamento.pk }}/">Novo Pedido</a>
+                                                    <a class="btn btn-default" href="/base/documentos_credenciamentos/{{ credenciamento.pk }}/">Documentos</a>
 
                                                 </td>
 
@@ -501,6 +509,7 @@
                                                     <td>{{ opcao.get_quantidade_disponivel }}</td>
                                                 </tr>
                                             {% endfor %}
+                                        </tbody>
                                         </tbody>
                                     </table>
                                 </div>
