@@ -7210,6 +7210,8 @@ def cadastrar_crc(request, fornecedor_id):
             registro = FornecedorCRC()
             registro.fornecedor = fornecedor
             registro.validade = datetime.date.today() + timedelta(days=365)
+            registro.numero = registro.get_proximo_numero(datetime.date.today().year)
+            registro.ano = datetime.date.today().year
 
         form = CRCForm(request.POST or None, instance=registro)
         if form.is_valid():

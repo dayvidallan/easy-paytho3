@@ -2723,6 +2723,8 @@ class FornecedorCRC(models.Model):
     data_nascimento = models.DateField(u'Data de Nascimento')
     email = models.CharField(u'Email ', max_length=200)
     validade = models.DateField(u'Validade')
+    numero = models.IntegerField(u'Número', null=True, blank=True)
+    ano = models.IntegerField(u'Ano', null=True, blank=True)
 
     class Meta:
         verbose_name = u'Certificado de Registro Cadastral'
@@ -2730,6 +2732,14 @@ class FornecedorCRC(models.Model):
 
     def __unicode__(self):
         return u'%s - Validade: %s' % (self.fornecedor, self.validade)
+
+    def get_proximo_numero(self, ano):
+        if FornecedorCRC.objects.filter(ano=ano).exists():
+            ultimo = FornecedorCRC.objects.filter(ano=ano).order_by('-numero')
+            return ultimo[0].numero + 1
+
+        else:
+            return 1
 
 
 class CnaeSecundario(models.Model):
