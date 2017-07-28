@@ -7171,107 +7171,125 @@ def relatorio_propostas(request, solicitacao_id):
 
 @login_required()
 def ver_crc(request, fornecedor_id):
-    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-    title = u'Certificado de Registro Cadastral - %s' % fornecedor
-    if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
-        registro = FornecedorCRC.objects.filter(fornecedor=fornecedor)[0]
-        cnaes = CnaeSecundario.objects.filter(crc=registro)
-        socios = SocioCRC.objects.filter(crc=registro)
-    return render(request, 'ver_crc.html', locals(), RequestContext(request))
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+        title = u'Certificado de Registro Cadastral - %s' % fornecedor
+        if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
+            registro = FornecedorCRC.objects.filter(fornecedor=fornecedor)[0]
+            cnaes = CnaeSecundario.objects.filter(crc=registro)
+            socios = SocioCRC.objects.filter(crc=registro)
+        return render(request, 'ver_crc.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def cadastrar_crc(request, fornecedor_id):
-    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-    title = u'Cadastrar CRC - %s' % fornecedor
-    if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
-        registro = FornecedorCRC.objects.filter(fornecedor=fornecedor)[0]
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+        title = u'Cadastrar CRC - %s' % fornecedor
+        if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
+            registro = FornecedorCRC.objects.filter(fornecedor=fornecedor)[0]
+        else:
+            registro = FornecedorCRC()
+            registro.fornecedor = fornecedor
+            registro.validade = datetime.date.today() + timedelta(days=365)
+
+        form = CRCForm(request.POST or None, instance=registro)
+        if form.is_valid():
+            o = form.save(False)
+
+            o.save()
+            messages.success(request, u'CRC cadastrado/editado com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
+
+        return render(request, 'cadastrar_crc.html', locals(), RequestContext(request))
     else:
-        registro = FornecedorCRC()
-        registro.fornecedor = fornecedor
-        registro.validade = datetime.date.today() + timedelta(days=365)
-
-    form = CRCForm(request.POST or None, instance=registro)
-    if form.is_valid():
-        o = form.save(False)
-
-        o.save()
-        messages.success(request, u'CRC cadastrado/editado com sucesso.')
-        return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
-
-    return render(request, 'cadastrar_crc.html', locals(), RequestContext(request))
+        raise PermissionDenied
 
 @login_required()
 def cadastrar_cnaes_secundario(request, crc_id):
-    crc = get_object_or_404(FornecedorCRC, pk=crc_id)
-    title = u'Cadastrar CNAES Secundário - %s' % crc.fornecedor
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        crc = get_object_or_404(FornecedorCRC, pk=crc_id)
+        title = u'Cadastrar CNAES Secundário - %s' % crc.fornecedor
 
-    registro = CnaeSecundario()
-    registro.crc = crc
+        registro = CnaeSecundario()
+        registro.crc = crc
 
-    form = CNAESForm(request.POST or None, instance=registro)
-    if form.is_valid():
-        form.save()
-        messages.success(request, u'CNAES Secundário com sucesso.')
-        return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
+        form = CNAESForm(request.POST or None, instance=registro)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'CNAES Secundário com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
 
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def cadastrar_socio(request, crc_id):
-    crc = get_object_or_404(FornecedorCRC, pk=crc_id)
-    title = u'Cadastrar Sócio - %s' % crc.fornecedor
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        crc = get_object_or_404(FornecedorCRC, pk=crc_id)
+        title = u'Cadastrar Sócio - %s' % crc.fornecedor
 
-    registro = SocioCRC()
-    registro.crc = crc
-    form = SocioForm(request.POST or None, instance=registro)
-    if form.is_valid():
-        form.save()
-        messages.success(request, u'Sócio com sucesso.')
-        return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
+        registro = SocioCRC()
+        registro.crc = crc
+        form = SocioForm(request.POST or None, instance=registro)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Sócio com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
 
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required()
 def imprimir_crc(request, fornecedor_id):
-    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-    registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
-    configuracao = get_config_geral()
-    logo = None
-    if configuracao.logo:
-        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+        registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
+        configuracao = get_config_geral()
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-    destino_arquivo = u'upload/extratos/%s.pdf' % fornecedor.id
-    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
-    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-
-
-    data = {'registro': registro, 'configuracao': configuracao, 'logo': logo}
-
-    template = get_template('imprimir_crc.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
+        destino_arquivo = u'upload/extratos/%s.pdf' % fornecedor.id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
 
 
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+        data = {'registro': registro, 'configuracao': configuracao, 'logo': logo}
+
+        template = get_template('imprimir_crc.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+
+
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        raise PermissionDenied
 
 
 @login_required()
 def renovar_crc(request, fornecedor_id):
-    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-    registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
-    registro.validade = datetime.date.today() + timedelta(days=365)
-    registro.save()
-    messages.success(request, u'CRC renovado com sucesso.')
-    return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+        registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
+        registro.validade = datetime.date.today() + timedelta(days=365)
+        registro.save()
+        messages.success(request, u'CRC renovado com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
+    else:
+        raise PermissionDenied
 
