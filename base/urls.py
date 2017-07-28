@@ -186,6 +186,7 @@ urlpatterns = [
     url(r'^imprimir_crc/(?P<fornecedor_id>\d+)/$', views.imprimir_crc, name='imprimir_crc'),
     url(r'^cadastrar_cnaes_secundario/(?P<crc_id>\d+)/$', views.cadastrar_cnaes_secundario, name='cadastrar_cnaes_secundario'),
     url(r'^cadastrar_socio/(?P<crc_id>\d+)/$', views.cadastrar_socio, name='cadastrar_socio'),
+    url(r'^renovar_crc/(?P<fornecedor_id>\d+)/$', views.renovar_crc, name='renovar_crc'),
 
 
 

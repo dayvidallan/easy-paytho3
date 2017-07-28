@@ -1992,6 +1992,7 @@ def suspender_pregao(request, pregao_id):
                 pregao.sine_die = False
                 pregao.data_retorno = form.cleaned_data.get('data_retorno')
                 pregao.data_abertura = form.cleaned_data.get('data_retorno')
+                pregao.hora_abertura = form.cleaned_data.get('hora_retorno')
             pregao.save()
 
             messages.success(request, u'Pregão suspenso com sucesso.')
@@ -3716,7 +3717,7 @@ def extrato_inicial(request, pregao_id):
     a.merge(b)
     document.add_paragraph()
     p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.alignment = 3
     p.add_run(u'Extrato Inicial -  %s' % pregao).bold = True
 
 
@@ -3726,15 +3727,19 @@ def extrato_inicial(request, pregao_id):
     O Pregoeiro Oficial da %s, objetivando o grau de competitividade preconizado pela administração pública, torna público que estará realizando a(s) licitação(ões) abaixo descrita(s), a saber:
 
      - %s - Processo Administrativo nº %s
+    Originado pelo Memorando n° %s - %s, que objetiva a %s, conforme
+    quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital, cuja sessão inicial
+    está marcada para o %s, às %s (Horário local).
 
-    A(s) referida(s) sessão(ões) será(ão) realizada(s) em: %s
+    A(s) referida(s) sessão(ões) será(ão) realizada(s) em: %s.
     O(s) Edital(is) e seus anexos, com as condições e especificações, encontra(m)-se à disposição dos interessados no Setor de Licitações, no endereço acima indicado, das 07:00h às 13:00h, de segunda a sexta-feira, em dias de expediente. O(s) Edital(is) poderão ser requeridos por meio do email %s, através de solicitação contendo o timbrado da requerente e assinado por representante habilitado.
     Quaisquer esclarecimentos poderão ser prestados no endereço indicado ou através dos telefones: %s.
 
 
-    ''' % (configuracao.nome, pregao, pregao.solicitacao.processo, pregao.local, configuracao.email, configuracao.telefones)
+    ''' % (configuracao.nome, pregao, pregao.solicitacao.processo, pregao.solicitacao.num_memorando, pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria, pregao.solicitacao.objeto, localize(pregao.data_abertura), pregao.hora_abertura, pregao.local, configuracao.email, configuracao.telefones)
 
     p = document.add_paragraph()
+    p.alignment = 3
     p.add_run(texto)
 
 
@@ -5925,7 +5930,7 @@ def ata_sessao(request, pregao_id):
         '''
         p.alignment = 3
         p.add_run(texto)
-    elif pregao.republicado:
+    elif pregao.republicado and not pregao.tem_resultado():
         texto = u'''
 
         Aberta a sessão e atendidas todas as prescrições legais, o Sr. Pregoeiro registrou que nenhuma empresa compareceu ou remeteu os envelopes para participação do certame.
@@ -6286,7 +6291,8 @@ def ata_sessao_credenciamento(request, pregao_id):
         row_cells = table.add_row().cells
         row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
         row_cells[1].text = u'%s' % me
-        texto = u'''
+
+    texto = u'''
 
     Verificando que a publicação do Procedimento ocorreu na forma e no prazo previsto na legislação aplicável, inclusive com a disponibilização do Edital no Setor de Licitações da PMG, Portal da Transparência e Quadro de Avisos da PMG, deu o Sr. Presidente da CPL/PMG continuidade do procedimento.
 
@@ -7193,7 +7199,7 @@ def cadastrar_crc(request, fornecedor_id):
         messages.success(request, u'CRC cadastrado/editado com sucesso.')
         return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
 
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'cadastrar_crc.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_cnaes_secundario(request, crc_id):
@@ -7231,6 +7237,41 @@ def cadastrar_socio(request, crc_id):
 def imprimir_crc(request, fornecedor_id):
     fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
     registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
+    configuracao = get_config_geral()
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/extratos/%s.pdf' % fornecedor.id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
 
 
-    return render(request, 'ver_crc.html', locals(), RequestContext(request))
+    data = {'registro': registro, 'configuracao': configuracao, 'logo': logo}
+
+    template = get_template('imprimir_crc.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+
+
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
+
+@login_required()
+def renovar_crc(request, fornecedor_id):
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
+    registro.validade = datetime.date.today() + timedelta(days=365)
+    registro.save()
+    messages.success(request, u'CRC renovado com sucesso.')
+    return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
+

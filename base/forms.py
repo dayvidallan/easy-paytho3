@@ -404,6 +404,7 @@ class SuspenderPregaoForm(forms.Form):
     categoria_suspensao = forms.ChoiceField(label=u'Categoria da Suspensão', required=False, choices=Pregao.CATEGORIA_SUSPENSAO_CHOICES)
     sine_die = forms.BooleanField(label=u'Sine die', required=False)
     data_retorno = forms.DateField(label=u'Data de Retorno', required=False)
+    hora_retorno = forms.CharField(label=u'Hora de Retorno', required=False)
 
     def __init__(self, *args, **kwargs):
         super(SuspenderPregaoForm, self).__init__(*args, **kwargs)
@@ -1171,12 +1172,11 @@ class EmpresaCredenciamentoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True, widget=autocomplete.ModelSelect2(url='participantepregao-autocomplete'))
     me_epp = forms.BooleanField(label=u'Micro Empresa/Empresa de Peq.Porte', required=False)
 
-
 class CRCForm(forms.ModelForm):
 
     class Meta:
         model = FornecedorCRC
-        fields = ('porte_empresa', 'data_abertura', 'inscricao_estadual', 'inscricao_municipal', 'natureza_juridica', 'ramo_negocio', 'cnae_primario_codigo', 'cnae_primario_descricao', 'objetivo_social', 'capital_social', 'data_ultima_integralizacao', 'banco', 'agencia', 'conta', 'cpf', 'nome', 'rg', 'rg_emissor', 'data_expedicao', 'data_nascimento', 'email')
+        fields = ('porte_empresa', 'data_abertura', 'inscricao_estadual', 'inscricao_municipal', 'natureza_juridica', 'ramo_negocio', 'cnae_primario_codigo', 'cnae_primario_descricao', 'objetivo_social', 'capital_social', 'data_ultima_integralizacao', 'banco', 'agencia', 'conta', 'nome', 'cpf', 'rg', 'rg_emissor', 'data_expedicao', 'data_nascimento', 'email')
 
     def __init__(self, *args, **kwargs):
         super(CRCForm, self).__init__(*args, **kwargs)

@@ -1296,8 +1296,7 @@ class Pregao(models.Model):
 
             if self.sine_die:
                 texto += u' - Sine die'
-            elif self.data_retorno:
-                texto += u' Retorno em %s' % self.data_retorno.strftime('%d/%m/%y')
+
 
             if self.categoria_suspensao:
                 texto += u'<br>Motivo: %s ' % self.categoria_suspensao
@@ -2716,8 +2715,8 @@ class FornecedorCRC(models.Model):
     banco = models.CharField(u'Banco', max_length=200, null=True, blank=True)
     agencia = models.CharField(u'Agência', max_length=50, null=True, blank=True)
     conta = models.CharField(u'Conta', max_length=200, null=True, blank=True)
+    nome = models.CharField(u'Nome do Representante Legal', max_length=500)
     cpf = models.CharField(u'CPF', max_length=20)
-    nome = models.CharField(u'Nome', max_length=500)
     rg = models.CharField(u'Carteira de Identidade', max_length=20)
     rg_emissor = models.CharField(u'Órgão Expedidor ', max_length=20)
     data_expedicao = models.DateField(u'Data de Expedição')

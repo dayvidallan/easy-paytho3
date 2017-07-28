@@ -1,0 +1,122 @@
+{% load bootstrap %}
+
+{% block extrastyle %}
+ <style>
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+        width: 100%;
+
+     }
+
+     @page {
+            @frame content_frame {
+				    {% block content_frame %}
+    				top: 20;
+    				left: 20;
+    				right: 20;
+    				bottom: 60;
+    				{% endblock %}
+    			}
+
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.5cm;
+                left: 0.5cm;
+                right: 0.5cm;
+                height: 1.8cm;
+            }
+     }
+
+     div.topo {
+
+       border-bottom-width:1px;
+        border-bottom-style:solid;
+        border-bottom-color:#BEBEBE;
+        height: 1px;
+      }
+
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center>
+        <font size="4">COMISSÃO PERMANENTE DE LICITAÇÃO</font><br><br>
+        <font size="4">CERTIFICADO DE REGISTRO CADASTRAL DE HABILITAÇÃO DE LICITANTES</font><br><br>
+    </center>
+  </h1>
+
+{% endblock %}
+
+{% block content %}
+  <p align="justify">
+
+       <center>
+           <table width="90%">
+                <tr>
+                    <td align="left"><b>N°</b>_________</td>
+                    <td align="right"><b>Validade</b>: {{ registro.validade }}</td>
+                </tr>
+            </table>
+
+       </center>
+       <br><br><br>
+        A COMISSÃO PERMANENTE DE LICITAÇÃO da {{ configuracao.nome }}, na conformidade do que estabelece os arts. 34 e seguintes da Lei 8.666/93, em sua redação oficial, CERTIFICA que a empresa abaixo certificada encontra-se
+      inscrita no CADASTRO DE HABILITAÇÃO DE LICITANTES, estando consequentemente <b><u>habilitada</u></b>, após cumpridas as demais exigências contidas na Lei 8.666/93, em sua redação atual, e porventura constantes
+      dos atos convocatórios correspondentes, a participar das licitações promovidas pelo MUNICÍPIO DE {{ configuracao.municipio }}.
+
+        <br><br>
+
+        Razão Social: {{ registro.fornecedor.razao_social }}<br>
+        Nome Fantasia: {{ registro.fornecedor.razao_social }}<br>
+        Ramo de Atividade Principal: {{ registro.ramo_negocio }}<br>
+        Endereço: {{ registro.fornecedor.endereco }}<br>
+        Telefone: {{ registro.fornecedor.telefones }}<br>
+        Email: {{ registro.fornecedor.email }}<br>
+        Capital Integralizado: {{ registro.capital_social }}<br>
+          Data de Constituição: {{ registro.data_abertura }}<br>
+          CNPJ: {{ registro.fornecedor.cnpj }}<br>
+        Inscrição Municipal: {{ registro.inscricao_municipal }}<br>
+      Inscrição Estadual: {{ registro.inscricao_estadual }}<br><br>
+      Representante Legal: <br><br>
+      01. Nome: {{ registro.nome }}<br>
+      Identidade: {{ registro.rg }}/{{ registro.rg_emissor }}
+      CPF: {{ registro.cpf }}
+
+         <center>
+        <br><br>
+
+
+        <br><br>
+        <b>__________________________________</b><br>
+        Presidente da CPL
+    </center>
+
+    </p>
+
+
+    <div id="footerContent">
+        OBSERVAÇÃO: Qualquer rasura invalida este certificado.
+    </div>
+
+{% endblock %}
