@@ -4108,6 +4108,7 @@ def informar_quantidades_do_pedido_credenciamento(request, credenciamento_id, so
                     novo_pedido.credenciamento = credenciamento
                     novo_pedido.solicitacao = nova_solicitacao
                     novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                    novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx])
                     novo_pedido.fornecedor = fornecedor.fornecedor
                     novo_pedido.quantidade = valor_pedido
                     novo_pedido.setor = setor
@@ -4228,8 +4229,10 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
                     if eh_lote:
 
                         novo_pedido.item = ItemAtaRegistroPreco.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
+                        novo_pedido.valor = ItemAtaRegistroPreco.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).valor
                     else:
-                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx]).valor
+                        novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
 
                     novo_pedido.quantidade = valor_pedido
                     novo_pedido.setor = setor
@@ -4308,6 +4311,7 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
                     novo_pedido.ata = ata
                     novo_pedido.solicitacao = nova_solicitacao
                     novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                    novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
 
                     novo_pedido.quantidade = valor_pedido
                     novo_pedido.setor = setor
@@ -4443,11 +4447,14 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                     if eh_lote:
 
                         novo_pedido.item = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
+                        novo_pedido.valor = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).valor
                     else:
                         novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                        novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
 
 
                     novo_pedido.quantidade = valor_pedido
+
                     novo_pedido.setor = setor
                     novo_pedido.pedido_por = request.user
                     novo_pedido.pedido_em = datetime.datetime.now()
@@ -7369,3 +7376,115 @@ def renovar_crc(request, fornecedor_id):
     else:
         raise PermissionDenied
 
+
+@login_required()
+def aditivar_contrato(request, contrato_id):
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        contrato = get_object_or_404(Contrato, pk=contrato_id)
+        title = u'Aditivar Contrato: %s' % contrato
+        form = AditivarContratoForm(request.POST or None, contrato=contrato)
+        itens = ItemContrato.objects.filter(contrato=contrato)
+        if form.is_valid():
+            aditivo = Aditivo()
+            aditivo.contrato = contrato
+            aditivo.ordem = contrato.get_ordem()
+
+            if form.cleaned_data.get('data_final'):
+                aditivo.de_prazo = True
+                aditivo.data_inicio = form.cleaned_data.get('data_inicial')
+                aditivo.data_fim = form.cleaned_data.get('data_final')
+
+            aditivo.tipo = form.cleaned_data.get('opcoes')
+            if form.cleaned_data.get('opcoes'):
+                aditivo.de_valor = True
+                aditivo.indice = form.cleaned_data.get('indice_reajuste')
+
+                if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
+                    aditivo.valor = ((form.cleaned_data.get('indice_reajuste')/100) * contrato.valor)
+                    for item in ItemContrato.objects.filter(contrato=contrato):
+                        item.valor = item.valor + ((form.cleaned_data.get('indice_reajuste')/100) * item.valor)
+                        item.save()
+                else:
+
+                    total_ajuste = 0
+                    qtd_ajuste = 0
+                    if form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_QUANTITATIVOS:
+
+                        for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
+                            if item and request.POST.getlist('quantidade')[idx-1] > 0:
+                                item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
+                                item.quantidade = item.quantidade + ((Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))/100) * item.quantidade)
+                                item.save()
+                                aditivo_item = AditivoItemContrato()
+                                aditivo_item.item = item
+                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.tipo = form.cleaned_data.get('opcoes')
+                                aditivo_item.save()
+
+                                total_ajuste +=  Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                qtd_ajuste += 1
+
+                    elif form.cleaned_data.get('opcoes') == Aditivo.SUPRESSAO_QUANTITATIVO:
+
+                        for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
+                            if item and request.POST.getlist('quantidade')[idx-1] > 0:
+                                item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
+                                item.quantidade = item.quantidade - ((Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))/100) * item.quantidade)
+                                item.save()
+
+                                aditivo_item = AditivoItemContrato()
+                                aditivo_item.item = item
+                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.tipo = form.cleaned_data.get('opcoes')
+                                aditivo_item.save()
+
+
+                                total_ajuste +=  Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                qtd_ajuste += 1
+
+                    elif form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_VALOR:
+
+                        for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
+                            if item and request.POST.getlist('quantidade')[idx-1] > 0:
+                                item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
+                                item.valor = item.valor + ((Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
+                                item.save()
+
+                                aditivo_item = AditivoItemContrato()
+                                aditivo_item.item = item
+                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.tipo = form.cleaned_data.get('opcoes')
+                                aditivo_item.valor = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.')) * item.valor
+                                aditivo_item.save()
+
+                                total_ajuste +=  Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                qtd_ajuste += 1
+
+                    elif form.cleaned_data.get('opcoes') == Aditivo.SUPRESSAO_VALOR:
+
+                        for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
+                            if item and request.POST.getlist('quantidade')[idx-1] > 0:
+                                item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
+                                item.valor = item.valor - ((Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
+                                item.save()
+
+                                aditivo_item = AditivoItemContrato()
+                                aditivo_item.item = item
+                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.tipo = form.cleaned_data.get('opcoes')
+                                aditivo_item.valor = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.')) * item.valor
+                                aditivo_item.save()
+
+                                total_ajuste +=  Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                qtd_ajuste += 1
+
+                    aditivo.valor =   total_ajuste /   qtd_ajuste
+
+
+            aditivo.save()
+            messages.success(request, u'Aditivo cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
+
+        return render(request, 'aditivar_contrato.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied

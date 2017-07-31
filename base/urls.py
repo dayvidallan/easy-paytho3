@@ -168,6 +168,7 @@ urlpatterns = [
 
     url(r'^editar_socio/(?P<item_id>\d+)/$', views.editar_socio, name='editar_socio'),
     url(r'^excluir_socio/(?P<item_id>\d+)/$', views.excluir_socio, name='excluir_socio'),
+    url(r'^aditivar_contrato/(?P<contrato_id>\d+)/$', views.aditivar_contrato, name='aditivar_contrato'),
 
 
 

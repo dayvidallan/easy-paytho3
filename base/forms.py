@@ -1202,3 +1202,42 @@ class SocioForm(forms.ModelForm):
         self.fields['data_expedicao'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_nascimento'].widget.attrs = {'class': 'vDateField'}
 
+
+class AditivarContratoForm(forms.Form):
+    data_inicial = forms.DateField(label=u'Data Inicial', required=False)
+    data_final = forms.DateField(label=u'Data Final', required=False)
+    opcoes = forms.ChoiceField(label=u'Tipo', required=False, choices=Aditivo.TIPO_CHOICES)
+    indice_reajuste = forms.DecimalField(label=u'Informe o Índice de Reajuste (%)', required=False)
+    percentual_acrescimo_valor = forms.DecimalField(label=u'Percentual de Acréscimo Permitido (%)', help_text=u'O percentual máximo é 25%', required=False)
+    percentual_acrescimo_quantitativos = forms.DecimalField(label=u'Percentual de Acréscimo Permitido (%)', help_text=u'O percentual máximo é 25%', required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.contrato = kwargs.pop('contrato', None)
+        super(AditivarContratoForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicial'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_final'].widget.attrs = {'class': 'vDateField'}
+        self.total_acrescimo_quantitativos = 0
+        for aditivo in Aditivo.objects.filter(contrato=self.contrato, de_valor=True, tipo=Aditivo.ACRESCIMO_QUANTITATIVOS):
+            if aditivo.indice:
+                self.total_acrescimo_quantitativos += aditivo.indice
+
+        self.fields['percentual_acrescimo_quantitativos'].initial = 25 - self.total_acrescimo_quantitativos
+        self.fields['percentual_acrescimo_quantitativos'].widget.attrs = {'readonly': 'True'}
+
+        self.total_acrescimo_valor = 0
+        for aditivo in Aditivo.objects.filter(contrato=self.contrato, de_valor=True, tipo=Aditivo.ACRESCIMO_VALOR):
+            self.total_acrescimo_valor += aditivo.indice
+
+        self.fields['percentual_acrescimo_valor'].initial = 25 - self.total_acrescimo_valor
+        self.fields['percentual_acrescimo_valor'].widget.attrs = {'readonly': 'True'}
+
+    class Media:
+            js = ['/static/base/js/aditivo.js']
+
+
+    def clean(self):
+        if self.cleaned_data.get('data_inicial') and not self.cleaned_data.get('data_final'):
+            self.add_error('data_final' , u'Informe a data final.')
+
+        if self.cleaned_data.get('opcoes') != Aditivo.REAJUSTE_FINANCEIRO:
+            import ipdb; ipdb.set_trace()

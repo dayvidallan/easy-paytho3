@@ -2376,6 +2376,7 @@ class PedidoCredenciamento(models.Model):
     fornecedor = models.ForeignKey(Fornecedor, null=True)
     solicitacao = models.ForeignKey(SolicitacaoLicitacao)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
     setor = models.ForeignKey(Setor)
     pedido_por = models.ForeignKey(User)
     pedido_em = models.DateTimeField(u'Pedido em')
@@ -2473,11 +2474,19 @@ class Contrato(models.Model):
             return u'Sim'
         return u'Não'
 
+    def get_valor_aditivado(self):
+        total = self.valor
+        for aditivo in self.aditivos_set.all():
+            if aditivo.de_valor and aditivo.valor: # evita NoneType em aditivo.valor
+                total += aditivo.valor
+        return total
+
+
     def get_data_fim(self):
-        if not Aditivo.objects.filter(contrato=self).exists():
+        if not Aditivo.objects.filter(contrato=self, de_prazo=True).exists():
             return self.data_fim
         else:
-            return Aditivo.objects.filter(contrato=self).order_by('-data_fim')[0].data_fim
+            return Aditivo.objects.filter(contrato=self, de_prazo=True).order_by('-ordem')[0].data_fim
 
     def get_proximo_aditivo(self):
         if not Aditivo.objects.filter(contrato=self).exists():
@@ -2508,25 +2517,77 @@ class Contrato(models.Model):
         return None
 
 
+    def get_ordem(self):
+        if Aditivo.objects.filter(contrato=self).exists():
+            return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].ordem + 1
+        else:
+            return 1
 
 class Aditivo(models.Model):
-    contrato = models.ForeignKey(Contrato)
+
+    ACRESCIMO_QUANTITATIVOS = u'Acréscimo de Quantitativos'
+    ACRESCIMO_VALOR = u'Acréscimo de Valor'
+    REAJUSTE_FINANCEIRO = u'Reajuste Econômico-financeiro'
+    SUPRESSAO_QUANTITATIVO = u'Supressão de Quantitativo'
+    SUPRESSAO_VALOR = u'Supressão de Valor'
+    TIPO_CHOICES = (
+        (u'', '-----------------'),
+        (ACRESCIMO_QUANTITATIVOS, ACRESCIMO_QUANTITATIVOS),
+        (ACRESCIMO_VALOR, ACRESCIMO_VALOR),
+        (REAJUSTE_FINANCEIRO, REAJUSTE_FINANCEIRO),
+        (SUPRESSAO_QUANTITATIVO,SUPRESSAO_QUANTITATIVO),
+        (SUPRESSAO_VALOR, SUPRESSAO_VALOR),
+    )
+    contrato = models.ForeignKey(Contrato, related_name='aditivos_set' , on_delete=models.CASCADE)
     ordem = models.PositiveSmallIntegerField(default=0)
-    numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
-    valor = models.DecimalField(decimal_places=2,max_digits=20, null=True, blank=True)
-    data_inicio = models.DateField(db_column='data_inicio', verbose_name=u'Data de Início', null=True, blank=True)
-    data_fim = models.DateField(db_column='data_fim', verbose_name=u'Data de Vencimento', null=True, blank=True)
+    valor = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
+    data_inicio = models.DateField(verbose_name=u'Data de Início', null=True, blank=True)
+    data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True, blank=True)
     de_prazo = models.BooleanField(verbose_name=u'Aditivo de Prazo', default=False)
     de_valor = models.BooleanField(verbose_name=u'Aditivo de Valor', default=False)
-    de_fiscal = models.BooleanField(verbose_name=u'Aditivo de Fiscal', default=False)
+    tipo = models.CharField(u'Tipo de Aditivo', null=True, blank=True, choices=TIPO_CHOICES, max_length=50)
+    indice = models.DecimalField(u'Índice de Reajuste', decimal_places=2, max_digits=10, null=True, blank=True)
 
     class Meta:
-        verbose_name = u'Aditivo do Contrato'
-        verbose_name_plural = u'Aditivos do Contrato'
+        verbose_name = u'Aditivo de Contrato'
+        verbose_name_plural = u'Aditivos de Contrato'
 
     def __unicode__(self):
-        return u'Aditivo: %s - %s' % (self.numero, self.contrato)
+        tipo = u''
+        if self.de_prazo:
+            tipo += u'de Prazo, '
 
+        if self.de_valor:
+            tipo += u'de Valor, '
+
+
+        if len(tipo)==0:
+            tipo = u'Indefinido'
+        return u'%sº Aditivo (%s)' % (self.ordem, tipo[:-2])
+
+
+class AditivoItemContrato(models.Model):
+    item = models.ForeignKey('base.ItemContrato', on_delete=models.CASCADE)
+    valor = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
+    tipo = models.CharField(u'Tipo de Aditivo', null=True, blank=True, choices=Aditivo.TIPO_CHOICES, max_length=50)
+    indice = models.DecimalField(u'Índice de Reajuste', decimal_places=2, max_digits=10, null=True, blank=True)
+
+    class Meta:
+        verbose_name = u'Aditivo de Item de Contrato'
+        verbose_name_plural = u'Aditivos de Itens de Contrato'
+
+    def __unicode__(self):
+        tipo = u''
+        if self.de_prazo:
+            tipo += u'de Prazo, '
+
+        if self.de_valor:
+            tipo += u'de Valor, '
+
+
+        if len(tipo)==0:
+            tipo = u'Indefinido'
+        return u'Aditivo do Item: (%s)' % (self.item)
 
 class ItemContrato(models.Model):
     contrato = models.ForeignKey(Contrato)
@@ -2578,6 +2639,7 @@ class PedidoContrato(models.Model):
     item = models.ForeignKey(ItemContrato)
     solicitacao = models.ForeignKey(SolicitacaoLicitacao)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
     setor = models.ForeignKey(Setor)
     pedido_por = models.ForeignKey(User)
     pedido_em = models.DateTimeField(u'Pedido em')
@@ -2670,6 +2732,7 @@ class PedidoAtaRegistroPreco(models.Model):
     item = models.ForeignKey(ItemAtaRegistroPreco)
     solicitacao = models.ForeignKey(SolicitacaoLicitacao)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
     setor = models.ForeignKey(Setor)
     pedido_por = models.ForeignKey(User)
     pedido_em = models.DateTimeField(u'Pedido em')
@@ -2770,3 +2833,6 @@ class SocioCRC(models.Model):
 
     def __unicode__(self):
         return u'%s - Sócio: %s' % (self.crc, self.nome)
+
+
+

@@ -204,7 +204,7 @@
 
                 <td>{{ contrato.data_inicio }}</td>
                 <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
-                <td>{{ contrato.valor|format_money }}</td>
+                <td>{{ contrato.get_valor_aditivado|format_money }}</td>
                 <td>{{ contrato.get_situacao }}</td>
             </tr>
         </tbody>
@@ -372,12 +372,15 @@
                 <br><br>
             {% endif %}
 
-        {% if contrato.aditivo_set.exists %}
+        {% if contrato.aditivos_set.exists %}
             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                     <thead>
 
                         <tr>
                             <th>Número</th>
+                            <th>Descrição</th>
+                            <th>Tipo</th>
+                            <th>Índice</th>
                             <th>Data Início</th>
                             <th>Data Fim</th>
 
@@ -386,11 +389,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in contrato.aditivo_set.all %}
+                        {% for item in contrato.aditivos_set.all %}
                             <tr>
                                 <td>{{ item.ordem }}</td>
-                                <td>{{ item.data_inicio }}</td>
-                                <td>{{ item.data_fim }}</td>
+                                <td>{{ item }}</td>
+                                <td>{{ item.tipo }}</td>
+                                <td>{{ item.indice|default_if_none:"-"  }}</td>
+                                <td>{{ item.data_inicio|default_if_none:"-" }}</td>
+                                <td>{{ item.data_fim|default_if_none:"-" }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
