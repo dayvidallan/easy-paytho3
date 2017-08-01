@@ -168,12 +168,14 @@
     <div class="pull-right">
         {% if eh_gerente %}
             <a class="btn btn-info" href="/admin/base/contrato/{{ contrato.pk }}/change/">Editar</a>
+            <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
             {% if not contrato.data_fim %}
                 <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
             {% endif %}
             {% if not contrato.liberada_compra %}
                 <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
             {% else %}
+
                 <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger">Suspender Solicitação</a>
 
             {% endif %}
@@ -365,12 +367,7 @@
             {% endif %}
         </div>
         <div id="aditivos" class="tab-pane">
-            {% if pode_gerenciar %}
-                <div class="pull-right">
-                    <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
-                </div>
-                <br><br>
-            {% endif %}
+
 
         {% if contrato.aditivos_set.exists %}
             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
