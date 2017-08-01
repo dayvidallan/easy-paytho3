@@ -2500,7 +2500,7 @@ class Contrato(models.Model):
         return AnexoContrato.objects.filter(contrato=self, publico=True)
 
     def get_fornecedor(self):
-        if ItemContrato.objects.filter(contrato=self)[0].participante:
+        if ItemContrato.objects.filter(contrato=self).exists() and ItemContrato.objects.filter(contrato=self)[0].participante:
             return ItemContrato.objects.filter(contrato=self)[0].participante
         return ItemContrato.objects.filter(contrato=self)[0].fornecedor
 
