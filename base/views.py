@@ -517,7 +517,9 @@ def lances_item(request, item_id):
             else:
                 participante = item.get_proximo_lance() or item.get_participante_desempate()
             rodada_anterior = int(rodada_atual.rodada) - 1
-            valor_anterior_registrado = PropostaItemPregao.objects.get(item=item, participante=participante).valor
+            valor_anterior_registrado = 0
+            if PropostaItemPregao.objects.filter(item=item, participante=participante).exists():
+                valor_anterior_registrado = PropostaItemPregao.objects.get(item=item, participante=participante).valor
             if LanceItemRodadaPregao.objects.filter(item=item, participante=participante, rodada__rodada__lt=rodada_atual.rodada, valor__isnull=False).order_by('-rodada__rodada').exists():
 
                 valor_anterior_registrado = LanceItemRodadaPregao.objects.filter(item=item, participante=participante, valor__isnull=False).order_by('-rodada__rodada')[0].valor
