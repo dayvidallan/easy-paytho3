@@ -5733,7 +5733,8 @@ def ata_sessao(request, pregao_id):
                 lista.append(item.item)
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), result[1]['total'])
             total_geral = total_geral + result[1]['total']
 
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
@@ -5890,7 +5891,7 @@ def ata_sessao(request, pregao_id):
 
         p = document.add_paragraph()
         p.alignment = 3
-        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), format_numero_extenso(total_geral), tipo))
+        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), total_geral, tipo))
 
 
     p = document.add_paragraph()

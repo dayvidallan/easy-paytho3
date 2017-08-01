@@ -82,26 +82,26 @@ ext = [{1:"um", 2:"dois", 3:"três", 4:"quatro", 5:"cinco", 6:"seis", 7:"sete", 
 und = ['', ' mil', (' milhão', ' milhões'), (' bilhão', ' bilhões'), (' trilhão', ' trilhões')]
 
 def cent(s, grand):
-    s = '0' * (3 - len(s)) + s
-    if s == '000':
+    s = u'0' * (3 - len(s)) + s
+    if s == u'000':
         return ''
-    if s == '100':
-        return 'cem'
+    if s == u'100':
+        return u'cem'
     ret = ''
     dez = s[1] + s[2]
-    if s[0] != '0':
+    if s[0] != u'0':
         ret += ext[2][int(s[0])]
-        if dez != '00':
-            ret += ' e '
+        if dez != u'00':
+            ret += u' e '
         else:
             return ret + (type(und[grand]) == type(()) and (int(s) > 1 and und[grand][1] or und[grand][0]) or und[grand])
     if int(dez) < 20:
         ret += ext[0][int(dez)]
     else:
-        if s[1] != '0':
+        if s[1] != u'0':
             ret += ext[1][int(s[1])]
-            if s[2] != '0':
-                ret += ' e ' + ext[0][int(s[2])]
+            if s[2] != u'0':
+                ret += u' e ' + ext[0][int(s[2])]
 
     return ret + (type(und[grand]) == type(()) and (int(s) > 1 and und[grand][1] or und[grand][0]) or und[grand])
 
@@ -109,24 +109,24 @@ def extenso(reais,centavos):
     ret = []
     grand = 0
     if (int(centavos)==0):
-        ret.append('zero centavos')
+        ret.append(u'zero centavos')
     elif (int(centavos)==1):
-        ret.append('um centavo')
+        ret.append(u'um centavo')
     else:
-        ret.append(cent(centavos,0)+' centavos')
+        ret.append(cent(centavos,0)+u' centavos')
     if (int(reais)==0):
-        ret.append('zero reais')
+        ret.append(u'zero reais')
         ret.reverse()
-        return ' e '.join([r for r in ret if r])
+        return u' e '.join([r for r in ret if r])
     elif (int(reais)==1):
-        ret.append('um real')
+        ret.append(u'um real')
         ret.reverse()
-        return ' e '.join([r for r in ret if r])
+        return u' e '.join([r for r in ret if r])
     while reais:
         s = reais[-3:]
         reais = reais[:-3]
         if (grand == 0):
-            ret.append(cent(s, grand)+' reais')
+            ret.append(cent(s, grand)+u' reais')
         else:
             ret.append(cent(s, grand))
         grand += 1
@@ -137,20 +137,20 @@ def extenso(reais,centavos):
 
     total = len(ret)
     for item in ret:
-        if item != 'zero centavos':
+        if item != u'zero centavos':
             lista.append(item)
         if contador == 2 and len(item) == 6:
             pass
         else:
-            if total == contador or item != 'zero centavos' or item == ' reais':
+            if total == contador or item != u'zero centavos' or item == u' reais':
                 pass
             else:
-                lista.append('e')
+                lista.append(u'e')
         contador += 1
 
-    return ''.join(lista)
+    return u''.join(lista)
 
-    return ' e '.join([r for r in ret if r])
+    return u' e '.join([r for r in ret if r])
 
 
 
@@ -161,8 +161,8 @@ def format_numero_extenso(num):
         reais,centavos = n.split(',')
         reais = reais.replace('.', '')
     except:
-        print 'Erro ao parsear o numero informado!'
+        print u'Erro ao parsear o numero informado!'
 
-    print n
+
     return extenso(reais,centavos)
 
