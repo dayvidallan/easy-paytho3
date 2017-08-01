@@ -1972,7 +1972,7 @@ class ResultadoItemPregao(models.Model):
 
 
 class AnexoPregao(models.Model):
-    pregao = models.ForeignKey(Pregao)
+    pregao = models.ForeignKey('base.Pregao')
     nome = models.CharField(u'Nome', max_length=500)
     data = models.DateField(u'Data')
     arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
@@ -1985,7 +1985,7 @@ class AnexoPregao(models.Model):
         verbose_name_plural = u'Anexos do Pregão'
 
     def __unicode__(self):
-        return '%s - %s' % (self.nome, self.pregao)
+        return '%s - %s' % (self.nome, self.data)
 
 
 class AnexoContrato(models.Model):
@@ -2632,6 +2632,24 @@ class ItemContrato(models.Model):
 
     def get_valor_total(self):
         return self.quantidade * self.valor
+
+    def get_aditivo_permitido_valor(self):
+        total_valor = 0
+        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_VALOR):
+            total_valor += item.indice
+
+        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_VALOR):
+            total_valor -= item.indice
+        return (25-total_valor)
+
+    def get_aditivo_permitido_quantitativo(self):
+        total_quantitativo = 0
+        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_QUANTITATIVOS):
+            total_quantitativo += item.indice
+        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_QUANTITATIVO):
+            total_quantitativo -= item.indice
+        return str(25-total_quantitativo).replace(',', '.')
+
 
 
 class PedidoContrato(models.Model):

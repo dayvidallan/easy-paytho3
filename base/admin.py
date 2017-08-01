@@ -318,3 +318,41 @@ class ProcessoAdmin(NewModelAdmin):
     search_fields = ('numero',)
 
 admin.site.register(Processo, ProcessoAdmin)
+
+
+class LogDownloadArquivoAdmin(NewModelAdmin):
+    list_display = ('nome', 'responsavel',  'cnpj')
+    ordering = ('responsavel',)
+    search_fields = ('responsavel',)
+
+admin.site.register(LogDownloadArquivo, LogDownloadArquivoAdmin)
+
+
+class AnexoPregaoAdmin(NewModelAdmin):
+    list_display = ('nome', 'data', )
+    ordering = ('nome',)
+    search_fields = ('nome',)
+
+admin.site.register(AnexoPregao, AnexoPregaoAdmin)
+
+class HistoricoPregaoAdmin(NewModelAdmin):
+    list_display = ('obs', 'data', )
+    ordering = ('data',)
+    search_fields = ('data',)
+
+admin.site.register(HistoricoPregao, HistoricoPregaoAdmin)
+
+class DocumentoSolicitacaoAdmin(NewModelAdmin):
+    list_display = ('nome', 'cadastrado_em', )
+    ordering = ('nome',)
+    search_fields = ('cadastrado_em',)
+
+admin.site.register(DocumentoSolicitacao, DocumentoSolicitacaoAdmin)
+
+
+class AnexoContratoAdmin(NewModelAdmin):
+    list_display = ('nome', 'data', )
+    ordering = ('nome',)
+    search_fields = ('nome',)
+
+admin.site.register(AnexoContrato, AnexoContratoAdmin)

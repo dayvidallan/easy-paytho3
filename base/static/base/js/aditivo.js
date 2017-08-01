@@ -14,6 +14,8 @@
         $("#id_percentual_acrescimo_quantitativos").parent().parent().hide();
         $("#id_percentual_acrescimo_valor").parent().parent().show();
         $("#itens").show();
+        $('.coluna_valor').show();
+        $('.coluna_quantidade').hide();
     }
 
     if($('#id_opcoes').val() == 'Acréscimo de Quantitativos' | $('#id_opcoes').val() == 'Supressão de Quantitativo') {
@@ -22,6 +24,8 @@
         $("#id_percentual_acrescimo_quantitativos").parent().parent().show();
         $("#id_percentual_acrescimo_valor").parent().parent().hide();
         $("#itens").show();
+        $('.coluna_valor').hide();
+        $('.coluna_quantidade').show();
     }
 
     if ($('#id_opcoes').val() == '') {

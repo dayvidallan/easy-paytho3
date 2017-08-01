@@ -1239,5 +1239,4 @@ class AditivarContratoForm(forms.Form):
         if self.cleaned_data.get('data_inicial') and not self.cleaned_data.get('data_final'):
             self.add_error('data_final' , u'Informe a data final.')
 
-        if self.cleaned_data.get('opcoes') != Aditivo.REAJUSTE_FINANCEIRO:
-            import ipdb; ipdb.set_trace()
+

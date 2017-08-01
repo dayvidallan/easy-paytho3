@@ -35,9 +35,8 @@ $(function() {
                             <th>Material/Serviço</th>
                             <th>Marca</th>
                             <th>Unidade</th>
-                            <th>Valor Unitário</th>
-                            <th>Valor Total</th>
-                            <th>Quantidade</th>
+                            <th class="coluna_valor">Valor Unitário</th>
+                            <th class="coluna_quantidade">Quantidade</th>
                             <th>Informar Índice (%)</th>
 
 
@@ -56,10 +55,10 @@ $(function() {
                                 {% endif %}
                                 <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                 <td>{{ opcao.unidade|default_if_none:"-" }}</td>
-                                <td>{{ opcao.valor|format_money }}</td>
-                                <td>{{ opcao.get_valor_total|format_money }}</td>
-                                <td>{{ opcao.quantidade|format_quantidade }}</td>
-                                <td><input name="quantidade" value="0"></td>
+                                <td class="coluna_valor">{{ opcao.valor|format_money }}</td>
+                                <td class="coluna_quantidade">{{ opcao.quantidade|format_quantidade }}</td>
+                                <td class="coluna_valor"><input name="valor" type="number"  min="0" step="0.1" max="{{ opcao.get_aditivo_permitido_valor }}"><small>(Máximo Permitido: {{ opcao.get_aditivo_permitido_valor|format_money }}%)</small></td>
+                                <td class="coluna_quantidade"><input name="quantidade" type="number"  min="0" step="0.1" max="{{ opcao.get_aditivo_permitido_quantitativo }}"><small>(Máximo Permitido: {{ opcao.get_aditivo_permitido_quantitativo|format_money }}%)</small></td>
                                 <input name="id_item" type="hidden" value="{{ opcao.id }}">
                             </tr>
 

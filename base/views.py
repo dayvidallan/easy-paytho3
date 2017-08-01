@@ -35,6 +35,7 @@ LARGURA = 210*mm
 ALTURA = 297*mm
 from django.utils.formats import localize
 from datetime import timedelta
+from django.db import transaction
 
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
@@ -252,42 +253,44 @@ def cadastra_proposta_pregao(request, pregao_id):
             if arquivo_up:
                 sheet = None
                 try:
-                    workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
-                    sheet = workbook.sheet_by_index(0)
+                    with transaction.atomic():
+                        workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
+                        sheet = workbook.sheet_by_index(0)
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
                 PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor).delete()
                 for row in range(9, sheet.nrows):
                     try:
-                        item = unicode(sheet.cell_value(row, 0)).strip()
-                        marca = unicode(sheet.cell_value(row, 5)).strip() or None
-                        valor = unicode(sheet.cell_value(row, 6)).strip()
-                        if row == 0:
-                            if item != u'Item' or valor != u'VALOR UNITÁRIO':
-                                raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
-                        else:
-                            if item and valor:
-                                item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
-                                if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
-                                    PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
-                                else:
-                                    novo_preco = PropostaItemPregao()
-                                    novo_preco.item = item_do_pregao
-                                    novo_preco.pregao = pregao
-                                    novo_preco.participante = fornecedor
-                                    try:
-                                        Decimal(valor)
-                                    except:
-                                        messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
-                                        return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
-                                    novo_preco.valor = valor
-                                    novo_preco.marca = marca
-                                    novo_preco.save()
-                                if not ParticipanteItemPregao.objects.filter(participante=fornecedor, item=item_do_pregao).exists():
-                                    participante_item = ParticipanteItemPregao()
-                                    participante_item.participante = fornecedor
-                                    participante_item.item = item_do_pregao
-                                    participante_item.save()
+                        with transaction.atomic():
+                            item = unicode(sheet.cell_value(row, 0)).strip()
+                            marca = unicode(sheet.cell_value(row, 5)).strip() or None
+                            valor = unicode(sheet.cell_value(row, 6)).strip()
+                            if row == 0:
+                                if item != u'Item' or valor != u'VALOR UNITÁRIO':
+                                    raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
+                            else:
+                                if item and valor:
+                                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
+                                    if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
+                                        PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
+                                    else:
+                                        novo_preco = PropostaItemPregao()
+                                        novo_preco.item = item_do_pregao
+                                        novo_preco.pregao = pregao
+                                        novo_preco.participante = fornecedor
+                                        try:
+                                            Decimal(valor)
+                                        except:
+                                            messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                            return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
+                                        novo_preco.valor = valor
+                                        novo_preco.marca = marca
+                                        novo_preco.save()
+                                    if not ParticipanteItemPregao.objects.filter(participante=fornecedor, item=item_do_pregao).exists():
+                                        participante_item = ParticipanteItemPregao()
+                                        participante_item.participante = fornecedor
+                                        participante_item.item = item_do_pregao
+                                        participante_item.save()
 
 
                     except ValueError:
@@ -1046,8 +1049,9 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
             if arquivo_up:
                 sheet = None
                 try:
-                    workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
-                    sheet = workbook.sheet_by_index(0)
+                    with transaction.atomic():
+                        workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
+                        sheet = workbook.sheet_by_index(0)
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
@@ -1067,7 +1071,8 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
                         try:
-                            Decimal(valor)
+                            with transaction.atomic():
+                                Decimal(valor)
                         except:
                             messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
                             return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
@@ -2167,9 +2172,10 @@ def importar_itens(request, solicitacao_id):
             if arquivo_up:
                 sheet = None
                 try:
-                    workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
-                    sheet = workbook.sheet_by_index(0)
-                    ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).delete()
+                    with transaction.atomic():
+                        workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
+                        sheet = workbook.sheet_by_index(0)
+                        ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).delete()
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
@@ -2240,9 +2246,10 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
         if arquivo_up:
             sheet = None
             try:
-                workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
-                sheet = workbook.sheet_by_index(0)
-                ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa).delete()
+                with transaction.atomic():
+                    workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
+                    sheet = workbook.sheet_by_index(0)
+                    ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa).delete()
             except XLRDError:
                 raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
@@ -2262,7 +2269,8 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                         novo_preco.pesquisa = pesquisa
                         novo_preco.item = item_do_pregao
                         try:
-                            Decimal(valor)
+                            with transaction.atomic():
+                                Decimal(valor)
                         except:
                             messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
                             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % pesquisa.solicitacao.id)
@@ -2581,6 +2589,7 @@ def relatorio_classificacao_por_item(request, pregao_id):
 
     def my_key(dict_key):
            try:
+               with transaction.atomic():
                   return int(dict_key)
            except ValueError:
                   return dict_key
@@ -2676,6 +2685,7 @@ def relatorio_propostas_pregao(request, pregao_id):
 
     def my_key(dict_key):
            try:
+               with transaction.atomic():
                   return int(dict_key)
            except ValueError:
                   return dict_key
@@ -2745,6 +2755,7 @@ def relatorio_lances_item(request, pregao_id):
 
     def my_key(dict_key):
            try:
+               with transaction.atomic():
                   return int(dict_key)
            except ValueError:
                   return dict_key
@@ -4178,7 +4189,8 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
 
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     try:
-                        int(valor)
+                        with transaction.atomic():
+                            int(valor)
                     except:
                         messages.error(request, u'o valor %s é inválido.' % (valor))
                         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
@@ -4191,7 +4203,8 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
                 resultados = itens_ata.filter(participante=participante)
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     try:
-                        int(valor)
+                        with transaction.atomic():
+                            int(valor)
                     except:
                         messages.error(request, u'o valor %s é inválido.' % (valor))
                         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
@@ -4276,7 +4289,8 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
             resultados = itens_ata.filter(fornecedor=participante)
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                 try:
-                    int(valor)
+                    with transaction.atomic():
+                        int(valor)
                 except:
                     messages.error(request, u'o valor %s é inválido.' % (valor))
                     return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
@@ -4395,7 +4409,8 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
 
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     try:
-                        int(valor)
+                        with transaction.atomic():
+                            int(valor)
                     except:
                         messages.error(request, u'o valor %s é inválido.' % (valor))
                         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
@@ -4411,7 +4426,8 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                     resultados = itens_contrato.filter(fornecedor=participante)
                 for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                     try:
-                        int(valor)
+                        with transaction.atomic():
+                            int(valor)
                     except:
                         messages.error(request, u'o valor %s é inválido.' % (valor))
                         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
@@ -6565,8 +6581,9 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
             if arquivo_up:
                 sheet = None
                 try:
-                    workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
-                    sheet = workbook.sheet_by_index(0)
+                    with transaction.atomic():
+                        workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
+                        sheet = workbook.sheet_by_index(0)
 
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
@@ -6610,7 +6627,8 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                             novo_item.unidade = un
                             novo_item.quantidade = qtd
                             try:
-                                Decimal(valor)
+                                with transaction.atomic():
+                                    Decimal(valor)
                             except:
                                 messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
                                 return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
@@ -7168,6 +7186,7 @@ def relatorio_propostas(request, solicitacao_id):
 
     def my_key(dict_key):
            try:
+               with transaction.atomic():
                   return int(dict_key)
            except ValueError:
                   return dict_key
@@ -7409,7 +7428,6 @@ def aditivar_contrato(request, contrato_id):
                     total_ajuste = 0
                     qtd_ajuste = 0
                     if form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_QUANTITATIVOS:
-
                         for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
                             if item and request.POST.getlist('quantidade')[idx-1] > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
@@ -7417,7 +7435,7 @@ def aditivar_contrato(request, contrato_id):
                                 item.save()
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
-                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.indice = request.POST.getlist('quantidade')[idx-1]
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
                                 aditivo_item.save()
 
@@ -7434,48 +7452,48 @@ def aditivar_contrato(request, contrato_id):
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
-                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.indice = request.POST.getlist('quantidade')[idx-1]
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
                                 aditivo_item.save()
 
 
-                                total_ajuste +=  Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                total_ajuste +=  request.POST.getlist('quantidade')[idx-1]
                                 qtd_ajuste += 1
 
                     elif form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_VALOR:
 
-                        for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
-                            if item and request.POST.getlist('quantidade')[idx-1] > 0:
+                        for idx, item in enumerate(request.POST.getlist('valor'), 1):
+                            if item and request.POST.getlist('valor')[idx-1] > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
-                                item.valor = item.valor + ((Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
+                                item.valor = item.valor + ((Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 item.save()
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
-                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.indice = Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.'))
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
-                                aditivo_item.valor = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.')) * item.valor
+                                aditivo_item.valor = Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.')) * item.valor
                                 aditivo_item.save()
 
-                                total_ajuste +=  Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                total_ajuste +=  Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.'))
                                 qtd_ajuste += 1
 
                     elif form.cleaned_data.get('opcoes') == Aditivo.SUPRESSAO_VALOR:
 
-                        for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
-                            if item and request.POST.getlist('quantidade')[idx-1] > 0:
+                        for idx, item in enumerate(request.POST.getlist('valor'), 1):
+                            if item and request.POST.getlist('valor')[idx-1] > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
-                                item.valor = item.valor - ((Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
+                                item.valor = item.valor - ((Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 item.save()
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
-                                aditivo_item.indice = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.indice = Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.'))
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
-                                aditivo_item.valor = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.')) * item.valor
+                                aditivo_item.valor = Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.')) * item.valor
                                 aditivo_item.save()
 
-                                total_ajuste +=  Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                                total_ajuste +=  Decimal(request.POST.getlist('valor')[idx-1].replace('.','').replace(',','.'))
                                 qtd_ajuste += 1
 
                     aditivo.valor =   total_ajuste /   qtd_ajuste
