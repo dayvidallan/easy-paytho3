@@ -34,7 +34,7 @@ INSTALLED_APPS = (
     'pagination',
     'base',
     'easyaudit',
-    'material',
+    
 
 )
 
