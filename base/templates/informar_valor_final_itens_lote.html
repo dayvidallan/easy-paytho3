@@ -26,7 +26,7 @@
                         {% for item in itens %}
                             <tr>
                                 <td>{{ item.item }} - {{ item.item.material|truncatechars:100 }}</td>
-                                <td><input name="itens" value="{{ item.item.get_valor_unitario_final }}">
+                                <td><input name="itens" type="number" value="{{ item.item.get_valor_unitario_final }}">
                                 <input name="id_item" type="hidden" value="{{ item.item.id }}"></td>
                             </tr>
                         {% endfor %}

@@ -80,7 +80,7 @@
                                         <td>{{ resultado.get_valor_item_lote }}</td>
                                         <td>{{ resultado.get_item_tipo_contrato.get_quantidade_disponivel }}</td>
                                         {% if buscou %}
-                                            <td><input name="quantidades" value="0">
+                                            <td><input name="quantidades" type="number" value="0">
                                                 <input name="id" type='hidden' value="{{resultado.id}}">
                                             </td>
                                         {% endif %}
@@ -140,7 +140,7 @@
                                     <td>{{ resultado.valor }}</td>
                                     <td>{{ resultado.get_quantidade_disponivel }}</td>
                                     {% if buscou %}
-                                        <td><input name="quantidades" value="0"></td>
+                                        <td><input name="quantidades" type="number" value="0"></td>
                                         <input name="id" type='hidden' value="{{resultado.id}}">
                                     {% endif %}
 
