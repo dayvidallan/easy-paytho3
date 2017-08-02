@@ -249,7 +249,7 @@ urlpatterns = [
 
     url(r'^editar_anexo_credenciamento/(?P<item_id>\d+)/$', views.editar_anexo_credenciamento, name='editar_anexo_credenciamento'),
     url(r'^apagar_anexo_credenciamento/(?P<item_id>\d+)/$', views.apagar_anexo_credenciamento, name='apagar_anexo_credenciamento'),
-
+    url(r'^anexo_38/(?P<pregao_id>\d+)/$', views.anexo_38, name='anexo_38'),
 
     url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),
     url(r'^apagar_item/(?P<item_id>\d+)/$', views.apagar_item, name='apagar_item'),
