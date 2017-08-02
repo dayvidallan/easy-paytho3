@@ -7536,14 +7536,9 @@ def anexo_38(request, pregao_id):
             w_sheet.write(row_index, 1, item.material.nome[:100])
             w_sheet.write(row_index, 2, contador)
             w_sheet.write(row_index, 3, format_money(result.valor))
-            if result.participante.nome_representante:
-                w_sheet.write(row_index, 4, result.participante.nome_representante)
-                w_sheet.write(row_index, 5, u'CPF')
-                w_sheet.write(row_index, 6, result.participante.cpf_representante)
-            else:
-                w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
-                w_sheet.write(row_index, 5, u'CNPJ')
-                w_sheet.write(row_index, 6, result.participante.fornecedor.cnpj)
+            w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+            w_sheet.write(row_index, 5, u'CNPJ')
+            w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
 
 
             contador += 1

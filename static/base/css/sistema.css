@@ -1448,14 +1448,8 @@ footer section#content-footer p {
     font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 
 }
-.formulario li {
 
-    list-style: none;
 
-}
-.formulario-bar > li > ul {
-    list-style: none;
-}
 
 .action-bar li {
     float: left;
@@ -1500,4 +1494,13 @@ footer section#content-footer p {
     padding: 6px 8%;
     white-space: inherit;
     width: 100%;
+}
+
+.formulario li {
+
+    list-style: none;
+
+}
+.formulario-bar > li > ul {
+    list-style: none;
 }
