@@ -74,12 +74,12 @@ def format_quantidade(value):
 
 import sys
 
-ext = [{1:"um", 2:"dois", 3:"três", 4:"quatro", 5:"cinco", 6:"seis", 7:"sete", 8:"oito", 9:"nove", 10:"dez", 11:"onze", 12:"doze",13:"treze", 14:"quatorze", 15:"quinze",
+ext = [{1:"um", 2:"dois", 3:u"três", 4:"quatro", 5:"cinco", 6:"seis", 7:"sete", 8:"oito", 9:"nove", 10:"dez", 11:"onze", 12:"doze",13:"treze", 14:"quatorze", 15:"quinze",
 16:"dezesseis", 17:"dezessete", 18:"dezoito", 19:"dezenove"},
 {2:"vinte", 3:"trinta", 4:"quarenta", 5:"cinquenta", 6:"sessenta", 7:"setenta", 8:"oitenta", 9:"noventa"},
 {1:"cento", 2:"duzentos", 3:"trezentos", 4:"quatrocentos", 5:"quinhentos", 6:"seiscentos", 7:"setecentos", 8:"oitocentos", 9:"novecentos"}]
 
-und = ['', ' mil', (' milhão', ' milhões'), (' bilhão', ' bilhões'), (' trilhão', ' trilhões')]
+und = ['', ' mil', (u' milhão', u' milhões'), (u' bilhão', u' bilhões'), (u' trilhão', u' trilhões')]
 
 def cent(s, grand):
     s = u'0' * (3 - len(s)) + s
@@ -148,7 +148,7 @@ def extenso(reais,centavos):
                 lista.append(u'e')
         contador += 1
 
-    return u''.join(lista)
+    return u' '.join(lista)
 
     return u' e '.join([r for r in ret if r])
 
