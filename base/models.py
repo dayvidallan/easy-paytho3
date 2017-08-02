@@ -2648,7 +2648,7 @@ class ItemContrato(models.Model):
             total_quantitativo += item.indice
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_QUANTITATIVO):
             total_quantitativo -= item.indice
-        return str(25-total_quantitativo).replace(',', '.')
+        return str((self.quantidade*(25-total_quantitativo))/100).replace(',', '.')
 
 
 

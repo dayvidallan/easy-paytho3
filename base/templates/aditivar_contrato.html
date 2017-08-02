@@ -37,7 +37,10 @@ $(function() {
                             <th>Unidade</th>
                             <th class="coluna_valor">Valor Unitário</th>
                             <th class="coluna_quantidade">Quantidade</th>
-                            <th width="15%">Informar Índice (%)</th>
+                            <th width="15%" class="coluna_valor">Informar Índice (%)</th>
+                            <th width="15%" class="coluna_quantidade">Informar Quantidade</th>
+                            <th class="coluna_valor">Novo Valor</th>
+                            <th class="coluna_quantidade">Quantidade Disponível</th>
 
 
                         </tr>
@@ -57,9 +60,13 @@ $(function() {
                                 <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                                 <td class="coluna_valor">{{ opcao.valor|format_money }}</td>
                                 <td class="coluna_quantidade">{{ opcao.quantidade|format_quantidade }}</td>
-                                <td class="coluna_valor"><input name="valor" type="number"  min="0" step="0.1" max="{{ opcao.get_aditivo_permitido_valor }}"> <small>Máximo Permitido: {{ opcao.get_aditivo_permitido_valor|format_money }}%</small></td>
-                                <td class="coluna_quantidade"><input name="quantidade" type="number"  min="0" step="0.1" max="{{ opcao.get_aditivo_permitido_quantitativo }}"> <small>Máximo Permitido: {{ opcao.get_aditivo_permitido_quantitativo|format_money }}%</small></td>
+                                <td class="coluna_valor_soma"><input name="valor" onKeyUp="document.getElementById('textfieldvalor_{{opcao.id}}').value=parseFloat({{ opcao.valor }})+parseFloat(this.value)" type="number"  min="0" step="0.1" max="{{ opcao.get_aditivo_permitido_valor }}"> <small>Máximo Permitido: {{ opcao.get_aditivo_permitido_valor|format_money }}%</small></td>
+                                <td class="coluna_quantidade_soma"><input name="quantidade" onKeyUp="document.getElementById('textfield2_{{opcao.id}}').value=parseInt({{ opcao.get_quantidade_disponivel|format_quantidade }})+parseInt(this.value)" type="number"  min="0" step="1" max="{{ opcao.get_aditivo_permitido_quantitativo }}"> <small>Máximo Permitido: {{ opcao.get_aditivo_permitido_quantitativo|format_quantidade}}</small></td>
+                                <td class="coluna_valor_subtrai"><input name="valor" onKeyUp="document.getElementById('textfieldvalor_{{opcao.id}}').value=parseFloat({{ opcao.valor }})-parseFloat(this.value)" type="number"  min="0" step="0.1" max="{{ opcao.get_aditivo_permitido_valor }}"> <small>Máximo Permitido: {{ opcao.get_aditivo_permitido_valor|format_money }}%</small></td>
+                                <td class="coluna_quantidade_subtrai"><input name="quantidade" onKeyUp="document.getElementById('textfield2_{{opcao.id}}').value=parseInt({{ opcao.get_quantidade_disponivel|format_quantidade }})-parseInt(this.value)" type="number"  min="0" step="1" max="{{ opcao.get_aditivo_permitido_quantitativo }}"> <small>Máximo Permitido: {{ opcao.get_aditivo_permitido_quantitativo|format_quantidade }}</small></td>
                                 <input name="id_item" type="hidden" value="{{ opcao.id }}">
+                                <td class="coluna_valor"><input type="text" id="textfieldvalor_{{opcao.id}}" value="{{ opcao.valor }}" readonly></td>
+                                <td class="coluna_quantidade"><input type="text" id="textfield2_{{opcao.id}}" value="{{ opcao.get_quantidade_disponivel|format_quantidade }}" readonly></td>
                             </tr>
 
 

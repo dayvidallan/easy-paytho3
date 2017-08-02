@@ -16,6 +16,19 @@
         $("#itens").show();
         $('.coluna_valor').show();
         $('.coluna_quantidade').hide();
+        $('.coluna_quantidade_subtrai').hide();
+        $('.coluna_quantidade_soma').hide();
+        if($('#id_opcoes').val() == 'Acréscimo de Valor'){
+            $('.coluna_valor_soma').show();
+            $('.coluna_valor_subtrai').hide();
+
+        }
+        if($('#id_opcoes').val() == 'Supressão de Valor'){
+            $('.coluna_valor_soma').hide();
+            $('.coluna_valor_subtrai').show();
+
+        }
+
     }
 
     if($('#id_opcoes').val() == 'Acréscimo de Quantitativos' | $('#id_opcoes').val() == 'Supressão de Quantitativo') {
@@ -26,6 +39,18 @@
         $("#itens").show();
         $('.coluna_valor').hide();
         $('.coluna_quantidade').show();
+        $('.coluna_valor_subtrai').hide();
+        $('.coluna_valor_soma').hide();
+        if($('#id_opcoes').val() == 'Acréscimo de Quantitativos'){
+            $('.coluna_quantidade_soma').show();
+            $('.coluna_quantidade_subtrai').hide();
+
+        }
+        if($('#id_opcoes').val() == 'Supressão de Quantitativos'){
+            $('.coluna_quantidade_soma').hide();
+            $('.coluna_quantidade_subtrai').show();
+
+        }
     }
 
     if ($('#id_opcoes').val() == '') {
