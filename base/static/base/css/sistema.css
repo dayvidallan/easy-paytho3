@@ -1495,3 +1495,12 @@ footer section#content-footer p {
     white-space: inherit;
     width: 100%;
 }
+
+.formulario li {
+
+    list-style: none;
+
+}
+.formulario-bar > li > ul {
+    list-style: none;
+}

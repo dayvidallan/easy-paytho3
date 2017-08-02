@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'easyaudit',
 
 
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -144,6 +145,13 @@ PASSWORD_HASHERS = [
         'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
         'django.contrib.auth.hashers.BCryptPasswordHasher',
     ]
+
+
+BOOTSTRAP3 = {
+    'form_renderers': {
+        'default': 'form_utils_bootstrap3.renderers.BetterFormRenderer'
+    }
+}
 
 try:
     from settings_base import *

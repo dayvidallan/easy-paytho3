@@ -4620,7 +4620,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     data_emissao = datetime.date.today()
 
     eh_lote = False
-
+    pedidos = None
     if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
     elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():

@@ -1202,14 +1202,20 @@ class SocioForm(forms.ModelForm):
         self.fields['data_expedicao'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_nascimento'].widget.attrs = {'class': 'vDateField'}
 
-
-class AditivarContratoForm(forms.Form):
+from form_utils.forms import BetterForm
+class AditivarContratoForm(BetterForm):
     data_inicial = forms.DateField(label=u'Data Inicial', required=False)
     data_final = forms.DateField(label=u'Data Final', required=False)
     opcoes = forms.ChoiceField(label=u'Tipo', required=False, choices=Aditivo.TIPO_CHOICES)
     indice_reajuste = forms.DecimalField(label=u'Informe o Índice de Reajuste (%)', required=False)
     percentual_acrescimo_valor = forms.DecimalField(label=u'Percentual de Acréscimo Permitido (%)', help_text=u'O percentual máximo é 25%', required=False)
     percentual_acrescimo_quantitativos = forms.DecimalField(label=u'Percentual de Acréscimo Permitido (%)', help_text=u'O percentual máximo é 25%', required=False)
+
+    class Meta:
+        fieldsets = [('main', {'fields': ['data_inicial', 'data_final'], 'legend': 'Aditivo de Prazo'}),
+                     ('Advanced', {'fields': ['opcoes', 'indice_reajuste'], 'legend': 'Aditivo de Valor',
+                                   'description': '',
+                                   'classes': ['advanced',]})]
 
     def __init__(self, *args, **kwargs):
         self.contrato = kwargs.pop('contrato', None)
