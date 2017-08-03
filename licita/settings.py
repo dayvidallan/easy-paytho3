@@ -29,11 +29,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'debug_toolbar',
+
     # Local apps
     'pagination',
     'base',
     'easyaudit',
+    #'debug_toolbar',
 
 
 
@@ -52,6 +53,7 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'base.middleware.threadlocals.ThreadLocals',
     'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'licita.urls'
@@ -98,8 +100,6 @@ STATICFILES_FINDERS = (
 LOGIN_URL = '/admin/login/'
 #
 AUTH_USER_MODEL = 'base.User'
-
-
 
 
 THUMB_SIZE = (100,100)
