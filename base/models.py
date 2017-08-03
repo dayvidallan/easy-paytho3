@@ -938,7 +938,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return LanceItemRodadaPregao.objects.filter(item=self).exists() or PropostaItemPregao.objects.filter(item=self).exists()
 
     def tem_empate(self):
-        return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, empate=True)
+        return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, empate=True)
 
 
     def get_marca_item_lote(self):
