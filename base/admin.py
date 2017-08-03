@@ -89,7 +89,7 @@ class ComissaoLicitacaoAdmin(NewModelAdmin):
     def get_membros(self, obj):
         texto = u''
         for membro in MembroComissaoLicitacao.objects.filter(comissao=obj):
-            texto = texto + u'<a href="/base/editar_membro_comissao/%s/">%s</a>, ' % (membro.membro.id, membro.membro.nome)
+            texto = texto + u'<a href="/base/editar_membro_comissao/%s/">%s</a>, ' % (membro.id, membro.membro.nome)
 
         return texto[:len(texto)-2]
     get_membros.short_description = u'Membros'
