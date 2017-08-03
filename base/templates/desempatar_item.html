@@ -44,7 +44,7 @@
                         <td>{{ resultado.marca }}</td>
                         <td>{{ resultado.valor }}</td>
                         <td>
-                            {% if resultado.item.tem_empate or eh_credenciamento %}
+                            {% if resultado.empate or eh_credenciamento %}
                                 <a href="/base/definir_colocacao/{{ resultado.id }}/" class="btn btn-success btn-sm">Definir colocação</a></td>
                             {% endif %}
                     </tr>
