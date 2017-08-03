@@ -1813,10 +1813,12 @@ class MembroComissaoLicitacao(models.Model):
     PREGOEIRO = u'Pregoeiro'
     MEMBRO_EQUIPE = u'Membro da Equipe do Pregão'
     PRESIDENTE = u'Presidente'
+    MEMBRO_SUPLENTE = u'Membro Suplente'
     #MEMBRO_CPL = u'Membro da CPL'
     FUNCAO_CHOICES = (
         (APOIO, APOIO),
         (MEMBRO_EQUIPE, MEMBRO_EQUIPE),
+        (MEMBRO_SUPLENTE, MEMBRO_SUPLENTE),
         (PREGOEIRO, PREGOEIRO),
         (PRESIDENTE, PRESIDENTE),
     )
