@@ -7526,7 +7526,7 @@ def anexo_38(request, pregao_id):
     contador_total = 0
     for idx, item in enumerate(itens, 0):
 
-        resultado = ResultadoItemPregao.objects.filter(item=item, participante__excluido_dos_itens=False, participante__desclassificado=False, item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('ordem')
+        resultado = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('ordem')
         contador = 1
         for result in resultado:
             row_index = contador_total + 1
