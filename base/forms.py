@@ -1232,7 +1232,8 @@ class AditivarContratoForm(BetterForm):
 
         self.total_acrescimo_valor = 0
         for aditivo in Aditivo.objects.filter(contrato=self.contrato, de_valor=True, tipo=Aditivo.ACRESCIMO_VALOR):
-            self.total_acrescimo_valor += aditivo.indice
+            if aditivo.indice:
+                self.total_acrescimo_valor += aditivo.indice
 
         self.fields['percentual_acrescimo_valor'].initial = 25 - self.total_acrescimo_valor
         self.fields['percentual_acrescimo_valor'].widget.attrs = {'readonly': 'True'}
