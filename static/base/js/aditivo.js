@@ -6,6 +6,8 @@
         $("#id_percentual_acrescimo_valor").parent().parent().hide();
         $("#id_percentual_acrescimo_quantitativos").parent().parent().hide();
         $("#itens").hide();
+        $("#valores_contratos").show();
+
     }
 
     if($('#id_opcoes').val() == 'Acréscimo de Valor' | $('#id_opcoes').val() == 'Supressão de Valor') {
@@ -18,6 +20,7 @@
         $('.coluna_quantidade').hide();
         $('.coluna_quantidade_subtrai').hide();
         $('.coluna_quantidade_soma').hide();
+        $("#valores_contratos").hide();
         if($('#id_opcoes').val() == 'Acréscimo de Valor'){
             $('.coluna_valor_soma').show();
             $('.coluna_valor_subtrai').hide();
@@ -41,6 +44,7 @@
         $('.coluna_quantidade').show();
         $('.coluna_valor_subtrai').hide();
         $('.coluna_valor_soma').hide();
+        $("#valores_contratos").hide();
         if($('#id_opcoes').val() == 'Acréscimo de Quantitativos'){
             $('.coluna_quantidade_soma').show();
             $('.coluna_quantidade_subtrai').hide();
@@ -59,6 +63,7 @@
         $("#id_percentual_acrescimo_quantitativos").parent().parent().hide();
         $("#id_percentual_acrescimo_valor").parent().parent().hide();
         $("#itens").hide();
+        $("#valores_contratos").hide();
     }
 
 

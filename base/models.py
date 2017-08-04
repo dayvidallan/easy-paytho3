@@ -2394,7 +2394,7 @@ class PedidoCredenciamento(models.Model):
 
 
     def get_total(self):
-        return self.quantidade * self.item.valor
+        return self.quantidade * self.valor
 
     def get_saldo_atual(self):
         return self.item.get_saldo_atual_secretaria(self.setor)
@@ -2478,10 +2478,17 @@ class Contrato(models.Model):
 
     def get_valor_aditivado(self):
         total = self.valor
-        for aditivo in self.aditivos_set.all():
+        for aditivo in self.aditivos_set.filter(tipo=Aditivo.REAJUSTE_FINANCEIRO):
             if aditivo.de_valor and aditivo.valor: # evita NoneType em aditivo.valor
                 total += aditivo.valor
         return total
+
+    def get_aditivo_permitido_valor(self):
+        total_valor = 0
+        for aditivo in self.aditivos_set.filter(tipo=Aditivo.REAJUSTE_FINANCEIRO):
+            total_valor += aditivo.valor
+
+        return (25-total_valor)
 
 
     def get_data_fim(self):
@@ -2559,7 +2566,10 @@ class Aditivo(models.Model):
         if self.de_prazo:
             tipo += u'de Prazo, '
 
-        if self.de_valor:
+        if self.tipo in [Aditivo.ACRESCIMO_QUANTITATIVOS, Aditivo.SUPRESSAO_QUANTITATIVO]:
+            tipo += u'de Quantidade, '
+
+        if self.tipo in [Aditivo.ACRESCIMO_VALOR, Aditivo.SUPRESSAO_VALOR]:
             tipo += u'de Valor, '
 
 
@@ -2622,7 +2632,7 @@ class ItemContrato(models.Model):
         else:
             total = self.quantidade
 
-            if ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+            if not (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
 
             pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
@@ -2673,7 +2683,7 @@ class PedidoContrato(models.Model):
         return u'Pedido %s do Contrato: %s' % (self.id, self.contrato)
 
     def get_total(self):
-        return self.quantidade * self.item.valor
+        return self.quantidade * self.valor
 
 
 
@@ -2768,7 +2778,7 @@ class PedidoAtaRegistroPreco(models.Model):
 
 
     def get_total(self):
-        return self.quantidade * self.item.valor
+        return self.quantidade * self.valor
 
     def get_saldo_atual(self):
         return self.item.get_saldo_atual_secretaria(self.setor)
