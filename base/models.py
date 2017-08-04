@@ -2622,12 +2622,22 @@ class ItemContrato(models.Model):
 
     def get_quantidade_disponivel(self):
         usuario = tl.get_user()
+
+        aditivos = AditivoItemContrato.objects.filter(item=self.item)
+        quantidade_aditivo = 0
+        if aditivos.exists():
+            for aditivo in aditivos:
+                if aditivo.tipo == Aditivo.ACRESCIMO_QUANTITATIVOS:
+                    quantidade_aditivo += aditivo.valor
+                elif aditivo.tipo == Aditivo.SUPRESSAO_QUANTITATIVO:
+                    quantidade_aditivo -= aditivo.valor
+
         if usuario.groups.filter(name=u'Gerente').exists():
             pedidos = PedidoContrato.objects.filter(item=self, ativo=True)
             if pedidos.exists():
-                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
             else:
-                return self.quantidade
+                return self.quantidade + quantidade_aditivo
 
         else:
             total = self.quantidade
@@ -2637,8 +2647,8 @@ class ItemContrato(models.Model):
 
             pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
             if pedidos.exists():
-                return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-            return total
+                return total - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
+            return total + quantidade_aditivo
 
         return 0
 

@@ -7,6 +7,9 @@ from django.contrib.admin.widgets import AdminDateWidget
 from dal import autocomplete
 from django.contrib.auth.models import Group
 from localflavor.br.forms import BRCNPJField
+from form_utils.forms import BetterForm
+
+
 class CadastraParticipantePregaoForm(forms.ModelForm):
     sem_representante = forms.BooleanField(label=u'Representante Ausente', initial=False, required=False)
     obs_ausencia_participante = forms.CharField(label=u'Motivo da Ausência do Representante', widget=forms.Textarea, required=False)
@@ -818,16 +821,14 @@ class ContratoForm(forms.ModelForm):
                 raise forms.ValidationError(u'O limite máximo é de 5%.')
 
 
-class CriarContratoForm(forms.Form):
-    # class Meta:
-    #     model = Contrato
-    #     fields = ('numero', 'data_inicio', 'data_fim')
+class CriarContratoForm(BetterForm):
 
     def __init__(self, *args, **kwargs):
         self.pregao = kwargs.pop('pregao', None)
         super(CriarContratoForm, self).__init__(*args, **kwargs)
         # self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         # self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+
         ultima = Contrato.objects.latest('id')
         if ultima.numero:
             lista = ultima.numero.split('/')
@@ -835,9 +836,8 @@ class CriarContratoForm(forms.Form):
         nome_campos = u''
         if len(lista) > 1:
             valor_contrato = int(lista[0])+1
-
         for i in self.pregao.get_vencedores():
-            label = u'Número do Contrato - Fornecedor: %s' % (i)
+            label = u'************** Número do Contrato - Fornecedor: %s' % (i)
             self.fields["contrato_%d" % i.id] = forms.CharField(label=label, required=True)
             if valor_contrato:
                 self.fields["contrato_%d" % i.id].initial = u'%s/%s' % (valor_contrato, lista[1])
@@ -1202,7 +1202,7 @@ class SocioForm(forms.ModelForm):
         self.fields['data_expedicao'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_nascimento'].widget.attrs = {'class': 'vDateField'}
 
-from form_utils.forms import BetterForm
+
 class AditivarContratoForm(BetterForm):
     data_inicial = forms.DateField(label=u'Data Inicial', required=False)
     data_final = forms.DateField(label=u'Data Final', required=False)
