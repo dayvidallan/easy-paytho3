@@ -1610,7 +1610,7 @@ def cadastrar_contrato(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
 
-    if True:
+    if request.user.has_perm('base.pode_gerenciar_contrato') and contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor):
 
         title=u'Cadastrar Contrato'
 

@@ -2623,7 +2623,7 @@ class ItemContrato(models.Model):
     def get_quantidade_disponivel(self):
         usuario = tl.get_user()
 
-        aditivos = AditivoItemContrato.objects.filter(item=self.item)
+        aditivos = AditivoItemContrato.objects.filter(item=self.item.item)
         quantidade_aditivo = 0
         if aditivos.exists():
             for aditivo in aditivos:
