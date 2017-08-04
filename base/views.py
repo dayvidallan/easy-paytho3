@@ -7456,7 +7456,6 @@ def aditivar_contrato(request, contrato_id):
                         for idx, item in enumerate(request.POST.getlist('valor_soma'), 1):
                             if item and request.POST.getlist('valor_soma')[idx-1] > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
-                                item.valor = item.valor + ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 item.save()
 
                                 aditivo_item = AditivoItemContrato()
@@ -7475,7 +7474,6 @@ def aditivar_contrato(request, contrato_id):
                         for idx, item in enumerate(request.POST.getlist('valor_subtrai'), 1):
                             if item and request.POST.getlist('valor_subtrai')[idx-1] > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
-                                item.valor = item.valor - ((Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 item.save()
 
                                 aditivo_item = AditivoItemContrato()
