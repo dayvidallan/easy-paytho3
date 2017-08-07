@@ -7426,6 +7426,9 @@ def aditivar_contrato(request, contrato_id):
                                 aditivo_item.valor = Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.'))
                                 aditivo_item.save()
 
+                                aditivo.indice = indice_ajuste
+                                aditivo.save()
+
                                 total_ajuste +=  Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.'))
                                 qtd_ajuste += 1
 
@@ -7445,6 +7448,8 @@ def aditivar_contrato(request, contrato_id):
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
                                 aditivo_item.valor = Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.'))
                                 aditivo_item.save()
+                                aditivo.indice = indice_ajuste
+                                aditivo.save()
 
 
                                 total_ajuste +=  request.POST.getlist('quantidade_subtrai')[idx-1]
@@ -7465,6 +7470,9 @@ def aditivar_contrato(request, contrato_id):
                                 aditivo_item.valor = Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.')) * item.valor
                                 aditivo_item.save()
 
+                                aditivo.indice = indice_ajuste
+                                aditivo.save()
+
                                 total_ajuste +=  Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))
                                 qtd_ajuste += 1
 
@@ -7482,6 +7490,9 @@ def aditivar_contrato(request, contrato_id):
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
                                 aditivo_item.valor = Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.')) * item.valor
                                 aditivo_item.save()
+
+                                aditivo.indice = indice_ajuste
+                                aditivo.save()
 
                                 total_ajuste +=  Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))
                                 qtd_ajuste += 1

@@ -2623,17 +2623,16 @@ class ItemContrato(models.Model):
     def get_quantidade_disponivel(self):
         usuario = tl.get_user()
         quantidade_aditivo = 0
-        if self.item and self.item.item:
-            aditivos = AditivoItemContrato.objects.filter(item=self.item.item)
-            if aditivos.exists():
-                for aditivo in aditivos:
-                    if aditivo.tipo == Aditivo.ACRESCIMO_QUANTITATIVOS:
-                        if aditivo.valor:
-                            quantidade_aditivo += aditivo.valor
-                    elif aditivo.tipo == Aditivo.SUPRESSAO_QUANTITATIVO:
-                        if aditivo.valor:
-                            quantidade_aditivo -= aditivo.valor
 
+        aditivos = AditivoItemContrato.objects.filter(item=self)
+        if aditivos.exists():
+            for aditivo in aditivos:
+                if aditivo.tipo == Aditivo.ACRESCIMO_QUANTITATIVOS:
+                    if aditivo.valor:
+                        quantidade_aditivo += aditivo.valor
+                elif aditivo.tipo == Aditivo.SUPRESSAO_QUANTITATIVO:
+                    if aditivo.valor:
+                        quantidade_aditivo -= aditivo.valor
         if usuario.groups.filter(name=u'Gerente').exists():
             pedidos = PedidoContrato.objects.filter(item=self, ativo=True)
             if pedidos.exists():

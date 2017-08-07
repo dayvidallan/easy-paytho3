@@ -310,57 +310,32 @@
         <div id="pedidos" class="tab-pane">
             {% if pedidos.exists %}
 
-                {% for secretaria, empresa in resultado.items %}
-                        <table class="table table-bordered table-condensed table-striped">
-                            <thead>
-                                <tr><th colspan="4"><a data-toggle="collapse" data-target="#demoa{{forloop.counter}}">{{ secretaria }}</a></th></tr>
-                            </thead>
-                        </table>
-                        <div id="demoa{{forloop.counter}}" class="collapse">
-                            {% for material, pedidos in empresa.items %}
-                                <table class="table table-bordered table-condensed table-striped">
-                                    <thead>
-                                        <tr><th colspan="4"><a data-toggle="collapse" data-target="#empresa{{forloop.counter}}">{{ material }}</a></th></tr>
-                                    </thead>
-                                </table>
-                                <div id="empresa{{forloop.counter}}" class="collapse">
-                                    <table class="table table-bordered table-condensed table-striped">
-                                        <thead>
-                                            <tr><th colspan="4">Pedidos</th></tr>
-                                            <tr>
-                                                <th>Material/Serviço</th>
-                                                <th>Quantidade Pedida</th>
-                                                <th>Saldo Atual da Secretaria</th>
-                                                <th>Opções</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for pedido, teste in pedidos.items %}
-                                                {% for pedido in teste %}
-                                                    <tr>
-                                                        <td>
-                                                            {% if pedido.item.material %}
-                                                                {{ pedido.item.material }}
-                                                            {% else %}
-                                                                {{ pedido.item.item.material }}
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>{{ pedido.quantidade|format_quantidade }}</td>
-                                                        <td>{{ pedido.get_saldo_atual }}</td>
-                                                        <td><a href="/base/itens_solicitacao/{{ pedido.solicitacao.id}}/" class="btn btn-info btn-sm ">Visualizar</a></td>
-                                                    </tr>
-                                                {% endfor %}
-                                            {% endfor %}
-                                         </tbody>
-                                    </table>
-                                </div>
-
-                            {% endfor %}
-                        </div>
-
-                {% endfor %}
-
-
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Material/Serviço</th>
+                            <th>Quantidade Pedida</th>
+                            <th>Saldo Atual da Secretaria</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                            <tr>
+                                <td>
+                                    {% if pedido.item.material %}
+                                        {{ pedido.item.material }}
+                                    {% else %}
+                                        {{ pedido.item.item.material }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ pedido.quantidade|format_quantidade }}</td>
+                                <td>{{ pedido.item.get_quantidade_disponivel|format_quantidade }}</td>
+                                <td><a href="/base/itens_solicitacao/{{ pedido.solicitacao.id}}/" class="btn btn-info btn-sm ">Visualizar</a></td>
+                            </tr>
+                        {% endfor %}
+                     </tbody>
+                </table>
 
             {% else %}
                 <p class="alert alert-warning">Nenhum pedido.</p>

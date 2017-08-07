@@ -236,7 +236,7 @@
                                                                 <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
                                                                 <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
                                                                 <td>{{ item.get_valor_item_lote|format_money }}</td>
-                                                                <td>{{ item.get_item_tipo_contrato.get_quantidade_disponivel }}</td>
+                                                                <td>{{ item.get_item_tipo_contrato.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                                             </tr>
@@ -306,7 +306,7 @@
                                                                 <td>{{ opcao.fornecedor }}</td>
                                                             {% endif %}
                                                             <td>{{ opcao.valor|format_money }}</td>
-                                                            <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                            <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
                                                         </tr>
                                                     {% endfor %}
@@ -380,7 +380,7 @@
                                                                     <td>{{ opcao.participante }}</td>
                                                                 {% endif %}
                                                                 <td>{{ opcao.valor }}</td>
-                                                                <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                                <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
                                                             </tr>
                                                         {% endfor %}
                                                     </tbody>
@@ -446,7 +446,7 @@
                                                             <td>{{ opcao.participante }}</td>
                                                         {% endif %}
                                                         <td>{{ opcao.valor }}</td>
-                                                        <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                        <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                                     </tr>
@@ -506,7 +506,7 @@
                                                     <td>{{ opcao.item.material|truncatechars:500 }}</td>
                                                     <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                     <td>{{ opcao.valor }}</td>
-                                                    <td>{{ opcao.get_quantidade_disponivel }}</td>
+                                                    <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

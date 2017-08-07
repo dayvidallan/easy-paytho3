@@ -411,7 +411,7 @@
                                                             {% endif %}
                                                         </td>
                                                         <td>{{ pedido.quantidade|format_quantidade }}</td>
-                                                        <td>{{ pedido.get_saldo_atual }}</td>
+                                                        <td>{{ pedido.item.get_quantidade_disponivel|format_quantidade }}</td>
                                                         <td><a href="/base/itens_solicitacao/{{ pedido.solicitacao.id}}/" class="btn btn-info btn-sm ">Visualizar</a></td>
                                                     </tr>
                                                 {% endfor %}
