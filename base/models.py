@@ -2569,7 +2569,7 @@ class Aditivo(models.Model):
         if self.tipo in [Aditivo.ACRESCIMO_QUANTITATIVOS, Aditivo.SUPRESSAO_QUANTITATIVO]:
             tipo += u'de Quantidade, '
 
-        if self.tipo in [Aditivo.ACRESCIMO_VALOR, Aditivo.SUPRESSAO_VALOR]:
+        if self.tipo in [Aditivo.ACRESCIMO_VALOR, Aditivo.SUPRESSAO_VALOR, Aditivo.REAJUSTE_FINANCEIRO]:
             tipo += u'de Valor, '
 
 

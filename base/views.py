@@ -7465,7 +7465,8 @@ def aditivar_contrato(request, contrato_id):
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
-                                aditivo_item.indice = Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))
+                                indice_ajuste = Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.indice = indice_ajuste
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
                                 aditivo_item.valor = Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.')) * item.valor
                                 aditivo_item.save()
@@ -7486,7 +7487,8 @@ def aditivar_contrato(request, contrato_id):
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
-                                aditivo_item.indice = Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))
+                                indice_ajuste = Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.indice = indice_ajuste
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
                                 aditivo_item.valor = Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.')) * item.valor
                                 aditivo_item.save()
