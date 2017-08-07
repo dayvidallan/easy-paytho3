@@ -2471,6 +2471,9 @@ class Contrato(models.Model):
         else:
             return u'Ativo'
 
+    def eh_ativo(self):
+        return not self.cancelado
+
     def get_carater_continuado(self):
         if self.continuado:
             return u'Sim'

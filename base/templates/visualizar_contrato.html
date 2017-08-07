@@ -166,7 +166,7 @@
 
 {% block content %}
     <div class="pull-right">
-        {% if eh_gerente %}
+        {% if eh_gerente and contrato.eh_ativo %}
             <a class="btn btn-info" href="/admin/base/contrato/{{ contrato.pk }}/change/">Editar</a>
             <a class="btn btn-success" href="/base/aditivar_contrato/{{ contrato.pk }}/">Aditivar Contrato</a>
             {% if not contrato.data_fim %}
@@ -187,7 +187,11 @@
     </div>
     {% if eh_gerente %}
         <div class="pull-left">
-            <a href="/base/rescindir_contrato/{{ contrato.id }}/" class="btn btn-danger">Rescindir Contrato</a>
+            {% if contrato.eh_ativo %}
+                <a href="/base/rescindir_contrato/{{ contrato.id }}/" class="btn btn-danger">Rescindir Contrato</a>
+            {% else %}
+                <a href="/base/rescindir_contrato/{{ contrato.id }}/" class="btn btn-info">Contrato Rescindido</a>
+            {% endif %}
         </div>
 
     {% endif %}

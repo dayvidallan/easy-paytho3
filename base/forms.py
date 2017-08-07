@@ -1262,6 +1262,7 @@ class ContratoRemanescenteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.pregao = kwargs.pop('pregao', None)
+        self.contrato = kwargs.pop('contrato', None)
         super(ContratoRemanescenteForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
@@ -1272,7 +1273,14 @@ class ContratoRemanescenteForm(forms.ModelForm):
                 if len(lista) > 1:
                     self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
-        self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(id__in=ParticipantePregao.objects.filter(pregao=self.pregao, excluido_dos_itens=False, desclassificado=False))
+        fornecedor_atual = ItemContrato.objects.filter(contrato=self.contrato)[0]
+        busca = ParticipantePregao.objects.filter(id__in=ParticipantePregao.objects.filter(pregao=self.pregao, excluido_dos_itens=False, desclassificado=False))
+        if fornecedor_atual.fornecedor:
+            busca = busca.exclude(fornecedor__id=fornecedor_atual.fornecedor)
+        else:
+            busca = busca.exclude(id=fornecedor_atual.participante)
+
+        self.fields['fornecedor'].queryset = busca
 
     def clean(self):
         if self.cleaned_data.get('garantia_execucao_objeto'):

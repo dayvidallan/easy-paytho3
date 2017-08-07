@@ -7592,7 +7592,7 @@ def contratar_remanescentes(request, contrato_id):
     title = u'Contratar Remanescentes - %s' % contrato
     if request.user.has_perm('base.pode_gerenciar_contrato'):
         itens = ItemContrato.objects.filter(contrato=contrato)
-        form = ContratoRemanescenteForm(request.POST or None, pregao=contrato.pregao)
+        form = ContratoRemanescenteForm(request.POST or None, pregao=contrato.pregao, contrato=contrato)
         if form.is_valid():
             o = form.save(False)
             o.valor = 1.00
@@ -7611,6 +7611,8 @@ def contratar_remanescentes(request, contrato_id):
                 valor_total += novo_item.valor * novo_item.quantidade
             o.valor = valor_total
             o.save()
+            contrato.cancelado = True
+            contrato.save()
             messages.success(request, u'Contrato gerado com sucesso.')
             return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
 
