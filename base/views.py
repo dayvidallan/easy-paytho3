@@ -7591,7 +7591,7 @@ def contratar_remanescentes(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
     title = u'Contratar Remanescentes - %s' % contrato
     if request.user.has_perm('base.pode_gerenciar_contrato'):
-        itens = ItemContrato.objects.filter(contrato=contrato, origem_outro_contrato__isnull=True)
+        itens = ItemContrato.objects.filter(contrato=contrato, inserido_outro_contrato=False)
         form = ContratoRemanescenteForm(request.POST or None, pregao=contrato.pregao, contrato=contrato)
         if form.is_valid():
             o = form.save(False)
@@ -7609,9 +7609,11 @@ def contratar_remanescentes(request, contrato_id):
                 novo_item.fornecedor = form.cleaned_data.get('fornecedor').fornecedor
                 novo_item.participante = form.cleaned_data.get('fornecedor')
                 novo_item.quantidade = item_atual.get_quantidade_disponivel()
-                novo_item.origem_outro_contrato = contrato
+
                 novo_item.save()
                 valor_total += novo_item.valor * novo_item.quantidade
+                item_atual.inserido_outro_contrato = True
+                item_atual.save()
             o.valor = valor_total
             o.save()
             contrato.cancelado = True
