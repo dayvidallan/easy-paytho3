@@ -7560,3 +7560,62 @@ def anexo_38(request, pregao_id):
     arquivo.close()
     os.unlink(salvou)
     return response
+
+
+@login_required()
+def rescindir_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+    title = u'Rescindir Contrato'
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        form = RescindirContratoForm(request.POST or None)
+        if form.is_valid():
+            if form.cleaned_data.get('opcao'):
+                if form.cleaned_data.get('opcao') == u'Arquivar Contrato':
+                    contrato.liberada_compra = False
+                    contrato.cancelado = True
+                    contrato.save()
+                    messages.success(request, u'Contrato arquivado com sucesso.')
+                    return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
+
+                elif form.cleaned_data.get('opcao') == u'Contratar Remanescentes':
+                    return HttpResponseRedirect(u'/base/contratar_remanescentes/%s/' % contrato.id)
+
+        return render(request, 'rescindir_contrato.html', locals(), RequestContext(request))
+
+
+    else:
+        raise PermissionDenied
+
+@login_required()
+def contratar_remanescentes(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+    title = u'Contratar Remanescentes - %s' % contrato
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        itens = ItemContrato.objects.filter(contrato=contrato)
+        form = ContratoRemanescenteForm(request.POST or None, pregao=contrato.pregao)
+        if form.is_valid():
+            o = form.save(False)
+            o.valor = 1.00
+            o.solicitacao = contrato.solicitacao
+            o.pregao = contrato.pregao
+            o.save()
+            valor_total = 0
+            itens_selecionados = request.POST.getlist('registros')
+            for item in itens_selecionados:
+                novo_item = get_object_or_404(ItemContrato, pk=int(item))
+                novo_item.id = None
+                novo_item.contrato = o
+                novo_item.fornecedor = form.cleaned_data.get('fornecedor').fornecedor
+                novo_item.participante = form.cleaned_data.get('fornecedor')
+                novo_item.save()
+                valor_total += novo_item.valor * novo_item.quantidade
+            o.valor = valor_total
+            o.save()
+            messages.success(request, u'Contrato gerado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
+
+
+        return render(request, 'contratar_remanescentes.html', locals(), RequestContext(request))
+
+    else:
+        raise PermissionDenied

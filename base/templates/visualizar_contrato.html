@@ -185,6 +185,12 @@
 
 
     </div>
+    {% if eh_gerente %}
+        <div class="pull-left">
+            <a href="/base/rescindir_contrato/{{ contrato.id }}/" class="btn btn-danger">Rescindir Contrato</a>
+        </div>
+
+    {% endif %}
     <br><br><br>
 
    <table width="30%" align="right" class="table table-bordered table-condensed table-striped">

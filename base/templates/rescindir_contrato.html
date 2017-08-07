@@ -1,0 +1,49 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block extrajs %}
+
+<script>
+$(function() {
+    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy' });
+});
+</script>
+{% endblock %}
+{% if request.user.pessoafisica %}
+    {% block breadcrumbs_class %}administracao{% endblock %}
+    {% block breadcrumbs %}
+        <a href="/">Início <i class="fa fa-angle-right"></i></a>
+        <a href="/base/gestao_contratos/">Contratos<i class="fa fa-angle-right"></i></a>
+        <a href="javascript:void(0);">{{ title }}</a>
+    {% endblock %}
+{% endif %}
+{% block content %}
+    <!--<div id="mensagem_erro" class="alert alert-warning">Para sua comodidade, baixe a planilha de itens, preencha os dados e posteriormente acesse este endereço para preenchimento do formulário abaixo e envio da planilha.</div>-->
+    <!--<a href="/base/planilha_propostas_solicitacao/{{ solicitacao.id }}/" class="btn btn-success">Baixar Planilha</a>-->
+     <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form|bootstrap }}
+                    </div>
+		        </div>
+
+                    <div>
+                        <div class="controls">
+                            <button type="submit" class="btn btn-primary">Continuar >></button>
+                        </div>
+                    </div>
+
+             </div>
+        </form>
+
+
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}

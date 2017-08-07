@@ -235,6 +235,11 @@ urlpatterns = [
     url(r'^liberar_pedidos_solicitacao/(?P<solicitacao_id>\d+)/$', views.liberar_pedidos_solicitacao, name='liberar_pedidos_solicitacao'),
     url(r'^cadastrar_termo_inexigibilidade/(?P<solicitacao_id>\d+)/$', views.cadastrar_termo_inexigibilidade, name='cadastrar_termo_inexigibilidade'),
     url(r'^relatorio_propostas/(?P<solicitacao_id>\d+)/$', views.relatorio_propostas, name='relatorio_propostas'),
+    url(r'^rescindir_contrato/(?P<contrato_id>\d+)/$', views.rescindir_contrato, name='rescindir_contrato'),
+    url(r'^contratar_remanescentes/(?P<contrato_id>\d+)/$', views.contratar_remanescentes, name='contratar_remanescentes'),
+
+
+
 
 
     url(r'^apagar_anexo_arp/(?P<item_id>\d+)/$', views.apagar_anexo_arp, name='apagar_anexo_arp'),

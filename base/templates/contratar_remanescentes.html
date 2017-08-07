@@ -1,0 +1,105 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% if request.user.pessoafisica %}
+    {% block breadcrumbs_class %}administracao{% endblock %}
+    {% block breadcrumbs %}
+        <a href="/">Início <i class="fa fa-angle-right"></i></a>
+        <a href="/base/ver_solicitacoes/">Solicitações <i class="fa fa-angle-right"></i></a>
+        <a href="/base/itens_solicitacao/{{ solicitacao.id }}/">{{  solicitacao }}<i class="fa fa-angle-right"></i></a>
+        <a href="javascript:void(0);">{{ title }}</a>
+    {% endblock %}
+{% endif %}
+{% block extrajs %}
+
+<script>
+$(function() {
+    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
+});
+</script>
+{% endblock %}
+{% block content %}
+    <form action="." method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');">
+        <fieldset>
+            {% csrf_token %}
+             <div class="miolo">
+                <div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form|bootstrap }}
+                    </div>
+                </div>
+
+             </div>
+         </fieldset>
+
+    <fieldset>
+            <legend>Itens</legend>
+
+
+
+             <div class="miolo">
+                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                    <thead>
+
+                        <tr>
+                            <th>Selecionar</th>
+                            <th>Item</th>
+                            <th>Material/Serviço</th>
+                            <th>Marca</th>
+                            <th>Unidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Quantidade Inicial</th>
+                            <th>Quantidade Disponível</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for opcao in itens %}
+
+                            <tr>
+                                <td><INPUT TYPE="checkbox" NAME="registros" value="{{ opcao.id }}" /></td>
+                                {% if opcao.item %}
+                                    <td>{{ opcao.item }}</td>
+                                    <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                {% else %}
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ opcao.material|truncatechars:500 }}</td>
+
+                                {% endif %}
+                                <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                                <td>{{ opcao.valor|format_money }}</td>
+                                <td>{{ opcao.get_valor_total|format_money }}</td>
+                                <td>{{ opcao.quantidade|format_quantidade }}</td>
+                                <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+
+
+             </div>
+
+        </fieldset>
+    <div class="controls">
+        <button type="submit" class="btn btn-primary" >Cadastrar</button>
+    </div>
+    </form>
+    </div>
+
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}

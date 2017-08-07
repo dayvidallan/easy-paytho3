@@ -1247,3 +1247,34 @@ class AditivarContratoForm(BetterForm):
             self.add_error('data_final' , u'Informe a data final.')
 
 
+
+class RescindirContratoForm(forms.Form):
+
+    opcao = forms.ChoiceField(required=False, label=u'Opções', choices=[(u'Arquivar Contrato', u'Arquivar Contrato'),(u'Contratar Remanescentes', u'Contratar Remanescentes')], widget=forms.widgets.RadioSelect())
+
+
+class ContratoRemanescenteForm(forms.ModelForm):
+    fornecedor = forms.ModelChoiceField(ParticipantePregao.objects, label=u'Fornecedor', required=True)
+    garantia_execucao_objeto = forms.IntegerField(label=u'Garantia de Execução do Objeto (%)', required=False, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
+    class Meta:
+        model = Contrato
+        fields = ('numero', 'aplicacao_artigo_57', 'garantia_execucao_objeto', 'data_inicio', 'data_fim')
+
+    def __init__(self, *args, **kwargs):
+        self.pregao = kwargs.pop('pregao', None)
+        super(ContratoRemanescenteForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
+        if Contrato.objects.exists():
+            ultima = Contrato.objects.latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
+                if len(lista) > 1:
+                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+
+        self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(id__in=ParticipantePregao.objects.filter(pregao=self.pregao, excluido_dos_itens=False, desclassificado=False))
+
+    def clean(self):
+        if self.cleaned_data.get('garantia_execucao_objeto'):
+            if self.cleaned_data.get('garantia_execucao_objeto') > 5:
+                raise forms.ValidationError(u'O limite máximo é de 5%.')
