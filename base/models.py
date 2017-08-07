@@ -2614,6 +2614,7 @@ class ItemContrato(models.Model):
     fornecedor = models.ForeignKey(Fornecedor, null=True)
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+    origem_outro_contrato = models.ForeignKey(Contrato, null=True, blank=True, related_name='contrato_origem_do_item')
 
     class Meta:
         ordering = ['item__item']
