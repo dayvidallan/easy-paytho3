@@ -6751,7 +6751,7 @@ def anexo_38(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
     nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_anexo38')
-    file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_anexo38.xlsx')
+    file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_anexo38.xls')
     rb = open_workbook(file_path)
 
     wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
@@ -6783,7 +6783,7 @@ def anexo_38(request, pregao_id):
             # w_sheet.write(row_index, 2, item.unidade.nome)
 
 
-    salvou = nome + u'_%s' % pregao.id + '.xlsx'
+    salvou = nome + u'_%s' % pregao.id + '.xls'
     wb.save(salvou)
 
     arquivo = open(salvou, "rb")
