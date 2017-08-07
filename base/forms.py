@@ -1276,9 +1276,9 @@ class ContratoRemanescenteForm(forms.ModelForm):
         fornecedor_atual = ItemContrato.objects.filter(contrato=self.contrato)[0]
         busca = ParticipantePregao.objects.filter(id__in=ParticipantePregao.objects.filter(pregao=self.pregao, excluido_dos_itens=False, desclassificado=False))
         if fornecedor_atual.fornecedor:
-            busca = busca.exclude(fornecedor__id=fornecedor_atual.fornecedor)
+            busca = busca.exclude(fornecedor__id=fornecedor_atual.fornecedor.id)
         else:
-            busca = busca.exclude(id=fornecedor_atual.participante)
+            busca = busca.exclude(id=fornecedor_atual.participante.id)
 
         self.fields['fornecedor'].queryset = busca
 
