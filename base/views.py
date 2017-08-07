@@ -7617,6 +7617,7 @@ def contratar_remanescentes(request, contrato_id):
             o.valor = valor_total
             o.save()
             contrato.cancelado = True
+            contrato.liberada_compra = False
             contrato.save()
             messages.success(request, u'Contrato gerado com sucesso.')
             return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % o.id)
