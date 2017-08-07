@@ -7609,7 +7609,7 @@ def contratar_remanescentes(request, contrato_id):
                 novo_item.fornecedor = form.cleaned_data.get('fornecedor').fornecedor
                 novo_item.participante = form.cleaned_data.get('fornecedor')
                 novo_item.quantidade = item_atual.get_quantidade_disponivel()
-
+                novo_item.inserido_outro_contrato = False
                 novo_item.save()
                 valor_total += novo_item.valor * novo_item.quantidade
                 pega_item = get_object_or_404(ItemContrato, pk=int(item))
