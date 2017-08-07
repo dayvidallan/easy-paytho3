@@ -7612,8 +7612,9 @@ def contratar_remanescentes(request, contrato_id):
 
                 novo_item.save()
                 valor_total += novo_item.valor * novo_item.quantidade
-                item_atual.inserido_outro_contrato = True
-                item_atual.save()
+                pega_item = get_object_or_404(ItemContrato, pk=int(item))
+                pega_item.inserido_outro_contrato = True
+                pega_item.save()
             o.valor = valor_total
             o.save()
             contrato.cancelado = True
