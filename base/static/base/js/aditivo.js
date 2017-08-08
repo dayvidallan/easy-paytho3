@@ -21,6 +21,10 @@
         $('.coluna_quantidade_subtrai').hide();
         $('.coluna_quantidade_soma').hide();
         $("#valores_contratos").hide();
+
+
+
+
         if($('#id_opcoes').val() == 'Acréscimo de Valor'){
             $('.coluna_valor_soma').show();
             $('.coluna_valor_subtrai').hide();
@@ -50,7 +54,7 @@
             $('.coluna_quantidade_subtrai').hide();
 
         }
-        if($('#id_opcoes').val() == 'Supressão de Quantitativos'){
+        if($('#id_opcoes').val() == 'Supressão de Quantitativo'){
             $('.coluna_quantidade_soma').hide();
             $('.coluna_quantidade_subtrai').show();
 
