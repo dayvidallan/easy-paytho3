@@ -4640,7 +4640,7 @@ def ver_ordem_compra(request, solicitacao_id):
     data_emissao = datetime.date.today()
     ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
 
-    eh_lote = False
+    eh_lote = solicitacao.eh_lote()
 
     tabela = {}
     pregao = contrato = ata = None
@@ -6758,7 +6758,7 @@ def anexo_38(request, pregao_id):
     w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
 
     sheet = rb.sheet_by_name(u"Página1")
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao).order_by('item')
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False).order_by('item')
     contador_total = 0
     for idx, item in enumerate(itens, 0):
 
