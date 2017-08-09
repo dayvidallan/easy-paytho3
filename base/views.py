@@ -7382,7 +7382,7 @@ def aditivar_contrato(request, contrato_id):
         contrato = get_object_or_404(Contrato, pk=contrato_id)
         title = u'Aditivar Contrato: %s' % contrato
         form = AditivarContratoForm(request.POST or None, contrato=contrato)
-        itens = ItemContrato.objects.filter(contrato=contrato)
+        itens = ItemContrato.objects.filter(contrato=contrato).order_by('material__nome')
         if form.is_valid():
             aditivo = Aditivo()
             aditivo.contrato = contrato
@@ -7411,9 +7411,9 @@ def aditivar_contrato(request, contrato_id):
                     if form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_QUANTITATIVOS:
                         aditivo.de_valor = True
 
-                        for idx, item in enumerate(request.POST.getlist('quantidade_soma'), 1):
+                        for idx, indice_informado in enumerate(request.POST.getlist('quantidade_soma'), 1):
 
-                            if item and request.POST.getlist('quantidade_soma')[idx-1] > 0:
+                            if indice_informado and int(indice_informado) > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 indice_ajuste = (Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.')) * 100)  / item.quantidade
 
@@ -7434,8 +7434,8 @@ def aditivar_contrato(request, contrato_id):
 
                     elif form.cleaned_data.get('opcoes') == Aditivo.SUPRESSAO_QUANTITATIVO:
                         aditivo.de_valor = True
-                        for idx, item in enumerate(request.POST.getlist('quantidade_subtrai'), 1):
-                            if item and request.POST.getlist('quantidade_subtrai')[idx-1] > 0:
+                        for idx, indice_informado in enumerate(request.POST.getlist('quantidade_subtrai'), 1):
+                            if indice_informado and int(indice_informado) > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 indice_ajuste = (Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.')) * 100) / item.quantidade
 
@@ -7458,9 +7458,11 @@ def aditivar_contrato(request, contrato_id):
                     elif form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_VALOR:
                         aditivo.de_valor = True
 
-                        for idx, item in enumerate(request.POST.getlist('valor_soma'), 1):
-                            if item and request.POST.getlist('valor_soma')[idx-1] > 0:
+                        for idx, indice_informado in enumerate(request.POST.getlist('valor_soma'), 1):
+                            if indice_informado and int(indice_informado) > 0:
+                                import ipdb; ipdb.set_trace()
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
+                                item.valor = ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor) + item.valor
                                 item.save()
 
                                 aditivo_item = AditivoItemContrato()
@@ -7468,7 +7470,7 @@ def aditivar_contrato(request, contrato_id):
                                 indice_ajuste = Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))
                                 aditivo_item.indice = indice_ajuste
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
-                                aditivo_item.valor = Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.')) * item.valor
+                                aditivo_item.valor = ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 aditivo_item.save()
 
                                 aditivo.indice = indice_ajuste
@@ -7480,17 +7482,18 @@ def aditivar_contrato(request, contrato_id):
                     elif form.cleaned_data.get('opcoes') == Aditivo.SUPRESSAO_VALOR:
                         aditivo.de_valor = True
 
-                        for idx, item in enumerate(request.POST.getlist('valor_subtrai'), 1):
-                            if item and request.POST.getlist('valor_subtrai')[idx-1] > 0:
+                        for idx, indice_informado in enumerate(request.POST.getlist('valor_subtrai'), 1):
+                            if indice_informado and int(indice_informado) > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
+                                item.valor = item.valor - ((Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 item.save()
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
-                                indice_ajuste = Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))
+                                indice_ajuste = (Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.')) * 100)  / item.valor
                                 aditivo_item.indice = indice_ajuste
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
-                                aditivo_item.valor = Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.')) * item.valor
+                                aditivo_item.valor = ((Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 aditivo_item.save()
 
                                 aditivo.indice = indice_ajuste

@@ -2561,6 +2561,7 @@ class Aditivo(models.Model):
     indice = models.DecimalField(u'Índice de Reajuste', decimal_places=2, max_digits=10, null=True, blank=True)
 
     class Meta:
+        ordering = ['ordem']
         verbose_name = u'Aditivo de Contrato'
         verbose_name_plural = u'Aditivos de Contrato'
 
@@ -2617,7 +2618,7 @@ class ItemContrato(models.Model):
     inserido_outro_contrato = models.BooleanField(u'Inserido em Outro Contrato', default=False)
 
     class Meta:
-        ordering = ['item__item']
+        ordering = ['material__nome']
         verbose_name = u'Item do Contrato'
         verbose_name_plural = u'Itens do Contrato'
 
