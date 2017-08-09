@@ -2672,7 +2672,7 @@ class ItemContrato(models.Model):
         total_valor = 0
 
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_VALOR):
-            total_valor -= item.indice
+            total_valor += item.indice
         return (25-total_valor)
 
     def get_aditivo_permitido_quantitativo_soma(self):
@@ -2684,7 +2684,7 @@ class ItemContrato(models.Model):
     def get_aditivo_permitido_quantitativo_subtrai(self):
         total_quantitativo = 0
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_QUANTITATIVO):
-            total_quantitativo -= item.indice
+            total_quantitativo += item.indice
         return str((self.quantidade*(25-total_quantitativo))/100).replace(',', '.')
 
 class PedidoContrato(models.Model):
