@@ -956,17 +956,6 @@ class DefinirVigenciaContratoForm(forms.ModelForm):
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
 
 
-class AditivarContratoForm(forms.Form):
-    data_inicio = forms.DateField(label=u'Data Inicial', widget=AdminDateWidget())
-    data_fim = forms.DateField(label=u'Data Final', widget=AdminDateWidget())
-
-    def __init__(self, *args, **kwargs):
-        self.contrato = kwargs.pop('contrato', None)
-        super(AditivarContratoForm, self).__init__(*args, **kwargs)
-
-        self.fields['data_inicio'].initial = self.contrato.get_data_fim()
-
-
 
 class DocumentoSolicitacaoForm(forms.ModelForm):
     documento = forms.FileField(label=u'Arquivo', required=True)
@@ -1245,6 +1234,10 @@ class AditivarContratoForm(BetterForm):
     def clean(self):
         if self.cleaned_data.get('data_inicial') and not self.cleaned_data.get('data_final'):
             self.add_error('data_final' , u'Informe a data final.')
+
+        if self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final'):
+            if self.contrato.aplicacao_artigo_57 == Contrato.INCISO_II and ((self.cleaned_data.get('data_final') - self.contrato.data_inicial).days / 5) > 365:
+                self.add_error('data_final' , u'Este contrato não pode ser aditivado em mais de 60 meses.')
 
 
 
