@@ -1656,7 +1656,7 @@ class LanceItemRodadaPregao(models.Model):
         ordering = ['-valor']
 
     def __unicode__(self):
-        return u'Lance %s da Rodada: %s' % (self.id, self.self.rodada)
+        return u'Lance %s da Rodada: %s' % (self.id, self.rodada.rodada)
 
     def get_marca(self):
         preco = PropostaItemPregao.objects.filter(participante=self.participante, item=self.item)
