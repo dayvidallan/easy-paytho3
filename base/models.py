@@ -57,6 +57,7 @@ class Secretaria(models.Model):
         return self.nome
 
     class Meta:
+        ordering = ['nome']
         verbose_name = u'Secretaria'
         verbose_name_plural = u'Secretarias'
 
@@ -72,6 +73,7 @@ class Setor(models.Model):
         return u'%s / %s' % (self.nome, self.secretaria)
 
     class Meta:
+        ordering = ['nome']
         verbose_name = u'Setor'
         verbose_name_plural = u'Setores'
 

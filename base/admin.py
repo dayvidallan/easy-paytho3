@@ -115,7 +115,7 @@ class PessoaFisicaAdmin(NewModelAdmin):
     form = PessoaFisicaForm
     list_display = ('nome', 'data_nascimento', 'setor', 'cpf', 'telefones', 'celulares', 'municipio')
     ordering = ('nome',)
-    list_filter = ('nome', 'setor__secretaria')
+    list_filter = ('setor__secretaria', 'setor', )
 
     def get_form(self, request, obj=None, **kwargs):
 
