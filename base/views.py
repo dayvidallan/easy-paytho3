@@ -7460,7 +7460,7 @@ def aditivar_contrato(request, contrato_id):
 
                         for idx, indice_informado in enumerate(request.POST.getlist('valor_soma'), 1):
                             if indice_informado and int(indice_informado) > 0:
-                                import ipdb; ipdb.set_trace()
+                                
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 item.valor = ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor) + item.valor
                                 item.save()
