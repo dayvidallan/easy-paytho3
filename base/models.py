@@ -2667,6 +2667,8 @@ class ItemContrato(models.Model):
         total_valor = 0
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_VALOR):
             total_valor += item.indice
+        if total_valor > 25:
+            return 0
 
         return (25-total_valor)
 
@@ -2675,6 +2677,8 @@ class ItemContrato(models.Model):
 
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_VALOR):
             total_valor += item.indice
+        if total_valor > 25:
+            return 0
         return (25-total_valor)
 
     def get_aditivo_permitido_quantitativo_soma(self):
