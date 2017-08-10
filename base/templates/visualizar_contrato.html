@@ -363,8 +363,7 @@
                             <th>Descrição</th>
                             <th>Tipo</th>
                             <th>Índice</th>
-                            <th>Data Início</th>
-                            <th>Data Fim</th>
+                            <th>Vigência</th>
 
 
 
@@ -377,7 +376,6 @@
                                 <td>{{ item }}</td>
                                 <td>{{ item.tipo }}</td>
                                 <td>{{ item.indice|default_if_none:"-"  }}</td>
-                                <td>{{ item.data_inicio|default_if_none:"-" }}</td>
                                 <td>{{ item.data_fim|default_if_none:"-" }}</td>
                             </tr>
                         {% endfor %}

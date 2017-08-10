@@ -383,7 +383,7 @@
                                             {{ pedido.fornecedor }}
                                         {% endif %}
                                     </td>
-                                    <td>{{ pedido.item.valor }}</td>
+                                    <td>{{ pedido.valor }}</td>
                                     <td>{{ pedido.quantidade|format_quantidade  }}</td>
                                     <td>
                                         {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra  %}
