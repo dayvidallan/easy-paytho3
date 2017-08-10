@@ -6765,20 +6765,21 @@ def anexo_38(request, pregao_id):
         resultado = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('ordem')
         contador = 1
         for result in resultado:
-            row_index = contador_total + 1
-            # style = xlwt.XFStyle()
-            # style.alignment.wrap = 1
-            w_sheet.write(row_index, 0, item.item)
-            w_sheet.write(row_index, 1, item.material.nome[:100])
-            w_sheet.write(row_index, 2, contador)
-            w_sheet.write(row_index, 3, format_money(result.valor))
-            w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
-            w_sheet.write(row_index, 5, u'CNPJ')
-            w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+            if contador < 5:
+                row_index = contador_total + 1
+                # style = xlwt.XFStyle()
+                # style.alignment.wrap = 1
+                w_sheet.write(row_index, 0, item.item)
+                w_sheet.write(row_index, 1, item.material.nome[:100])
+                w_sheet.write(row_index, 2, contador)
+                w_sheet.write(row_index, 3, format_money(result.valor))
+                w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+                w_sheet.write(row_index, 5, u'CNPJ')
+                w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
 
 
-            contador += 1
-            contador_total += 1
+                contador += 1
+                contador_total += 1
             # w_sheet.write(row_index, 1, item.material.nome, style)
             # w_sheet.write(row_index, 2, item.unidade.nome)
 
