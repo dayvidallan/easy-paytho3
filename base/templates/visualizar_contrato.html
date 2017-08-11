@@ -279,7 +279,6 @@
                                             <th>Marca</th>
                                             <th>Unidade</th>
                                             <th>Valor Unitário</th>
-                                            <th>Valor Total</th>
                                             <th>Quantidade Inicial</th>
                                             <th>Quantidade Disponível</th>
 
@@ -300,7 +299,6 @@
                                                 <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                 <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                                                 <td>{{ opcao.valor|format_money }}</td>
-                                                <td>{{ opcao.get_valor_total|format_money }}</td>
                                                 <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                 <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
