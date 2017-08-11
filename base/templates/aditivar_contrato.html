@@ -62,10 +62,10 @@ $(function() {
 
                                 <tr>
                                     <td width="10%">&nbsp;</td>
-                                    <td><b>Valor do Contrato Atual:</b> {{ contrato.valor }}</td>
+                                    <td><b>Valor do Contrato Atual:</b> {{ contrato.get_valor_aditivado }}</td>
 
 
-                                    <td><b>Novo Valor:</b> <input type="text" id="novo_valor_contrato" name="novo_valor_contrato"  value="{{ contrato.valor }}" readonly><br>
+                                    <td><b>Novo Valor:</b> <input type="text" id="novo_valor_contrato" name="novo_valor_contrato"  value="{{ contrato.get_valor_aditivado }}" readonly><br>
                                     </td>
                                 </tr>
                          </tbody>
