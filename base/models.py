@@ -1230,7 +1230,7 @@ class Pregao(models.Model):
     data_retorno = models.DateField(u'Data do Retorno', null=True, blank=True)
     sine_die = models.NullBooleanField(u'Sine Die', null=True, blank=True)
     republicado = models.BooleanField(u'Republicado', default=False)
-    objeto_tipo = models.CharField(u'Objeto - Tipo', choices=OBJETO_TIPO_CHOICES, max_length=200, default=COMPRA_MATERIAL_CONSUMO)
+    objeto_tipo = models.CharField(u'Objeto - Tipo', choices=OBJETO_TIPO_CHOICES, max_length=200, null=True, blank=True)
     valor_total = models.CharField(u'Valor Total Orçado', max_length=20, null=True, blank=True)
     recurso_proprio = models.CharField(u'Recurso Próprio', max_length=20, null=True, blank=True)
     recurso_federal = models.CharField(u'Recurso Transferido (Federal)', max_length=20, null=True, blank=True)
@@ -2493,7 +2493,11 @@ class Contrato(models.Model):
         for aditivo in self.aditivos_set.filter(tipo=Aditivo.REAJUSTE_FINANCEIRO):
             total_valor += aditivo.valor
 
-        return (25-total_valor)
+
+        if self.pregao and self.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
+            return (50-total_valor)
+        else:
+            return (25-total_valor)
 
 
     def get_data_fim(self):
@@ -2668,31 +2672,49 @@ class ItemContrato(models.Model):
         total_valor = 0
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_VALOR):
             total_valor += item.indice
-        if total_valor > 25:
-            return 0
 
-        return (25-total_valor)
+        if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
+            if total_valor > 50:
+                return 0
+            return (50-total_valor)
+        else:
+            if total_valor > 25:
+                return 0
+            return (25-total_valor)
+
 
     def get_aditivo_permitido_valor_subtrai(self):
         total_valor = 0
 
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_VALOR):
             total_valor += item.indice
-        if total_valor > 25:
-            return 0
-        return (25-total_valor)
+        if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
+            if total_valor > 50:
+                return 0
+            return (50-total_valor)
+        else:
+            if total_valor > 25:
+                return 0
+            return (25-total_valor)
 
     def get_aditivo_permitido_quantitativo_soma(self):
         total_quantitativo = 0
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_QUANTITATIVOS):
             total_quantitativo += item.indice
-        return str((self.quantidade*(25-total_quantitativo))/100).replace(',', '.')
+
+        if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
+            return str((self.quantidade*(50-total_quantitativo))/100).replace(',', '.')
+        else:
+            return str((self.quantidade*(25-total_quantitativo))/100).replace(',', '.')
 
     def get_aditivo_permitido_quantitativo_subtrai(self):
         total_quantitativo = 0
         for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_QUANTITATIVO):
             total_quantitativo += item.indice
-        return str((self.quantidade*(25-total_quantitativo))/100).replace(',', '.')
+        if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
+            return str((self.quantidade*(50-total_quantitativo))/100).replace(',', '.')
+        else:
+            return str((self.quantidade*(25-total_quantitativo))/100).replace(',', '.')
 
 class PedidoContrato(models.Model):
     contrato = models.ForeignKey(Contrato)

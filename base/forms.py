@@ -138,6 +138,7 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(ParticipantePregao.objects, label=u'Fornecedor', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
     preencher = forms.BooleanField(label=u'Preencher Manualmente', initial=False, required=False)
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
+    objeto_tipo = forms.ChoiceField(label=u'Objeto - Tipo', required=True, choices=Pregao.OBJETO_TIPO_CHOICES)
 
     class Media:
             js = ['/static/base/js/propostapregao.js']
@@ -228,6 +229,8 @@ class PregaoForm(forms.ModelForm):
         if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_termino') < self.cleaned_data.get('data_inicio'):
             self.add_error('data_termino', u'A data de término não pode ser menor do que a data de início.')
 
+        if not self.cleaned_data.get('objeto_tipo'):
+            self.add_error('objeto_tipo', u'Informe o tipo do objeto.')
 
         if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino'):
             teste = self.cleaned_data.get('data_termino')- self.cleaned_data.get('data_inicio')
