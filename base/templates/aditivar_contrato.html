@@ -15,7 +15,7 @@
 $(function() {
     $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
     $("#id_indice_reajuste").keyup(function(){
-        document.getElementById('novo_valor_contrato').value=((parseFloat({{ contrato.valor }})*parseFloat(this.value))/100)+parseFloat({{ contrato.valor }});
+        document.getElementById('novo_valor_contrato').value=((parseFloat({{ contrato.get_valor_aditivado }})*parseFloat(this.value))/100)+parseFloat({{ contrato.get_valor_aditivado }});
     });
 });
 
