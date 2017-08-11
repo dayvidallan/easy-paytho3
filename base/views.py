@@ -738,7 +738,7 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
 
 def baixar_editais(request):
     hoje = datetime.date.today()
-    pregoes = Pregao.objects.all().order_by('-num_pregao')
+    pregoes = Pregao.objects.all().order_by('-id')
     form = BaixarEditaisForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('modalidade'):

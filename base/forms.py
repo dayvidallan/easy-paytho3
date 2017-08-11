@@ -1240,7 +1240,7 @@ class AditivarContratoForm(BetterForm):
 
         if self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final'):
             if self.contrato.aplicacao_artigo_57 == Contrato.INCISO_II and ((self.cleaned_data.get('data_final') - self.contrato.data_inicio).days / 5) > 365:
-                self.add_error('data_final' , u'Este contrato não pode ser aditivado em mais de 60 meses, conforme o ART. 57 II. Prazo limite: %s.' %  (self.contrato.data_inicio + relativedelta(years=5)))
+                self.add_error('data_final' , u'Este contrato não pode ser aditivado em mais de 60 meses, conforme o ART. 57 II. Prazo limite: %s.' %  (self.contrato.data_inicio + relativedelta(years=5)).strftime('%d/%m/%y'))
 
 
 
