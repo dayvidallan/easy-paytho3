@@ -7400,7 +7400,7 @@ def aditivar_contrato(request, contrato_id):
 
                 if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
                     aditivo.de_valor = True
-                    aditivo.valor = ((form.cleaned_data.get('indice_reajuste')/100) * contrato.valor)
+                    aditivo.valor = ((form.cleaned_data.get('indice_reajuste')/100) * contrato.get_valor_aditivado())
                     for item in ItemContrato.objects.filter(contrato=contrato):
                         item.valor = item.valor + ((form.cleaned_data.get('indice_reajuste')/100) * item.valor)
                         item.save()
