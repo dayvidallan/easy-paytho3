@@ -2631,6 +2631,7 @@ class ItemContrato(models.Model):
         usuario = tl.get_user()
         quantidade_aditivo = 0
 
+
         aditivos = AditivoItemContrato.objects.filter(item=self)
         if aditivos.exists():
             for aditivo in aditivos:
@@ -2641,7 +2642,7 @@ class ItemContrato(models.Model):
                     if aditivo.valor:
                         quantidade_aditivo -= aditivo.valor
         if usuario.groups.filter(name=u'Gerente').exists():
-            pedidos = PedidoContrato.objects.filter(item=self, ativo=True)
+            pedidos = PedidoContrato.objects.filter(item=self, ativo=True).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
             if pedidos.exists():
                 return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
             else:
@@ -2653,7 +2654,7 @@ class ItemContrato(models.Model):
             if not (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
 
-            pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
+            pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
             if pedidos.exists():
                 return total - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
             return total + quantidade_aditivo
