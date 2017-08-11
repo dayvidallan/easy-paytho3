@@ -7605,12 +7605,13 @@ def contratar_remanescentes(request, contrato_id):
             valor_total = 0
             itens_selecionados = request.POST.getlist('registros')
             for item in itens_selecionados:
-                item_atual = get_object_or_404(ItemContrato, pk=int(item))
-                novo_item = item_atual
+                copia_item_atual = get_object_or_404(ItemContrato, pk=int(item))
+                novo_item = copia_item_atual
                 novo_item.id = None
                 novo_item.contrato = o
                 novo_item.fornecedor = form.cleaned_data.get('fornecedor').fornecedor
                 novo_item.participante = form.cleaned_data.get('fornecedor')
+                item_atual = get_object_or_404(ItemContrato, pk=int(item))
                 novo_item.quantidade = item_atual.get_quantidade_disponivel()
                 novo_item.inserido_outro_contrato = False
                 novo_item.save()

@@ -1236,7 +1236,7 @@ class AditivarContratoForm(BetterForm):
             self.add_error('data_final' , u'Informe a data final.')
 
         if self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final'):
-            if self.contrato.aplicacao_artigo_57 == Contrato.INCISO_II and ((self.cleaned_data.get('data_final') - self.contrato.data_inicial).days / 5) > 365:
+            if self.contrato.aplicacao_artigo_57 == Contrato.INCISO_II and ((self.cleaned_data.get('data_final') - self.contrato.data_inicio).days / 5) > 365:
                 self.add_error('data_final' , u'Este contrato não pode ser aditivado em mais de 60 meses.')
 
 
@@ -1273,7 +1273,7 @@ class ContratoRemanescenteForm(forms.ModelForm):
         else:
             busca = busca.exclude(id=fornecedor_atual.participante.id)
 
-        self.fields['fornecedor'].queryset = busca
+        self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(id__in=[2,3])
 
     def clean(self):
         if self.cleaned_data.get('garantia_execucao_objeto'):
