@@ -8,7 +8,7 @@ from dal import autocomplete
 from django.contrib.auth.models import Group
 from localflavor.br.forms import BRCNPJField
 from form_utils.forms import BetterForm
-
+from dateutil.relativedelta import relativedelta
 
 class CadastraParticipantePregaoForm(forms.ModelForm):
     sem_representante = forms.BooleanField(label=u'Representante Ausente', initial=False, required=False)
@@ -1240,7 +1240,7 @@ class AditivarContratoForm(BetterForm):
 
         if self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final'):
             if self.contrato.aplicacao_artigo_57 == Contrato.INCISO_II and ((self.cleaned_data.get('data_final') - self.contrato.data_inicio).days / 5) > 365:
-                self.add_error('data_final' , u'Este contrato não pode ser aditivado em mais de 60 meses.')
+                self.add_error('data_final' , u'Este contrato não pode ser aditivado em mais de 60 meses, conforme o ART. 57 II. Prazo limite: %s.' %  (self.contrato.data_inicio + relativedelta(years=5)))
 
 
 
