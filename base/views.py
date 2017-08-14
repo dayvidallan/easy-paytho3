@@ -514,9 +514,8 @@ def lances_item(request, item_id):
                 item.filtrar_todos_ativos()
         sorteio = False
         if request.GET and request.GET.get('sorteio') == u'1':
-
+            sorteio = True
             item.gerar_resultado(apaga=False)
-            sorteio = item.tem_empate()
 
 
 
