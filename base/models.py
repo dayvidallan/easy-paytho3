@@ -1615,6 +1615,10 @@ class PropostaItemPregao(models.Model):
     def ativo(self):
         return not self.desclassificado and not self.desistencia
 
+    def get_resultado_participante_item(self):
+        if ResultadoItemPregao.objects.filter(participante=self.participante, item=self.item).exists():
+            return ResultadoItemPregao.objects.filter(participante=self.participante, item=self.item)[0].ordem
+
 
 class RodadaPregao(models.Model):
     rodada = models.IntegerField(verbose_name=u'Rodada de Lances')

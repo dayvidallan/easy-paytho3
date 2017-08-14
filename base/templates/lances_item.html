@@ -121,91 +121,112 @@
                 </tr>
             </tbody>
         </table>
-        <table class="table table-bordered table-condensed table-striped">
-            <thead>
-                <tr>
-                    <th colspan="4">
-                        <form action="." method="post" class="form-horizontal">
-                            {% csrf_token %}
-                            <table border="0" width="30%">
-                                <tr>
-                                    {% if item.eh_ativo and item.ativo %}
-                                        <td>Opções</td>
-                                        <td><a href="/base/lances_item/{{item.id}}/?filtrar=2" class="btn btn-default btn-sm">Todos</a></td>
-                                        <td>
-                                            <a href="/base/lances_item/{{item.id}}/?filtrar=1" class="btn btn-default btn-sm">Filtrar por 10%</a>
-                                        </td>
-                                        {% if botao_incluir and item.ativo %}
+        <form method="POST" id="bolsas_form" action="/base/salvar_sorteio_item_pregao/{{ item.id }}/">
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="4">
+                            <form action="." method="post" class="form-horizontal">
+                                {% csrf_token %}
+                                <table border="0" width="30%">
+                                    <tr>
+                                        {% if item.eh_ativo and item.ativo %}
+                                            <td>Opções</td>
+                                            <td><a href="/base/lances_item/{{item.id}}/?filtrar=2" class="btn btn-default btn-sm">Todos</a></td>
                                             <td>
-                                                <a href="/base/lances_item/{{item.id}}/?filtrar=1&incluir=1" class="btn btn-default btn-sm">Incluir Fornecedor</a>
+                                                <a href="/base/lances_item/{{item.id}}/?filtrar=1" class="btn btn-default btn-sm">Filtrar por 10%</a>
+                                            </td>
+
+                                            {% if botao_incluir and item.ativo %}
+                                                <td>
+                                                    <a href="/base/lances_item/{{item.id}}/?filtrar=1&incluir=1" class="btn btn-default btn-sm">Incluir Fornecedor</a>
+                                                </td>
+                                            {% endif %}
+                                            <td>
+                                                <a href="/base/lances_item/{{item.id}}/?sorteio=1" class="btn btn-default btn-sm">Sorteio</a>
                                             </td>
                                         {% endif %}
-                                    {% endif %}
 
 
 
-                                </tr>
-                            </table>
-                        </form>
-                    </th>
-                </tr>
-                <tr>
-                    <th>Fornecedor</th>
-                    {% if eh_modalidade_desconto %}
-                        <th>Desconto</th>
-                    {% else %}
-                        <th>Valor</th>
-                    {% endif %}
-                    <th>ME/EPP</th>
-                    <th>Opções</th>
-                </tr>
-
-            </thead>
-            <tbody>
-                {% for preco in fornecedores_lance %}
-                    <tr>
-                        <td>
-                            {% if not preco.concorre %}
-                                {% if preco.desclassificado or preco.desistencia %}
-                                    <font color="red">{{ preco.participante }}</font>
-                                {% else %}
-                                    <font color="orange">{{ preco.participante }}</font>
-                                {% endif %}
-                            {% else %}
-                                {{ preco.participante }}
-                            {% endif %}
-                        </td>
-                        {% if eh_modalidade_desconto %}
-                            <td width="15%">{{ preco.valor }}%</td>
-                        {% else %}
-                            <td width="15%">{{ preco.valor|format_money }}</td>
-                        {% endif %}
-                        <td>{% if preco.participante.me_epp %}
-                                <font color="green">Sim</font>
-                            {% else %}
-                                <font color="red">Não</font>
-                            {% endif %}
-                        </td>
-                        <td width="45%">
-                            {% if preco.desclassificado %}
-                                <font color="red">Desclassificado</font>
-                            {% elif preco.desistencia %}
-                                <font color="red">Desistente</font>
-                            {% else %}
-                                {% if item.eh_ativo and item.ativo %}
-                                    {% if not preco.concorre and not item.ja_recebeu_lance  %}
-                                        <a href="/base/adicionar_por_discricionaridade/{{ preco.id }}/" class="btn btn-warning btn-sm">Incluir</a>
-                                    {% endif %}
-                                    <a href="/base/remover_participante/{{ preco.id }}/2/" class="btn btn-danger btn-sm">Desistir</a>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-
+                                    </tr>
+                                </table>
+                            </form>
+                        </th>
                     </tr>
-                {% endfor %}
+                    <tr>
+                        {% if sorteio %}
+                            <th>Ordem</th>
+                        {% endif %}
+                        <th>Fornecedor</th>
+                        {% if eh_modalidade_desconto %}
+                            <th>Desconto</th>
+                        {% else %}
+                            <th>Valor</th>
+                        {% endif %}
+                        <th>ME/EPP</th>
+                        {% if not sorteio %}
+                            <th>Opções</th>
+                        {% endif %}
+                    </tr>
 
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for preco in fornecedores_lance %}
+                        <tr>
+                            {% if sorteio %}
+                            <td><INPUT type="number" NAME="ordens" value="{{ preco.get_resultado_participante_item }}"> </td>
+                            {% endif %}
+                            <td>
+                                {% if not preco.concorre %}
+                                    {% if preco.desclassificado or preco.desistencia %}
+                                        <font color="red">{{ preco.participante }}</font>
+                                    {% else %}
+                                        <font color="orange">{{ preco.participante }}</font>
+                                    {% endif %}
+                                {% else %}
+                                    {{ preco.participante }}
+                                {% endif %}
+                            </td>
+                            {% if eh_modalidade_desconto %}
+                                <td width="15%">{{ preco.valor }}%</td>
+                            {% else %}
+                                <td width="15%">{{ preco.valor|format_money }}</td>
+                            {% endif %}
+                            <td>{% if preco.participante.me_epp %}
+                                    <font color="green">Sim</font>
+                                {% else %}
+                                    <font color="red">Não</font>
+                                {% endif %}
+                            </td>
+                            {% if not sorteio %}
+                                <td width="45%">
+                                    {% if preco.desclassificado %}
+                                        <font color="red">Desclassificado</font>
+                                    {% elif preco.desistencia %}
+                                        <font color="red">Desistente</font>
+                                    {% else %}
+                                        {% if item.eh_ativo and item.ativo %}
+                                            {% if not preco.concorre and not item.ja_recebeu_lance  %}
+                                                <a href="/base/adicionar_por_discricionaridade/{{ preco.id }}/" class="btn btn-warning btn-sm">Incluir</a>
+                                            {% endif %}
+                                            <a href="/base/remover_participante/{{ preco.id }}/2/" class="btn btn-danger btn-sm">Desistir</a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+
+                        </tr>
+                    {% endfor %}
+                    {% if sorteio %}
+                        <tr>
+                            <td colspan="4"><input type="submit" class="btn btn-success"></td>
+                        </tr>
+                    {% endif %}
+
+                </tbody>
+            </table>
+        </form>
     </div>
 <div style="width:50%; float:left">
 

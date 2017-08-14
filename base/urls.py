@@ -74,6 +74,8 @@ urlpatterns = [
     url(r'^editar_visitante/(?P<visitante_id>\d+)/$', views.editar_visitante, name='editar_visitante'),
     url(r'^excluir_visitante/(?P<visitante_id>\d+)/$', views.excluir_visitante, name='excluir_visitante'),
     url(r'^gerar_resultado_credenciamento/(?P<pregao_id>\d+)/$', views.gerar_resultado_credenciamento, name='gerar_resultado_credenciamento'),
+    url(r'^salvar_sorteio_item_pregao/(?P<item_id>\d+)/$', views.salvar_sorteio_item_pregao, name='salvar_sorteio_item_pregao'),
+
 
 
     url(r'^cadastrar_credenciamento/(?P<solicitacao_id>\d+)/$', views.cadastrar_credenciamento, name='cadastrar_credenciamento'),

@@ -138,7 +138,7 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
     fornecedor = forms.ModelChoiceField(ParticipantePregao.objects, label=u'Fornecedor', widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
     preencher = forms.BooleanField(label=u'Preencher Manualmente', initial=False, required=False)
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
-    
+
 
     class Media:
             js = ['/static/base/js/propostapregao.js']

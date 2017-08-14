@@ -512,6 +512,12 @@ def lances_item(request, item_id):
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
             else:
                 item.filtrar_todos_ativos()
+        sorteio = False
+        if request.GET and request.GET.get('sorteio') == u'1':
+            sorteio = True
+            item.gerar_resultado(apaga=False)
+
+
         form = LanceForm(request.POST or None)
         if form.is_valid():
             rodada_atual = item.get_rodada_atual()
@@ -7630,5 +7636,27 @@ def contratar_remanescentes(request, contrato_id):
 
         return render(request, 'contratar_remanescentes.html', locals(), RequestContext(request))
 
+    else:
+        raise PermissionDenied
+
+
+@login_required()
+def salvar_sorteio_item_pregao(request, item_id):
+
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
+    pregao = item.solicitacao.get_pregao()
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        ordenar = request.POST.getlist('ordens')
+        if ordenar:
+            lista = list()
+            for proposta in PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor'):
+                lista.append(proposta)
+            for idx, ordem_informada in enumerate(ordenar, 0):
+                if ordem_informada:
+                    plano = ResultadoItemPregao.objects.get(participante=lista[idx].participante, item=lista[idx].item)
+                    plano.ordem = int(ordem_informada)
+                    plano.save()
+            messages.success(request, u'Ordem do sorteio salva com sucesso.')
+            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
     else:
         raise PermissionDenied
