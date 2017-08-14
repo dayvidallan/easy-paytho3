@@ -7663,6 +7663,9 @@ def salvar_sorteio_item_pregao(request, item_id):
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         ordenar = request.POST.getlist('ordens')
         if ordenar:
+            if len(ordenar) != len(set(ordenar)):
+                messages.error(request, u'Não é permitido ter duas ou mais empresas com a mesma colocação.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
             lista = list()
             for proposta in PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor'):
                 lista.append(proposta)
