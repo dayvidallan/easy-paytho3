@@ -1617,7 +1617,7 @@ class PropostaItemPregao(models.Model):
 
     def get_resultado_participante_item(self):
         if ResultadoItemPregao.objects.filter(participante=self.participante, item=self.item).exists():
-            return ResultadoItemPregao.objects.filter(participante=self.participante, item=self.item)[0].ordem
+            return ResultadoItemPregao.objects.filter(participante=self.participante, item=self.item)[0].ore
 
 
 class RodadaPregao(models.Model):

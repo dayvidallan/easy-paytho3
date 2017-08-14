@@ -516,6 +516,7 @@ def lances_item(request, item_id):
         if request.GET and request.GET.get('sorteio') == u'1':
             sorteio = True
             item.gerar_resultado(apaga=False)
+            ResultadoItemPregao.objects.filter(item=item).update(empate=False)
 
 
         form = LanceForm(request.POST or None)
@@ -1406,6 +1407,14 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
             historico.save()
             participante.excluido_dos_itens = True
             participante.save()
+            for item in ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao):
+                for resultado in ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem'):
+                    if ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO).count() >= 2:
+                        if ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO)[0].valor == ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO)[1].valor:
+                            registro = ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO)[0]
+                            registro.empate = True
+                            registro.save()
+
             return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
         return render(request, 'encerrar_pregao.html', locals(), RequestContext(request))
     else:
