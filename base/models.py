@@ -1978,6 +1978,11 @@ class ResultadoItemPregao(models.Model):
         else:
             return 'R$ %s' % format_money(self.valor)
 
+    def ganhador_atual(self):
+        if ResultadoItemPregao.objects.filter(item=self.item, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
+            return ResultadoItemPregao.objects.filter(item=self.item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0].participante
+        return None
+
 
 class AnexoPregao(models.Model):
     pregao = models.ForeignKey('base.Pregao')

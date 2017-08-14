@@ -1389,6 +1389,11 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
         title=u'Alterar Participante'
         form = RemoverParticipanteForm(request.POST or None)
         if form.is_valid():
+            ids_itens_ganhador = list()
+            for item_resultado in ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante):
+                if item_resultado.ganhador_atual() and item_resultado.ganhador_atual() == participante:
+                    ids_itens_ganhador.append(item_resultado.item.id)
+
             if situacao ==u'1':
                 ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.INABILITADO, observacoes=form.cleaned_data.get('motivo'))
 
@@ -1407,11 +1412,12 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
             historico.save()
             participante.excluido_dos_itens = True
             participante.save()
-            for item in ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao):
-                for resultado in ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem'):
-                    if ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO).count() >= 2:
-                        if ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO)[0].valor == ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO)[1].valor:
-                            registro = ResultadoItemPregao.objects.filter(item=item.item, situacao=ResultadoItemPregao.CLASSIFICADO)[0]
+
+            if ids_itens_ganhador:
+                for ids in ids_itens_ganhador:
+                    if ResultadoItemPregao.objects.filter(item__id=ids, situacao=ResultadoItemPregao.CLASSIFICADO).count() >= 2:
+                        if ResultadoItemPregao.objects.filter(item__id=ids, situacao=ResultadoItemPregao.CLASSIFICADO)[0].valor == ResultadoItemPregao.objects.filter(item__id=ids, situacao=ResultadoItemPregao.CLASSIFICADO)[1].valor:
+                            registro = ResultadoItemPregao.objects.filter(item__id=ids, situacao=ResultadoItemPregao.CLASSIFICADO)[0]
                             registro.empate = True
                             registro.save()
 
