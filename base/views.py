@@ -514,9 +514,10 @@ def lances_item(request, item_id):
                 item.filtrar_todos_ativos()
         sorteio = False
         if request.GET and request.GET.get('sorteio') == u'1':
-            sorteio = True
+
             item.gerar_resultado(apaga=False)
-            ResultadoItemPregao.objects.filter(item=item).update(empate=False)
+            sorteio = item.tem_empate()
+
 
 
         form = LanceForm(request.POST or None)
@@ -7674,6 +7675,7 @@ def salvar_sorteio_item_pregao(request, item_id):
                     plano = ResultadoItemPregao.objects.get(participante=lista[idx].participante, item=lista[idx].item)
                     plano.ordem = int(ordem_informada)
                     plano.save()
+            ResultadoItemPregao.objects.filter(item=item).update(empate=False)
             messages.success(request, u'Ordem do sorteio salva com sucesso.')
             return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
     else:
