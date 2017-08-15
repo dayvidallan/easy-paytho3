@@ -220,7 +220,11 @@
                     {% endfor %}
                     {% if sorteio %}
                         <tr>
-                            <td colspan="4"><input type="submit" class="btn btn-success"></td>
+                            {% if item.tem_empate %}
+                                <td colspan="4"><input type="submit" class="btn btn-success"></td>
+                            {% else %}
+                                <td colspan="4"><p class="alert alert-info">Este item não possui empate.</p></td>
+                            {% endif %}
                         </tr>
                     {% endif %}
 
