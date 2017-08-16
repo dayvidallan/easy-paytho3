@@ -4267,7 +4267,7 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
                         novo_pedido.item = ItemAtaRegistroPreco.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
                         novo_pedido.valor = ItemAtaRegistroPreco.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).valor
                     else:
-                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx]).valor
+                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
                         novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
 
                     novo_pedido.quantidade = valor_pedido
