@@ -838,7 +838,11 @@ class CriarContratoForm(BetterForm):
         valor_contrato = None
         nome_campos = u''
         if len(lista) > 1:
-            valor_contrato = int(lista[0])+1
+            try:
+                int(lista[0])
+                valor_contrato = int(lista[0])+1
+            except:
+                valor_contrato = 0
         for i in self.pregao.get_vencedores():
             label = u'************** Número do Contrato - Fornecedor: %s' % (i)
             self.fields["contrato_%d" % i.id] = forms.CharField(label=label, required=True)
