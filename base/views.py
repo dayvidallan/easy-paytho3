@@ -5458,6 +5458,20 @@ def upload_termo_homologacao(request, pregao_id):
 
 
 @login_required()
+def gerar_resultado_licitacao_toda(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao):
+            item.gerar_resultado(apaga=True)
+        messages.success(request, u'Resultado gerado com sucesso.')
+        return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+    else:
+        raise PermissionDenied
+
+
+
+@login_required()
 def gerar_resultado_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
@@ -5469,7 +5483,7 @@ def gerar_resultado_licitacao(request, pregao_id):
             chave= '%s' %  proposta.participante.id
 
             tabela[chave]['total'] += proposta.valor
-        resultado = sorted(tabela.items(), key=lambda x: x[1])
+        resultado = sorted(tabela.items(), key=lambda x:x[1])
         total = len(resultado)
         indice = 0
         # print resultado

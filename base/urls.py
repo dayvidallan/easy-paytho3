@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^propostas_item/(?P<item_id>\d+)/$', views.propostas_item, name='propostas_item'),
     url(r'^propostas_item_credenciamento/(?P<item_id>\d+)/$', views.propostas_item_credenciamento, name='propostas_item_credenciamento'),
 
+    url(r'^gerar_resultado_licitacao_toda/(?P<pregao_id>\d+)/$', views.gerar_resultado_licitacao_toda, name='gerar_resultado_licitacao_toda'),
 
     url(r'^lances_item/(?P<item_id>\d+)/$', views.lances_item, name='lances_item'),
     url(r'^rodada_pregao/(?P<item_id>\d+)/$', views.rodada_pregao, name='rodada_pregao'),

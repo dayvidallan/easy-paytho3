@@ -1341,7 +1341,7 @@ class Pregao(models.Model):
                         tem_empate_ficto = True
             indice += 1
 
-        return tem_empate_ficto
+        return tem_empate_ficto and ResultadoItemPregao.objects.filter(participante__pregao=pregao).exists()
 
     def eh_suspenso(self):
         return self.situacao in [Pregao.SUSPENSO]
