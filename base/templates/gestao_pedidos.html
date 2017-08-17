@@ -305,7 +305,7 @@
                                                             {% else %}
                                                                 <td>{{ opcao.fornecedor }}</td>
                                                             {% endif %}
-                                                            <td>{{ opcao.valor|format_money }}</td>
+                                                            <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
                                                             <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
                                                         </tr>

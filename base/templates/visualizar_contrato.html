@@ -298,7 +298,7 @@
                                                 {% endif %}
                                                 <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                 <td>{{ opcao.unidade|default_if_none:"-" }}</td>
-                                                <td>{{ opcao.valor|format_money }}</td>
+                                                <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
                                                 <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                 <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 

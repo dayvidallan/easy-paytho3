@@ -4486,10 +4486,10 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                     if eh_lote:
 
                         novo_pedido.item = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
-                        novo_pedido.valor = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).valor
+                        novo_pedido.valor = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).get_valor_item_contrato()
                     else:
                         novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
-                        novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
+                        novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).get_valor_item_contrato()
 
 
                     novo_pedido.quantidade = valor_pedido
@@ -7486,8 +7486,8 @@ def aditivar_contrato(request, contrato_id):
                             if indice_informado and int(indice_informado) > 0:
 
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
-                                item.valor = ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor) + item.valor
-                                item.save()
+                                #item.valor = ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor) + item.valor
+                                #item.save()
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
@@ -7509,8 +7509,8 @@ def aditivar_contrato(request, contrato_id):
                         for idx, indice_informado in enumerate(request.POST.getlist('valor_subtrai'), 1):
                             if indice_informado and int(indice_informado) > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
-                                item.valor = item.valor - ((Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
-                                item.save()
+                                #item.valor = item.valor - ((Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
+                                #item.save()
 
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
