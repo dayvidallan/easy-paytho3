@@ -4951,7 +4951,10 @@ def registrar_adjudicacao(request, pregao_id):
 def registrar_homologacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if request.user.pessoafisica == pregao.solicitacao.setor_origem.secretaria.ordenador_despesa:
-        title=u'Registrar Homologação'
+        if pregao.eh_credenciamento():
+            title=u'Credenciar'
+        else:
+            title=u'Registrar Homologação'
         form = RegistrarHomologacaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
             o = form.save(False)
@@ -7458,7 +7461,7 @@ def aditivar_contrato(request, contrato_id):
                         for idx, indice_informado in enumerate(request.POST.getlist('quantidade_subtrai'), 1):
                             if indice_informado and int(indice_informado) > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
-                                indice_ajuste = (Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.')) * 100) / item.quantidade
+                                indice_ajuste = (Decimal(request.POST.getlist('quantidade_subtrai')[idx-1].replace('.','').replace(',','.')) * 100) / item.quantidade
 
 
                                 item.save()
@@ -7467,13 +7470,13 @@ def aditivar_contrato(request, contrato_id):
                                 aditivo_item.item = item
                                 aditivo_item.indice = indice_ajuste
                                 aditivo_item.tipo = form.cleaned_data.get('opcoes')
-                                aditivo_item.valor = Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.'))
+                                aditivo_item.valor = Decimal(request.POST.getlist('quantidade_subtrai')[idx-1].replace('.','').replace(',','.'))
                                 aditivo_item.save()
                                 aditivo.indice = indice_ajuste
                                 aditivo.save()
 
 
-                                total_ajuste +=  request.POST.getlist('quantidade_subtrai')[idx-1]
+                                total_ajuste +=  Decimal(request.POST.getlist('quantidade_subtrai')[idx-1].replace('.','').replace(',','.'))
                                 qtd_ajuste += 1
 
                     elif form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_VALOR:

@@ -948,6 +948,8 @@ class RegistrarHomologacaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RegistrarHomologacaoForm, self).__init__(*args, **kwargs)
         self.fields['data_homologacao'].widget.attrs = {'class': 'vDateField'}
+        if self.instance.eh_credenciamento():
+            self.fields['data_homologacao'].label = u'Data do Credenciamento'
 
 class DefinirVigenciaContratoForm(forms.ModelForm):
     class Meta:
