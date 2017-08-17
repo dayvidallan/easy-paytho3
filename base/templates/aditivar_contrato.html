@@ -31,7 +31,6 @@ $(function() {
              <div class="miolo">
 				<div class="row-fluid">
                     <div class="col-xs-6">
-                        {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
                         {% for fieldset in form.fieldsets %}
                           <fieldset class="{{ fieldset.classes }}">
                           {% if fieldset.legend %}
