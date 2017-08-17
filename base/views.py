@@ -5462,10 +5462,10 @@ def gerar_resultado_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         tabela = {}
-        for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+        for proposta in PropostaItemPregao.objects.filter(pregao=pregao).order_by('valor'):
             chave= '%s' %  proposta.participante.id
             tabela[chave] = dict(total = 0)
-        for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+        for proposta in PropostaItemPregao.objects.filter(pregao=pregao).order_by('valor'):
             chave= '%s' %  proposta.participante.id
 
             tabela[chave]['total'] += proposta.valor
@@ -5488,7 +5488,7 @@ def gerar_resultado_licitacao(request, pregao_id):
             #         if resultado[indice][0] < limite_lance:
             #             tem_empate_ficto = True
 
-            itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor)
+            itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor).order_by('valor')
 
             for item in itens:
                 if ResultadoItemPregao.objects.filter(item=item.item, participante=fornecedor).exists():
