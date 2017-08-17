@@ -659,7 +659,10 @@ def ver_pregoes(request):
             pregoes = pregoes.filter(Q(solicitacao__processo__numero__icontains=form.cleaned_data.get('info')) | Q(solicitacao__num_memorando__icontains=form.cleaned_data.get('info')) | Q(num_pregao__icontains=form.cleaned_data.get('info')) )
 
         if form.cleaned_data.get('modalidade'):
-            pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
+            if form.cleaned_data.get('modalidade') == ModalidadePregao.PREGAO:
+                pregoes = pregoes.filter(modalidade__in=[ModalidadePregao.PREGAO, ModalidadePregao.PREGAO_SRP])
+            else:
+                pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
 
         if form.cleaned_data.get('data_inicial'):
             pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))

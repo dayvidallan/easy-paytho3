@@ -295,6 +295,11 @@ class Command(BaseCommand):
         ModalidadePregao.objects.get_or_create(nome=u'Chamada Pública – PRONATER ')[0]
         ModalidadePregao.objects.get_or_create(nome=u'Pregão Presencial - Sistema de Registro de Preços (SRP)')[0]
         ModalidadePregao.objects.get_or_create(nome=u'Concorrência - Sistema de Registro de Preços (SRP)')[0]
+        #ModalidadePregao.objects.get_or_create(nome=u'Concorrência - Regime de Empreitada Integral')[0]
+
+        # TipoPregao.objects.get_or_create(nome=u'Menor Preço')[0]
+        # TipoPregao.objects.get_or_create(nome=u'Melhor Técnica')[0]
+        # TipoPregao.objects.get_or_create(nome=u'Técnica e Preços')[0]
 
 
 
