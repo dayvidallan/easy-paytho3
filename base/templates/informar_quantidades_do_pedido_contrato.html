@@ -137,7 +137,7 @@
                                     {% else %}
                                         <td>{{ resultado.participante }}</td>
                                     {% endif %}
-                                    <td>{{ resultado.valor }}</td>
+                                    <td>{{ resultado.get_valor_item_contrato }}</td>
                                     <td>{{ resultado.get_quantidade_disponivel|format_quantidade }}</td>
                                     {% if buscou %}
                                         <td><input name="quantidades" type="number" value="0"></td>
