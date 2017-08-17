@@ -1282,7 +1282,7 @@ class ContratoRemanescenteForm(forms.ModelForm):
         else:
             busca = busca.exclude(id=fornecedor_atual.participante.id)
 
-        self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(id__in=[2,3])
+        self.fields['fornecedor'].queryset = busca
 
     def clean(self):
         if self.cleaned_data.get('garantia_execucao_objeto'):
