@@ -211,7 +211,7 @@
         <tbody>
 
             <tr>
-                <td><a href="/base/itens_solicitacao/{{ contrato.solicitacao.id }}/">{{ contrato.solicitacao.num_memorando }}</td>
+                <td><a href="/base/itens_solicitacao/{{ contrato.solicitacao.id }}/">{{ contrato.solicitacao.num_memorando }}</a></td>
                 <td>{{ contrato.solicitacao.processo|default_if_none:"-" }}</td>
 
                 <td>{{ contrato.data_inicio }}</td>
@@ -256,6 +256,9 @@
             </li>
             <li>
                 <a href="#anexos">Anexos</a>
+            </li>
+            <li>
+                <a href="#relatorios">Relatórios</a>
             </li>
 
         </ul>
@@ -445,6 +448,17 @@
                     </tbody>
                 </table>
 
+
+        </div>
+        <div id="relatorios" class="tab-pane">
+
+            <table class="table table-bordered table-condensed table-striped" width="90%">
+                <tbody>
+                    <tr>
+                        <td><a href="/base/relatorio_info_contrato/{{ contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
+                    </tr>
+                </tbody>
+            </table>
 
         </div>
    </div>

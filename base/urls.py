@@ -275,6 +275,7 @@ urlpatterns = [
     url(r'^ver_relatorios_gerenciais_atas/$', views.ver_relatorios_gerenciais_atas, name='ver_relatorios_gerenciais_atas'),
     url(r'^ver_relatorios_gerenciais_credenciamentos/$', views.ver_relatorios_gerenciais_credenciamentos, name='ver_relatorios_gerenciais_credenciamentos'),
 
+    url(r'^relatorio_info_contrato/(?P<contrato_id>\d+)/$', views.relatorio_info_contrato, name='relatorio_info_contrato'),
 
 
     url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
