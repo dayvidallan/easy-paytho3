@@ -76,6 +76,7 @@ urlpatterns = [
     url(r'^excluir_visitante/(?P<visitante_id>\d+)/$', views.excluir_visitante, name='excluir_visitante'),
     url(r'^gerar_resultado_credenciamento/(?P<pregao_id>\d+)/$', views.gerar_resultado_credenciamento, name='gerar_resultado_credenciamento'),
     url(r'^salvar_sorteio_item_pregao/(?P<item_id>\d+)/$', views.salvar_sorteio_item_pregao, name='salvar_sorteio_item_pregao'),
+    url(r'^mudar_credenciamento_fornecedor/(?P<credenciamento_id>\d+)/(?P<fornecedor_id>\d+)/(?P<opcao>\d+)/$', views.mudar_credenciamento_fornecedor, name='mudar_credenciamento_fornecedor'),
 
 
 
@@ -269,7 +270,12 @@ urlpatterns = [
     url(r'^cadastrar_variaveis_configuracao/$', views.cadastrar_variaveis_configuracao, name='cadastrar_variaveis_configuracao'),
 
     url(r'^localizar_processo/$', views.localizar_processo, name='localizar_processo'),
-    url(r'^ver_relatorios_gerenciais/$', views.ver_relatorios_gerenciais, name='ver_relatorios_gerenciais'),
+    url(r'^ver_relatorios_gerenciais_licitacao/$', views.ver_relatorios_gerenciais_licitacao, name='ver_relatorios_gerenciais_licitacao'),
+    url(r'^ver_relatorios_gerenciais_contratos/$', views.ver_relatorios_gerenciais_contratos, name='ver_relatorios_gerenciais_contratos'),
+    url(r'^ver_relatorios_gerenciais_atas/$', views.ver_relatorios_gerenciais_atas, name='ver_relatorios_gerenciais_atas'),
+    url(r'^ver_relatorios_gerenciais_credenciamentos/$', views.ver_relatorios_gerenciais_credenciamentos, name='ver_relatorios_gerenciais_credenciamentos'),
+
+
 
     url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
     url(r'^informar_valor_final_itens_lote/(?P<lote_id>\d+)/(?P<pregao_id>\d+)/$', views.informar_valor_final_itens_lote, name='informar_valor_final_itens_lote'),

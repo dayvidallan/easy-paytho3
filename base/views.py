@@ -4093,7 +4093,7 @@ def informar_quantidades_do_pedido_credenciamento(request, credenciamento_id, so
     itens_credenciamento = credenciamento.itemcredenciamento_set.all()
     solicitacao = credenciamento.solicitacao
     title=u'Pedido de Compra - %s' % credenciamento
-    participantes = ParticipantePregao.objects.filter(pregao=credenciamento.pregao, desclassificado=False, excluido_dos_itens=False)
+    participantes = ParticipantePregao.objects.filter(pregao=credenciamento.pregao, desclassificado=False, excluido_dos_itens=False, credenciado=True)
     form = FiltraVencedorPedidoForm(request.POST or None, participantes=participantes)
     eh_lote = False
     origem_pregao = credenciamento.solicitacao.get_pregao()
@@ -5099,7 +5099,6 @@ def visualizar_credenciamento(request, credenciamento_id):
 
     pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
-
 
     pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('item__material', 'setor')
     tabela  = {}
@@ -6944,8 +6943,8 @@ def localizar_processo(request):
 
 
 @login_required()
-def ver_relatorios_gerenciais(request):
-    title=u'Relatórios Gerenciais'
+def ver_relatorios_gerenciais_licitacao(request):
+    title=u'Relatórios Gerenciais das Licitações'
 
     eh_ordenador_despesa = False
     if get_config():
@@ -7026,7 +7025,210 @@ def ver_relatorios_gerenciais(request):
             return HttpResponse(pdf, 'application/pdf')
 
 
-    return render(request, 'ver_relatorios_gerenciais.html', locals(), RequestContext(request))
+    return render(request, 'ver_relatorios_gerenciais_licitacao.html', locals(), RequestContext(request))
+
+
+
+
+def ver_relatorios_gerenciais_contratos(request):
+    title=u'Relatórios Gerenciais dos Contratos'
+    eh_gerente = request.user.groups.filter(name='Gerente')
+    if eh_gerente:
+
+        form = RelatoriosGerenciaisContratosForm(request.POST or None)
+
+        if form.is_valid():
+            contratos = Contrato.objects.all().order_by('numero')
+            relatorio =  form.cleaned_data.get('relatorio')
+            situacao = form.cleaned_data.get('situacao')
+            visualizar = form.cleaned_data.get('visualizar')
+            secretaria = form.cleaned_data.get('secretaria')
+            ano = form.cleaned_data.get('ano')
+            hoje = datetime.date.today()
+            total = 0
+            if ano:
+                contratos = contratos.filter(data_inicio__year=ano)
+
+            if situacao:
+                descricao_situacao = u'Todos'
+                if situacao == u'2':
+                    contratos = contratos.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                    descricao_situacao = u'Vigentes'
+                elif situacao == u'3':
+                    contratos = contratos.filter(Q(concluido=True), Q(suspenso=True), Q(cancelado=True))
+                    descricao_situacao = u'Concluídos'
+
+            if secretaria:
+                contratos = contratos.filter(solicitacao__setor_origem__secretaria=secretaria)
+
+
+            if visualizar == u'2':
+                destino_arquivo = u'upload/resultados/relatorio_gerencial_contratos_%s.pdf' %  request.user.pessoafisica.id
+                if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+                    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+                caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+                data_emissao = datetime.date.today()
+
+                configuracao = get_config(request.user.pessoafisica.setor.secretaria)
+                logo = None
+                if configuracao.logo:
+                    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+
+                data = {'contratos': contratos, 'titulo': 'Contratos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+                template = get_template('relatorio_gerencial_situacao_contratos.html')
+
+
+                html  = template.render(Context(data))
+
+                pdf_file = open(caminho_arquivo, "w+b")
+                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                        encoding='utf-8')
+                pdf_file.close()
+                file = open(caminho_arquivo, "r")
+                pdf = file.read()
+                file.close()
+                return HttpResponse(pdf, 'application/pdf')
+    else:
+        raise PermissionDenied
+
+
+    return render(request, 'ver_relatorios_gerenciais_contratos.html', locals(), RequestContext(request))
+
+
+def ver_relatorios_gerenciais_atas(request):
+    title=u'Relatórios Gerenciais das Atas'
+    eh_gerente = request.user.groups.filter(name='Gerente')
+    if eh_gerente:
+
+        form = RelatoriosGerenciaisContratosForm(request.POST or None)
+
+        if form.is_valid():
+            contratos = AtaRegistroPreco.objects.all().order_by('numero')
+            relatorio =  form.cleaned_data.get('relatorio')
+            situacao = form.cleaned_data.get('situacao')
+            visualizar = form.cleaned_data.get('visualizar')
+            secretaria = form.cleaned_data.get('secretaria')
+            ano = form.cleaned_data.get('ano')
+            hoje = datetime.date.today()
+            total = 0
+            if ano:
+                contratos = contratos.filter(data_inicio__year=ano)
+
+            if situacao:
+                descricao_situacao = u'Todos'
+                if situacao == u'2':
+                    contratos = contratos.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                    descricao_situacao = u'Vigentes'
+                elif situacao == u'3':
+                    contratos = contratos.filter(Q(concluido=True), Q(suspenso=True), Q(cancelado=True))
+                    descricao_situacao = u'Concluídos'
+
+            if secretaria:
+                contratos = contratos.filter(solicitacao__setor_origem__secretaria=secretaria)
+
+
+            if visualizar == u'2':
+                destino_arquivo = u'upload/resultados/relatorio_gerencial_contratos_%s.pdf' %  request.user.pessoafisica.id
+                if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+                    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+                caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+                data_emissao = datetime.date.today()
+
+                configuracao = get_config(request.user.pessoafisica.setor.secretaria)
+                logo = None
+                if configuracao.logo:
+                    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+
+                data = {'contratos': contratos, 'titulo': 'Atas', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+                template = get_template('relatorio_gerencial_situacao_contratos.html')
+
+
+                html  = template.render(Context(data))
+
+                pdf_file = open(caminho_arquivo, "w+b")
+                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                        encoding='utf-8')
+                pdf_file.close()
+                file = open(caminho_arquivo, "r")
+                pdf = file.read()
+                file.close()
+                return HttpResponse(pdf, 'application/pdf')
+    else:
+        raise PermissionDenied
+
+
+    return render(request, 'ver_relatorios_gerenciais_contratos.html', locals(), RequestContext(request))
+
+def ver_relatorios_gerenciais_credenciamentos(request):
+    title=u'Relatórios Gerenciais dos Credenciamentos'
+    eh_gerente = request.user.groups.filter(name='Gerente')
+    if eh_gerente:
+
+        form = RelatoriosGerenciaisContratosForm(request.POST or None)
+
+        if form.is_valid():
+            contratos = Credenciamento.objects.all().order_by('numero')
+            relatorio =  form.cleaned_data.get('relatorio')
+            situacao = form.cleaned_data.get('situacao')
+            visualizar = form.cleaned_data.get('visualizar')
+            secretaria = form.cleaned_data.get('secretaria')
+            ano = form.cleaned_data.get('ano')
+            hoje = datetime.date.today()
+            total = 0
+            if ano:
+                contratos = contratos.filter(data_inicio__year=ano)
+
+            if situacao:
+                descricao_situacao = u'Todos'
+                if situacao == u'2':
+                    contratos = contratos.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                    descricao_situacao = u'Vigentes'
+                elif situacao == u'3':
+                    contratos = contratos.filter(Q(concluido=True), Q(suspenso=True), Q(cancelado=True))
+                    descricao_situacao = u'Concluídos'
+
+            if secretaria:
+                contratos = contratos.filter(solicitacao__setor_origem__secretaria=secretaria)
+
+
+            if visualizar == u'2':
+                destino_arquivo = u'upload/resultados/relatorio_gerencial_contratos_%s.pdf' %  request.user.pessoafisica.id
+                if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+                    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+                caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+                data_emissao = datetime.date.today()
+
+                configuracao = get_config(request.user.pessoafisica.setor.secretaria)
+                logo = None
+                if configuracao.logo:
+                    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+
+                data = {'contratos': contratos, 'titulo': 'Credenciamentos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+                template = get_template('relatorio_gerencial_situacao_contratos.html')
+
+
+                html  = template.render(Context(data))
+
+                pdf_file = open(caminho_arquivo, "w+b")
+                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                        encoding='utf-8')
+                pdf_file.close()
+                file = open(caminho_arquivo, "r")
+                pdf = file.read()
+                file.close()
+                return HttpResponse(pdf, 'application/pdf')
+    else:
+        raise PermissionDenied
+
+
+    return render(request, 'ver_relatorios_gerenciais_contratos.html', locals(), RequestContext(request))
+
 
 @login_required()
 def liberar_pedidos_solicitacao(request, solicitacao_id):
@@ -7697,5 +7899,26 @@ def salvar_sorteio_item_pregao(request, item_id):
             ResultadoItemPregao.objects.filter(item=item).update(empate=False)
             messages.success(request, u'Ordem do sorteio salva com sucesso.')
             return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    else:
+        raise PermissionDenied
+
+
+@login_required()
+def mudar_credenciamento_fornecedor(request, credenciamento_id, fornecedor_id, opcao):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+
+    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+
+    if eh_gerente:
+        participante = get_object_or_404(ParticipantePregao, pk=fornecedor_id)
+        if opcao == u'1':
+            participante.credenciado = True
+        elif opcao == u'2':
+            participante.credenciado = False
+        participante.save()
+        messages.success(request, u'Credenciamento do fornecedor alterado com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_credenciamento/%s/' % credenciamento.id)
+
     else:
         raise PermissionDenied

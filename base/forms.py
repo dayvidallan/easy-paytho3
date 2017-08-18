@@ -1123,6 +1123,32 @@ class RelatoriosGerenciaisForm(forms.Form):
         self.fields['ano'].choices = ANO_CHOICES
         self.fields['ano'].initial = ano_limite
 
+class RelatoriosGerenciaisContratosForm(forms.Form):
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    #relatorio = forms.ChoiceField(label=u'Tipo de Relatório', choices=((u'Relatório de Situação', u'Relatório de Situação'),(u'Relatório de Economia', u'Relatório de Economia'),), required=False)
+
+    #modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Vigentes'), (3, u'Concluídos')) )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    visualizar = forms.ChoiceField(label=u'Modo de Visualização', required=False, choices=((u'1', u'Na Tela'),(u'2', u'Gerar PDF'),),)
+
+
+    def __init__(self, *args, **kwargs):
+        super(RelatoriosGerenciaisContratosForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        contratos = Contrato.objects.all().order_by('data_inicio')
+        ANO_CHOICES = []
+        if contratos.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = contratos[0].data_inicio.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
 
 class CriarContratoAdesaoAtaForm(forms.Form):
 

@@ -290,7 +290,7 @@
 
         </div>
         <div id="empresas" class="tab-pane">
-            {% if pode_gerenciar %}
+            {% if eh_gerente %}
                 <div class="pull-right">
                     <a class="btn btn-success" href="/base/cadastrar_empresa_credenciamento/{{ credenciamento.id }}/">Cadastrar Empresa</a>
                 </div>
@@ -304,17 +304,25 @@
                         <th width="20%">Endereço</th>
                         <th width="20%">Telefone</th>
                         <th width="20%">Email</th>
+                        <th>Opções</th>
 
                     </tr>
                 </thead>
                 <tbody>
                         {% for empresa in credenciamento.get_fornecedores %}
                             <tr>
-                                <td>{{ empresa.razao_social }}</td>
-                                <td>{{ empresa.cnpj }}</td>
-                                <td>{{ empresa.endereco }}</td>
-                                <td>{{ empresa.telefone }}</td>
-                                <td>{{ empresa.email }}</td>
+                                <td>{{ empresa.fornecedor.razao_social }}</td>
+                                <td>{{ empresa.fornecedor.cnpj }}</td>
+                                <td>{{ empresa.fornecedor.endereco }}</td>
+                                <td>{{ empresa.fornecedor.telefone }}</td>
+                                <td>{{ empresa.fornecedor.email }}</td>
+                                <td>
+                                    {% if empresa.credenciado %}
+                                        <a href="/base/mudar_credenciamento_fornecedor/{{ credenciamento.id }}/{{ empresa.id}}/2/" class="btn btn-danger btn-sm ">Descredenciar</a>
+                                    {% else %}
+                                        <a href="/base/mudar_credenciamento_fornecedor/{{ credenciamento.id }}/{{ empresa.id}}/1/" class="btn btn-success btn-sm ">Credenciar</a>
+                                    {% endif %}
+                                </td>
 
                             </tr>
                         {% endfor %}
