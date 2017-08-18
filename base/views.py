@@ -7931,7 +7931,7 @@ def relatorio_info_contrato(request, contrato_id):
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
     eh_gerente = True
     if eh_gerente:
-        pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
+        pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('pedido_em')
         configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
         logo = None
         if configuracao.logo:
