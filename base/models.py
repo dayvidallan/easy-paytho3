@@ -1156,12 +1156,12 @@ def upload_path_termo_homologacao(instance, filename):
     return os.path.join('upload/homologacoes/%s/' % instance.id, filename)
 
 class Pregao(models.Model):
-    CADASTRADO = u'Cadastrado'
+    CADASTRADO = u'Publicado'
     DESERTO = u'Deserto'
     FRACASSADO = u'Fracassado'
-    CONCLUIDO = u'Concluído'
+    CONCLUIDO = u'Homologado'
     SUSPENSO = u'Suspenso'
-    REVOGADO = u'Revogado'
+    REVOGADO = u'Revogado/Anulado'
     ADJUDICADO = u'Adjudicado'
 
 
