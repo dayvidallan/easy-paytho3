@@ -133,33 +133,27 @@ ul{
             <thead>
 
                 <tr>
-                    <th>Item</th>
-                    <th>Material/Serviço</th>
-                    <th>Marca</th>
-                    <th>Unidade</th>
-                    <th>Valor Unitário</th>
-                    <th>Quantidade Inicial</th>
-                    <th>Quantidade Disponível</th>
+                    <th width="5%">Item</th>
+                    <th width="75%">Material/Serviço</th>
+                    <th width="10%">Valor Unitário</th>
+                    <th width="10%">Quantidade Inicial / Disponível</th>
 
 
                 </tr>
             </thead>
             <tbody>
-                {% for opcao in contrato.itemcontrato_set.all %}
+                {% for opcao in contrato.get_itens %}
                     <tr>
                         {% if opcao.item %}
-                            <td>{{ opcao.item }}</td>
-                            <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                            <td>{{ opcao.item.item }}</td>
+                        <td align="left">{{ opcao.item.material|truncatechars:500 }} <br><b>MARCA:</b> {{ opcao.marca|default_if_none:"-" }} <br><b>Unidade:</b> {{ opcao.unidade|default_if_none:"-" }}</td>
                         {% else %}
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ opcao.material|truncatechars:500 }}</td>
+                            <td align="left">{{ opcao.material|truncatechars:500 }}  - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
 
                         {% endif %}
-                        <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                        <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                         <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
-                        <td>{{ opcao.quantidade|format_quantidade }}</td>
-                        <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                        <td>{{ opcao.quantidade|format_quantidade }} / {{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                     </tr>
@@ -173,9 +167,9 @@ ul{
         <table border="1" width="100%" cellpadding="5" cellspacing="5">
             <thead>
                 <tr>
-                    <th>Material/Serviço</th>
-                    <th>Quantidade Pedida</th>
-                    <th>Saldo Atual da Secretaria</th>
+                    <th width="80%">Material/Serviço</th>
+                    <th width="10%">Quantidade Pedida</th>
+                    <th width="10%">Saldo Atual da Secretaria</th>
 
                 </tr>
             </thead>

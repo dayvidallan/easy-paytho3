@@ -2551,6 +2551,9 @@ class Contrato(models.Model):
         else:
             return 1
 
+    def get_itens(self):
+        return self.itemcontrato_set.all().order_by('item__item')
+
 class Aditivo(models.Model):
 
     ACRESCIMO_QUANTITATIVOS = u'Acréscimo de Quantitativos'
