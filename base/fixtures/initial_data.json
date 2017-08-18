@@ -1,0 +1,163 @@
+[
+    {
+        "model": "base.opcaolcn",
+        "pk": 1,
+        "fields": {
+            "descricao": "Estabelecimento de Margem de Preferência – LN 8.666/93, § 8°"
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 2,
+        "fields": {
+            "descricao": "Exigência de Subcontratação com MPE (Obras e Serviços) – LCN 123/06, art. 48, II"
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 3,
+        "fields": {
+            "descricao": "Licitação Exclusiva para MPE (Itens até R$ 80.000,00) – LCN 123/06, art. 48, I"
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 4,
+        "fields": {
+            "descricao": "Inaplicabilidade dos Benefícios a MPE – LCN 123/06, art. 49, II"
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 5,
+        "fields": {
+            "descricao": "Inaplicabilidade dos Benefícios a MPE – LCN 123/06, art. 49, III – parte inicial "
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 6,
+        "fields": {
+            "descricao": "Inaplicabilidade dos Benefícios a MPE – LCN 123/06, art. 49, III – parte final "
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 7,
+        "fields": {
+            "descricao": "Inaplicabilidade dos Benefícios a MPE – Outras razões"
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 8,
+        "fields": {
+            "descricao": "Prioridade de Contratação para MPE Local ou Regional – LCN 123/06, art. 48, § 3°"
+        }
+    },
+    {
+        "model": "base.opcaolcn",
+        "pk": 9,
+        "fields": {
+            "descricao": "Reserva de COTA para MPE (Bens Divisíveis) – LCN 123/06, art. 48, III "
+        }
+    },
+    {
+        "model": "base.criteriopregao",
+        "pk": 1,
+        "fields": {
+            "nome": "Por Item"
+        }
+    },
+    {
+        "model": "base.criteriopregao",
+        "pk": 2,
+        "fields": {
+            "nome": "Por Lote"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 1,
+        "fields": {
+            "nome": "Carta Convite"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 2,
+        "fields": {
+            "nome": "Concorrência Pública"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 3,
+        "fields": {
+            "nome": "Concurso"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 4,
+        "fields": {
+            "nome": "Pregão Presencial"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 5,
+        "fields": {
+            "nome": "Tomada de Preço"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 6,
+        "fields": {
+            "nome": "Credenciamento"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 7,
+        "fields": {
+            "nome": "Chamada Pública – Alimentação Escolar"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 8,
+        "fields": {
+            "nome": "Chamada Pública – Outros"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 9,
+        "fields": {
+            "nome": "Chamada Pública – PRONATER "
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 10,
+        "fields": {
+            "nome": "Pregão Presencial - Sistema de Registro de Preços (SRP)"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 11,
+        "fields": {
+            "nome": "Concorrência - Sistema de Registro de Preços (SRP)"
+        }
+    },
+    {
+        "model": "base.tipopregao",
+        "pk": 1,
+        "fields": {
+            "nome": "Menor Preço"
+        }
+    }
+]

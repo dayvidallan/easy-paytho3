@@ -24,7 +24,7 @@ class Command(BaseCommand):
         print_and_call_command('reset_db')
         #print_and_call_command('syncdb', load_initial_data=False, interactive = False)
         print_and_call_command('migrate')
-        #print_and_call_command('loaddata', 'initial_data', skip_validation=True)
+        print_and_call_command('loaddata', 'initial_data', skip_validation=True)
         print_and_call_command('sync_permissions')
         print_and_call_command('collectstatic', clear=True, verbosity=0, interactive=False)
         print_and_call_command('criar_base_teste')
