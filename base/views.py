@@ -7931,7 +7931,11 @@ def relatorio_info_contrato(request, contrato_id):
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
     eh_gerente = True
     if eh_gerente:
+        total = 0
+        itens = contrato.get_itens()
         pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('pedido_em')
+        for item in itens:
+            total += item.get_valor_total()
         configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
         logo = None
         if configuracao.logo:
@@ -7944,7 +7948,7 @@ def relatorio_info_contrato(request, contrato_id):
         data_emissao = datetime.date.today()
 
 
-        data = {'contrato':contrato, 'pedidos': pedidos, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+        data = {'contrato':contrato, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
         template = get_template('relatorio_info_contrato.html')
 
@@ -7961,3 +7965,88 @@ def relatorio_info_contrato(request, contrato_id):
     else:
         PermissionDenied
 
+
+@login_required()
+def relatorio_qtd_disponivel_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+
+    pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = True
+    if eh_gerente:
+        total = 0
+        itens = contrato.get_itens()
+
+        for item in itens:
+            total += item.get_valor_total_disponivel()
+        configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'contrato':contrato,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_qtd_disponivel_contrato.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied
+
+
+@login_required()
+def relatorio_qtd_consumida_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, pk=contrato_id)
+
+    pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = True
+    if eh_gerente:
+        total = 0
+        itens = contrato.get_itens()
+        pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('pedido_em')
+        for item in itens:
+            total += item.get_valor_total_consumido()
+        configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'contrato':contrato, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_qtd_consumida_contrato.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied

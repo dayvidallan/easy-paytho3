@@ -2679,7 +2679,19 @@ class ItemContrato(models.Model):
         return 0
 
     def get_valor_total(self):
-        return self.quantidade * self.valor
+        return self.quantidade * Decimal(self.get_valor_item_contrato())
+
+    def get_valor_total_disponivel(self):
+        return self.get_quantidade_disponivel() * Decimal(self.get_valor_item_contrato())
+
+    def get_quantidade_consumida(self):
+        if PedidoContrato.objects.filter(item=self).exists():
+            return PedidoContrato.objects.filter(item=self).aggregate(total=Sum('quantidade'))['total']
+        else:
+            return 0
+
+    def get_valor_total_consumido(self):
+        return self.get_quantidade_consumida() * Decimal(self.get_valor_item_contrato())
 
     def get_aditivo_permitido_valor_soma(self):
         total_valor = 0
