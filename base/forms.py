@@ -274,7 +274,7 @@ class SolicitacaoForm(forms.ModelForm):
             del self.fields['tipo']
 
 
-        if self.instance.tipo == SolicitacaoLicitacao.COMPRA and self.request:
+        if (self.instance.tipo == SolicitacaoLicitacao.COMPRA or self.instance.tipo_aquisicao == SolicitacaoLicitacao.ADESAO_ARP) and self.request:
             del self.fields['justificativa']
             del self.fields['tipo_aquisicao']
             del self.fields['todos_interessados']

@@ -250,9 +250,13 @@
             {% if ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra %}
                 <div class="pull-right">
                     <a class="btn btn-success" href="/base/adicionar_item_adesao_arp/{{ata.id}}/">Adicionar Item</a>
-                    <a class="btn btn-success" href="/base/carregar_planilha_itens_adesao_arp/{{ata.id}}/">Carregar Planilha de  Itens</a>
-                    <a href="/media/upload/modelos/modelo_adesao_arp.xlsx" target="_blank" class="btn btn-primary">Modelo de Planilha</a>
-                    <a class="btn btn-success" href="/base/itens_solicitacao/{{ ata.solicitacao.id }}/">Continuar >></a>
+                    {% if not ata.itematraregistropreco_set.exists %}
+                        <a class="btn btn-success" href="/base/carregar_planilha_itens_adesao_arp/{{ata.id}}/">Carregar Planilha de  Itens</a>
+                        <a href="/media/upload/modelos/modelo_adesao_arp.xlsx" target="_blank" class="btn btn-primary">Modelo de Planilha</a>
+                    {% else %}
+                        <a class="btn btn-success" href="/base/itens_solicitacao/{{ ata.solicitacao.id }}/">Continuar >></a>
+                    {% endif %}
+
 
                 </div>
             {% endif %}
