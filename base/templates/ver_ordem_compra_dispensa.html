@@ -123,23 +123,21 @@ ul{
                         <thead>
                             <tr>
                                 <th width="7%">Item</th>
-                                <th>Especificação</th>
-                                <th width="20%">Unidade</th>
-                                <th width="10%">Quantidade</th>
-                                <th width="20%">Valor Unit.</th>
-                                <th width="20%">Total</th>
+                                <th width="45%">Especificação</th>
+                                <th width="20%">Quantidade</th>
+                                <th width="20%">Valor Unit.(R$)</th>
+                                <th width="20%">Total(R$)</th>
                             </tr>
                         </thead>
                         <tbody>
                             {%  for proposta in itens %}
 
                                 <tr>
-                                    <td>{{ proposta.item }}</td>
-                                    <td  style="text-align: left;">{{ proposta.item.material }} - MARCA: {{ proposta.marca}}</td>
-                                    <td>{{ proposta.item.unidade}}</td>
+                                    <td>{{ proposta.item.item }}</td>
+                                    <td  style="text-align: left;">{{ proposta.item.material }} - MARCA: {{ proposta.marca}} - UNIDADE: {{ proposta.item.unidade }}</td>
                                     <td>{{ proposta.item.quantidade|format_quantidade  }}</td>
-                                    <td>R$ {{ proposta.valor_maximo|format_money  }}</td>
-                                    <td>R$ {{ proposta.get_total|format_money  }}</td>
+                                    <td>{{ proposta.valor_maximo|format_money  }}</td>
+                                    <td>{{ proposta.get_total|format_money  }}</td>
                                 </tr>
                             {% endfor %}
                             <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
