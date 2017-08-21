@@ -1577,6 +1577,8 @@ def cadastrar_anexo_credenciamento(request, credenciamento_id):
         return render(request, 'cadastrar_anexo_contrato.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
+
+@transaction.atomic()
 @login_required()
 def cadastrar_ata_registro_preco(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
