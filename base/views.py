@@ -4141,11 +4141,12 @@ def informar_quantidades_do_pedido_credenciamento(request, credenciamento_id, so
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                 valor_pedido = int(valor)
                 if valor_pedido > 0:
+                    
                     novo_pedido = PedidoCredenciamento()
                     novo_pedido.credenciamento = credenciamento
                     novo_pedido.solicitacao = nova_solicitacao
                     novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
-                    novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx])
+                    novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
                     novo_pedido.fornecedor = fornecedor.fornecedor
                     novo_pedido.quantidade = valor_pedido
                     novo_pedido.setor = setor
