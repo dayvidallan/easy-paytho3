@@ -4779,6 +4779,10 @@ def informar_valor_final_itens_lote(request, lote_id, pregao_id):
 @login_required()
 def gerar_ordem_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if solicitacao.tem_valor_acima_permitido():
+        messages.error(request, u'O valor desta solicitação está acima do permitido.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
+
     id_sessao = "%s_solicitacao" % (request.user.pessoafisica.id)
     request.session[id_sessao] = solicitacao.id
     title = u'Gerar Ordem de Compra/Serviço - %s' % solicitacao
