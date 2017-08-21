@@ -1,0 +1,160 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4 landscape;
+            margin: 0.3cm;
+            margin-bottom: 0.7cm;
+            margin-top: 0.3cm;
+            @frame footer {
+    		    -pdf-frame-content: footerblock;
+    		    bottom: 1cm;
+    		    margin-left: 1cm;
+    		    margin-right: 1cm;
+                margin-top: 1cm;
+    		    height: 1cm;
+		    }
+
+     }
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center><font size="4">Dados da {{ contrato }} - Quantidades Consumidas</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+
+
+{% endblock %}
+
+{% block content %}
+<center>
+    <table width="100%" border="1" align="right" cellpadding="5" cellspacing="5">
+        <thead>
+            <tr>
+                <th>Nº da Solicitação</th>
+                <th>Nº Processo</th>
+                {% if ata.adesao %}
+                    <th>Nº do Ofício</th>
+                    <th>Órgão de Origem</th>
+                {% endif %}
+                <th>Início da Vigência</th>
+                <th>Término da Vigência</th>
+                <th>Situação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ ata.solicitacao.num_memorando }}</td>
+                <td>{{ ata.solicitacao.processo|default_if_none:"-" }}</td>
+
+                {% if ata.adesao %}
+                    <td>{{ ata.num_oficio }}</td>
+                    <td>{{ ata.orgao_origem|default_if_none:"-" }}</td>
+                {% endif %}
+                <td>{{ ata.data_inicio }}</td>
+                <td>{{ ata.data_fim|default_if_none:"-" }}</td>
+                <td>{{ ata.get_situacao }}</td>
+            </tr>
+
+        </tbody>
+   </table>
+   <br>
+
+
+
+    <table border="1" width="100%" cellpadding="5" cellspacing="5">
+       <tr>
+           <td width="15%"><b>Objeto:</b></td><td align="left">{{ ata.solicitacao.objeto }}</td>
+       </tr>
+   </table>
+
+    <br>
+
+        <h3>Itens da Ata de Registro de Preço</h3>
+        <table border="1" width="100%" cellpadding="5" cellspacing="5">
+
+            <thead>
+
+                <tr>
+                    <th width="5%">Item</th>
+                    <th width="65%">Material/Serviço</th>
+                    <th width="10%">Unidade</th>
+                    <th width="10%">Valor Unitário</th>
+                    <th width="10%">Quantidade Consumida</th>
+                    <th width="10%">Total</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for opcao in itens %}
+                    <tr>
+                        {% if opcao.item %}
+                            <td>{{ opcao.item.item }}</td>
+                            <td>{{ opcao.item.material|truncatechars:500 }} - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+                        {% else %}
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ opcao.material|truncatechars:500 }}  - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+
+                        {% endif %}
+                        <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                        <td>{{ opcao.valor|format_money }}</td>
+                        <td>{{ opcao.get_quantidade_consumida|format_quantidade }}</td>
+                        <td>{{ opcao.get_valor_total_consumido|format_money }}</td>
+                    </tr>
+                {% endfor %}
+                 <tr>
+                     <td colspan="5">Total</td>
+                     <td>{{ total|format_money }}</td>
+                 </tr>
+            </tbody>
+        </table>
+
+
+
+
+</center>
+
+
+
+
+
+<div id="footerblock" align="right">
+   Página <pdf:pagenumber> de <pdf:pagecount>
+</div>
+
+{% endblock %}
+
+
+

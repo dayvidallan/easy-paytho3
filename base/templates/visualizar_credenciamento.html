@@ -235,6 +235,9 @@
             <li>
                 <a href="#anexos">Anexos</a>
             </li>
+            <li>
+                <a href="#relatorios">Relatórios</a>
+            </li>
 
 
         </ul>
@@ -444,6 +447,23 @@
                 <p class="alert alert-warning">Nenhum anexo.</p>
             {% endif %}
 
+
+        </div>
+       <div id="relatorios" class="tab-pane">
+
+            <table class="table table-bordered table-condensed table-striped" width="90%">
+                <tbody>
+                    <tr>
+                        <td><a href="/base/relatorio_info_credenciamento/{{ credenciamento.pk }}/" target="_blank">Informações do Credenciamento</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="/base/relatorio_qtd_disponivel_credenciamento/{{ credenciamento.pk }}/" target="_blank">Quantidades Disponíveis do Credenciamento</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="/base/relatorio_qtd_consumida_credenciamento/{{ credenciamento.pk }}/" target="_blank">Quantidades Consumidas do Credenciamento</a></td>
+                    </tr>
+                </tbody>
+            </table>
 
         </div>
 

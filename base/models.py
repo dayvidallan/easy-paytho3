@@ -2384,6 +2384,21 @@ class ItemCredenciamento(models.Model):
         else:
             return self.quantidade
 
+    def get_valor_total_disponivel(self):
+        return self.get_quantidade_disponivel() * Decimal(self.valor)
+
+    def get_valor_total(self):
+        return self.valor * self.quantidade
+
+    def get_quantidade_consumida(self):
+        if PedidoCredenciamento.objects.filter(item=self).exists():
+            return PedidoCredenciamento.objects.filter(item=self).aggregate(total=Sum('quantidade'))['total']
+        else:
+            return 0
+
+    def get_valor_total_consumido(self):
+        return self.get_quantidade_consumida() * Decimal(self.valor)
+
 class PedidoCredenciamento(models.Model):
     credenciamento = models.ForeignKey(Credenciamento)
     item = models.ForeignKey(ItemCredenciamento)
@@ -2553,6 +2568,9 @@ class Contrato(models.Model):
 
     def get_itens(self):
         return self.itemcontrato_set.all().order_by('item__item')
+
+    def eh_gerente(self, user):
+        return user.groups.filter(name='Gerente') and self.solicitacao.recebida_setor(user.pessoafisica.setor)
 
 class Aditivo(models.Model):
 
@@ -2776,7 +2794,6 @@ class PedidoContrato(models.Model):
 
 
 
-
 class ItemAtaRegistroPreco(models.Model):
     ata = models.ForeignKey(AtaRegistroPreco)
     item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
@@ -2844,6 +2861,20 @@ class ItemAtaRegistroPreco(models.Model):
             else:
                 return self.quantidade
 
+    def get_total(self):
+        return self.quantidade * self.valor
+
+    def get_valor_total_disponivel(self):
+        return self.get_quantidade_disponivel() * Decimal(self.valor)
+
+    def get_quantidade_consumida(self):
+        if PedidoAtaRegistroPreco.objects.filter(item=self).exists():
+            return PedidoAtaRegistroPreco.objects.filter(item=self).aggregate(total=Sum('quantidade'))['total']
+        else:
+            return 0
+
+    def get_valor_total_consumido(self):
+        return self.get_quantidade_consumida() * Decimal(self.valor)
 
 class PedidoAtaRegistroPreco(models.Model):
     ata = models.ForeignKey(AtaRegistroPreco)

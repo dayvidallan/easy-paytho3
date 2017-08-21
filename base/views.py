@@ -5066,6 +5066,11 @@ def visualizar_ata_registro_preco(request, ata_id):
 
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('item__material', 'setor')
     tabela  = {}
+    itens = ata.itemataregistropreco_set.all()
+    if ata.adesao:
+        participantes = Fornecedor.objects.filter(id__in=itens.values_list('fornecedor', flat=True))
+    else:
+        participantes = ParticipantePregao.objects.filter(id__in=itens.values_list('participante', flat=True))
 
     materiais  = dict()
     secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
@@ -7929,7 +7934,7 @@ def relatorio_info_contrato(request, contrato_id):
 
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
-    eh_gerente = True
+
     if eh_gerente:
         total = 0
         itens = contrato.get_itens()
@@ -7972,7 +7977,7 @@ def relatorio_qtd_disponivel_contrato(request, contrato_id):
 
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
-    eh_gerente = True
+
     if eh_gerente:
         total = 0
         itens = contrato.get_itens()
@@ -8015,7 +8020,7 @@ def relatorio_qtd_consumida_contrato(request, contrato_id):
 
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
-    eh_gerente = True
+
     if eh_gerente:
         total = 0
         itens = contrato.get_itens()
@@ -8050,3 +8055,304 @@ def relatorio_qtd_consumida_contrato(request, contrato_id):
         return HttpResponse(pdf, 'application/pdf')
     else:
         PermissionDenied
+
+
+@login_required()
+def relatorio_info_arp(request, ata_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+
+    pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+
+
+    if eh_gerente:
+        total = 0
+        itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+
+        pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
+        for item in itens:
+            total += item.valor * item.quantidade
+        configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % ata_id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_info_arp.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied
+
+
+@login_required()
+def relatorio_qtd_disponivel_ata(request, ata_id, fornecedor_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+
+
+    pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+
+    if eh_gerente:
+        if fornecedor_id == '0':
+            itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+        else:
+            if ata.adesao:
+                fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=fornecedor)
+            else:
+                part_pregao = get_object_or_404(ParticipantePregao, pk=fornecedor_id)
+                fornecedor = part_pregao.fornecedor
+                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, participante=part_pregao)
+        total = 0
+        for item in itens:
+            total += item.get_valor_total_disponivel()
+        configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % ata.id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'ata':ata, 'fornecedor': fornecedor,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_qtd_disponivel_ata.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied
+
+
+@login_required()
+def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+
+    if eh_gerente:
+        if fornecedor_id == '0':
+            itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+        else:
+            if ata.adesao:
+                fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=fornecedor)
+            else:
+                part_pregao = get_object_or_404(ParticipantePregao, pk=fornecedor_id)
+                fornecedor = part_pregao.fornecedor
+                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, participante=part_pregao)
+
+        total = 0
+        itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+        pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
+        for item in itens:
+            total += item.get_valor_total_consumido()
+        configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % ata.id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_qtd_consumida_ata.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied
+
+
+
+@login_required()
+def relatorio_info_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+
+    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    if eh_gerente:
+        total = 0
+        itens = credenciamento.itemcredenciamento_set.all()
+        pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('pedido_em')
+        for item in itens:
+            total += item.valor * item.quantidade
+        configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'credenciamento':credenciamento, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_info_credenciamento.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied
+
+
+@login_required()
+def relatorio_qtd_disponivel_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+
+    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    if eh_gerente:
+        total = 0
+        itens = credenciamento.itemcredenciamento_set.all()
+
+        for item in itens:
+            total += item.get_quantidade_disponivel() * item.valor
+        configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'credenciamento':credenciamento,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_qtd_disponivel_credenciamento.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied
+
+
+@login_required()
+def relatorio_qtd_consumida_credenciamento(request, credenciamento_id):
+    credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
+
+    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
+    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    if eh_gerente:
+        total = 0
+        itens = credenciamento.itemcredenciamento_set.all()
+        pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('pedido_em')
+        for item in itens:
+            total += item.get_valor_total_consumido()
+        configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+
+        data = {'credenciamento':credenciamento, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+        template = get_template('relatorio_qtd_consumida_credenciamento.html')
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        PermissionDenied
+
+@login_required()
+def notificacoes(request):
+    title = u'Módulo de Notificações'
+    hoje = datetime.date.today()
+
+    tem_notificacao = False
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        prazo_15dias = hoje + timedelta(days=15)
+        licitacoes_agendadas = Pregao.objects.filter(data_abertura__gte=hoje, data_abertura__lte=prazo_15dias).order_by('data_abertura')
+        if licitacoes_agendadas.exists():
+            tem_notificacao = True
+
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        contratos_sem_vigencia = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False, data_inicio__lte=hoje)
+        ids_vencidos = list()
+        for item in contratos_sem_vigencia:
+            if item.get_data_fim() < hoje:
+                if item.eh_gerente(request.user):
+                    ids_vencidos.append(item.id)
+                    tem_notificacao = True
+        contratos_sem_vigencia = contratos_sem_vigencia.filter(id__in=ids_vencidos)
+
+    return render(request, 'notificacoes.html', locals(), RequestContext(request))

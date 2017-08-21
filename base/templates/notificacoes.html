@@ -1,0 +1,36 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+    {% if perms.base.pode_cadastrar_pregao %}
+        {% if licitacoes_agendadas.exists %}
+            <h3>Licitações com data de abertura das propostas nos próximos 15 dias:</h3>
+            {% for pregao in licitacoes_agendadas %}
+                <h4><a href="/base/pregao/{{ pregao.id }}/" target="_blank">{{ pregao }} - {{ pregao.data_abertura }}</a></h4>
+            {% endfor %}
+        {% endif %}
+
+    {% endif %}
+    {% if perms.base.pode_gerenciar_contrato %}
+        {% if contratos_sem_vigencia.exists %}
+            <h3>Contratos com a vigência encerrada:</h3>
+            {% for contrato in contratos_sem_vigencia %}
+                <h4><a href="/base/visualizar_contrato/{{ contrato.id }}/" target="_blank">{{ contrato }}  - {{ contrato.get_data_fim }}</a></h4>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    {% if not tem_notificacao %}
+        <p class="alert alert-info">Nenhuma notificação.</p>
+    {% endif %}
+
+
+
+
+{% endblock %}

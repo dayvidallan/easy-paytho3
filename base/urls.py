@@ -260,6 +260,8 @@ urlpatterns = [
     url(r'^apagar_anexo_credenciamento/(?P<item_id>\d+)/$', views.apagar_anexo_credenciamento, name='apagar_anexo_credenciamento'),
     url(r'^anexo_38/(?P<pregao_id>\d+)/$', views.anexo_38, name='anexo_38'),
 
+
+
     url(r'^lista_materiais_por_secretaria/(?P<solicitacao_id>\d+)/(?P<secretaria_id>\d+)/$', views.lista_materiais_por_secretaria, name='lista_materiais_por_secretaria'),
     url(r'^apagar_item/(?P<item_id>\d+)/$', views.apagar_item, name='apagar_item'),
     url(r'^editar_valor_final/(?P<item_id>\d+)/(?P<pregao_id>\d+)/$', views.editar_valor_final, name='editar_valor_final'),
@@ -268,6 +270,9 @@ urlpatterns = [
     url(r'^gerenciar_grupos/$', views.gerenciar_grupos, name='gerenciar_grupos'),
     url(r'^ver_variaveis_configuracao/$', views.ver_variaveis_configuracao, name='ver_variaveis_configuracao'),
     url(r'^cadastrar_variaveis_configuracao/$', views.cadastrar_variaveis_configuracao, name='cadastrar_variaveis_configuracao'),
+    url(r'^notificacoes/$', views.notificacoes, name='notificacoes'),
+
+
 
     url(r'^localizar_processo/$', views.localizar_processo, name='localizar_processo'),
     url(r'^ver_relatorios_gerenciais_licitacao/$', views.ver_relatorios_gerenciais_licitacao, name='ver_relatorios_gerenciais_licitacao'),
@@ -279,6 +284,13 @@ urlpatterns = [
     url(r'^relatorio_qtd_disponivel_contrato/(?P<contrato_id>\d+)/$', views.relatorio_qtd_disponivel_contrato, name='relatorio_qtd_disponivel_contrato'),
     url(r'^relatorio_qtd_consumida_contrato/(?P<contrato_id>\d+)/$', views.relatorio_qtd_consumida_contrato, name='relatorio_qtd_consumida_contrato'),
 
+    url(r'^relatorio_info_arp/(?P<ata_id>\d+)/$', views.relatorio_info_arp, name='relatorio_info_arp'),
+    url(r'^relatorio_qtd_disponivel_ata/(?P<ata_id>\d+)/(?P<fornecedor_id>\d+)/$', views.relatorio_qtd_disponivel_ata, name='relatorio_qtd_disponivel_ata'),
+    url(r'^relatorio_qtd_consumida_ata/(?P<ata_id>\d+)/(?P<fornecedor_id>\d+)/$', views.relatorio_qtd_consumida_ata, name='relatorio_qtd_consumida_ata'),
+
+    url(r'^relatorio_info_credenciamento/(?P<credenciamento_id>\d+)/$', views.relatorio_info_credenciamento, name='relatorio_info_credenciamento'),
+    url(r'^relatorio_qtd_disponivel_credenciamento/(?P<credenciamento_id>\d+)/$', views.relatorio_qtd_disponivel_credenciamento, name='relatorio_qtd_disponivel_credenciamento'),
+    url(r'^relatorio_qtd_consumida_credenciamento/(?P<credenciamento_id>\d+)/$', views.relatorio_qtd_consumida_credenciamento, name='relatorio_qtd_consumida_credenciamento'),
 
     url(r'^gerenciar_grupo_usuario/(?P<usuario_id>\d+)/(?P<grupo_id>\d+)/(?P<acao>\d+)/$', views.gerenciar_grupo_usuario, name='gerenciar_grupo_usuario'),
     url(r'^informar_valor_final_itens_lote/(?P<lote_id>\d+)/(?P<pregao_id>\d+)/$', views.informar_valor_final_itens_lote, name='informar_valor_final_itens_lote'),
