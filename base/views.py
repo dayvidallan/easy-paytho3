@@ -7331,6 +7331,8 @@ def erro_500(request):
 def erro_404(request):
     return render(request, '404.html', locals(), RequestContext(request))
 
+def erro_403(request):
+    return render(request, '403.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_empresa_credenciamento(request, credenciamento_id):

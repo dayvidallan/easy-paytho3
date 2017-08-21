@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Acesso negado' %}{% endblock %}
+
+{% block content %}
+
+<h2>{% trans 'Acesso negado' %}</h2>
+
+<p>{% trans "Desculpe, mas você não tem autorização para acessar esta página. Verifique se a solicitação de origem se encontra em algum setor da sua secretaria" %}</p>
+
+{% endblock %}

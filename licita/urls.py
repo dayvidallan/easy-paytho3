@@ -33,3 +33,5 @@ urlpatterns += [ url(r'^media/(?P<path>.*)$', serve, { 'document_root': settings
 handler500 = 'base.views.erro_500'
 
 handler404 = 'base.views.erro_404'
+
+handler403 = 'base.views.erro_403'
