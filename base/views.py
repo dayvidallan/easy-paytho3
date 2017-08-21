@@ -7932,8 +7932,7 @@ def mudar_credenciamento_fornecedor(request, credenciamento_id, fornecedor_id, o
 def relatorio_info_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
-    pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
 
     if eh_gerente:
         total = 0
@@ -7968,15 +7967,14 @@ def relatorio_info_contrato(request, contrato_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 @login_required()
 def relatorio_qtd_disponivel_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
-    pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
 
     if eh_gerente:
         total = 0
@@ -8011,15 +8009,14 @@ def relatorio_qtd_disponivel_contrato(request, contrato_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 @login_required()
 def relatorio_qtd_consumida_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
-    pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
 
     if eh_gerente:
         total = 0
@@ -8054,16 +8051,13 @@ def relatorio_qtd_consumida_contrato(request, contrato_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 @login_required()
 def relatorio_info_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-
-    pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
-
+    eh_gerente = request.user.groups.filter(name='Gerente')
 
     if eh_gerente:
         total = 0
@@ -8099,16 +8093,13 @@ def relatorio_info_arp(request, ata_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 @login_required()
 def relatorio_qtd_disponivel_ata(request, ata_id, fornecedor_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-
-
-    pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
 
     if eh_gerente:
         if fornecedor_id == '0':
@@ -8151,14 +8142,13 @@ def relatorio_qtd_disponivel_ata(request, ata_id, fornecedor_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 @login_required()
 def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
 
     if eh_gerente:
         if fornecedor_id == '0':
@@ -8204,7 +8194,7 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 
@@ -8212,8 +8202,7 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
 def relatorio_info_credenciamento(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
 
-    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
     if eh_gerente:
         total = 0
         itens = credenciamento.itemcredenciamento_set.all()
@@ -8247,15 +8236,14 @@ def relatorio_info_credenciamento(request, credenciamento_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 @login_required()
 def relatorio_qtd_disponivel_credenciamento(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
 
-    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
     if eh_gerente:
         total = 0
         itens = credenciamento.itemcredenciamento_set.all()
@@ -8289,15 +8277,13 @@ def relatorio_qtd_disponivel_credenciamento(request, credenciamento_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 
 @login_required()
 def relatorio_qtd_consumida_credenciamento(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
-
-    pode_gerenciar = credenciamento.solicitacao.recebida_setor(request.user.pessoafisica.setor)
-    eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    eh_gerente = request.user.groups.filter(name='Gerente')
     if eh_gerente:
         total = 0
         itens = credenciamento.itemcredenciamento_set.all()
@@ -8331,7 +8317,7 @@ def relatorio_qtd_consumida_credenciamento(request, credenciamento_id):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
     else:
-        PermissionDenied
+        raise PermissionDenied
 
 @login_required()
 def notificacoes(request):
