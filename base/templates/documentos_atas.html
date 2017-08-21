@@ -14,7 +14,51 @@
     </div>
     <br><br>
 
+    <h3>Relatórios</h3>
+    <table class="table table-bordered table-condensed table-striped" width="90%">
+        <tbody>
+            <tr>
+                <td><a href="/base/relatorio_info_arp/{{ ata.pk }}/" target="_blank">Informações da Ata de Registro de Preço</a></td>
+            </tr>
+            <tr>
+                <td><a href="/base/relatorio_qtd_disponivel_ata/{{ ata.pk }}/0/" target="_blank">Quantidades Disponíveis</a></td>
+            </tr>
+            {% if ata.adesao %}
+
+                {% for part in participantes %}
+                    <tr>
+                        <td><a href="/base/relatorio_qtd_disponivel_ata/{{ ata.pk }}/{{ part.pk }}/" target="_blank">Quantidades Disponíveis - {{ part.razao_social }}</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% for part in participantes %}
+                    <tr>
+                        <td><a href="/base/relatorio_qtd_disponivel_ata/{{ ata.pk }}/{{ part.pk }}/" target="_blank">Quantidades Disponíveis - {{ part.fornecedor.razao_social }}</a></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            <tr>
+                <td><a href="/base/relatorio_qtd_disponivel_ata/{{ ata.pk }}/0/" target="_blank">Quantidades Consumidas</a></td>
+            </tr>
+            {% if ata.adesao %}
+                {% for part in participantes %}
+                    <tr>
+                        <td><a href="/base/relatorio_qtd_consumida_ata/{{ ata.pk }}/{{ part.pk }}/" target="_blank">Quantidades Consumidas - {{ part.razao_social }} </a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% for part in participantes %}
+                    <tr>
+                        <td><a href="/base/relatorio_qtd_consumida_ata/{{ ata.pk }}/{{ part.pk }}/" target="_blank">Quantidades Consumidas - {{ part.fornecedor.razao_social }}</a></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+
+        </tbody>
+    </table>
+    <br>
     {%  if ata.anexoataregistropreco_set.exists %}
+        <h3>Anexos</h3>
         <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>

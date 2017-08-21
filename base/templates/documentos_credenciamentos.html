@@ -13,8 +13,23 @@
         <a class="btn btn-success" href="/base/gestao_pedidos/">Voltar</a>
     </div>
     <br><br>
-
+    <h3>Relatórios</h3>
+    <table class="table table-bordered table-condensed table-striped" width="90%">
+        <tbody>
+            <tr>
+                <td><a href="/base/relatorio_info_credenciamento/{{ credenciamento.pk }}/" target="_blank">Informações do Credenciamento</a></td>
+            </tr>
+            <tr>
+                <td><a href="/base/relatorio_qtd_disponivel_credenciamento/{{ credenciamento.pk }}/" target="_blank">Quantidades Disponíveis do Credenciamento</a></td>
+            </tr>
+            <tr>
+                <td><a href="/base/relatorio_qtd_consumida_credenciamento/{{ credenciamento.pk }}/" target="_blank">Quantidades Consumidas do Credenciamento</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
     {%  if credenciamento.anexocredenciamento_set.exists %}
+        <h3>Anexos</h3>
         <table border="2" width="90%" class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>

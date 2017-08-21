@@ -7932,269 +7932,248 @@ def mudar_credenciamento_fornecedor(request, credenciamento_id, fornecedor_id, o
 def relatorio_info_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
-    eh_gerente = request.user.groups.filter(name='Gerente')
+    total = 0
+    itens = contrato.get_itens()
+    pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('pedido_em')
+    for item in itens:
+        total += item.get_valor_total()
+    configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-    if eh_gerente:
-        total = 0
-        itens = contrato.get_itens()
-        pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('pedido_em')
-        for item in itens:
-            total += item.get_valor_total()
-        configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
-
-        destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
+    destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
 
 
-        data = {'contrato':contrato, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'contrato':contrato, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
-        template = get_template('relatorio_info_contrato.html')
+    template = get_template('relatorio_info_contrato.html')
 
-        html  = template.render(Context(data))
+    html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
 def relatorio_qtd_disponivel_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
-    eh_gerente = request.user.groups.filter(name='Gerente')
+    total = 0
+    itens = contrato.get_itens()
 
-    if eh_gerente:
-        total = 0
-        itens = contrato.get_itens()
+    for item in itens:
+        total += item.get_valor_total_disponivel()
+    configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        for item in itens:
-            total += item.get_valor_total_disponivel()
-        configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
-
-        destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
+    destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
 
 
-        data = {'contrato':contrato,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'contrato':contrato,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
-        template = get_template('relatorio_qtd_disponivel_contrato.html')
+    template = get_template('relatorio_qtd_disponivel_contrato.html')
 
-        html  = template.render(Context(data))
+    html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
 def relatorio_qtd_consumida_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
-    eh_gerente = request.user.groups.filter(name='Gerente')
 
-    if eh_gerente:
-        total = 0
-        itens = contrato.get_itens()
-        pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('pedido_em')
-        for item in itens:
-            total += item.get_valor_total_consumido()
-        configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    total = 0
+    itens = contrato.get_itens()
+    pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('pedido_em')
+    for item in itens:
+        total += item.get_valor_total_consumido()
+    configuracao = get_config(contrato.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
+    destino_arquivo = u'upload/resultados/%s.pdf' % contrato_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
 
 
-        data = {'contrato':contrato, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'contrato':contrato, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
-        template = get_template('relatorio_qtd_consumida_contrato.html')
+    template = get_template('relatorio_qtd_consumida_contrato.html')
 
-        html  = template.render(Context(data))
+    html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
 def relatorio_info_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    eh_gerente = request.user.groups.filter(name='Gerente')
 
-    if eh_gerente:
-        total = 0
-        itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+    total = 0
+    itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
 
-        pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
-        for item in itens:
-            total += item.valor * item.quantidade
-        configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
+    for item in itens:
+        total += item.valor * item.quantidade
+    configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        destino_arquivo = u'upload/resultados/%s.pdf' % ata_id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
+    destino_arquivo = u'upload/resultados/%s.pdf' % ata_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
 
 
-        data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
-        template = get_template('relatorio_info_arp.html')
+    template = get_template('relatorio_info_arp.html')
 
-        html  = template.render(Context(data))
+    html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
 def relatorio_qtd_disponivel_ata(request, ata_id, fornecedor_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    eh_gerente = request.user.groups.filter(name='Gerente')
 
-    if eh_gerente:
-        if fornecedor_id == '0':
-            itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
-        else:
-            if ata.adesao:
-                fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=fornecedor)
-            else:
-                part_pregao = get_object_or_404(ParticipantePregao, pk=fornecedor_id)
-                fornecedor = part_pregao.fornecedor
-                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, participante=part_pregao)
-        total = 0
-        for item in itens:
-            total += item.get_valor_total_disponivel()
-        configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
-
-        destino_arquivo = u'upload/resultados/%s.pdf' % ata.id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
-
-
-        data = {'ata':ata, 'fornecedor': fornecedor,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
-
-        template = get_template('relatorio_qtd_disponivel_ata.html')
-
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+    if fornecedor_id == '0':
+        itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
     else:
-        raise PermissionDenied
+        if ata.adesao:
+            fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+            itens = ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=fornecedor)
+        else:
+            part_pregao = get_object_or_404(ParticipantePregao, pk=fornecedor_id)
+            fornecedor = part_pregao.fornecedor
+            itens = ItemAtaRegistroPreco.objects.filter(ata=ata, participante=part_pregao)
+    total = 0
+    for item in itens:
+        total += item.get_valor_total_disponivel()
+    configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % ata.id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+
+    data = {'ata':ata, 'fornecedor': fornecedor,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+    template = get_template('relatorio_qtd_disponivel_ata.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
 def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    eh_gerente = request.user.groups.filter(name='Gerente')
 
-    if eh_gerente:
-        if fornecedor_id == '0':
-            itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
-        else:
-            if ata.adesao:
-                fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=fornecedor)
-            else:
-                part_pregao = get_object_or_404(ParticipantePregao, pk=fornecedor_id)
-                fornecedor = part_pregao.fornecedor
-                itens = ItemAtaRegistroPreco.objects.filter(ata=ata, participante=part_pregao)
-
-        total = 0
+    if fornecedor_id == '0':
         itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
-        pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
-        for item in itens:
-            total += item.get_valor_total_consumido()
-        configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
-
-        destino_arquivo = u'upload/resultados/%s.pdf' % ata.id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
-
-
-        data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
-
-        template = get_template('relatorio_qtd_consumida_ata.html')
-
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
     else:
-        raise PermissionDenied
+        if ata.adesao:
+            fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+            itens = ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=fornecedor)
+        else:
+            part_pregao = get_object_or_404(ParticipantePregao, pk=fornecedor_id)
+            fornecedor = part_pregao.fornecedor
+            itens = ItemAtaRegistroPreco.objects.filter(ata=ata, participante=part_pregao)
+
+    total = 0
+    itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+    pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
+    for item in itens:
+        total += item.get_valor_total_consumido()
+    configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % ata.id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+
+    data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+    template = get_template('relatorio_qtd_consumida_ata.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
 
 
 
@@ -8202,122 +8181,116 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
 def relatorio_info_credenciamento(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
 
-    eh_gerente = request.user.groups.filter(name='Gerente')
-    if eh_gerente:
-        total = 0
-        itens = credenciamento.itemcredenciamento_set.all()
-        pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('pedido_em')
-        for item in itens:
-            total += item.valor * item.quantidade
-        configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
+    total = 0
+    itens = credenciamento.itemcredenciamento_set.all()
+    pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('pedido_em')
+    for item in itens:
+        total += item.valor * item.quantidade
+    configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
 
 
-        data = {'credenciamento':credenciamento, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'credenciamento':credenciamento, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
-        template = get_template('relatorio_info_credenciamento.html')
+    template = get_template('relatorio_info_credenciamento.html')
 
-        html  = template.render(Context(data))
+    html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
 def relatorio_qtd_disponivel_credenciamento(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
 
-    eh_gerente = request.user.groups.filter(name='Gerente')
-    if eh_gerente:
-        total = 0
-        itens = credenciamento.itemcredenciamento_set.all()
 
-        for item in itens:
-            total += item.get_quantidade_disponivel() * item.valor
-        configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    total = 0
+    itens = credenciamento.itemcredenciamento_set.all()
 
-        destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
+    for item in itens:
+        total += item.get_quantidade_disponivel() * item.valor
+    configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
 
 
-        data = {'credenciamento':credenciamento,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'credenciamento':credenciamento,  'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
-        template = get_template('relatorio_qtd_disponivel_credenciamento.html')
+    template = get_template('relatorio_qtd_disponivel_credenciamento.html')
 
-        html  = template.render(Context(data))
+    html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
 def relatorio_qtd_consumida_credenciamento(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
-    eh_gerente = request.user.groups.filter(name='Gerente')
-    if eh_gerente:
-        total = 0
-        itens = credenciamento.itemcredenciamento_set.all()
-        pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('pedido_em')
-        for item in itens:
-            total += item.get_valor_total_consumido()
-        configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-        data_emissao = datetime.date.today()
+    total = 0
+    itens = credenciamento.itemcredenciamento_set.all()
+    pedidos = PedidoCredenciamento.objects.filter(credenciamento=credenciamento).order_by('pedido_em')
+    for item in itens:
+        total += item.get_valor_total_consumido()
+    configuracao = get_config(credenciamento.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % credenciamento_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
 
 
-        data = {'credenciamento':credenciamento, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'credenciamento':credenciamento, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
-        template = get_template('relatorio_qtd_consumida_credenciamento.html')
+    template = get_template('relatorio_qtd_consumida_credenciamento.html')
 
-        html  = template.render(Context(data))
+    html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 @login_required()
 def notificacoes(request):
