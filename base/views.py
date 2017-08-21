@@ -4141,7 +4141,7 @@ def informar_quantidades_do_pedido_credenciamento(request, credenciamento_id, so
             for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
                 valor_pedido = int(valor)
                 if valor_pedido > 0:
-                    
+
                     novo_pedido = PedidoCredenciamento()
                     novo_pedido.credenciamento = credenciamento
                     novo_pedido.solicitacao = nova_solicitacao
