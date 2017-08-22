@@ -363,9 +363,9 @@ class SolicitacaoLicitacao(models.Model):
         if self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO:
             return False
         if self.tem_item_cadastrado() and ItemPesquisaMercadologica.objects.filter(pesquisa__solicitacao=self).exists():
-            if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao() >= 8000:
+            if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao() > 8000:
                 return True
-            elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao() >= 15000:
+            elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao() > 15000:
                 return True
         return False
 
