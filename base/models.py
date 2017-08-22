@@ -418,7 +418,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def eh_dispensa(self):
-        return not (self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO)
+        return self.tipo_aquisicao in [self.TIPO_AQUISICAO_DISPENSA, self.DISPENSA_LICITACAO_ATE_8MIL, self.DISPENSA_LICITACAO_ATE_15MIL]
 
     def tem_proposta(self):
         for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):

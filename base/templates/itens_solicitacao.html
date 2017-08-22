@@ -242,7 +242,7 @@
 
                                 {% endif %}
                                 {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                                    {% if solicitacao.prazo_aberto %}
+                                    {% if solicitacao.prazo_aberto and not solicitacao.eh_dispensa %}
                                         <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
                                     {% endif %}
                                     {% if item.arquivo_referencia_valor_medio %}
