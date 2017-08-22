@@ -128,6 +128,21 @@ class CadastrarItemSolicitacaoForm(forms.ModelForm):
             self.add_error('material', u'Este material já foi cadastrado.')
 
 
+class AlterarItemSolicitacaoForm(forms.ModelForm):
+    material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
+
+    class Meta:
+        model = ItemSolicitacaoLicitacao
+        fields = ['material', 'unidade', 'quantidade', 'situacao']
+    def __init__(self, *args, **kwargs):
+        self.solicitacao = kwargs.pop('solicitacao',None)
+        super(AlterarItemSolicitacaoForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        if self.cleaned_data.get('material') and ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, material=self.cleaned_data.get('material')).exists():
+            self.add_error('material', u'Este material já foi cadastrado.')
+
+
 class UploadPropostaPesquisaForm(forms.Form):
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
 
