@@ -8,6 +8,9 @@
     <a href="javascript:void(0);">{{ solicitacao }}</a>
 {% endblock %}
 {% block content %}
+    {% if solicitacao.tem_item_sem_pesquisa %}
+        <font color="red">Existe(m) item(ns) sem pesquisa mercadológica cadastrada.</font>
+    {% endif%}
     <div class="pull-right">
          {% if recebida_no_setor %}
             {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.get_pregao.data_homologacao  %}

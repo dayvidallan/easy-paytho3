@@ -386,7 +386,11 @@ class SolicitacaoLicitacao(models.Model):
                 return True
         return False
 
-
+    def tem_item_sem_pesquisa(self):
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):
+            if not item.recebeu_pesquisa_todos_fornecedores():
+                return True
+        return False
 
     def pode_receber_pedidos_secretarias(self):
         if self.prazo_resposta_interessados:
