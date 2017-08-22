@@ -2293,9 +2293,13 @@ class AtaRegistroPreco(models.Model):
         return total
 
     def get_itens(self):
-        if self.adesao:
-            return ItemAtaRegistroPreco.objects.filter(ata=self).order_by('id')
         return ItemAtaRegistroPreco.objects.filter(ata=self)
+
+    def get_ordem(self):
+        if ItemAtaRegistroPreco.objects.filter(ata=self).exists():
+            return ItemAtaRegistroPreco.objects.filter(ata=self).order_by('-ordem')[0].ordem + 1
+        else:
+            return 1
 
 class Credenciamento(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
@@ -2814,9 +2818,10 @@ class ItemAtaRegistroPreco(models.Model):
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+    ordem = models.IntegerField(u'Ordem', null=True)
 
     class Meta:
-        ordering = ['item__item']
+        ordering = ['ordem']
         verbose_name = u'Item da ARP'
         verbose_name_plural = u'Itens da ARP'
 
@@ -2885,6 +2890,8 @@ class ItemAtaRegistroPreco(models.Model):
 
     def get_valor_total_consumido(self):
         return self.get_quantidade_consumida() * Decimal(self.valor)
+
+
 
 class PedidoAtaRegistroPreco(models.Model):
     ata = models.ForeignKey(AtaRegistroPreco)

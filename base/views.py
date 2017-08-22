@@ -1605,6 +1605,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                         novo_item.participante = lote.get_vencedor().participante
                         novo_item.valor = item.get_valor_unitario_final()
                         novo_item.quantidade = item.quantidade
+                        novo_item.ordem = o.get_ordem()
                         novo_item.unidade = item.unidade
                         novo_item.material = item.material
                         novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
@@ -1618,6 +1619,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                     novo_item.marca = resultado.marca
                     novo_item.participante = resultado.participante
                     novo_item.valor = resultado.valor
+                    novo_item.ordem = o.get_ordem()
                     novo_item.quantidade = resultado.item.quantidade
                     novo_item.unidade = resultado.item.unidade
                     novo_item.material = resultado.item.material
@@ -6659,6 +6661,7 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                             novo_item.marca = marca
                             novo_item.unidade = un
                             novo_item.quantidade = qtd
+                            novo_item.ordem = ata.get_ordem()
                             try:
                                 with transaction.atomic():
                                     Decimal(valor)
@@ -7311,7 +7314,7 @@ def criar_contrato_adesao_ata(request, ata_id):
             o.data_inicio = form.cleaned_data.get('data_inicial_%d' % participante.id)
             o.data_fim = form.cleaned_data.get('data_final_%d' % participante.id)
             o.save()
-            for resultado in ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=participante):
+            for resultado in ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=participante).order_by('id'):
                 novo_item = ItemContrato()
                 novo_item.contrato = o
                 novo_item.item = resultado.item
