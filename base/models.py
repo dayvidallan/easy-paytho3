@@ -2292,6 +2292,10 @@ class AtaRegistroPreco(models.Model):
             total = total + (item.quantidade * item.valor)
         return total
 
+    def get_itens(self):
+        if self.adesao:
+            return ItemAtaRegistroPreco.objects.filter(ata=self).order_by('id')
+        return ItemAtaRegistroPreco.objects.filter(ata=self)
 
 class Credenciamento(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
