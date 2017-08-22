@@ -8329,8 +8329,9 @@ def notificacoes(request):
 @login_required()
 def editar_item_arp(request, item_id):
     item = get_object_or_404(ItemAtaRegistroPreco, pk=item_id)
+    ata = item.ata
     title=u'Editar Item'
-    if request.user.has_perm('base.pode_gerenciar_contrato'):
+    if ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra:
         form = EditarItemARPForm(request.POST or None, instance=item)
         if form.is_valid():
             o = form.save()
@@ -8345,7 +8346,7 @@ def editar_item_arp(request, item_id):
 def apagar_item_arp(request, item_id):
     item = get_object_or_404(ItemAtaRegistroPreco, pk=item_id)
     ata = item.ata
-    if request.user.has_perm('base.pode_gerenciar_contrato'):
+    if ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra:
         item.delete()
         messages.success(request, u'Item removido com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)

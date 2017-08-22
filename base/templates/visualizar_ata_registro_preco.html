@@ -301,9 +301,9 @@
                                                         <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                         <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                                                         {% if ata.adesao %}
-                                                            <td>{{ opcao.fornecedor }}</td>
+                                                            <td>{{ opcao.fornecedor.razao_social }}</td>
                                                         {% else %}
-                                                            <td>{{ opcao.participante }}</td>
+                                                            <td>{{ opcao.participante.fornecedor.razao_social }}</td>
                                                         {% endif %}
                                                         <td>{{ opcao.valor|format_money }}</td>
                                                         <td>{{ opcao.quantidade|format_quantidade }}</td>
@@ -334,7 +334,7 @@
 
                                             <tr>
                                                 <th>Item</th>
-                                                <th>Material/Serviço</th>
+                                                <th width="40%">Material/Serviço</th>
                                                 <th>Marca</th>
                                                 <th>Unidade</th>
                                                 <th>Empresa</th>
@@ -361,9 +361,9 @@
                                                     <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                     <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                                                     {% if ata.adesao %}
-                                                        <td>{{ opcao.fornecedor }}</td>
+                                                        <td>{{ opcao.fornecedor.razao_social }}</td>
                                                     {% else %}
-                                                        <td>{{ opcao.participante }}</td>
+                                                        <td>{{ opcao.participante.fornecedor.razao_social }}</td>
                                                     {% endif %}
                                                     <td>{{ opcao.valor|format_money }}</td>
                                                     <td>{{ opcao.quantidade|format_quantidade }}</td>
