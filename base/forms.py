@@ -1314,3 +1314,11 @@ class ContratoRemanescenteForm(forms.ModelForm):
         if self.cleaned_data.get('garantia_execucao_objeto'):
             if self.cleaned_data.get('garantia_execucao_objeto') > 5:
                 raise forms.ValidationError(u'O limite máximo é de 5%.')
+
+
+class EditarItemARPForm(forms.ModelForm):
+    material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
+    class Meta:
+        model = ItemAtaRegistroPreco
+        fields = ('marca', 'valor', 'quantidade', 'material', 'unidade')
+

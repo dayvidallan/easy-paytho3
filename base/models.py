@@ -583,12 +583,16 @@ class SolicitacaoLicitacao(models.Model):
 
     def get_valor_da_solicitacao(self):
         total = Decimal(0.00)
-        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=False):
-            if item.valor_medio:
-                total += item.quantidade  * item.valor_medio
-        return total
+        menor_proposta = 10000000000000000
+        propostas = PesquisaMercadologica.objects.filter(solicitacao=self)
+        for proposta in propostas:
+            total = 0
+            for item in ItemPesquisaMercadologica.objects.filter(pesquisa=proposta):
+                total += item.valor_maximo * item.item.quantidade
+            if total < menor_proposta:
+                menor_proposta = total
 
-
+        return menor_proposta
 
 
 class ItemSolicitacaoLicitacao(models.Model):

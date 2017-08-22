@@ -8324,3 +8324,29 @@ def notificacoes(request):
         contratos_sem_vigencia = contratos_sem_vigencia.filter(id__in=ids_vencidos)
 
     return render(request, 'notificacoes.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_item_arp(request, item_id):
+    item = get_object_or_404(ItemAtaRegistroPreco, pk=item_id)
+    title=u'Editar Item'
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        form = EditarItemARPForm(request.POST or None, instance=item)
+        if form.is_valid():
+            o = form.save()
+            messages.success(request, u'Item editado com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % item.ata.id)
+
+        return render(request, 'cadastrar_pregao.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def apagar_item_arp(request, item_id):
+    item = get_object_or_404(ItemAtaRegistroPreco, pk=item_id)
+    ata = item.ata
+    if request.user.has_perm('base.pode_gerenciar_contrato'):
+        item.delete()
+        messages.success(request, u'Item removido com sucesso.')
+        return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
+    else:
+        raise PermissionDenied
