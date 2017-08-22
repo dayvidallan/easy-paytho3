@@ -1925,6 +1925,8 @@ class PesquisaMercadologica(models.Model):
             total += item.valor_maximo * item.item.quantidade
         return total
 
+    def tem_todos_itens(self):
+        return ItemPesquisaMercadologica.objects.filter(pesquisa=self).count() == ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao).count()
 
 class ItemPesquisaMercadologica(models.Model):
     pesquisa = models.ForeignKey(PesquisaMercadologica, verbose_name=u'Pesquisa')

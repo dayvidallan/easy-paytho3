@@ -32,6 +32,9 @@
                                     Ata N°{{ pesquisa.razao_social }} / {{ pesquisa.orgao_gerenciador_ata }} - Vigência: {{ pesquisa.vigencia_ata }}
                                 {% else %}
                                     {{ pesquisa.razao_social }} - CNPJ: {{ pesquisa.cnpj }}
+                                    {% if not pesquisa.tem_todos_itens %}
+                                        <b>Não apresentou proposta para todos os itens.</b>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             <td>{{ pesquisa.origem }}</td>
