@@ -4817,7 +4817,7 @@ def ver_ordem_compra(request, solicitacao_id):
     data_emissao = datetime.date.today()
     ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
 
-    eh_lote = False
+    eh_lote = solicitacao.eh_lote()
 
     tabela = {}
     pregao = contrato = ata = None
@@ -8349,5 +8349,73 @@ def apagar_item_arp(request, item_id):
         item.delete()
         messages.success(request, u'Item removido com sucesso.')
         return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
+    else:
+        raise PermissionDenied
+
+def anexo_38(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+    nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_anexo38')
+    file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_anexo38.xls')
+    rb = open_workbook(file_path)
+
+    wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+    w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+    sheet = rb.sheet_by_name(u"Página1")
+    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False).order_by('item')
+    contador_total = 0
+    for idx, item in enumerate(itens, 0):
+
+        resultado = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('ordem')
+        contador = 1
+        for result in resultado:
+            if contador < 6:
+                row_index = contador_total + 1
+                # style = xlwt.XFStyle()
+                # style.alignment.wrap = 1
+                w_sheet.write(row_index, 0, item.item)
+                w_sheet.write(row_index, 1, item.material.nome[:100])
+                w_sheet.write(row_index, 2, contador)
+                w_sheet.write(row_index, 3, format_money(result.valor))
+                w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+                w_sheet.write(row_index, 5, u'CNPJ')
+                w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+
+
+                contador += 1
+                contador_total += 1
+            # w_sheet.write(row_index, 1, item.material.nome, style)
+            # w_sheet.write(row_index, 2, item.unidade.nome)
+
+
+    salvou = nome + u'_%s' % pregao.id + '.xls'
+    wb.save(salvou)
+
+    arquivo = open(salvou, "rb")
+
+
+    content_type = 'application/vnd.ms-excel'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    nome_arquivo = salvou.split('/')[-1]
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(salvou)
+    return response
+
+
+@login_required()
+def ativar_item_pregao(request, item_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        item.situacao = ItemSolicitacaoLicitacao.CADASTRADO
+        item.save()
+        historico = HistoricoPregao()
+        historico.pregao = item.get_licitacao()
+        historico.data = datetime.datetime.now()
+        historico.obs = u'Item Reativado: %s.' % item
+        historico.save()
+        messages.success(request, u'Item reativado com sucesso.')
+        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
     else:
         raise PermissionDenied

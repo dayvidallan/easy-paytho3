@@ -121,11 +121,14 @@ ul{
                     <table border="1" width="100%" cellpadding="5" cellspacing="5">
                         <thead>
                             <tr>
-                                <th width="7%">Item</th>
-                                <th>Especificação</th>
-                                {% if not eh_lote %}
 
+                                {% if not eh_lote %}
+                                    <th width="7%">Item</th>
+                                    <th>Especificação</th>
                                     <th width="20%">Unidade</th>
+                                {% else %}
+                                    <th width="7%">Lote</th>
+                                    <th>Especificação</th>
                                 {% endif %}
 
                                 <th width="10%">Qtd.</th>
@@ -144,11 +147,12 @@ ul{
                                     {% else %}
                                         <td  style="text-align: left;">{{ pedido.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% endif %}
-
-                                    {% if pedido.item.item.unidade %}
-                                        <td>{{ pedido.item.item.unidade }}</td>
-                                    {% else %}
-                                        <td>{{ pedido.item.unidade }}</td>
+                                    {% if not eh_lote %}
+                                        {% if pedido.item.item.unidade %}
+                                            <td>{{ pedido.item.item.unidade }}</td>
+                                        {% else %}
+                                            <td>{{ pedido.item.unidade }}</td>
+                                        {% endif %}
                                     {% endif %}
 
 

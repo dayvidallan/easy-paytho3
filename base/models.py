@@ -947,7 +947,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return LanceItemRodadaPregao.objects.filter(item=self).exists() or PropostaItemPregao.objects.filter(item=self).exists()
 
     def tem_empate(self):
-        return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, empate=True)
+        return ResultadoItemPregao.objects.filter(item=self, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, empate=True)
 
 
     def get_marca_item_lote(self):
@@ -1678,7 +1678,7 @@ class LanceItemRodadaPregao(models.Model):
         ordering = ['-valor']
 
     def __unicode__(self):
-        return u'Lance %s da Rodada: %s' % (self.id, self.self.rodada)
+        return u'Lance %s da Rodada: %s' % (self.id, self.rodada.rodada)
 
     def get_marca(self):
         preco = PropostaItemPregao.objects.filter(participante=self.participante, item=self.item)
