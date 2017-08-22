@@ -8,7 +8,7 @@
         <table class="table table-bordered table-condensed table-striped">
             <tr>
                 <td align="right">
-                    {% if not eh_ativo %}
+                    {% if not item.eh_ativo %}
                         <a href="/base/ativar_item_pregao/{{ item.id }}/" class="btn btn-success" align="right">Ativar Item</a>
                     {% endif %}
                     {% if item.tem_rodada_aberta and item.eh_ativo and item.ativo %}
