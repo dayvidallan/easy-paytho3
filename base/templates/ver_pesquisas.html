@@ -33,7 +33,7 @@
                                 {% else %}
                                     {{ pesquisa.razao_social }} - CNPJ: {{ pesquisa.cnpj }}
                                     {% if not pesquisa.tem_todos_itens %}
-                                        <b>Não apresentou proposta para todos os itens.</b>
+                                        <font color="red">Não apresentou proposta para todos os itens.</font>
                                     {% endif %}
                                 {% endif %}
                             </td>
