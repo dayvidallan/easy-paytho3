@@ -364,7 +364,7 @@ class SolicitacaoLicitacao(models.Model):
             total = Decimal(0.00)
             for item in ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa):
                 total += item.valor_maximo * item.item.quantidade
-                valores.append(total)
+            valores.append(total)
         valores.sort()
         if len(valores) > 2 and valores[0] == valores[1]:
             return True
