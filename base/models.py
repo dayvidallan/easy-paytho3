@@ -772,6 +772,9 @@ class ItemSolicitacaoLicitacao(models.Model):
                 return preco[0].marca
         return None
 
+    def recebeu_pesquisa_todos_fornecedores(self):
+        return PesquisaMercadologica.objects.filter(solicitacao=self.solicitacao).count() == ItemPesquisaMercadologica.objects.filter(item=self).count()
+
 
     def get_reducao_total(self):
         if self.get_lance_minimo_valor():

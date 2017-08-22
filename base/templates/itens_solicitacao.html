@@ -249,6 +249,10 @@
                                     {% if item.tem_pesquisa_registrada and solicitacao.prazo_aberto %}
                                         <a href="/ver_pesquisa_mercadologica/{{item.id}}/" class="btn btn-info btn-sm">Ver Pesquisa Mercadológica</a>
                                     {% endif %}
+                                    {% if not item.recebeu_pesquisa_todos_fornecedores %}
+                                        <br><font color="red">Nem todos os fornecedores emitiram proposta.</font>
+                                    {% endif %}
+
                                 {% endif %}
 
 
