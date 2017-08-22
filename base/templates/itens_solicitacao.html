@@ -9,7 +9,7 @@
 {% endblock %}
 {% block content %}
     {% if solicitacao.tem_item_sem_pesquisa %}
-        <font color="red">Existe(m) item(ns) sem pesquisa mercadológica cadastrada.</font>
+       <p class="alert alert-danger">Existe(m) item(ns) sem pesquisa mercadológica cadastrada.</p>
     {% endif%}
     <div class="pull-right">
          {% if recebida_no_setor %}
