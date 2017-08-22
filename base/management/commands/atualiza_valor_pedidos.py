@@ -3,7 +3,7 @@
 from django.core.management.base import BaseCommand
 
 
-from base.models import PedidoCredenciamento, PedidoAtaRegistroPreco, PedidoContrato, Pregao, ItemAtaRegistroPreco
+from base.models import PedidoCredenciamento, PedidoAtaRegistroPreco, PedidoContrato, Pregao, ItemAtaRegistroPreco, ItemContrato, ItemCredenciamento
 
 
 class Command(BaseCommand):
@@ -29,8 +29,18 @@ class Command(BaseCommand):
         #         else:
         #             pregao.situacao = u'Publicado'
         #         pregao.save()
+        #
+        # for item in ItemAtaRegistroPreco.objects.all():
+        #     if item.item:
+        #         item.ordem = item.item.item
+        #         item.save()
 
-        for item in ItemAtaRegistroPreco.objects.all():
+        for item in ItemContrato.objects.all():
+            if item.item:
+                item.ordem = item.item.item
+                item.save()
+
+        for item in ItemCredenciamento.objects.all():
             if item.item:
                 item.ordem = item.item.item
                 item.save()

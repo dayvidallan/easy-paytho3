@@ -1674,6 +1674,7 @@ def cadastrar_contrato(request, solicitacao_id):
                                 if lote.get_vencedor().participante == participante:
                                     novo_item = ItemContrato()
                                     novo_item.contrato = o
+                                    novo_item.ordem = o.get_ordem()
                                     novo_item.item = item
                                     novo_item.material = item.material
                                     if item.get_marca_item_lote():
@@ -1689,6 +1690,7 @@ def cadastrar_contrato(request, solicitacao_id):
                             if resultado.participante == participante:
                                 novo_item = ItemContrato()
                                 novo_item.contrato = o
+                                novo_item.ordem = o.get_ordem()
                                 novo_item.item = resultado.item
                                 novo_item.material = resultado.item.material
                                 if resultado.marca:
@@ -1710,6 +1712,7 @@ def cadastrar_contrato(request, solicitacao_id):
                     for resultado in PedidoContrato.objects.filter(solicitacao=solicitacao):
                         novo_item = ItemContrato()
                         novo_item.contrato = o
+                        novo_item.ordem = o.get_ordem()
                         if resultado.item.item:
                             novo_item.item = resultado.item.item
                         novo_item.material = resultado.item.material
@@ -1726,6 +1729,7 @@ def cadastrar_contrato(request, solicitacao_id):
                     for resultado in PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao):
                         novo_item = ItemContrato()
                         novo_item.contrato = o
+                        novo_item.ordem = o.get_ordem()
                         if resultado.item.item:
                             novo_item.item = resultado.item.item
                         novo_item.material = resultado.item.material
@@ -1743,6 +1747,7 @@ def cadastrar_contrato(request, solicitacao_id):
                     for resultado in PedidoCredenciamento.objects.filter(solicitacao=solicitacao):
                         novo_item = ItemContrato()
                         novo_item.contrato = o
+                        novo_item.ordem = o.get_ordem()
                         if resultado.item.item:
                             novo_item.item = resultado.item.item
                         novo_item.material = resultado.item.material
@@ -1785,6 +1790,7 @@ def cadastrar_credenciamento(request, solicitacao_id):
             for resultado in solicitacao.get_resultado():
                 novo_item = ItemCredenciamento()
                 novo_item.credenciamento = o
+                novo_item.ordem = o.get_ordem()
                 novo_item.item = resultado.item
                 novo_item.marca = resultado.marca
                 novo_item.valor = resultado.valor
@@ -7314,7 +7320,7 @@ def criar_contrato_adesao_ata(request, ata_id):
             o.data_inicio = form.cleaned_data.get('data_inicial_%d' % participante.id)
             o.data_fim = form.cleaned_data.get('data_final_%d' % participante.id)
             o.save()
-            for resultado in ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=participante).order_by('id'):
+            for resultado in ItemAtaRegistroPreco.objects.filter(ata=ata, fornecedor=participante):
                 novo_item = ItemContrato()
                 novo_item.contrato = o
                 novo_item.item = resultado.item
@@ -7324,6 +7330,7 @@ def criar_contrato_adesao_ata(request, ata_id):
                 novo_item.valor = resultado.valor
                 novo_item.quantidade = resultado.quantidade
                 novo_item.unidade = resultado.unidade
+                novo_item.ordem = o.get_ordem()
                 novo_item.save()
 
 

@@ -2320,6 +2320,7 @@ class Credenciamento(models.Model):
     objeto = models.TextField(u'Objeto', null=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
 
+
     class Meta:
         verbose_name = u'Credenciamento'
         verbose_name_plural = u'Credenciamentos'
@@ -2337,6 +2338,11 @@ class Credenciamento(models.Model):
         else:
             return u'Ativo'
 
+    def get_ordem(self):
+        if ItemCredenciamento.objects.filter(credenciamento=self).exists():
+            return ItemCredenciamento.objects.filter(credenciamento=self).order_by('-ordem')[0].ordem + 1
+        else:
+            return 1
 
     def get_fornecedores(self):
         participantes = ParticipantePregao.objects.filter(desclassificado=False, excluido_dos_itens=False, pregao=self.pregao)
@@ -2360,9 +2366,10 @@ class ItemCredenciamento(models.Model):
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+    ordem = models.IntegerField(u'Ordem', null=True)
 
     class Meta:
-        ordering = ['item__item']
+        ordering = ['ordem']
         verbose_name = u'Item do Credenciamento'
         verbose_name_plural = u'Itens do Credenciamento'
 
@@ -2538,6 +2545,11 @@ class Contrato(models.Model):
         else:
             return (25-total_valor)
 
+    def get_ordem(self):
+        if ItemContrato.objects.filter(contrato=self).exists():
+            return ItemContrato.objects.filter(contrato=self).order_by('-ordem')[0].ordem + 1
+        else:
+            return 1
 
     def get_data_fim(self):
         if not Aditivo.objects.filter(contrato=self, de_prazo=True).exists():
@@ -2667,9 +2679,10 @@ class ItemContrato(models.Model):
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     inserido_outro_contrato = models.BooleanField(u'Inserido em Outro Contrato', default=False)
+    ordem = models.IntegerField(u'Ordem', null=True)
 
     class Meta:
-        ordering = ['material__nome']
+        ordering = ['ordem']
         verbose_name = u'Item do Contrato'
         verbose_name_plural = u'Itens do Contrato'
 
