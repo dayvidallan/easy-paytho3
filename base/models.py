@@ -358,6 +358,18 @@ class SolicitacaoLicitacao(models.Model):
         verbose_name_plural = u'Solicitações de Licitação'
 
 
+    def tem_empate_propostas(self):
+        valores = list()
+        for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=self):
+            total = Decimal(0.00)
+            for item in ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa):
+                total += item.valor_maximo * item.item.quantidade
+                valores.append(total)
+        valores.sort()
+        if len(valores) > 2 and valores[0] == valores[1]:
+            return True
+        return False
+
     def tem_valor_acima_permitido(self):
 
         if self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO:
