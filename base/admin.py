@@ -14,7 +14,6 @@ admin.site.register(PropostaItemPregao)
 
 
 class ItemSolicitacaoLicitacaoAdmin(NewModelAdmin):
-    form = CadastrarItemSolicitacaoForm
 
     def response_change(self, request, obj):
         self.message_user(request, u'Item alterado com sucesso.')
