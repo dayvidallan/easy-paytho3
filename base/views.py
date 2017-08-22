@@ -3069,7 +3069,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         contador += 1
                 row_cells = table.add_row().cells
                 row_cells[0].text = u'Total'
-                row_cells[5].text = format_money(total_geral)
+                row_cells[1].text = u'%s (%s)' % (format_money(total_geral), format_numero_extenso(total_geral))
+                row_cells[1].merge(row_cells[5])
                 p = document.add_paragraph()
 
 

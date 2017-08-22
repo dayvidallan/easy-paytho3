@@ -191,25 +191,25 @@ CARDINAL_FEMININO.update({
 
 NOME_CARDINAL_POTENCIA = {
     10**3: ('mil', 'mil'),
-    10**6: ('milhão', 'milhões'),
-    10**9: ('bilhão', 'bilhões'),
-    10**12: ('trilhão', 'trilhões'),
-    10**15: ('quatrilhão', 'quatrilhões'),
-    10**18: ('quintilhão', 'quintilhões'),
-    10**21: ('sextilhão', 'sextilhões'),
-    10**24: ('setilhão', 'setilhões'),
-    10**27: ('octilhão', 'octilhões'),
-    10**30: ('nonilhão', 'nonilhões'),
-    10**33: ('decilhão', 'decilhões'),
-    10**36: ('undecilhão', 'undecilhões'),
-    10**39: ('dodecilhão', 'duodecilhões'),
-    10**42: ('tredecilhão', 'tredecilhões'),
-    10**45: ('quatuordecilhão', 'quatuordecilhões'),
-    10**48: ('quindecilhão', 'quindecilhões'),
-    10**51: ('sesdecilhão', 'sesdecilhões'),
-    10**54: ('septendecilhão', 'septendecilhões'),
-    10**57: ('octodecilhão', 'octodecilhões'),
-    10**60: ('nonidecilhão', 'nonidecilhões'),
+    10**6: (u'milhão', u'milhões'),
+    10**9: (u'bilhão', u'bilhões'),
+    10**12: (u'trilhão', u'trilhões'),
+    10**15: (u'quatrilhão', u'quatrilhões'),
+    10**18: (u'quintilhão', u'quintilhões'),
+    10**21: (u'sextilhão', u'sextilhões'),
+    10**24: (u'setilhão', u'setilhões'),
+    10**27: (u'octilhão', u'octilhões'),
+    10**30: (u'nonilhão', u'nonilhões'),
+    10**33: (u'decilhão', u'decilhões'),
+    10**36: (u'undecilhão', u'undecilhões'),
+    10**39: (u'dodecilhão', u'duodecilhões'),
+    10**42: (u'tredecilhão', u'tredecilhões'),
+    10**45: (u'quatuordecilhão', u'quatuordecilhões'),
+    10**48: (u'quindecilhão', u'quindecilhões'),
+    10**51: (u'sesdecilhão', u'sesdecilhões'),
+    10**54: (u'septendecilhão', u'septendecilhões'),
+    10**57: (u'octodecilhão', u'octodecilhões'),
+    10**60: (u'nonidecilhão', u'nonidecilhões'),
     }
 
 #
@@ -643,7 +643,7 @@ class NumeroPorExtenso(object):
 def format_numero_extenso(num):
 
     e = NumeroPorExtenso(num)
-    return e.extenso_unidade
+    return u'%s' % e.extenso_unidade
     print('Numeral cardinal simples:', e.extenso_cardinal)
     print('Numeral ordinal simples:', e.extenso_ordinal)
     print('Valor monetário em R$:', e.extenso_unidade)
