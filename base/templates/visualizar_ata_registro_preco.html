@@ -341,7 +341,7 @@
                                                 <th>Valor</th>
                                                 <th>Quantidade Inicial</th>
                                                 <th>Quantidade Disponível</th>
-                                                 {% if eh_gerente %}
+                                                {% if ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra %}
                                                     <th>Opções</th>
                                                 {% endif %}
 
@@ -369,7 +369,7 @@
                                                     <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                     <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
                                                     <td>
-                                                         {% if eh_gerente %}
+                                                         {% if ata.adesao and request.user == ata.solicitacao.cadastrado_por and ata.solicitacao.setor_atual == request.user.pessoafisica.setor and not ata.liberada_compra %}
                                                             <a href="/base/editar_item_arp/{{ opcao.id }}/" class="btn btn-info btn-sm">Editar</a>
                                                             <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_arp/{{opcao.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                                         {% endif %}
