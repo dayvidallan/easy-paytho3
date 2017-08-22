@@ -252,6 +252,8 @@ urlpatterns = [
     url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
 
 
+    url(r'^ativar_item_pregao/(?P<item_id>\d+)/$', views.ativar_item_pregao, name='ativar_item_pregao'),
+
 
 
 ]

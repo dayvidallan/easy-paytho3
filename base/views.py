@@ -6798,3 +6798,19 @@ def anexo_38(request, pregao_id):
     os.unlink(salvou)
     return response
 
+
+@login_required()
+def ativar_item_pregao(request, item_id):
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        item.situacao = ItemSolicitacaoLicitacao.CADASTRADO
+        item.save()
+        historico = HistoricoPregao()
+        historico.pregao = item.get_licitacao()
+        historico.data = datetime.datetime.now()
+        historico.obs = u'Item Reativado: %s.' % item
+        historico.save()
+        messages.success(request, u'Item reativado com sucesso.')
+        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+    else:
+        raise PermissionDenied
