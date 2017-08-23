@@ -862,6 +862,8 @@ def cadastrar_solicitacao(request):
             o.setor_origem = request.user.pessoafisica.setor
             o.setor_atual = request.user.pessoafisica.setor
             o.data_cadastro = datetime.datetime.now()
+            if form.cleaned_data.get('tipo_aquisicao') and form.cleaned_data.get('tipo_aquisicao') in [SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE, SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.DISPENSA_LICITACAO_ATE_8MIL, SolicitacaoLicitacao.DISPENSA_LICITACAO_ATE_15MIL]:
+                o.tipo = SolicitacaoLicitacao.COMPRA
             o.cadastrado_por = request.user
             if not form.cleaned_data['interessados'] and not form.cleaned_data['todos_interessados']:
                 o.prazo_resposta_interessados = None
