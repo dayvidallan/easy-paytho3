@@ -7771,7 +7771,6 @@ def aditivar_contrato(request, contrato_id):
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 #item.valor = ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor) + item.valor
                                 #item.save()
-
                                 aditivo_item = AditivoItemContrato()
                                 aditivo_item.item = item
                                 indice_ajuste = Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))

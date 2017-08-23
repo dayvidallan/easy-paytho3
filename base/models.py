@@ -2780,11 +2780,11 @@ class ItemContrato(models.Model):
         if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
             if total_valor > 50:
                 return 0
-            return (50-total_valor)
+            return str(50-total_valor).replace(',', '.')
         else:
             if total_valor > 25:
                 return 0
-            return (25-total_valor)
+            return str(25-total_valor).replace(',', '.')
 
 
     def get_aditivo_permitido_valor_subtrai(self):
@@ -2795,11 +2795,11 @@ class ItemContrato(models.Model):
         if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
             if total_valor > 50:
                 return 0
-            return (50-total_valor)
+            return str(50-total_valor).replace(',', '.')
         else:
             if total_valor > 25:
                 return 0
-            return (25-total_valor)
+            return str(25-total_valor).replace(',', '.')
 
     def get_aditivo_permitido_quantitativo_soma(self):
         total_quantitativo = 0

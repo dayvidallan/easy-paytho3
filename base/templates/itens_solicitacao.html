@@ -60,7 +60,7 @@
                 {% elif not solicitacao.credenciamento_set.exists and solicitacao.eh_credenciamento %}
                     <a href="/base/cadastrar_credenciamento/{{solicitacao.id}}/" class="btn btn-success">Criar Credenciamento</a>
                 {% endif %}
-             {% elif perms.base.pode_gerenciar_contrato and solicitacao.pode_gerar_ordem and recebida_no_setor and  not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists and not solicitacao.eh_credenciamento %}
+             {% elif perms.base.pode_gerenciar_contrato and solicitacao.pode_gerar_ordem and recebida_no_setor and not solicitacao.tem_ordem_compra and  not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists and not solicitacao.eh_credenciamento %}
                 <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
              {% endif %}
 
@@ -245,7 +245,7 @@
 
                                 {% endif %}
                                 {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
-                                    {% if solicitacao.prazo_aberto and not solicitacao.eh_dispensa %}
+                                    {% if solicitacao.prazo_aberto and not solicitacao.pode_gerar_ordem %}
                                         <a href="/registrar_preco_item/{{item.id}}/" class="btn btn-success btn-sm">Registrar / Editar Valor</a>
                                     {% endif %}
                                     {% if item.arquivo_referencia_valor_medio %}
