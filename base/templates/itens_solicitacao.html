@@ -127,7 +127,7 @@
                 <a class="btn btn-success" href="/base/abrir_processo_para_solicitacao/{{ solicitacao.pk }}/">Abrir Processo</a>
 
              {% endif %}
-              {% if solicitacao.eh_dispensa %}
+              {% if solicitacao.pode_gerar_ordem %}
                 {% if not solicitacao.eh_credenciamento %}
                     {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_proposta and not solicitacao.prazo_aberto %}
                     <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
