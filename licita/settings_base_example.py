@@ -22,6 +22,10 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
+#dados do zoho, nosso servidor de email
+#SMTP Host: smtp.zoho.com
+#SMTP Port: 465
+
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:

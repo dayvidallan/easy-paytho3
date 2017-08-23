@@ -375,9 +375,9 @@ class SolicitacaoLicitacao(models.Model):
         if self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO:
             return False
         if self.tem_item_cadastrado() and ItemPesquisaMercadologica.objects.filter(pesquisa__solicitacao=self).exists():
-            if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao() > 8000:
+            if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao_dispensa() > 8000:
                 return True
-            elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao() > 15000:
+            elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao_dispensa() > 15000:
                 return True
         return False
 
@@ -599,7 +599,7 @@ class SolicitacaoLicitacao(models.Model):
         return total
 
 
-    def get_valor_da_solicitacao(self):
+    def get_valor_da_solicitacao_dispensa(self):
         total = Decimal(0.00)
         menor_proposta = 10000000000000000
         propostas = PesquisaMercadologica.objects.filter(solicitacao=self)
@@ -611,6 +611,14 @@ class SolicitacaoLicitacao(models.Model):
                 menor_proposta = total
 
         return menor_proposta
+
+    def get_valor_da_solicitacao(self):
+        total = Decimal(0.00)
+        propostas = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self)
+        for proposta in propostas:
+            total += proposta.valor_medio * proposta.quantidade
+
+        return total
 
 
 class ItemSolicitacaoLicitacao(models.Model):
