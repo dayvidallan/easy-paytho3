@@ -1762,6 +1762,40 @@ def cadastrar_contrato(request, solicitacao_id):
 
                     o.pregao = solicitacao.credenciamento_origem.pregao
                     o.save()
+                else:
+                    lista = list()
+                    dicionario = {}
+                    for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=solicitacao):
+                        total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+                        if total:
+                            lista.append([pesquisa.id, total])
+                            dicionario[pesquisa.id] = total
+                    resultado = sorted(dicionario.items(), key=lambda x: x[1])
+                    pesquisa = PesquisaMercadologica.objects.get(id=resultado[0][0])
+                    if Fornecedor.objects.filter(cnpj=pesquisa.cnpj):
+                        fornecedor = Fornecedor.objects.filter(cnpj=pesquisa.cnpj)[0]
+                    else:
+                        fornecedor = Fornecedor()
+                        fornecedor.cnpj = pesquisa.cnpj
+                        fornecedor.razao_social = pesquisa.razao_social
+                        fornecedor.endereco = pesquisa.endereco
+                        fornecedor.telefones = pesquisa.telefone
+                        fornecedor.email = pesquisa.email
+                        fornecedor.save()
+                    for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao):
+                        registro = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, item=item)[0]
+                        novo_item = ItemContrato()
+                        novo_item.contrato = o
+                        novo_item.ordem = o.get_ordem()
+                        novo_item.item = item
+                        novo_item.material = item.material
+
+                        novo_item.marca = registro.marca
+                        novo_item.fornecedor = fornecedor
+                        novo_item.valor = registro.valor_maximo
+                        novo_item.quantidade = item.quantidade
+                        novo_item.unidade = item.unidade
+                        novo_item.save()
 
 
             messages.success(request, u'Cadastrado realizado com sucesso.')
