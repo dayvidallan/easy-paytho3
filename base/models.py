@@ -366,7 +366,7 @@ class SolicitacaoLicitacao(models.Model):
                 total += item.valor_maximo * item.item.quantidade
             valores.append(total)
         valores.sort()
-        if len(valores) > 2 and valores[0] == valores[1]:
+        if len(valores) > 1 and valores[0] == valores[1]:
             return True
         return False
 
