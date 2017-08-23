@@ -819,7 +819,11 @@
                             {% if pregao.eh_pregao %}
                                 <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação</a>
                             {% else %}
-                                <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação e Adjudicação</a>
+                                {% if pregao.eh_credenciamento %}
+                                    <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Credenciamento</a>
+                                {% else %}
+                                    <a href="/media/{{pregao.arquivo_homologacao}}" class="btn btn-info" target="_blank">Ver Termo de Homologação e Adjudicação</a>
+                                {% endif %}
                             {% endif%}
                         <br><br>
                         Ordenador de Despesa: {{ pregao.ordenador_despesa }}

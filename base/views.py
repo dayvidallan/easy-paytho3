@@ -5504,6 +5504,8 @@ def editar_pregao(request, pregao_id):
 def upload_termo_homologacao(request, pregao_id):
     title=u'Enviar Termo de Homologação'
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+    if pregao.eh_credenciamento():
+        title = u'Enviar Termo de Credenciamento'
     if request.user.pessoafisica == pregao.solicitacao.setor_origem.secretaria.ordenador_despesa:
         form = UploadTermoHomologacaoForm(request.POST or None, request.FILES or None, instance=pregao)
         if form.is_valid():

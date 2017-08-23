@@ -999,6 +999,12 @@ class UploadTermoHomologacaoForm(forms.ModelForm):
         model = Pregao
         fields = ('arquivo_homologacao',)
 
+    def __init__(self, *args, **kwargs):
+        super(UploadTermoHomologacaoForm, self).__init__(*args, **kwargs)
+        if self.instance.eh_credenciamento():
+            self.fields['arquivo_homologacao'].label = u'Termo de Credenciamento'
+
+
 
 class BaixarEditaisForm(forms.Form):
     METHOD = u'GET'
