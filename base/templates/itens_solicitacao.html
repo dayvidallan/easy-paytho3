@@ -243,7 +243,7 @@
 
                             <td>
                                 {% if perms.base.pode_cadastrar_solicitacao and solicitacao.pode_enviar_para_compra %}
-                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto and not solicitacao.tem_ordem_compra %}
+                                    {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto and not solicitacao.tem_ordem_compra and not solicitacao.get_contrato %}
                                         <a href="/base/editar_item/{{item.id}}/" class="btn btn-info btn-sm">Editar</a>
                                         <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item/{{item.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                     {% endif %}
@@ -402,7 +402,7 @@
                                     <td>{{ pedido.quantidade|format_quantidade  }}</td>
                                     <td>
                                         {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra  %}
-                                            {% if not solicitacao.tem_ordem_compra %}
+                                            {% if not solicitacao.tem_ordem_compra and not solicitacao.get_contrato %}
                                                 <ul class="action-bar">
                                                     {% if pedido.contrato %}
                                                         <li><a href="/base/editar_item_pedido/{{ pedido.id }}/1/" class="btn btn-sm btn-info">Editar</a></li>
@@ -464,7 +464,7 @@
                                 <td>{{ pedido.item.valor }}</td>
                                 <td>{{ pedido.quantidade|format_quantidade  }}</td>
                                 <td>
-                                    {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra  %}
+                                    {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra and not solicitacao.get_contrato %}
                                         {% if not solicitacao.tem_ordem_compra %}
                                             <ul class="action-bar">
                                                 {% if pedido.contrato %}
