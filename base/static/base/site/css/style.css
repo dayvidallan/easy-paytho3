@@ -316,7 +316,19 @@ a.learn_more2:hover{
 .service_icon.icon3{
 	border:2px solid #49b5e7;
 	}
-	
+
+.service_icon.icon4{
+	border:2px solid #FFFF00;
+	}
+
+.service_icon.icon5{
+	border:2px solid #FF7F50;
+	}
+.service_icon.icon6{
+	border:2px solid #FF0000;
+	}
+
+
 .service_icon span {
     background:#f56eab;
     border: 3px solid #fff;
@@ -330,7 +342,19 @@ a.learn_more2:hover{
 }
 .service_icon.icon3 span{
     background:#49b5e7;
-	}
+}
+
+.service_icon.icon4 span{
+    background:#FFFF00;
+}
+
+.service_icon.icon5 span{
+    background:#FF7F50;
+}
+.service_icon.icon6 span{
+    background:#FF0000;
+}
+
 .service_icon i{
 	color: #fff;
     font-size: 40px;
@@ -368,7 +392,7 @@ a.learn_more2:hover{
 	
 	
 .top_cont_latest{
-	background:url(../img/dashboard_pic.png) no-repeat right bottom;
+	background:url(../img/dashboard.png) no-repeat right bottom;
 }
 	
 .work_pic{
