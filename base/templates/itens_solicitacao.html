@@ -73,7 +73,7 @@
                         {% if not solicitacao.itemsolicitacaolicitacao_set.exists %}
                             <a class="btn btn-warning" href="/base/importar_itens/{{ solicitacao.pk }}/">Importar Itens</a>
                         {% endif %}
-                        {% if solicitacao.pode_receber_pedidos_secretarias %}
+                        {% if solicitacao.pode_receber_pedidos_secretarias and solicitacao.itemsolicitacaolicitacao_set.exists %}
                             {% if solicitacao.liberada_para_pedido %}
                                 <a class="btn btn-danger" href="/base/liberar_pedidos_solicitacao/{{ solicitacao.pk }}/">Encerrar Pedidos</a>
                             {% else %}
@@ -134,7 +134,7 @@
                 {% if not solicitacao.eh_credenciamento %}
                     {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_proposta and not solicitacao.prazo_aberto %}
                     <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
-                    {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
+                    {% elif perms.base.pode_cadastrar_pesquisa_mercadologica  and solicitacao.tem_ordem_compra %}
                         <a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
                     {% endif %}
                 {% endif %}
@@ -303,7 +303,7 @@
             {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_pedidos_compra and not solicitacao.tem_ordem_compra %}
                 <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
 
-            {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and solicitacao.tem_ordem_compra %}
+            {% elif perms.base.pode_cadastrar_pesquisa_mercadologica and solicitacao.tem_ordem_compra %}
                 <a href="/base/ver_ordem_compra/{{solicitacao.id}}/" class="btn btn-info" target="_blank">Ver Ordem de Compra/Serviço</a>
             {% endif %}
             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.tem_ordem_compra and not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists %}

@@ -1299,6 +1299,9 @@ class Pregao(models.Model):
             self.eh_ata_registro_preco = False
         super(Pregao, self).save()
 
+
+    def tem_item_deserto_fracassado(self):
+        return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao).filter(Q(situacao=ItemSolicitacaoLicitacao.FRACASSADO) | Q(situacao=ItemSolicitacaoLicitacao.DESERTO)).exists()
     def eh_credenciamento(self):
         return self.modalidade.id in [ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, ModalidadePregao.CHAMADA_PUBLICA_OUTROS, ModalidadePregao.CHAMADA_PUBLICA_PRONATER, ModalidadePregao.CREDENCIAMENTO]
     def eh_maior_desconto(self):

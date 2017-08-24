@@ -929,6 +929,11 @@
 
 
                                 {% endif %}
+                                {% if pregao.tem_item_deserto_fracassado %}
+                                    <tr>
+                                        <td><a href="/base/relatorio_itens_desertos/{{ pregao.id }}/" target="_blank">Relatório de Itens Desertos ou Fracassados</a></td>
+                                    </tr>
+                                {% endif %}
 
                                 {% if pregao.tem_ocorrencia %}
                                     <tr>

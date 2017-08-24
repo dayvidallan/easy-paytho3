@@ -396,6 +396,12 @@ class ContinuaPesquisaMercadologicaForm(forms.ModelForm):
             self.fields['endereco'].required = True
             self.fields['telefone'].required = True
             self.fields['email'].required = True
+            self.fields['razao_social'].label = u'Razão Social*'
+            self.fields['cnpj'].label = u'CNPJ*'
+            self.fields['cnpj'].help_text = u'Preencha com números, traços e barras'
+            self.fields['endereco'].label = u'Endereço*'
+            self.fields['telefone'].label = u'Telefone*'
+            self.fields['email'].label = u'Email*'
 
         else:
             del self.fields['razao_social']
