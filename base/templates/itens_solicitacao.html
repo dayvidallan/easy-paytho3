@@ -66,7 +66,7 @@
 
 
              {% if perms.base.pode_cadastrar_solicitacao %}
-                {% if solicitacao.situacao == solicitacao.CADASTRADO %}
+                {% if solicitacao.situacao == solicitacao.CADASTRADO and not solicitacao.get_contrato %}
                     {% if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto %}
                         {% if not solicitacao.tem_ordem_compra %}
                             <a class="btn btn-success" href="/base/cadastrar_item_solicitacao/{{ solicitacao.pk }}/">Cadastrar Item</a>
@@ -95,7 +95,7 @@
                     {% endif %}
                 {% endif %}
              {% endif %}
-             {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor %}
+             {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.get_contrato %}
                 {% if solicitacao.prazo_aberto and not solicitacao.tem_ordem_compra %}
                     <!-- <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a> -->
                     <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
@@ -131,7 +131,7 @@
                 <a class="btn btn-success" href="/base/abrir_processo_para_solicitacao/{{ solicitacao.pk }}/">Abrir Processo</a>
 
              {% endif %}
-              {% if solicitacao.pode_gerar_ordem %}
+              {% if solicitacao.pode_gerar_ordem and not solicitacao.get_contrato %}
                 {% if not solicitacao.eh_credenciamento %}
                     {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.tem_ordem_compra and solicitacao.tem_proposta and not solicitacao.prazo_aberto %}
                     <a href="/base/gerar_ordem_compra/{{solicitacao.id}}/" class="btn btn-primary">Gerar Ordem de Compra/Serviço</a>
