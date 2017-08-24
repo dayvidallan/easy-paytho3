@@ -219,7 +219,11 @@
                         <th>Material/Serviço</th>
                         <th>Unidade</th>
                         <th>Quantidade</th>
-                        <th>Valor Médio</th>
+                        {% if solicitacao.pode_gerar_ordem %}
+                            <th>Valor</th>
+                        {% else %}
+                            <th>Valor Médio</th>
+                        {% endif %}
                         <th>Total</th>
 
                         <th>Opções</th>

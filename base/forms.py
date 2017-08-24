@@ -392,6 +392,11 @@ class ContinuaPesquisaMercadologicaForm(forms.ModelForm):
             del self.fields['vigencia_ata']
             del self.fields['orgao_gerenciador_ata']
             self.fields['razao_social'].required = True
+            self.fields['cnpj'].required = True
+            self.fields['endereco'].required = True
+            self.fields['telefone'].required = True
+            self.fields['email'].required = True
+
         else:
             del self.fields['razao_social']
             del self.fields['cnpj']
