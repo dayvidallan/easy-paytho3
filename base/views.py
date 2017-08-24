@@ -5730,7 +5730,10 @@ def rejeitar_pesquisa(request, item_pesquisa_id):
             if registros.exists():
                 total_registros = registros.count()
                 soma = registros.aggregate(Sum('valor_maximo'))
-                elemento.valor_medio = soma['valor_maximo__sum']/total_registros
+                if elemento.solicitacao.pode_gerar_ordem():
+                    elemento.valor_medio = elemento.get_melhor_proposta()
+                else:
+                    elemento.valor_medio = soma['valor_maximo__sum']/total_registros
                 elemento.total = elemento.valor_medio * elemento.quantidade
 
             else:
@@ -5753,7 +5756,10 @@ def excluir_item_pesquisa(request, item_pesquisa_id):
         if registros.exists():
             total_registros = registros.count()
             soma = registros.aggregate(Sum('valor_maximo'))
-            elemento.valor_medio = soma['valor_maximo__sum']/total_registros
+            if elemento.solicitacao.pode_gerar_ordem():
+                elemento.valor_medio = elemento.get_melhor_proposta()
+            else:
+                elemento.valor_medio = soma['valor_maximo__sum']/total_registros
             elemento.total = elemento.valor_medio * elemento.quantidade
 
         else:
@@ -5783,7 +5789,10 @@ def excluir_pesquisa(request, pesquisa_id):
             if registros.exists():
                 total_registros = registros.count()
                 soma = registros.aggregate(Sum('valor_maximo'))
-                elemento.valor_medio = soma['valor_maximo__sum']/total_registros
+                if elemento.solicitacao.pode_gerar_ordem():
+                    elemento.valor_medio = elemento.get_melhor_proposta()
+                else:
+                    elemento.valor_medio = soma['valor_maximo__sum']/total_registros
                 elemento.total = elemento.valor_medio * elemento.quantidade
 
             else:

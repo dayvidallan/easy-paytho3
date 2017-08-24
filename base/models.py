@@ -682,6 +682,12 @@ class ItemSolicitacaoLicitacao(models.Model):
                         return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
         return False
 
+    def get_melhor_proposta(self):
+        tem = ItemPesquisaMercadologica.objects.filter(item=self).order_by('valor_maximo')
+        if tem.exists():
+            return tem[0].valor_maximo
+        return 0
+
     def get_valor_total_proposto(self):
         if ItemLote.objects.filter(item=self).exists():
             lote = ItemLote.objects.filter(item=self)[0].lote
@@ -1978,7 +1984,11 @@ class ItemPesquisaMercadologica(models.Model):
         if registros:
             total_registros = registros.count()
             soma = registros.aggregate(Sum('valor_maximo'))
-            self.item.valor_medio = soma['valor_maximo__sum']/total_registros
+            elemento = self.item
+            if elemento.solicitacao.pode_gerar_ordem():
+                elemento.valor_medio = elemento.get_melhor_proposta()
+            else:
+                elemento.valor_medio = soma['valor_maximo__sum']/total_registros
             self.item.total = self.item.valor_medio * self.item.quantidade
             self.item.save()
 
