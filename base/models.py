@@ -1323,7 +1323,7 @@ class Pregao(models.Model):
         return ParticipantePregao.objects.filter(pregao=self, desclassificado=False, excluido_dos_itens=False).exists()
 
     def eh_ativo(self):
-        return self.situacao not in [Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
+        return self.situacao not in [Pregao.ADJUDICADO, Pregao.FRACASSADO, Pregao.DESERTO, Pregao.CONCLUIDO, Pregao.SUSPENSO]
 
     def get_situacao(self):
         if self.data_homologacao:
