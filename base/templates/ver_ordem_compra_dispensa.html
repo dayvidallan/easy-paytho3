@@ -152,23 +152,23 @@ ul{
     <table border="1" width="100%" cellpadding="5" cellspacing="5" align="center">
         <thead>
             <tr>
-                <th width="60%">Referente ao Processo N°</th><td>{{ solicitacao.processo }}</td>
-                <th>Pregão N °</th><td>{{ pregao.num_pregao }}</td>
+                <th>Referente ao Processo N°</th><td>{{ solicitacao.processo|default_if_none:"não informado" }}</td>
+
             </tr>
 
             <tr>
-                <th>Projeto/Atividade</th><td colspan="3">{{ ordem.projeto_atividade_num }} - {{ ordem.projeto_atividade_descricao }}</td>
+                <th>Projeto/Atividade</th><td>{{ ordem.projeto_atividade_num }} - {{ ordem.projeto_atividade_descricao }}</td>
 
             </tr>
             <tr>
-                <th>Programa</th><td colspan="3">{{ ordem.programa_num }} - {{ ordem.programa_descricao }}</td>
+                <th>Programa</th><td>{{ ordem.programa_num }} - {{ ordem.programa_descricao }}</td>
             </tr>
             <tr>
-                <th>Fonte</th><td colspan="3">{{ ordem.fonte_num }} - {{ ordem.fonte_descricao }}</td>
+                <th>Fonte</th><td>{{ ordem.fonte_num }} - {{ ordem.fonte_descricao }}</td>
 
             </tr>
             <tr>
-               <th>Elemento de Despesa</th><td colspan="3">{{ ordem.elemento_despesa_num }} - {{ ordem.elemento_despesa_descricao }}</td>
+               <th>Elemento de Despesa</th><td>{{ ordem.elemento_despesa_num }} - {{ ordem.elemento_despesa_descricao }}</td>
 
             </tr>
         </thead>
