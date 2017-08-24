@@ -1008,8 +1008,14 @@ def preencher_pesquisa_mercadologica(request, solicitacao_id):
     if not solicitacao.prazo_aberto:
         messages.error(request, u'Prazo de envio encerrado.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
+    if not solicitacao.pode_cadastrar_pesquisa():
+        messages.error(request, u'Apenas uma proposta pode ser cadastrada.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
     if not request.user.is_authenticated():
         return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/2/' % solicitacao.id)
+
+
+
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).order_by('item')
 
     form = PesquisaMercadologicaForm(request.POST or None, request=request, solicitacao=solicitacao)

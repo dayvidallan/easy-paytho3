@@ -98,7 +98,9 @@
              {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.get_contrato %}
                 {% if solicitacao.prazo_aberto and not solicitacao.tem_ordem_compra %}
                     <!-- <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a> -->
-                    <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
+                    {% if solicitacao.pode_cadastrar_pesquisa %}
+                        <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
+                    {% endif %}
                     <a class="btn btn-info" href="/base/ver_pesquisas/{{ solicitacao.id }}/">Ver Pesquisas</a>
                     <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
                     <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>

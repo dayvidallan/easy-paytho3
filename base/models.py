@@ -381,6 +381,12 @@ class SolicitacaoLicitacao(models.Model):
                 return True
         return False
 
+    def pode_cadastrar_pesquisa(self):
+        if self.tipo_aquisicao == SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE:
+            return not PesquisaMercadologica.objects.filter(solicitacao=self).exists()
+        else:
+            return True
+
     def eh_credenciamento(self):
         return self.tipo_aquisicao in [self.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.CHAMADA_PUBLICA_OUTROS, self.CHAMADA_PUBLICA_PRONATER, self.CREDENCIAMENTO]
 
