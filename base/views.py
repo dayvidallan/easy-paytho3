@@ -839,7 +839,7 @@ def cadastrar_pregao(request, solicitacao_id):
                 novo_processo = Processo()
                 novo_processo.pessoa_cadastro = request.user
                 novo_processo.numero = form.cleaned_data.get('num_processo')
-                novo_processo.objeto = solicitacao.objeto
+                novo_processo.objeto = form.cleaned_data.get('objeto')
                 novo_processo.tipo = Processo.TIPO_MEMORANDO
                 novo_processo.setor_origem = request.user.pessoafisica.setor
                 novo_processo.save()
@@ -1246,7 +1246,7 @@ def planilha_propostas(request, solicitacao_id):
 
     sheet = rb.sheet_by_name("Sheet1")
     w_sheet.write(1, 1, pregao.get_titulo())
-    w_sheet.write(2, 1, pregao.solicitacao.objeto)
+    w_sheet.write(2, 1, pregao.objeto)
     w_sheet.write(3, 1, pregao.get_local())
 
     for idx, item in enumerate(itens, 0):
@@ -2199,7 +2199,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
 @login_required()
 def retomar_lances(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         item.ativo=True
         item.save()
         messages.success(request, u'Lances retomados com sucesso.')
@@ -3185,7 +3185,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     4.3 – Fica eleito o Foro da Comarca Local, para dirimir as dúvidas ou controvérsias resultantes da interpretação deste Contrato, renunciando a qualquer outro por mais privilegiado que seja.
 
-    ''' % (pregao.solicitacao.objeto, pregao.modalidade, nome_ordenador)
+    ''' % (pregao.objeto, pregao.modalidade, nome_ordenador)
 
     p = document.add_paragraph()
     p.alignment = 3
@@ -3527,7 +3527,7 @@ def gerenciar_grupo_usuario(request, usuario_id, grupo_id, acao):
 def pedido_outro_interessado(request, pedido_id, opcao):
     title=u'Rejeitar Pedido'
     pedido = get_object_or_404(ItemQuantidadeSecretaria, pk=pedido_id)
-    if request.user.groups.filter(name=u'Secretaria').exists() and pedido.solicitacao.pode_enviar_para_compra()  and solicitacao.setor_origem == request.user.pessoafisica.setor:
+    if request.user.groups.filter(name=u'Secretaria').exists() and pedido.solicitacao.pode_enviar_para_compra()  and pedido.solicitacao.setor_origem == request.user.pessoafisica.setor:
         if not pedido.avaliado_em:
             if opcao == u'1':
                 pedido.aprovado = True
@@ -4061,7 +4061,7 @@ def avaliar_pedidos(request, solicitacao_id):
         pedidos = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao)
 
         total = solicitacao.interessados.count()
-        informados = pedidos.distinct('secretaria').count() - 1
+        informados = pedidos.values('secretaria').order_by('secretaria').distinct('secretaria').count() - 1
 
         form = FiltrarSecretariaForm(request.POST or None, pedidos=pedidos)
         if request.GET.get('secretaria'):
@@ -4962,6 +4962,22 @@ def ver_ordem_compra(request, solicitacao_id):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
+
+
+
+@login_required()
+def excluir_ordem_compra_dispensa(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if solicitacao.pode_gerar_ordem() and not solicitacao.get_contrato() and not solicitacao.eh_credenciamento() and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and solicitacao.tem_ordem_compra():
+        OrdemCompra.objects.filter(solicitacao=solicitacao).delete()
+        messages.success(request, u'Ordem de Compra/Serviço excluída com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
+
+    else:
+        raise PermissionDenied
+
+
+
 @login_required()
 def ver_ordem_compra_dispensa(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
@@ -5512,7 +5528,7 @@ def editar_pregao(request, pregao_id):
                 novo_processo = Processo()
                 novo_processo.pessoa_cadastro = request.user
                 novo_processo.numero = form.cleaned_data.get('num_processo')
-                novo_processo.objeto = solicitacao.objeto
+                novo_processo.objeto = form.cleaned_data.get('objeto')
                 novo_processo.tipo = Processo.TIPO_MEMORANDO
                 novo_processo.setor_origem = request.user.pessoafisica.setor
                 novo_processo.save()
@@ -6064,7 +6080,7 @@ def ata_sessao(request, pregao_id):
     texto = u'''
     Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
 
-    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
+    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.objeto, pregao.responsavel, comissao, portaria)
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()
@@ -6423,7 +6439,7 @@ def ata_sessao_credenciamento(request, pregao_id):
     Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
     Aberta a Sessão e atendidas todas as prescrições legais, o Sr. Presidente da CPL/PMG registrou que, de acordo com o prazo estabelecido, foi entregue o Envelope da (s) seguinte (s) licitante (s):
 
-    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.solicitacao.objeto, pregao.responsavel, comissao, portaria)
+    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.objeto, pregao.responsavel, comissao, portaria)
 
     #document.add_paragraph(texto)
     p = document.add_paragraph()
@@ -6747,7 +6763,7 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                                 with transaction.atomic():
                                     Decimal(valor)
                             except:
-                                messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                messages.error(request, u'o valor %s é inválido.' % (valor))
                                 return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
                             novo_item.valor = valor
                             novo_item.ata = ata
@@ -6854,7 +6870,6 @@ def revogar_pregao(request, pregao_id):
 @login_required()
 def imprimir_fornecedor(request, fornecedor_id):
     fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-    title = u'Dados do Fornecedor - %s' % fornecedor
     configuracao = get_config()
     logo = None
     if configuracao.logo:

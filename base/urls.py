@@ -206,6 +206,8 @@ urlpatterns = [
     url(r'^renovar_crc/(?P<fornecedor_id>\d+)/$', views.renovar_crc, name='renovar_crc'),
 
 
+    url(r'^excluir_ordem_compra_dispensa/(?P<solicitacao_id>\d+)/$', views.excluir_ordem_compra_dispensa, name='excluir_ordem_compra_dispensa'),
+
 
 
     url(r'^novo_pedido_compra_contrato/(?P<contrato_id>\d+)/$', views.novo_pedido_compra_contrato, name='novo_pedido_compra_contrato'),

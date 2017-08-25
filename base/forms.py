@@ -182,7 +182,7 @@ class PregaoForm(forms.ModelForm):
     )
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel', 'situacao']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'objeto', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel', 'situacao']
 
 
     class Media:
@@ -197,6 +197,7 @@ class PregaoForm(forms.ModelForm):
         self.fields['aplicacao_lcn_123_06'].help_text = u'<a href="http://www.planalto.gov.br/ccivil_03/leis/LCP/Lcp123.htm" target="_blank">De acordo com a Lei 123/06</a>'
         self.initial['valor_total'] = format_money(self.solicitacao.get_valor_da_solicitacao())
         self.fields['valor_total'].widget.attrs = {'readonly': 'True'}
+        self.fields['objeto'].initial = self.solicitaao.objeto
 
         if not self.request.user.is_superuser:
             del self.fields['situacao']

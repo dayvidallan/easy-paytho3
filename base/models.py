@@ -1255,6 +1255,7 @@ class Pregao(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
     modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade / Procedimento')
+    objeto = models.TextField(u'Objeto', null=True)
     fundamento_legal = models.CharField(u'Fundamento Legal', max_length=5000, null=True, blank=True)
     tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento', null=True, blank=True)
     criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação')
@@ -1390,7 +1391,12 @@ class Pregao(models.Model):
             elif not tem_empate_ficto and not ganhador_eh_beneficiario:
                 if fornecedor.me_epp:
                     limite_lance = total_global_vencedor + (total_global_vencedor*10)/100
-                    if int(resultado[indice][0]) < limite_lance:
+                    if ResultadoItemPregao.objects.filter(participante=fornecedor).exists():
+                        valor_resultado = ResultadoItemPregao.objects.filter(participante=fornecedor)[0].valor
+                        if valor_resultado < limite_lance:
+                            tem_empate_ficto = True
+
+                    elif int(resultado[indice][0]) < limite_lance:
                         tem_empate_ficto = True
             indice += 1
 
