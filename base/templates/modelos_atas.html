@@ -1,0 +1,118 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load pagination_tags %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?situacao=" + escape( $('#'+campo.id).val());
+
+        }
+
+        $(function() {
+            $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
+        });
+
+	</script>
+{% endblock %}
+{% block content %}
+    <div class="pull-right">
+            <a class="btn btn-success" href="/base/cadastrar_modelo_ata/{{pregao_id}}/">Cadastrar Modelo</a>
+            <a class="btn btn-info" href="/base/pregao/{{ pregao_id }}/">Voltar</a>
+    </div>
+
+    {% if form %}
+        <fieldset>
+            <form action="." method="GET" class="form-horizontal">
+                {% csrf_token %}
+                <div class="row-fluid">
+                    <div class="col-xs-6">
+                        <div class="controls">{{ form.nome|bootstrap }}
+                            {% if form.nome.help_text %}
+                                <p class="help-inline"><small>{{ form.nome.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="col-xs-6">
+                        <div class="controls">{{ form.palavra|bootstrap }}
+                            {% if form.palavra.help_text %}
+                                <p class="help-inline"><small>{{ form.palavra.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-xs-2 col-md-2">
+                        <div class="controls">{{ form.tipo|bootstrap }}
+                            {% if form.tipo.help_text %}
+                                <p class="help-inline"><small>{{ form.tipo.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-xs-1 col-md-1">
+                        <br>
+                        <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                    </div>
+
+                </div>
+
+
+
+
+
+            </form>
+
+        </fieldset>
+    {% endif %}
+    {% if atas.exists %}
+
+        <h4>{{ atas.count }} registro(s) encontrado(s).</h4>
+        <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Data do Cadastro</th>
+                    <th>Nome da Ata</th>
+                    <th>Tipo da Ata</th>
+                    <th>Opções</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% autopaginate atas 15 %}
+                {% paginate %}
+                {% for ata in atas %}
+                   <tr>
+                       <td>{{ ata.cadastrado_em }}</td>
+                       <td>{{ ata.nome }}</td>
+                       <td>{{ ata.tipo }}</td>
+
+                       <td>
+                           <ul class="action-bar">
+                               <li><a class="btn btn-success btn-sm" href="/media/{{ata.arquivo}}/">Ver Arquivo</a></li>
+                               {% if request.user.pessoafisica == ata.cadastrado_por %}
+                                   <li><a class="btn btn-info btn-sm" href="/base/editar_modelo_ata/{{ata.id}}/{{pregao_id}}/">Editar</a></li>
+                                   <li><a class="btn btn-danger btn-sm" href="/base/deletar_modelo_ata/{{ata.id}}/{{pregao_id}}/">Apagar</a></li>
+                               {% endif%}
+                           </ul>
+                       </td>
+                   </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <br><br>
+        <p class="alert alert-info">Nenhum modelo cadastrado.</p>
+    {% endif %}
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}

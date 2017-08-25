@@ -3074,3 +3074,25 @@ class SocioCRC(models.Model):
 
 
 
+class ModeloAta(models.Model):
+
+    TIPO_ATA_CHOICES = (
+        (u'Ata de Sessão Inicial', u'Ata de Sessão Inicial'),
+        (u'Ata de Julgamento', u'Ata de Julgamento'),
+        (u'Ata de Licitação Fracassada', u'Ata de Licitação Fracassada'),
+        (u'Ata de Licitação Deserta', u'Ata de Licitação Deserta'),
+        (u'Ata de Saneamento', u'Ata de Saneamento'),
+    )
+    nome = models.CharField(u'Nome da Ata', max_length=1000)
+    tipo = models.CharField(u'Tipo da Ata', max_length=100, choices=TIPO_ATA_CHOICES)
+    palavras_chaves = models.CharField(u'Palavras-Chave', max_length=4000)
+    cadastrado_em = models.DateTimeField(u'Cadastrado Em')
+    cadastrado_por = models.ForeignKey(PessoaFisica)
+    arquivo = models.FileField(u'Arquivo', null=True, blank=True, upload_to=u'upload/minutas/')
+
+    class Meta:
+        verbose_name = u'Modelo de Ata'
+        verbose_name_plural = u'Modelos de Atas'
+
+    def __unicode__(self):
+        return self.nome

@@ -8554,3 +8554,66 @@ def relatorio_itens_desertos(request, pregao_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+
+@login_required()
+def modelos_atas(request, pregao_id):
+    title = u'Modelos de Atas'
+    atas = ModeloAta.objects.all().order_by('-id')
+
+
+    form = BuscarModeloAtaForm(request.GET or None)
+
+    if form.is_valid():
+        if form.cleaned_data.get('nome'):
+            atas = atas.filter(nome=form.cleaned_data.get('nome'))
+
+        if form.cleaned_data.get('palavra'):
+            atas = atas.filter(palavras_chaves__icontains=form.cleaned_data.get('palavra'))
+
+        if form.cleaned_data.get('tipo'):
+            atas = atas.filter(tipo=form.cleaned_data.get('tipo'))
+
+
+
+    return render(request, 'modelos_atas.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_modelo_ata(request, pregao_id):
+    title = u'Cadastrar Modelo de Ata'
+    form = ModeloAtaForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.cadastrado_em = datetime.datetime.now()
+        o.cadastrado_por = request.user.pessoafisica
+        o.save()
+        messages.success(request, u'Modelo cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/modelos_atas/%s/' % pregao_id)
+
+    return render(request, 'cadastrar_modelo_ata.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_modelo_ata(request, ata_id, pregao_id):
+    title = u'Editar Modelo de Ata'
+    ata = get_object_or_404(ModeloAta, pk=ata_id)
+    if request.user.pessoafisica == ata.cadastrado_por:
+        form = ModeloAtaForm(request.POST or None, request.FILES or None, instance=ata)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Modelo editado com sucesso.')
+            return HttpResponseRedirect(u'/base/modelos_atas/%s/' % pregao_id)
+
+        return render(request, 'cadastrar_modelo_ata.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def deletar_modelo_ata(request, ata_id, pregao_id):
+    ata = get_object_or_404(ModeloAta, pk=ata_id)
+    if request.user.pessoafisica == ata.cadastrado_por:
+        ata.delete()
+        messages.success(request, u'Modelo excluído com sucesso.')
+        return HttpResponseRedirect(u'/base/modelos_atas/%s/' % pregao_id)
+
+    else:
+        raise PermissionDenied

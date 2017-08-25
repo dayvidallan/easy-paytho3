@@ -11,6 +11,12 @@ urlpatterns = [
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^busca_pessoa/$', views.busca_pessoa, name='busca_pessoa'),
 
+    url(r'^modelos_atas/(?P<pregao_id>\d+)/$', views.modelos_atas, name='modelos_atas'),
+    url(r'^cadastrar_modelo_ata/(?P<pregao_id>\d+)/$', views.cadastrar_modelo_ata, name='cadastrar_modelo_ata'),
+    url(r'^editar_modelo_ata/(?P<ata_id>\d+)/(?P<pregao_id>\d+)/$', views.editar_modelo_ata, name='editar_modelo_ata'),
+    url(r'^deletar_modelo_ata/(?P<ata_id>\d+)/(?P<pregao_id>\d+)/$', views.deletar_modelo_ata, name='deletar_modelo_ata'),
+
+
     url(r'^administracao/$', views.administracao, name='administracao'),
     url(r'^auditoria/$', views.auditoria, name='auditoria'),
     url(r'^pregao/(?P<pregao_id>\d+)/$', views.pregao, name='pregao'),

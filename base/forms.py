@@ -1355,3 +1355,14 @@ class EditarItemARPForm(forms.ModelForm):
         model = ItemAtaRegistroPreco
         fields = ('marca', 'valor', 'quantidade', 'material', 'unidade')
 
+class BuscarModeloAtaForm(forms.Form):
+    METHOD = u'GET'
+    nome = forms.CharField(label=u'Filtrar por Nome', required=False)
+    palavra = forms.CharField(label=u'Filtrar por Plavra-chave', required=False)
+    tipo = forms.ChoiceField(label=u'Filtrar por Tipo', required=False, choices=(('', '---------'),) + ModeloAta.TIPO_ATA_CHOICES)
+
+class ModeloAtaForm(forms.ModelForm):
+
+    class Meta:
+        model = ModeloAta
+        fields = ('nome', 'tipo', 'palavras_chaves', 'arquivo')
