@@ -39,6 +39,9 @@
         {% autopaginate pregoes 10 %}
         {% paginate %}
         {%  for pregao in pregoes %}
+            <fieldset>
+                <legend>**** {{ pregao.modalidade }} N° {{ pregao.num_pregao }} ****</legend>
+
 
             <table class="table table-bordered table-condensed table-striped">
                 <tr>
@@ -90,6 +93,7 @@
                 </tr>
 
             </table>
+           </fieldset>
 
         {% endfor %}
     {% else %}
