@@ -734,7 +734,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_pedido_secretaria(self):
         usuario = tl.get_user()
         if ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self).exists():
-            return ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self)[0].quantidade
+            return str(ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self)[0].quantidade).replace('.', ',')
         return 0
 
     def get_id_lote(self):

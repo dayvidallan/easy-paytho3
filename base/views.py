@@ -4061,14 +4061,14 @@ def avaliar_pedidos(request, solicitacao_id):
         pedidos = ItemQuantidadeSecretaria.objects.filter(solicitacao=solicitacao)
 
         total = solicitacao.interessados.count()
-        informados = pedidos.values('secretaria').order_by('secretaria').distinct('secretaria').count() - 1
+        informados = pedidos.values_list('secretaria', flat=True).distinct('secretaria').count() - 1
 
         form = FiltrarSecretariaForm(request.POST or None, pedidos=pedidos)
         if request.GET.get('secretaria'):
             pedidos = pedidos.filter(secretaria=request.GET.get('secretaria'))
-        chaves =  pedidos.values('secretaria').order_by('secretaria').distinct('secretaria')
+        chaves =  pedidos.values_list('secretaria', flat=True).distinct('secretaria')
         for num in chaves:
-            secretaria = get_object_or_404(Secretaria, pk=num['secretaria'])
+            secretaria = get_object_or_404(Secretaria, pk=num)
             chave = u'%s' % secretaria.id
             pendente = pedidos.filter(secretaria=secretaria, avaliado_em__isnull=True).exists()
             tabela[chave] = dict(pedido = list(), nome=secretaria, pendente=pendente)
