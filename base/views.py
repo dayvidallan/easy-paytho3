@@ -2112,6 +2112,7 @@ def prazo_pesquisa_mercadologica(request, solicitacao_id):
 
         if solicitacao.prazo_aberto:
             solicitacao.prazo_aberto = False
+            solicitacao.liberada_para_pedido = False
             solicitacao.save()
             messages.success(request, u'Período para recebimento de pesquisa fechado com sucesso.')
         else:
