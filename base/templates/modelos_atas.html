@@ -93,7 +93,7 @@
 
                        <td>
                            <ul class="action-bar">
-                               <li><a class="btn btn-success btn-sm" href="/media/{{ata.arquivo}}/">Ver Arquivo</a></li>
+                               <li><a class="btn btn-success btn-sm" href="/media/{{ata.arquivo}}">Ver Arquivo</a></li>
                                {% if request.user.pessoafisica == ata.cadastrado_por %}
                                    <li><a class="btn btn-info btn-sm" href="/base/editar_modelo_ata/{{ata.id}}/{{pregao_id}}/">Editar</a></li>
                                    <li><a class="btn btn-danger btn-sm" href="/base/deletar_modelo_ata/{{ata.id}}/{{pregao_id}}/">Apagar</a></li>

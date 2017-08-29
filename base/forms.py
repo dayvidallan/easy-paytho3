@@ -1366,3 +1366,8 @@ class ModeloAtaForm(forms.ModelForm):
     class Meta:
         model = ModeloAta
         fields = ('nome', 'tipo', 'palavras_chaves', 'arquivo')
+
+    def __init__(self, *args, **kwargs):
+        super(ModeloAtaForm, self).__init__(*args, **kwargs)
+        self.fields['palavras_chaves'].label = u'Palavras-chave (separe por ;)'
+        self.fields['arquivo'].required = True

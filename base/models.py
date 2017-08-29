@@ -3085,7 +3085,7 @@ class ModeloAta(models.Model):
     )
     nome = models.CharField(u'Nome da Ata', max_length=1000)
     tipo = models.CharField(u'Tipo da Ata', max_length=100, choices=TIPO_ATA_CHOICES)
-    palavras_chaves = models.CharField(u'Palavras-Chave', max_length=4000)
+    palavras_chaves = models.CharField(u'Palavras-Chave', max_length=4000, null=True, blank=True)
     cadastrado_em = models.DateTimeField(u'Cadastrado Em')
     cadastrado_por = models.ForeignKey(PessoaFisica)
     arquivo = models.FileField(u'Arquivo', null=True, blank=True, upload_to=u'upload/minutas/')

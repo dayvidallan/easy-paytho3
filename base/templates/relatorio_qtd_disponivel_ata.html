@@ -50,7 +50,7 @@ ul{
     <br>
   <h1 class="page-header">
     {% include "cabecalho.html" %}
-    <center><font size="4">Dados da {{ ata }} - Quantidades Disponíveis</font><br>Fornecedor: {{ fornecedor }}<br><font size="2">Gerado em {{ data_emissao }}</font></center>
+    <center><font size="4">Dados da {{ ata }} - Quantidades Disponíveis</font>{% if fornecedor %}<br>Fornecedor: {{ fornecedor }}{% endif %}<br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
 
 

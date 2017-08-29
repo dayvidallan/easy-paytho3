@@ -8198,6 +8198,7 @@ def relatorio_qtd_disponivel_ata(request, ata_id, fornecedor_id):
 
     if fornecedor_id == '0':
         itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+        fornecedor = None
     else:
         if ata.adesao:
             fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
@@ -8244,6 +8245,7 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
 
     if fornecedor_id == '0':
         itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+        fornecedor = None
     else:
         if ata.adesao:
             fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
@@ -8270,7 +8272,7 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
     data_emissao = datetime.date.today()
 
 
-    data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'ata':ata, 'fornecedor':fornecedor, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
     template = get_template('relatorio_qtd_consumida_ata.html')
 
