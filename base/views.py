@@ -8447,7 +8447,7 @@ def anexo_38(request, pregao_id):
     arquivo = open(salvou, "rb")
 
 
-    content_type = 'application/vnd.ms-excel'
+    content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     response = HttpResponse(arquivo.read(), content_type=content_type)
     nome_arquivo = salvou.split('/')[-1]
     response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
