@@ -85,17 +85,18 @@ class PessoaFisicaForm(forms.ModelForm):
     #data_nascimento = forms.DateField(label=u'Data de Nascimento', widget=forms.widgets.DateInput(format="%d/%m/%Y", attrs={'type':'date'}))
     class Meta:
         model = PessoaFisica
-        fields = ['nome', 'cpf', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'estado', 'municipio', 'setor', 'grupo']
+        fields = ['nome', 'cpf', 'matricula', 'vinculo', 'sexo', 'data_nascimento', 'telefones', 'celulares', 'email', 'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'estado', 'municipio', 'setor', 'grupo']
         # widgets = {
         #     'data_nascimento' : forms.DateInput(attrs={'type':'date'})
         # }
+
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.edicao = kwargs.pop('edicao', None)
         super(PessoaFisicaForm, self).__init__(*args, **kwargs)
         #self.fields[ 'data_nascimento' ].input_formats = [ '%d-%m-%Y' ]
-
+        self.fields['data_nascimento'].widget.attrs = {'class': 'vDateField'}
         if not self.request.user.is_superuser:
             self.fields['setor'].queryset = Setor.objects.filter(secretaria=self.request.user.pessoafisica.setor.secretaria)
 
@@ -1067,8 +1068,11 @@ class RemoverMembroComissaoLicitacaoForm(forms.Form):
 class ComissaoLicitacaoForm(forms.ModelForm):
     class Meta:
         model = ComissaoLicitacao
-        fields = ('nome', 'secretaria')
+        fields = ('nome', 'data_designacao', 'secretaria')
 
+    def __init__(self, *args, **kwargs):
+        super(ComissaoLicitacaoForm, self).__init__(*args, **kwargs)
+        self.fields['data_designacao'].required = True
 
 class AderirARPForm(forms.ModelForm):
     num_memorando = forms.CharField(label=u'Número do Memorando',required=True)
@@ -1261,6 +1265,7 @@ class SocioForm(forms.ModelForm):
 
 
 class AditivarContratoForm(BetterForm):
+    tipo_aditivo = forms.ChoiceField(label=u'Selecione o Tipo do Aditivo', choices=((u'', u'Selecione o Tipo de Aditivo'), (u'Prazo', u'Prazo'), (u'Valor', u'Valor'), (u'Todos', u'Prazo e Valor'),))
     data_inicial = forms.DateField(label=u'Data Inicial', required=False)
     data_final = forms.DateField(label=u'Data Final', required=False)
     opcoes = forms.ChoiceField(label=u'Tipo', required=False, choices=Aditivo.TIPO_CHOICES)
@@ -1269,7 +1274,9 @@ class AditivarContratoForm(BetterForm):
     percentual_acrescimo_quantitativos = forms.DecimalField(label=u'Percentual de Acréscimo Permitido (%)', help_text=u'O percentual máximo é 25%', required=False)
 
     class Meta:
-        fieldsets = [('main', {'fields': ['data_inicial', 'data_final'], 'legend': 'Aditivo de Prazo'}),
+        fieldsets = [
+                    ('tipo', {'fields': ['tipo_aditivo', ], 'legend': 'Tipo do Aditivo'}),
+                    ('main', {'fields': ['data_inicial', 'data_final'], 'legend': 'Aditivo de Prazo'}),
                      ('Advanced', {'fields': ['opcoes', 'indice_reajuste'], 'legend': 'Aditivo de Valor',
                                    'description': '',
                                    'classes': ['advanced',]})]
@@ -1371,3 +1378,31 @@ class ModeloAtaForm(forms.ModelForm):
         super(ModeloAtaForm, self).__init__(*args, **kwargs)
         self.fields['palavras_chaves'].label = u'Palavras-chave (separe por ;)'
         self.fields['arquivo'].required = True
+
+class RelatoriosGerenciaisComprasForm(forms.Form):
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+    #relatorio = forms.ChoiceField(label=u'Tipo de Relatório', choices=((u'Relatório de Situação', u'Relatório de Situação'),(u'Relatório de Economia', u'Relatório de Economia'),), required=False)
+
+    #modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
+    tipo_ordem = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Compras'), (3, u'Serviços')) )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    visualizar = forms.ChoiceField(label=u'Modo de Visualização', required=False, choices=((u'1', u'Na Tela'),(u'2', u'Gerar PDF'),),)
+
+
+    def __init__(self, *args, **kwargs):
+        super(RelatoriosGerenciaisComprasForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        contratos = OrdemCompra.objects.all().order_by('data')
+        ANO_CHOICES = []
+        if contratos.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = contratos[0].data.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhuma ordem cadastrada'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
+        self.fields['secretaria'].queryset = Secretaria.objects.filter(id__in=OrdemCompra.objects.values_list('solicitacao__setor_origem__secretaria', flat=True))

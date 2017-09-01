@@ -1334,7 +1334,10 @@ class Pregao(models.Model):
 
     def get_situacao(self):
         if self.data_homologacao:
-            return u'Homologado em %s' % self.data_homologacao.strftime('%d/%m/%y')
+            if self.eh_credenciamento():
+                return u'Credenciado em %s' % self.data_homologacao.strftime('%d/%m/%y')
+            else:
+                return u'Homologado em %s' % self.data_homologacao.strftime('%d/%m/%y')
         elif self.data_adjudicacao:
             return u'Adjudicado em %s' % self.data_adjudicacao.strftime('%d/%m/%y')
         elif self.situacao == self.REVOGADO:
@@ -1777,8 +1780,26 @@ class PessoaFisica(models.Model):
                     (SEXO_FEMININO, u'Feminino'),
                     )
 
+    CEDIDO = u'Cedido de outra Unidade Administrativa'
+    EMPREGADO_PUBLICO = u'Empregado Público'
+    SERVIDOR_COMISSIONADO = u'Servidor Público Comissionado'
+    SERVIDOR_EFETIVO = u'Servidor Público Efetivo'
+    SERVIDOR_TEMPORARIO = u'Servidor Temporário'
+    TERCEIRO = u'Terceiro estranho à Administração'
+
+    VINCULO_CHOICES = (
+        (CEDIDO, CEDIDO),
+        (EMPREGADO_PUBLICO, EMPREGADO_PUBLICO),
+        (SERVIDOR_COMISSIONADO, SERVIDOR_COMISSIONADO),
+        (SERVIDOR_EFETIVO, SERVIDOR_EFETIVO ),
+        (SERVIDOR_TEMPORARIO, SERVIDOR_TEMPORARIO),
+        (TERCEIRO, TERCEIRO),
+    )
+
     user = models.OneToOneField(User, null=True, blank=True)
     nome = models.CharField(max_length=80)
+    matricula = models.CharField(u'Matrícula', max_length=50, null=True)
+    vinculo = models.CharField(u'Vínculo', max_length=200, choices=VINCULO_CHOICES, default=SERVIDOR_EFETIVO)
     cpf = models.CharField(u'CPF',max_length=15, help_text=u'Digite o CPF com pontos e traços.')
     sexo = models.CharField(u'Sexo', max_length=1, choices=SEXO_CHOICES)
     data_nascimento = models.DateField(u'Data de Nascimento', null=True)
@@ -1863,6 +1884,7 @@ class Municipio(models.Model):
 
 class ComissaoLicitacao(models.Model):
     nome = models.CharField(u'Portaria', max_length=80)
+    data_designacao = models.DateField(u'Data de Designação', null=True)
     secretaria = models.ForeignKey('base.Secretaria', null=True)
 
 
@@ -2266,6 +2288,7 @@ class OrdemCompra(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
     numero = models.CharField(u'Número da Ordem', max_length=200)
     data = models.DateField(u'Data')
+    tipo = models.CharField(u'Tipo da Ordem', max_length=100, choices=((u'Compras', u'Compras'),(u'Serviços', u'Serviços'),), default=u'Compras')
     projeto_atividade_num = models.CharField(u'Número do Projeto de Atividade', max_length=200, null=True, blank=True)
     projeto_atividade_descricao = models.CharField(u'Descrição do Projeto de Atividade', max_length=200, null=True, blank=True)
     programa_num = models.CharField(u'Número do Programa', max_length=200, null=True, blank=True)
@@ -2288,6 +2311,37 @@ class OrdemCompra(models.Model):
         ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).delete()
         super(OrdemCompra, self).delete(*args, **kwargs)
         solicitacao.delete()
+
+    def get_valor_global(self):
+        valor = Decimal(0.00)
+        pedidos = None
+        if PedidoAtaRegistroPreco.objects.filter(solicitacao=self.solicitacao).exists():
+            pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=self.solicitacao).order_by('item')
+
+        elif PedidoContrato.objects.filter(solicitacao=self.solicitacao).exists():
+            pedidos = PedidoContrato.objects.filter(solicitacao=self.solicitacao).order_by('item')
+
+        elif PedidoCredenciamento.objects.filter(solicitacao=self.solicitacao).exists():
+            pedidos = PedidoCredenciamento.objects.filter(solicitacao=self.solicitacao).order_by('item')
+        if pedidos:
+            for pedido in pedidos:
+                valor = valor + (pedido.item.valor*pedido.quantidade)
+        else:
+            dicionario = {}
+            for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=self.solicitacao):
+                total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+                if total:
+
+                    dicionario[pesquisa.id] = total
+            resultado = sorted(dicionario.items(), key=lambda x: x[1])
+            itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado[0][0]).order_by('item')
+            valor = 0
+            for item in itens:
+                valor += item.get_total()
+        return valor
+
+
+
 
 class AtaRegistroPreco(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
@@ -2638,7 +2692,8 @@ class Contrato(models.Model):
             fornecedor = ItemContrato.objects.filter(contrato=self)[0].fornecedor
             ids = list()
             for lote in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True):
-                if lote.get_vencedor().participante.fornecedor == fornecedor:
+                vencedor = lote.get_vencedor()
+                if vencedor and vencedor.participante.fornecedor == fornecedor:
                     ids.append(lote.id)
 
             return ItemSolicitacaoLicitacao.objects.filter(id__in=ids)

@@ -1,0 +1,98 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4 landscape;
+            margin: 0.3cm;
+            @frame footer {
+    		    -pdf-frame-content: footerblock;
+    		    bottom: 1cm;
+    		    margin-left: 1cm;
+    		    margin-right: 1cm;
+             margin-top: 1cm;
+    		    height: 1cm;
+		    }
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center><font size="4">Relatório Gerencial - {{ titulo }} - {{ situacao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+
+
+{% endblock %}
+
+{% block content %}
+<center>
+    <table border="1" width="100%" cellpadding="5" cellspacing="5">
+            <thead>
+                <tr>
+                    <th width="10%">Número</th>
+                    <th width="15%">Tipo</th>
+                    <th width="15%">Data</th>
+                    <th width="50%">Objeto</th>
+                    <th width="20%">Secretaria Solicitante</th>
+                    <th width="15%">Valor Global (R$)</th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for ordem in ordens %}
+                   <tr>
+                       <td>{{ ordem.numero }}</td>
+                       <td>{{ ordem.tipo }}</td>
+                       <td>{{ ordem.data }}</td>
+                       <td>{{ ordem.solicitacao.objeto }}</td>
+                       <td>{{ ordem.solicitacao.setor_origem.secretaria }}</td>
+                       <td>{{ ordem.get_valor_global|format_money}}</td>
+
+                   </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="5"><b>TOTAL</b></td>
+                    <td><b>{{ total|format_money }} ({{ total|format_numero_extenso}})</b></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+{% endblock %}
+
+
+

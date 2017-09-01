@@ -6079,10 +6079,15 @@ def ata_sessao(request, pregao_id):
 
     comissao = u', '.join(comissao)
     texto = u'''
-    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s. O Pregoeiro iniciou a sessão informando os procedimentos da mesma.
-
+    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s
     ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.objeto, pregao.responsavel, comissao, portaria)
 
+    if pregao.comissao and pregao.comissao.data_designacao:
+        texto += u'Data de Designação: %s.' % pregao.comissao.data_designacao.strftime('%d/%m/%Y')
+    else:
+        texto += '.'
+
+    texto += u' O Pregoeiro iniciou a sessão informando os procedimentos da mesma.'
     #document.add_paragraph(texto)
     p = document.add_paragraph()
     p.alignment = 3
@@ -7142,7 +7147,7 @@ def ver_relatorios_gerenciais_licitacao(request):
 
 
 
-
+@login_required()
 def ver_relatorios_gerenciais_contratos(request):
     title=u'Relatórios Gerenciais dos Contratos'
     eh_gerente = request.user.groups.filter(name='Gerente')
@@ -7209,7 +7214,7 @@ def ver_relatorios_gerenciais_contratos(request):
 
     return render(request, 'ver_relatorios_gerenciais_contratos.html', locals(), RequestContext(request))
 
-
+@login_required()
 def ver_relatorios_gerenciais_atas(request):
     title=u'Relatórios Gerenciais das Atas'
     eh_gerente = request.user.groups.filter(name='Gerente')
@@ -7276,6 +7281,7 @@ def ver_relatorios_gerenciais_atas(request):
 
     return render(request, 'ver_relatorios_gerenciais_contratos.html', locals(), RequestContext(request))
 
+@login_required()
 def ver_relatorios_gerenciais_credenciamentos(request):
     title=u'Relatórios Gerenciais dos Credenciamentos'
     eh_gerente = request.user.groups.filter(name='Gerente')
@@ -8660,3 +8666,75 @@ def deletar_modelo_ata(request, ata_id, pregao_id):
 
     else:
         raise PermissionDenied
+
+
+@login_required()
+def ver_relatorios_gerenciais_compras(request):
+    title=u'Relatórios Gerenciais de Compras'
+
+    if request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica'):
+
+        form = RelatoriosGerenciaisComprasForm(request.POST or None)
+
+        if form.is_valid():
+            ordens = OrdemCompra.objects.all().order_by('numero')
+            relatorio =  form.cleaned_data.get('relatorio')
+            tipo = form.cleaned_data.get('tipo_ordem')
+            visualizar = form.cleaned_data.get('visualizar')
+            secretaria = form.cleaned_data.get('secretaria')
+            ano = form.cleaned_data.get('ano')
+            hoje = datetime.date.today()
+            total = 0
+            if ano:
+                ordens = ordens.filter(data__year=ano)
+
+            if ordens:
+                descricao_situacao = u'Todos os Tipos'
+                if tipo == u'2':
+                    ordens = ordens.filter(tipo=u'Compras')
+                    descricao_situacao = u'Tipo: Compras'
+                elif tipo == u'3':
+                    ordens = ordens.filter(tipo=u'Serviços')
+                    descricao_situacao = u'Tipo: Serviços'
+
+            if secretaria:
+                ordens = ordens.filter(solicitacao__setor_origem__secretaria=secretaria)
+
+
+            total = Decimal(0.00)
+            for ordem in ordens:
+                total += ordem.get_valor_global()
+
+            if visualizar == u'2':
+                destino_arquivo = u'upload/resultados/relatorio_gerencial_compras_%s.pdf' %  request.user.pessoafisica.id
+                if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+                    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+                caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+                data_emissao = datetime.date.today()
+
+                configuracao = get_config(request.user.pessoafisica.setor.secretaria)
+                logo = None
+                if configuracao.logo:
+                    logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+
+                data = {'ordens': ordens, 'total':total, 'titulo': 'Ordens de Compra', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+                template = get_template('relatorio_gerencial_compras.html')
+
+
+                html  = template.render(Context(data))
+
+                pdf_file = open(caminho_arquivo, "w+b")
+                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                        encoding='utf-8')
+                pdf_file.close()
+                file = open(caminho_arquivo, "r")
+                pdf = file.read()
+                file.close()
+                return HttpResponse(pdf, 'application/pdf')
+    else:
+        raise PermissionDenied
+
+
+    return render(request, 'ver_relatorios_gerenciais_compras.html', locals(), RequestContext(request))

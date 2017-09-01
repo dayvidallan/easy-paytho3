@@ -1,0 +1,118 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% load pagination_tags %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_solicitacoes/">Solicitações<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?situacao=" + escape( $('#'+campo.id).val());
+
+        }
+	</script>
+{% endblock %}
+{% block content %}
+    <div class="pull-right">
+        <a class="btn btn-info" href="/base/ver_solicitacoes/">Voltar</a>
+    </div>
+    <br>
+    <fieldset>
+        <legend>Filtros</legend>
+        <form action="." method="POST" class="form-horizontal">
+            {% csrf_token %}
+
+                    <div class="row-fluid">
+                        <div class="col-xs-2 col-md-2">
+                            <div class="controls">{{ form.ano|bootstrap }}
+                                {% if form.ano.help_text %}
+                                    <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                         </div>
+
+                        <div class="col-xs-2 col-md-2">
+                            <div class="controls">{{  form.tipo_ordem|bootstrap }}
+                                {% if form.tipo_ordem.help_text %}
+                                    <p class="help-inline"><small>{{ form.tipo_ordem.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                         </div>
+
+                        <div class="col-xs-2 col-md-2">
+                            <div class="controls">{{  form.secretaria|bootstrap }}
+                                {% if form.secretaria.help_text %}
+                                    <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                         </div>
+                        <div class="col-xs-2 col-md-2">
+                            <div class="controls">{{ form.visualizar|bootstrap }}
+                                {% if form.visualizar.help_text %}
+                                    <p class="help-inline"><small>{{ form.visualizar.help_text }}</small></p>
+                                {% endif %}
+                            </div>
+                         </div>
+
+
+                        <div class="col-xs-1 col-md-1">
+                            <br>
+                            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                        </div>
+                    </div>
+
+
+        </form>
+
+    </fieldset>
+
+    {% if ordens.exists %}
+        <h3>{{ ordens.count }} registros encontrados</h3>
+
+        <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Tipo</th>
+                    <th>Data</th>
+                    <th width="10%">Objeto</th>
+                    <th>Secretaria Solicitante</th>
+                    <th width="20%">Valor Global (R$)</th>
+                    <th>Opções</th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for ordem in ordens %}
+                   <tr>
+                       <td>{{ ordem.numero }}</td>
+                       <td>{{ ordem.tipo }}</td>
+                       <td>{{ ordem.data }}</td>
+                       <td>{{ ordem.solicitacao.objeto }}</td>
+                       <td>{{ ordem.solicitacao.setor_origem.secretaria }}</td>
+                       <td>{{ ordem.get_valor_global|format_money}}</td>
+                       <td><a href="/base/ver_ordem_compra/{{ ordem.solicitacao.id}}/" target="_blank" class="btn btn-info btn-sm">Ver ordem</a></td>
+                   </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="5">Total</td>
+                    <td>{{ total|format_money }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    {% elif form.is_bound %}
+        <p class="alert alert-info">Nenhum registro cadastrado.</p>
+    {% else %}
+
+        <p class="alert alert-info">Selecione os filtros para gerar o relatório.</p>
+    {% endif %}
+
+
+{% endblock %}

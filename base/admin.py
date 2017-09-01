@@ -113,9 +113,9 @@ admin.site.register(ComissaoLicitacao, ComissaoLicitacaoAdmin)
 
 class PessoaFisicaAdmin(NewModelAdmin):
     form = PessoaFisicaForm
-    list_display = ('nome', 'data_nascimento', 'setor', 'cpf', 'telefones', 'celulares', 'municipio')
+    list_display = ('nome', 'matricula', 'data_nascimento', 'setor', 'cpf', 'telefones', 'celulares', )
     ordering = ('nome',)
-    list_filter = ('setor__secretaria', 'setor', )
+    list_filter = ('setor__secretaria', 'setor', 'vinculo')
 
     def get_form(self, request, obj=None, **kwargs):
 

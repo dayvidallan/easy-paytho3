@@ -163,6 +163,10 @@
         <a class="btn btn-default" href="/base/aderir_arp/">Aderir à ARP</a>
         <br><br>
     </div>
+    {% elif perms.base.pode_cadastrar_pesquisa_mercadologica %}
+        <div class="pull-right">
+            <a class="btn btn-info" href="/base/ver_relatorios_gerenciais_compras/">Relatórios Gerenciais</a>
+        </div>
     {% endif %}
     <div>
         <ul class="nav nav-tabs">

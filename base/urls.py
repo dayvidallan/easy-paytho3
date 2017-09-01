@@ -290,6 +290,8 @@ urlpatterns = [
     url(r'^ver_relatorios_gerenciais_contratos/$', views.ver_relatorios_gerenciais_contratos, name='ver_relatorios_gerenciais_contratos'),
     url(r'^ver_relatorios_gerenciais_atas/$', views.ver_relatorios_gerenciais_atas, name='ver_relatorios_gerenciais_atas'),
     url(r'^ver_relatorios_gerenciais_credenciamentos/$', views.ver_relatorios_gerenciais_credenciamentos, name='ver_relatorios_gerenciais_credenciamentos'),
+    url(r'^ver_relatorios_gerenciais_compras/$', views.ver_relatorios_gerenciais_compras, name='ver_relatorios_gerenciais_compras'),
+
 
     url(r'^relatorio_info_contrato/(?P<contrato_id>\d+)/$', views.relatorio_info_contrato, name='relatorio_info_contrato'),
     url(r'^relatorio_qtd_disponivel_contrato/(?P<contrato_id>\d+)/$', views.relatorio_qtd_disponivel_contrato, name='relatorio_qtd_disponivel_contrato'),

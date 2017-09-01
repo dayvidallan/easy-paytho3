@@ -1,3 +1,7 @@
+$("#id_data_inicial").parent().parent().parent().parent().parent().hide();
+$("#id_opcoes").parent().parent().parent().parent().parent().hide();
+$('.controls').hide();
+
  function exibir_esconder_campo() {
 
     if ($('#id_opcoes').val() == 'Reajuste Econômico-financeiro') {
@@ -70,12 +74,32 @@
         $("#valores_contratos").hide();
     }
 
+    if ($('#id_tipo_aditivo').val() == 'Valor') {
+        $("#id_data_inicial").parent().parent().parent().parent().parent().hide();
+        $("#id_opcoes").parent().parent().parent().parent().parent().show();
+        $('.controls').show();
+
+    }
+    if ($('#id_tipo_aditivo').val() == 'Prazo') {
+        $("#id_data_inicial").parent().parent().parent().parent().parent().show();
+        $("#id_opcoes").parent().parent().parent().parent().parent().hide();
+        $('.controls').show();
+    }
+    if ($('#id_tipo_aditivo').val() == 'Todos') {
+        $("#id_data_inicial").parent().parent().parent().parent().parent().show();
+        $("#id_opcoes").parent().parent().parent().parent().parent().show();
+        $('.controls').show();
+    }
+
 
 
  }
   $(document).ready(function() {
     exibir_esconder_campo();
     $("#id_opcoes").on('change', function(){
+      exibir_esconder_campo();
+    });
+    $("#id_tipo_aditivo").on('change', function(){
       exibir_esconder_campo();
     });
 
