@@ -1292,6 +1292,7 @@ class Pregao(models.Model):
     class Meta:
         verbose_name = u'Pregão'
         verbose_name_plural = u'Pregões'
+        ordering = ['-data_abertura']
 
 
 

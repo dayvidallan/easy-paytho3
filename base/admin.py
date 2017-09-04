@@ -321,9 +321,14 @@ admin.site.register(Processo, ProcessoAdmin)
 
 
 class LogDownloadArquivoAdmin(NewModelAdmin):
-    list_display = ('nome', 'responsavel',  'cnpj')
+    list_display = ('nome', 'responsavel', 'email',  'cnpj', 'get_pregao')
     ordering = ('responsavel',)
-    search_fields = ('responsavel',)
+    list_filter = ('arquivo__pregao', )
+    search_fields = ('responsavel', 'email', 'cnpj')
+
+    def get_pregao(self, obj):
+        return obj.arquivo.pregao
+    get_pregao.short_description = u'Arquivo do Pregão'
 
 admin.site.register(LogDownloadArquivo, LogDownloadArquivoAdmin)
 
@@ -356,3 +361,4 @@ class AnexoContratoAdmin(NewModelAdmin):
     search_fields = ('nome',)
 
 admin.site.register(AnexoContrato, AnexoContratoAdmin)
+
