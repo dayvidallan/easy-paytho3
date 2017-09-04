@@ -301,7 +301,7 @@
             {% endif %}
 
             {% if perms.base.pode_cadastrar_solicitacao and recebida_no_setor and solicitacao.tem_pedidos_compra  %}
-                <a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" class="btn btn-success">Gerar Pedidos</a>
+                <a href="/base/gerar_pedido_fornecedores/{{solicitacao.id}}/" target="_blank" class="btn btn-success">Gerar Pedidos</a>
                 {% if not solicitacao.tem_ordem_compra %}
                     <a href="/base/excluir_solicitacao_pedido/{{solicitacao.id}}/" class="btn btn-danger">Excluir Solicitação</a>
                 {% endif %}
