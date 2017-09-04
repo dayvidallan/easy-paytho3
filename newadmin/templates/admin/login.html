@@ -58,18 +58,19 @@
   </div>
 </div>
 
-	<div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+	<div id="loginbox" style="margin-top:20px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 		<div class="panel">
 			<div class="panel-heading">
 				<div class="panel-title text-center">
                     <h2>
                         <br/>
-                        <p><img src="/static/base/imagens/logo1.png" width="25%" height="10%"></p>
+                        <p><img src="/static/base/imagens/logo1.png" width="60%" height="25%"></p>
                     </h2>
                 </div>
 			</div>
 
 			<div style="padding-top:30px; width:65%;" class="panel-body">
+
                 {% if messages %}
                     {% for message in messages %}
                         <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible fade in"{% endif %}>
@@ -114,6 +115,7 @@
                         {% if form.password.errors %}
                             <p class="help-block">{{ form.password.errors|join:", " }}</p>
                         {% endif %}
+
                     </div>
                     <div style="margin-top:10px" class="form-group">
 						<div class="col-sm-12 controls">
@@ -121,6 +123,7 @@
 						</div>
 					</div>
 				</form>
+
 			</div>
 
 		</div>
@@ -132,33 +135,33 @@
 
 
 
-<div style="margin-top:150px;margin-right:150px;">
+<div style="margin-top:10%;margin-right:10%;">
     <br><br><br><br><br><br>
     <table border="0" cellspacing="15" cellpadding="15">
-            <tr>
-                <td colspan="2"><font size="5">+ Informações</font></td>
+        <tr>
+            <td colspan="2"><font size="4">+ Informações</font></td>
 
-            </tr>
-            <tr>
-                <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
-                <td width="80%"><font color="#4A708B" size="4"><br><a href="/base/baixar_editais/">Editais</a></font></td>
-            </tr>
-            <tr>
-                <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
-                <td width="80%"><font color="#4A708B" size="4"><br><a href="/base/baixar_atas/">Atas de Registro de Preço</a></font></td>
-            </tr>
+        </tr>
+        <tr>
+            <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
+            <td width="80%"><font color="#4A708B" size="4"><br><a href="/base/baixar_editais/">Editais</a></font></td>
+        </tr>
+        <tr>
+            <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
+            <td width="80%"><font color="#4A708B" size="4"><br><a href="/base/baixar_atas/">Atas de Registro de Preço</a></font></td>
+        </tr>
 
-            <tr>
-                <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
-                <td width="80%"><font color="#4A708B" size="4"><br><a href="/base/localizar_processo/">Processos</a></font></td>
-            </tr>
+        <tr>
+            <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
+            <td width="80%"><font color="#4A708B" size="4"><br><a href="/base/localizar_processo/">Processos</a></font></td>
+        </tr>
 
-            <tr>
-                <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
-                <td width="80%"><font color="#4A708B" size="4"><br><a class="button-to-click" href="#">Contatos</a></font></td>
-            </tr>
+        <tr>
+            <td width="25%" align="center"><font color="#4A708B" size="4"><br><i class="fa fa-arrow-right"></i></font></td>
+            <td width="80%"><font color="#4A708B" size="4"><br><a class="button-to-click" href="#">Contatos</a></font></td>
+        </tr>
 
-        </table>
+    </table>
 </div>
 
 

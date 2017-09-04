@@ -283,7 +283,7 @@ def cadastra_proposta_pregao(request, pregao_id):
                                         except:
                                             messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
                                             return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
-                                        
+
                                         if Decimal(valor) <= 0:
                                             messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
                                             return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
