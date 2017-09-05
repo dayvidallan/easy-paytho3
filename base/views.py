@@ -6750,14 +6750,35 @@ def relatorio_propostas(request, solicitacao_id):
 def anexo_38(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-    nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_anexo38')
-    file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_anexo38.xlsx')
-    rb = open_workbook(file_path)
 
-    wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
-    w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+    import openpyxl
+    from openpyxl.utils import get_column_letter
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=anexo_38_tce_licitacao_%s.xlsx' % pregao.id
+    wb = openpyxl.Workbook()
+    ws = wb.get_active_sheet()
+    ws.title = "MyModel"
 
-    sheet = rb.sheet_by_name(u"Página1")
+    row_num = 0
+
+    columns = [
+        (u"NumeroLote", 12),
+        (u"DescricaoLote", 30),
+        (u"OrdemClassificatoria", 18),
+        (u"ValorProposta", 15),
+        (u"NomeParticipante", 30),
+        (u"TipoDocumento", 15),
+        (u"NumeroDocumento", 20),
+    ]
+
+    for col_num in xrange(len(columns)):
+        c = ws.cell(row=row_num + 1, column=col_num + 1)
+        c.value = columns[col_num][0]
+        #c.style.font.bold = True
+        # set column width
+        ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
+
+
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False).order_by('item')
     contador_total = 0
     for idx, item in enumerate(itens, 0):
@@ -6769,33 +6790,36 @@ def anexo_38(request, pregao_id):
                 row_index = contador_total + 1
                 # style = xlwt.XFStyle()
                 # style.alignment.wrap = 1
-                w_sheet.write(row_index, 0, item.item)
-                w_sheet.write(row_index, 1, item.material.nome[:100])
-                w_sheet.write(row_index, 2, contador)
-                w_sheet.write(row_index, 3, format_money(result.valor))
-                w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
-                w_sheet.write(row_index, 5, u'CNPJ')
-                w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+                # w_sheet.write(row_index, 0, item.item)
+                # w_sheet.write(row_index, 1, item.material.nome[:100])
+                # w_sheet.write(row_index, 2, contador)
+                # w_sheet.write(row_index, 3, format_money(result.valor))
+                # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+                # w_sheet.write(row_index, 5, u'CNPJ')
+                # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+
+                row = [
+                    item.item,
+                    item.material.nome[:100],
+                    contador,
+                    format_money(result.valor),
+                    result.participante.fornecedor.razao_social,
+                    u'CNPJ',
+                    str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
 
 
+                ]
+                for col_num in xrange(len(row)):
+                    c = ws.cell(row=row_index + 1, column=col_num + 1)
+                    c.value = row[col_num]
+                    #c.style.alignment.wrap_text = True
                 contador += 1
                 contador_total += 1
-            # w_sheet.write(row_index, 1, item.material.nome, style)
-            # w_sheet.write(row_index, 2, item.unidade.nome)
 
 
-    salvou = nome + u'_%s' % pregao.id + '.xlsx'
-    wb.save(salvou)
-
-    arquivo = open(salvou, "rb")
 
 
-    content_type = 'application/vnd.ms-excel'
-    response = HttpResponse(arquivo.read(), content_type=content_type)
-    nome_arquivo = salvou.split('/')[-1]
-    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
-    arquivo.close()
-    os.unlink(salvou)
+    wb.save(response)
     return response
 
 
