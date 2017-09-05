@@ -228,7 +228,7 @@ def cadastra_proposta_pregao(request, pregao_id):
 
     title=u'Cadastrar Proposta'
     pregao = get_object_or_404(Pregao, pk= pregao_id)
-    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if not pregao.tem_resultado() and request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
         edicao=False
         participante = None
@@ -4360,7 +4360,7 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
 
             messages.success(request, u'Pedido cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
-    return render(request, 'informar_quantidades_do_pedido_contrato.html', locals(), RequestContext(request))
+    return render(request, 'informar_quantidades_do_pedido_arp.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -4440,7 +4440,7 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
 
             messages.success(request, u'Pedido cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
-    return render(request, 'informar_quantidades_do_pedido_contrato.html', locals(), RequestContext(request))
+    return render(request, 'informar_quantidades_do_pedido_arp.html', locals(), RequestContext(request))
 
 
 
@@ -4975,7 +4975,7 @@ def ver_ordem_compra(request, solicitacao_id):
 @login_required()
 def excluir_ordem_compra_dispensa(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if solicitacao.pode_gerar_ordem() and not solicitacao.get_contrato() and not solicitacao.eh_credenciamento() and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and solicitacao.tem_ordem_compra():
+    if solicitacao.tem_ordem_compra() and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica') and solicitacao.recebida_setor(request.user.pessoafisica.setor):
         OrdemCompra.objects.filter(solicitacao=solicitacao).delete()
         messages.success(request, u'Ordem de Compra/Serviço excluída com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
@@ -7739,10 +7739,14 @@ def renovar_crc(request, fornecedor_id):
     if request.user.has_perm('base.pode_cadastrar_pregao'):
         fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
         registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
-        registro.validade = datetime.date.today() + timedelta(days=365)
-        registro.save()
-        messages.success(request, u'CRC renovado com sucesso.')
-        return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
+        title = u'Renovar Validade do CRC'
+        form = DataRenovaCRCForm(request.POST or None)
+        if form.is_valid():
+            registro.validade = form.cleaned_data.get('data') + timedelta(days=364)
+            registro.save()
+            messages.success(request, u'CRC renovado com sucesso.')
+            return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
+        return render(request, 'renovar_crc.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 

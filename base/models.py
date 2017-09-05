@@ -674,6 +674,10 @@ class ItemSolicitacaoLicitacao(models.Model):
         verbose_name = u'Item da Solicitação de Licitação'
         verbose_name_plural = u'Itens da Solicitação de Licitação'
 
+    def get_valor_item_ata(self):
+        if ItemAtaRegistroPreco.objects.filter(material=self.material, ata__solicitacao=self.solicitacao).exists():
+            return ItemAtaRegistroPreco.objects.filter(material=self.material, ata__solicitacao=self.solicitacao)[0].valor
+
     def tem_valor_final_preenchido(self):
         itens_lote = ItemLote.objects.filter(lote=self).values_list('item', flat=True)
         return PropostaItemPregao.objects.filter(item__in=itens_lote, valor_item_lote__isnull=False).exists()

@@ -132,7 +132,7 @@ ul{
             {% for item in pesquisa.get_itens %}
                 <tr>
                     <td>{{ item.item.item }}</td>
-                    <td>{{ item.item.material }} - MARCA: {{ item.marca|default_if_none:"-" }}</td>
+                    <td>{{ item.item.material }} - MARCA: {{ item.marca|default_if_none:"-" }} - UNIDADE: {{ item.item.unidade|default_if_none:"-" }}</td>
                     <td align="center">{{ item.item.quantidade|format_quantidade }}</td>
                     <td align="right">{{ item.valor_maximo|format_money }}</td>
                     <td align="right">{{ item.get_total|format_money }}</td>

@@ -77,7 +77,7 @@
                                         <td>{{ resultado.material|truncatechars:500 }}</td>
                                         <td>{{ resultado.get_marca_item_lote|default_if_none:"-" }}</td>
                                         <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
-                                        <td>{{ resultado.get_valor_item_lote }}</td>
+                                        <td>{{ resultado.get_valor_item_ata }}</td>
                                         <td>{{ resultado.get_item_tipo_contrato.get_quantidade_disponivel|format_quantidade }}</td>
                                         {% if buscou %}
                                             <td><input name="quantidades" type="number" value="0">
@@ -137,7 +137,7 @@
                                     {% else %}
                                         <td>{{ resultado.participante }}</td>
                                     {% endif %}
-                                    <td>{{ resultado.get_valor_item_contrato }}</td>
+                                    <td>{{ resultado.valor }}</td>
                                     <td>{{ resultado.get_quantidade_disponivel|format_quantidade }}</td>
                                     {% if buscou %}
                                         <td><input name="quantidades" type="number" value="0"></td>

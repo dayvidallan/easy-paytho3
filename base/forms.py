@@ -1406,3 +1406,9 @@ class RelatoriosGerenciaisComprasForm(forms.Form):
         self.fields['ano'].choices = ANO_CHOICES
         self.fields['ano'].initial = ano_limite
         self.fields['secretaria'].queryset = Secretaria.objects.filter(id__in=OrdemCompra.objects.values_list('solicitacao__setor_origem__secretaria', flat=True))
+
+class DataRenovaCRCForm(forms.Form):
+    data = forms.DateField(label=u'Informe a data da renovação')
+    def __init__(self, *args, **kwargs):
+        super(DataRenovaCRCForm, self).__init__(*args, **kwargs)
+        self.fields['data'].widget.attrs = {'class': 'vDateField'}

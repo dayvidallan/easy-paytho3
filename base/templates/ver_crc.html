@@ -29,9 +29,7 @@
         {% if registro %}
             <h3><b>Validade: {{ registro.validade}}</b></h3>
             <br><br>
-            <fieldset>
-                <legend>Dados do Fornecedor</legend>
-            </fieldset>
+            <h3>Dados do Fornecedor</h3><hr>
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -64,7 +62,7 @@
                 </thead>
 
             </table>
-            <h4>CNAES Primário</h4>
+            <h3>CNAES Primário</h3><hr>
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -76,7 +74,7 @@
                 </thead>
 
             </table>
-            <h4>CNAES Secundário</h4>
+            <h3>CNAES Secundário</h3><hr>
             <div class="pull-right">
                 <a class="btn btn-success" href="/base/cadastrar_cnaes_secundario/{{ registro.id }}/">Cadastrar CNAES Secundário</a>
             </div>
@@ -105,7 +103,7 @@
             {% else %}
                 <p class="alert alert-warning">Nenhum CNAES Secundário.</p>
             {% endif %}
-            <h4>Informações</h4>
+            <h3>Informações</h3><hr>
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -125,7 +123,7 @@
                 </thead>
 
             </table>
-            <h4>Dados Bancários</h4>
+            <h3>Dados Bancários</h3><hr>
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -139,7 +137,7 @@
                 </thead>
 
             </table>
-            <h4>Responsável Legal</h4>
+            <h3>Responsável Legal</h3><hr>
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
@@ -161,7 +159,7 @@
                 </thead>
 
             </table>
-            <h4>Sócios</h4>
+            <h3>Sócios</h3><hr>
             <div class="pull-right">
                 <a class="btn btn-success" href="/base/cadastrar_socio/{{ registro.id }}/">Cadastrar Sócio</a>
             </div>
