@@ -1882,13 +1882,13 @@ def baixar_arquivo(request, arquivo_id):
         o = form.save(False)
         o.arquivo = arquivo
         o.save()
-        # arquivo_nome = u'\'%s\' - %s' % (arquivo.nome, arquivo.pregao)
-        # link = settings.URL + u'media/%s' % arquivo.arquivo
-        # texto = u'Olá, %s. Segue o link para download do arquivo: %s. Link: %s ' % (o.nome, arquivo_nome, link)
-        # send_mail('Easy Gestão Pública - Download do Arquivo', texto, settings.EMAIL_HOST_USER,
-        #      [o.email], fail_silently=False)
-        # messages.success(request, u'O link para download do arquivo foi enviado para seu email.')
-        # return HttpResponseRedirect(u'/base/baixar_editais/', )
+        arquivo_nome = u'\'%s\' - %s' % (arquivo.nome, arquivo.pregao)
+        link = settings.SITE_URL + u'/media/%s' % arquivo.arquivo
+        texto = u'Olá, %s. Segue o link para download do arquivo: %s. Link: %s ' % (o.nome, arquivo_nome, link)
+        send_mail('Easy Gestão Pública - Download do Arquivo', texto, settings.EMAIL_HOST_USER,
+             [o.email], fail_silently=False)
+        messages.success(request, u'O link para download do arquivo foi enviado para seu email.')
+        return HttpResponseRedirect(u'/base/baixar_editais/', )
         return HttpResponseRedirect(u'/media/%s' % arquivo.arquivo )
     return render(request, 'baixar_arquivo.html', locals(), RequestContext(request))
 

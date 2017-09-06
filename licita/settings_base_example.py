@@ -32,3 +32,5 @@ else:
     ADMINS = (
         ('Walkyso', 'walkyso@gmail.com'),
     )
+
+SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br:86'
