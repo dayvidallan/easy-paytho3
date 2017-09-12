@@ -638,6 +638,12 @@ class NumeroPorExtenso(object):
     extenso_unidade = property(get_extenso_unidade)
 
 
+@register.filter(is_safe=True)
+def format_numero(num):
+
+    e = NumeroPorExtenso(num)
+    return u'%s' % e.extenso_cardinal
+
 
 @register.filter(is_safe=True)
 def format_numero_extenso(num):

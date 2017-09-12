@@ -365,6 +365,7 @@
                             <th>Tipo</th>
                             <th>Índice</th>
                             <th>Vigência</th>
+                            <th>Arquivo</th>
 
 
 
@@ -378,6 +379,7 @@
                                 <td>{{ item.tipo }}</td>
                                 <td>{{ item.indice|default_if_none:"-"  }}</td>
                                 <td>{{ item.data_fim|default_if_none:"-" }}</td>
+                                <td><a href="/base/imprimir_aditivo/{{ item.id }}/" class="btn btn-default">Modelo</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>

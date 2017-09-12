@@ -17,7 +17,7 @@ from xhtml2pdf import pisa
 from django.db.models import Q, F, Count
 from dal import autocomplete
 from django.contrib.auth.models import Group
-from templatetags.app_filters import format_money, format_quantidade, format_numero_extenso
+from templatetags.app_filters import format_money, format_quantidade, format_numero_extenso, format_numero
 from django.db.transaction import atomic
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
@@ -36,6 +36,10 @@ ALTURA = 297*mm
 from django.utils.formats import localize
 from datetime import timedelta
 from django.db import transaction
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+from docx import Document
+from docx.shared import Inches, Pt
+
 
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
@@ -6034,9 +6038,7 @@ def ata_sessao(request, pregao_id):
             resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
             total_geral = total_geral + result[1]['total']
 
-    from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
-    from docx import Document
-    from docx.shared import Inches, Pt
+
 
     document = Document()
     table = document.add_table(rows=2, cols=2)
@@ -8748,3 +8750,254 @@ def ver_relatorios_gerenciais_compras(request):
 
 
     return render(request, 'ver_relatorios_gerenciais_compras.html', locals(), RequestContext(request))
+
+@login_required()
+def imprimir_aditivo(request, aditivo_id):
+    aditivo = get_object_or_404(Aditivo, pk=aditivo_id)
+    configuracao = get_config(aditivo.contrato.solicitacao.setor_origem.secretaria)
+
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+
+    municipio = None
+    config_geral = get_config_geral()
+    if get_config_geral():
+        municipio = get_config_geral().municipio
+
+
+    document = Document()
+    table = document.add_table(rows=2, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells2 = table.rows[1].cells
+
+
+
+
+    style2 = document.styles['Normal']
+    font = style2.font
+    font.name = 'Arial'
+    font.size = Pt(6)
+
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(11)
+
+
+
+    paragraph = hdr_cells[0].paragraphs[0]
+    run = paragraph.add_run()
+    run.add_picture(logo, width=Inches(1.75))
+
+    paragraph2 = hdr_cells[1].paragraphs[0]
+    paragraph2.style = document.styles['Normal']
+    hdr_cells[1].text =  u'%s' % (configuracao.nome)
+
+
+    paragraph3 = hdr_cells2[1].paragraphs[0]
+    paragraph3.style2 = document.styles['Normal']
+
+
+
+    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+    a, b = hdr_cells2[:2]
+    a.merge(b)
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'MINUTA %sº TERMO ADITIVO AO CONTRATO Nº %s' % (aditivo.ordem, aditivo.contrato.numero)).bold = True
+
+    fornecedor = aditivo.contrato.get_fornecedor().fornecedor
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.add_run(u'Minuta %s° Termo Aditivo ao contrato nº %s firmado entre a %s e o MUNICIPIO DE %s.' % (aditivo.ordem, aditivo.contrato.numero, fornecedor.razao_social, config_geral.nome))
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+    if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
+        crc = FornecedorCRC.objects.get(fornecedor=fornecedor)
+        p.add_run(u'CONTRATADA: empresa %s, inscrita no CNPJ/MF nº %s, sediada a Rua %s, neste ato, representada por %s - CPF: %s.' % (fornecedor.razao_social, fornecedor.cnpj, fornecedor.endereco, crc.nome, crc.cpf))
+    else:
+        p.add_run(u'CONTRATADA: empresa %s, inscrita no CNPJ/MF nº %s, sediada a Rua %s, neste ato, representada por ______________________.' % (fornecedor.razao_social, fornecedor.cnpj, fornecedor.endereco))
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(u'CONTRATANTE: O Município %s, inscrito no CNPJ sob o nº. %s, sediado na %s, neste ato representado por %s - CPF: %s.' % (config_geral.nome, config_geral.cnpj, config_geral.endereco, config_geral.ordenador_despesa.nome, config_geral.cpf_ordenador_despesa ))
+
+    if aditivo.de_prazo and aditivo.de_valor:
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'OBJETO').bold=True
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA PRIMEIRA: ').bold=True
+        p = document.add_paragraph()
+        dias = (aditivo.data_fim - aditivo.contrato.data_fim).days
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        num_processo = u' '
+        if aditivo.contrato.solicitacao.processo:
+            num_processo = aditivo.contrato.solicitacao.processo.numero
+
+        texto = u'''
+        O objeto do presente aditivo é PRORROGAR em %s dias a vigência e ACRESCER o valor do contrato %s em %s%% (%s por cento)
+        do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
+        ''' % (dias, aditivo.contrato.numero, aditivo.indice, format_numero(aditivo.indice), num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        p.add_run(texto)
+
+
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA SEGUNDA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        valor_final = aditivo.contrato.valor + aditivo.valor
+        texto = u'''A Alteração do valor passando de R$ %s para R$ %s ''' % (aditivo.contrato.valor, valor_final)
+        p.add_run(texto)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'DA DOTAÇÃO ORÇAMENTÁRIA').bold=True
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA TERCEIRA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+        texto = u'''
+        A despesa com a prestação do serviço objeto deste termo aditivo ao Contrato, no valor de R$ (__________), que será mediante a emissão da nota de empenho, em conformidade com as dotações orçamentárias listadas abaixo.
+        '''
+        p.add_run(texto)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'ÓRGÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'UNIDADE: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'FUNÇÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'SUBFUNÇÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'PROGRAMA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'PROJETO/ATIVIDADE: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'ELEMENTO DE DESPESA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'DA VIGÊNCIA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA QUARTA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        texto = u'''
+        O presente Aditivo ao contrato %s terá vigência de ATÉ %s (%s) DIAS CORRIDOS, contatos da data de assinatura.''' % (aditivo.contrato.numero, dias, format_numero(dias))
+
+        p.add_run(texto)
+
+
+
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(u'DAS DEMAIS CLÁUSULAS DO CONTRATO ORIGINAL ').bold=True
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    p.add_run(u'CLÁUSULA QUINTA: ').bold=True
+    p = document.add_paragraph()
+    texto = u'''
+    Ficam mantidas integralmente todas as demais cláusulas do contrato original que não se conflitarem com o presente termo.
+
+
+    E por estarem assim justos e contratados, assinam o presente termo em três vias de igual teor e forma para que produzam os efeitos da Lei.
+    '''
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(texto)
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.add_run(u'%s, %s' % (config_geral.municipio, datetime.datetime.now().date().strftime('%d/%m/%Y')))
+
+    p = document.add_paragraph()
+
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'_________________________').bold=True
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'Contratante ').bold=True
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'_________________________').bold=True
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'Contratada ').bold=True
+
+
+
+
+    texto = u'TESTEMUNHAS:'
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    p.add_run(texto).underline=True
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    table = document.add_table(rows=2, cols=4)
+
+    hdr_cells = table.rows[0].cells
+    table.columns[0].width = Inches(0.5)
+    table.columns[1].width = Inches(2.5)
+    table.columns[2].width = Inches(0.5)
+    table.columns[3].width = Inches(2.5)
+
+
+
+    hdr_cells[0].text = u'1) '
+    hdr_cells[1].text = u'______________________'
+    hdr_cells[2].text = u'2) '
+    hdr_cells[3].text = u'______________________'
+
+    hdr_cells = table.rows[1].cells
+
+    hdr_cells[0].text = u'CPF: '
+    hdr_cells[1].text = u'______________________'
+    hdr_cells[2].text = u'CPF: '
+    hdr_cells[3].text = u'______________________'
+
+
+
+
+
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/ata_sessao_%s.docx' % aditivo.id)
+    document.save(caminho_arquivo)
+
+
+
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
+    return response
+
