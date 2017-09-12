@@ -8810,7 +8810,9 @@ def imprimir_aditivo(request, aditivo_id):
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.add_run(u'MINUTA %sº TERMO ADITIVO AO CONTRATO Nº %s' % (aditivo.ordem, aditivo.contrato.numero)).bold = True
 
-    fornecedor = aditivo.contrato.get_fornecedor().fornecedor
+    fornecedor = aditivo.contrato.get_fornecedor()
+    if hasattr('fornecedor', fornecedor):
+        fornecedor = aditivo.contrato.get_fornecedor().fornecedor
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     p.add_run(u'Minuta %s° Termo Aditivo ao contrato nº %s firmado entre a %s e o MUNICIPIO DE %s.' % (aditivo.ordem, aditivo.contrato.numero, fornecedor.razao_social, config_geral.nome))
