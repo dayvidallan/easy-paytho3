@@ -438,8 +438,11 @@ class SolicitacaoLicitacao(models.Model):
     def eh_dispensa(self):
         return self.tipo_aquisicao in [self.TIPO_AQUISICAO_DISPENSA, self.DISPENSA_LICITACAO_ATE_8MIL, self.DISPENSA_LICITACAO_ATE_15MIL]
 
+    def eh_inexigibilidade(self):
+        return self.tipo_aquisicao == self.TIPO_AQUISICAO_INEXIGIBILIDADE
+
     def pode_gerar_ordem(self):
-        return (self.tipo_aquisicao in [self.TIPO_AQUISICAO_INEXIGIBILIDADE]) or self.eh_dispensa()
+        return  self.eh_inexigibilidade() or self.eh_dispensa()
 
     def tem_proposta(self):
         for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):

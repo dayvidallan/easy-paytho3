@@ -2189,6 +2189,115 @@ def cadastrar_minuta(request, solicitacao_id):
 def avalia_minuta(request, solicitacao_id, tipo):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     if request.user.has_perm('base.pode_avaliar_minuta') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.data_avaliacao_minuta:
+        if solicitacao.pode_gerar_ordem():
+
+            import tempfile
+            import zipfile
+            solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+
+            municipio = None
+            config = get_config_geral()
+            if config:
+                municipio = get_config_geral().municipio
+
+            num_processo = u''
+            if solicitacao.processo:
+                num_processo = solicitacao.processo.numero
+
+            lista = list()
+            dicionario = {}
+            entrou = False
+            for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=solicitacao):
+                total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+                if total:
+                    lista.append([pesquisa.id, total])
+                    dicionario[pesquisa.id] = total
+                    entrou = True
+            if entrou:
+                resultado = sorted(dicionario.items(), key=lambda x: x[1])
+                fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
+                itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado[0][0]).order_by('item')
+                total = 0
+
+                for item in itens:
+                    total += item.get_total()
+
+                data = datetime.datetime.now().date().strftime('%d/%m/%Y')
+
+                dicionario = {
+                    '#PROCESSO#' : num_processo,
+                    '#CREDOR#' : fornecedor.razao_social,
+                    '#CNPJ#' : fornecedor.cnpj,
+                    '#ENDERECO#' : fornecedor.endereco,
+                    '#CIDADE#' : municipio or u'-',
+                    '#DATA#': data,
+                    '#VALOR#': str(total.quantize(Decimal(10) ** -2)).replace('.',','),
+                    '#DESCRICAO#': format_numero_extenso(total),
+                    '#OBJETO#': solicitacao.objeto,
+                    '#PREFEITURA#': config.nome,
+
+
+                }
+                if solicitacao.eh_inexigibilidade():
+                    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_inexigibilidade.docx'))
+                elif solicitacao.tipo_aquisicao == solicitacao.DISPENSA_LICITACAO_ATE_8MIL:
+                    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_dispensa_ate_8mil.docx'))
+                elif solicitacao.tipo_aquisicao == solicitacao.DISPENSA_LICITACAO_ATE_15MIL:
+                    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_dispensa_ate_15mil.docx'))
+                elif solicitacao.tipo_aquisicao == solicitacao.TIPO_AQUISICAO_DISPENSA:
+                    template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_dispensa_outros.docx'))
+
+
+                new_docx = zipfile.ZipFile('%s.docx' % tempfile.mktemp(), "a")
+
+                tmp_xml_file = open(template_docx.extract("word/document.xml", tempfile.mkdtemp()))
+                tempXmlStr = tmp_xml_file.read()
+                tmp_xml_file.close()
+                os.unlink(tmp_xml_file.name)
+
+                for key in dicionario.keys():
+                    value = unicode(dicionario.get(key)).encode("utf8")
+                    tempXmlStr = tempXmlStr.replace(key, value)
+
+                tmp_xml_file =  open(tempfile.mktemp(), "w+")
+                tmp_xml_file.write(tempXmlStr)
+                tmp_xml_file.close()
+
+                for arquivo in template_docx.filelist:
+                    if not arquivo.filename == "word/document.xml":
+                        new_docx.writestr(arquivo.filename, template_docx.read(arquivo))
+
+                new_docx.write(tmp_xml_file.name, "word/document.xml")
+
+                template_docx.close()
+                new_docx.close()
+                os.unlink(tmp_xml_file.name)
+
+
+                # Caso não seja informado, deverá retornar o caminho para o arquivo DOCX processado.
+                caminho_arquivo =  new_docx.filename
+                nome_arquivo = caminho_arquivo.split('/')[-1]
+                extensao = nome_arquivo.split('.')[-1]
+                arquivo = open(caminho_arquivo, "rb")
+
+
+                content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+                response = HttpResponse(arquivo.read(), content_type=content_type)
+                response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+                arquivo.close()
+                os.unlink(caminho_arquivo)
+                return response
+            else:
+                messages.error(request, u'Nenhuma pesquisa cadastrada.')
+                return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+
+
+
+
+
+
+
+
         title=u'Avaliar Minuta/Emitir Termo -  %s' % solicitacao
         form = ObsForm(request.POST or None, request.FILES or None)
         if form.is_valid():
@@ -2203,7 +2312,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
             solicitacao.save()
             messages.success(request, u'Minuta avaliada com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'avalia_minuta.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 

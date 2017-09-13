@@ -1,0 +1,42 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/itens_solicitacao/{{ solicitacao.id }}/">{{ solicitacao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+
+<script>
+$(function() {
+    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
+});
+</script>
+{% endblock %}
+{% block content %}
+        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-6">
+                        {{ form|bootstrap }}
+                    </div>
+		        </div>
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+
+             </div>
+        </form>
+
+    </div>
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}
