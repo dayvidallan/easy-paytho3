@@ -8811,7 +8811,7 @@ def imprimir_aditivo(request, aditivo_id):
     p.add_run(u'MINUTA %sº TERMO ADITIVO AO CONTRATO Nº %s' % (aditivo.ordem, aditivo.contrato.numero)).bold = True
 
     fornecedor = aditivo.contrato.get_fornecedor()
-    if hasattr('fornecedor', fornecedor):
+    if hasattr(fornecedor, 'fornecedor'):
         fornecedor = aditivo.contrato.get_fornecedor().fornecedor
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
@@ -8859,7 +8859,7 @@ def imprimir_aditivo(request, aditivo_id):
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         valor_final = aditivo.contrato.valor + aditivo.valor
-        texto = u'''A Alteração do valor passando de R$ %s para R$ %s ''' % (aditivo.contrato.valor, valor_final)
+        texto = u'''A alteração do valor passando de R$ %s para R$ %s ''' % (aditivo.contrato.valor, valor_final)
         p.add_run(texto)
 
         p = document.add_paragraph()
