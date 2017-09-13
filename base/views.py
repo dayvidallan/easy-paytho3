@@ -9020,25 +9020,211 @@ def imprimir_aditivo(request, aditivo_id):
 
         p.add_run(texto)
 
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'DAS DEMAIS CLÁUSULAS DO CONTRATO ORIGINAL ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA QUINTA: ').bold=True
+        p = document.add_paragraph()
+        texto = u'''
+        Ficam mantidas integralmente todas as demais cláusulas do contrato original que não se conflitarem com o presente termo.
+
+
+        E por estarem assim justos e contratados, assinam o presente termo em três vias de igual teor e forma para que produzam os efeitos da Lei.
+        '''
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(texto)
+
+    elif aditivo.de_prazo:
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'OBJETO').bold=True
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA PRIMEIRA: ').bold=True
+        p = document.add_paragraph()
+        dias = (aditivo.data_fim - aditivo.contrato.data_fim).days
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        num_processo = u' '
+        if aditivo.contrato.solicitacao.processo:
+            num_processo = aditivo.contrato.solicitacao.processo.numero
+
+        texto = u'''
+
+        O objeto do presente aditivo é PRORROGAR em %s dias a vigência do contrato %s do Processo Administrativo nº %s referente a %s,
+        cujo objeto trata de %s
+        ''' % (dias, aditivo.contrato.numero,  num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        p.add_run(texto)
+
+
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA SEGUNDA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        valor_final = aditivo.contrato.valor + aditivo.valor
+        texto = u'''
+        O presente Aditivo ao contrato %s terá vigência de ATÉ %s (%s) DIAS CORRIDOS, contatos da data de assinatura.''' % (aditivo.contrato.numero, dias, format_numero(dias))
+
+        p.add_run(texto)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'DA DOTAÇÃO ORÇAMENTÁRIA').bold=True
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA TERCEIRA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+        texto = u'''
+        A despesa com a prestação do serviço objeto deste termo aditivo ao Contrato, no valor de R$ (__________), que será mediante a emissão da nota de empenho, em conformidade com as dotações orçamentárias listadas abaixo.
+        '''
+        p.add_run(texto)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'ÓRGÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'UNIDADE: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'FUNÇÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'SUBFUNÇÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'PROGRAMA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'PROJETO/ATIVIDADE: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'ELEMENTO DE DESPESA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'DA VIGÊNCIA: ').bold=True
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'DAS DEMAIS CLÁUSULAS DO CONTRATO ORIGINAL ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA QUARTA: ').bold=True
+        p = document.add_paragraph()
+        texto = u'''
+        Ficam mantidas integralmente todas as demais cláusulas do contrato original que não se conflitarem com o presente termo.
+
+
+        E por estarem assim justos e contratados, assinam o presente termo em três vias de igual teor e forma para que produzam os efeitos da Lei.
+        '''
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(texto)
+
+    elif aditivo.de_valor:
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'OBJETO').bold=True
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA PRIMEIRA: ').bold=True
+        p = document.add_paragraph()
+
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        num_processo = u' '
+        if aditivo.contrato.solicitacao.processo:
+            num_processo = aditivo.contrato.solicitacao.processo.numero
+
+
+        texto = u'''
+        O objeto do presente aditivo é ACRESCER o valor do contrato %s em %s%% (%s por cento)
+        do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
+        ''' % (aditivo.contrato.numero, aditivo.indice, format_numero(aditivo.indice), num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        p.add_run(texto)
+
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA SEGUNDA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        valor_final = aditivo.contrato.valor + aditivo.valor
+        texto = u'''A alteração do valor passando de R$ %s para R$ %s ''' % (aditivo.contrato.valor, valor_final)
+        p.add_run(texto)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'DA DOTAÇÃO ORÇAMENTÁRIA').bold=True
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA TERCEIRA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+        texto = u'''
+        A despesa com a prestação do serviço objeto deste termo aditivo ao Contrato, no valor de R$ (__________), que será mediante a emissão da nota de empenho, em conformidade com as dotações orçamentárias listadas abaixo.
+        '''
+        p.add_run(texto)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'ÓRGÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'UNIDADE: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'FUNÇÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'SUBFUNÇÃO: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'PROGRAMA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'PROJETO/ATIVIDADE: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'ELEMENTO DE DESPESA: ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'DA VIGÊNCIA: ').bold=True
+
+        p.add_run(u'CLÁUSULA QUARTA: ').bold=True
+        p = document.add_paragraph()
+        texto = u'''
+        O presente Aditivo ao contrato %s terá validade, contada da data de assinatura.''' % (aditivo.contrato.numero)
+
+        p.add_run(texto)
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'DAS DEMAIS CLÁUSULAS DO CONTRATO ORIGINAL ').bold=True
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.add_run(u'CLÁUSULA QUINTA: ').bold=True
+        p = document.add_paragraph()
+        texto = u'''
+        Ficam mantidas integralmente todas as demais cláusulas do contrato original que não se conflitarem com o presente termo.
+
+
+        E por estarem assim justos e contratados, assinam o presente termo em três vias de igual teor e forma para que produzam os efeitos da Lei.
+        '''
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(texto)
 
 
 
 
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    p.add_run(u'DAS DEMAIS CLÁUSULAS DO CONTRATO ORIGINAL ').bold=True
-    p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    p.add_run(u'CLÁUSULA QUINTA: ').bold=True
-    p = document.add_paragraph()
-    texto = u'''
-    Ficam mantidas integralmente todas as demais cláusulas do contrato original que não se conflitarem com o presente termo.
-
-
-    E por estarem assim justos e contratados, assinam o presente termo em três vias de igual teor e forma para que produzam os efeitos da Lei.
-    '''
-    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    p.add_run(texto)
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
@@ -9096,7 +9282,7 @@ def imprimir_aditivo(request, aditivo_id):
 
 
 
-    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/ata_sessao_%s.docx' % aditivo.id)
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/termo_aditivo_%s.docx' % aditivo.id)
     document.save(caminho_arquivo)
 
 
