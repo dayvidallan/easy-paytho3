@@ -2189,7 +2189,7 @@ def cadastrar_minuta(request, solicitacao_id):
 def avalia_minuta(request, solicitacao_id, tipo):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     if request.user.has_perm('base.pode_avaliar_minuta') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.data_avaliacao_minuta:
-        if solicitacao.pode_gerar_ordem():
+        if solicitacao.pode_gerar_ordem() or solicitacao.eh_credenciamento():
 
             import tempfile
             import zipfile
@@ -2234,7 +2234,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
                     '#VALOR#': str(total.quantize(Decimal(10) ** -2)).replace('.',','),
                     '#DESCRICAO#': format_numero_extenso(total),
                     '#OBJETO#': solicitacao.objeto,
-                    '#PREFEITURA#': config.nome,
+                    '#PREFEITURA#': config.ordenador_despesa.nome,
 
 
                 }
@@ -3775,6 +3775,9 @@ def imprimir_capa_processo(request, processo_id):
         elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
             origem = solicitacao.contrato_origem.solicitacao.get_pregao()
             pedido = PedidoContrato.objects.filter(solicitacao=solicitacao)[0]
+        elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
+            origem = solicitacao.credenciamento_origem.solicitacao.get_pregao()
+            pedido = PedidoCredenciamento.objects.filter(solicitacao=solicitacao)[0]
 
         c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
         c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % (pedido.item.fornecedor))
@@ -8877,13 +8880,10 @@ def imprimir_aditivo(request, aditivo_id):
 
 
     document = Document()
+
     table = document.add_table(rows=2, cols=2)
     hdr_cells = table.rows[0].cells
     hdr_cells2 = table.rows[1].cells
-
-
-
-
     style2 = document.styles['Normal']
     font = style2.font
     font.name = 'Arial'
@@ -8893,8 +8893,6 @@ def imprimir_aditivo(request, aditivo_id):
     font = style.font
     font.name = 'Arial'
     font.size = Pt(11)
-
-
 
     paragraph = hdr_cells[0].paragraphs[0]
     run = paragraph.add_run()
@@ -8908,8 +8906,6 @@ def imprimir_aditivo(request, aditivo_id):
     paragraph3 = hdr_cells2[1].paragraphs[0]
     paragraph3.style2 = document.styles['Normal']
 
-
-
     #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
     hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
     a, b = hdr_cells2[:2]
@@ -8917,23 +8913,53 @@ def imprimir_aditivo(request, aditivo_id):
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'')
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+
     p.add_run(u'MINUTA %sº TERMO ADITIVO AO CONTRATO Nº %s' % (aditivo.ordem, aditivo.contrato.numero)).bold = True
+
 
     fornecedor = aditivo.contrato.get_fornecedor()
     if hasattr(fornecedor, 'fornecedor'):
         fornecedor = aditivo.contrato.get_fornecedor().fornecedor
+
+    table = document.add_table(rows=1, cols=2)
+    hdr_cells = table.rows[0].cells
+
+    paragraph = hdr_cells[0].paragraphs[0]
+    run = paragraph.add_run()
+
+    paragraph2 = hdr_cells[1].paragraphs[0]
+    hdr_cells[1].text =  u'Minuta %s° Termo Aditivo ao contrato nº %s firmado entre a %s e o MUNICIPIO DE %s.' % (aditivo.ordem, aditivo.contrato.numero, fornecedor.razao_social, config_geral.nome)
+
     p = document.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    p.add_run(u'Minuta %s° Termo Aditivo ao contrato nº %s firmado entre a %s e o MUNICIPIO DE %s.' % (aditivo.ordem, aditivo.contrato.numero, fornecedor.razao_social, config_geral.nome))
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'')
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    fornecedor_nome = fornecedor_cpf = fornecedor_endereco = fornecedor_nome_representante = fornecedor_cnpj = u''
+    registro_fornecedor = ItemContrato.objects.filter(contrato=aditivo.contrato)[0]
+    if registro_fornecedor.participante:
+        fornecedor_nome_representante = registro_fornecedor.participante.nome_representante
+        fornecedor_cpf = registro_fornecedor.participante.cpf_representante
+        fornecedor_endereco = registro_fornecedor.participante.fornecedor.endereco
+        fornecedor_cnpj = registro_fornecedor.participante.fornecedor.cnpj
+        fornecedor_nome = registro_fornecedor.participante.fornecedor.razao_social
+    elif registro_fornecedor.fornecedor:
+        if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
+            crc = FornecedorCRC.objects.get(fornecedor=fornecedor)
+            fornecedor_nome = crc.razao_social
+            fornecedor_cpf = crc.cpf
+            fornecedor_endereco = crc.fornecedor.endereco
+            fornecedor_cnpj = crc.fornecedor.cnpj
+            fornecedor_nome_representante = crc.nome
 
-    if FornecedorCRC.objects.filter(fornecedor=fornecedor).exists():
-        crc = FornecedorCRC.objects.get(fornecedor=fornecedor)
-        p.add_run(u'CONTRATADA: empresa %s, inscrita no CNPJ/MF nº %s, sediada a Rua %s, neste ato, representada por %s - CPF: %s.' % (fornecedor.razao_social, fornecedor.cnpj, fornecedor.endereco, crc.nome, crc.cpf))
-    else:
-        p.add_run(u'CONTRATADA: empresa %s, inscrita no CNPJ/MF nº %s, sediada a Rua %s, neste ato, representada por ______________________.' % (fornecedor.razao_social, fornecedor.cnpj, fornecedor.endereco))
+    p.add_run(u'CONTRATADA: empresa %s, inscrita no CNPJ/MF nº %s, sediada a Rua %s, neste ato, representada por %s - CPF: %s.' % (fornecedor_nome, fornecedor_cnpj, fornecedor_endereco, fornecedor_nome_representante, fornecedor_cpf))
+
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -9065,7 +9091,7 @@ def imprimir_aditivo(request, aditivo_id):
         p.add_run(u'CLÁUSULA SEGUNDA: ').bold=True
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        valor_final = aditivo.contrato.valor + aditivo.valor
+
         texto = u'''
         O presente Aditivo ao contrato %s terá vigência de ATÉ %s (%s) DIAS CORRIDOS, contatos da data de assinatura.''' % (aditivo.contrato.numero, dias, format_numero(dias))
 
@@ -9156,7 +9182,7 @@ def imprimir_aditivo(request, aditivo_id):
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         valor_final = aditivo.contrato.valor + aditivo.valor
-        texto = u'''A alteração do valor passando de R$ %s para R$ %s ''' % (aditivo.contrato.valor, valor_final)
+        texto = u'''A alteração do valor passando de R$ %s (%s) para R$ %s (%s)''' % (format_money(aditivo.contrato.valor), format_numero_extenso(aditivo.contrato.valor), format_money(valor_final), format_numero_extenso(valor_final))
         p.add_run(texto)
 
         p = document.add_paragraph()
@@ -9169,9 +9195,10 @@ def imprimir_aditivo(request, aditivo_id):
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
+        valor = valor_final - aditivo.contrato.valor
         texto = u'''
-        A despesa com a prestação do serviço objeto deste termo aditivo ao Contrato, no valor de R$ (__________), que será mediante a emissão da nota de empenho, em conformidade com as dotações orçamentárias listadas abaixo.
-        '''
+        A despesa com a prestação do serviço objeto deste termo aditivo ao Contrato, no valor de R$ %s (%s), que será mediante a emissão da nota de empenho, em conformidade com as dotações orçamentárias listadas abaixo.
+        ''' % (format_money(valor), format_numero_extenso(valor))
         p.add_run(texto)
 
         p = document.add_paragraph()
@@ -9232,18 +9259,48 @@ def imprimir_aditivo(request, aditivo_id):
 
     p = document.add_paragraph()
 
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'_________________________').bold=True
+
+    orgao = config_geral.nome
+    nome_pessoa_ordenadora = config_geral.ordenador_despesa.nome
+
+
+    document.add_paragraph()
+    texto = u'%s' % (nome_pessoa_ordenadora)
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'Contratante ').bold=True
+
+    p.add_run(texto)
+
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'_________________________').bold=True
+    p.add_run(orgao)
+
+    document.add_paragraph()
+
+    texto = u'%s' % (fornecedor_nome_representante)
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run(u'Contratada ').bold=True
+
+    p.add_run(texto)
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(fornecedor_nome)
+    document.add_paragraph()
+
+
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'_________________________').bold=True
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'Contratante ').bold=True
+    #
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'_________________________').bold=True
+    # p = document.add_paragraph()
+    # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # p.add_run(u'Contratada ').bold=True
 
 
 
