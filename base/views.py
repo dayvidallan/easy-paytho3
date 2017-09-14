@@ -3765,7 +3765,10 @@ def imprimir_capa_processo(request, processo_id):
     #c.drawString(110*mm, ALTURA - 88*mm, u'Campus: %s' % processo.uo.setor.sigla)
     #c.drawString(32*mm, ALTURA - 95*mm, u'Interessado: %s' % processo.pessoa_interessada.nome[:55] + (processo.pessoa_interessada.nome[55:] and '...'))
     c.drawString(32*mm, ALTURA - 96*mm, u'Setor de Origem: %s' % truncatechars(processo.setor_origem, 65))
-    c.drawString(32*mm, ALTURA - 104*mm, u'Tipo: %s' % (solicitacao.tipo_aquisicao))
+    if solicitacao.credenciamento_origem or solicitacao.eh_inexigibilidade():
+        c.drawString(32*mm, ALTURA - 104*mm, u'Tipo: Inexigibilidade')
+    else:
+        c.drawString(32*mm, ALTURA - 104*mm, u'Tipo: %s' % (solicitacao.tipo_aquisicao))
     #c.drawString(32*mm, ALTURA - 109*mm, u'Destino: %s' % (unicode(processo.tramite_set.all()[0].orgao_recebimento)))
 
     if solicitacao.tipo == solicitacao.COMPRA:
@@ -3782,10 +3785,7 @@ def imprimir_capa_processo(request, processo_id):
             pedido = PedidoCredenciamento.objects.filter(solicitacao=solicitacao)[0]
             fornecedor_pedido = pedido.fornecedor
 
-        if solicitacao.credenciamento_origem or solicitacao.eh_inexigibilidade():
-            c.drawString(32*mm, ALTURA - 112*mm, u'Origem: Inexigibilidade')
-        else:
-            c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
+        c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
         c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % (fornecedor_pedido))
         L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 70),'Helvetica',12,155 * mm)
         y = ALTURA - 126*mm
@@ -5261,6 +5261,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
         w_sheet.write(8, 1,  texto)
         contador = 12
         conta_item = 1
+
 
         for proposta in itens:
 
