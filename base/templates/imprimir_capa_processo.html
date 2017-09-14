@@ -99,7 +99,7 @@ ul{
         </tr>
         <tr>
             <th>Tipo</th>
-            {% if processo.get_memorando.credenciamento_origem %}
+            {% if processo.get_memorando.credenciamento_origem or processo.get_memorando.eh_inexigibilidade %}
                 <td>Inexigibilidade</td>
             {% else %}
                 <td>{{ processo.get_tipo_display }}</td>
