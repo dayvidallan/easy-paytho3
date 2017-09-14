@@ -3782,7 +3782,10 @@ def imprimir_capa_processo(request, processo_id):
             pedido = PedidoCredenciamento.objects.filter(solicitacao=solicitacao)[0]
             fornecedor_pedido = pedido.fornecedor
 
-        c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
+        if solicitacao.credenciamento_origem or solicitacao.eh_inexigibilidade():
+            c.drawString(32*mm, ALTURA - 112*mm, u'Origem: Inexigibilidade')
+        else:
+            c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
         c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % (fornecedor_pedido))
         L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 70),'Helvetica',12,155 * mm)
         y = ALTURA - 126*mm
