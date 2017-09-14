@@ -5078,15 +5078,92 @@ def ver_ordem_compra(request, solicitacao_id):
     template = get_template('ver_ordem_compra.html')
 
     html  = template.render(Context(data))
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra.xls')
+        rb = open_workbook(file_path,formatting_info=True)
 
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        w_sheet.write(0, 1, u'Ordem de Compra/Serviço - %s' % ordem.numero)
+        w_sheet.write(1, 1, configuracao.nome)
+        if solicitacao.arp_origem and solicitacao.arp_origem.solicitacao.get_pregao():
+            texto = u'Pregão %s' % solicitacao.arp_origem.solicitacao.get_pregao()
+        elif solicitacao.contrato_origem and solicitacao.contrato_origem.solicitacao.get_pregao():
+            texto = u'Pregão %s' % solicitacao.contrato_origem.solicitacao.get_pregao()
+        elif solicitacao.credenciamento_origem and solicitacao.credenciamento_origem.solicitacao.get_pregao():
+            texto = u'Pregão %s' % solicitacao.credenciamento_origem.solicitacao.get_pregao()
+        else:
+            texto = u'Origem %s' % solicitacao
+
+
+        w_sheet.write(2, 1, texto)
+        w_sheet.write(3, 1,  ordem.solicitacao.objeto)
+        w_sheet.write(4, 1,  ordem.solicitacao.objetivo)
+        w_sheet.write(5, 1,  fornecedor.razao_social)
+        w_sheet.write(6, 1,  fornecedor.endereco)
+        w_sheet.write(7, 1,  fornecedor.cnpj )
+        if hasattr(fornecedor, 'banco') and fornecedor.banco:
+            texto = u'%s / Agência: %s / Conta: %s'% (fornecedor.banco, fornecedor.agencia, fornecedor.conta)
+        else:
+            texto = u'Não Informado.'
+        w_sheet.write(8, 1,  texto)
+        contador = 12
+        conta_item = 1
+
+        for item in resultado.items():
+
+            for pedido in item[1]['pedidos']:
+
+                row_index = contador + 1
+
+
+                w_sheet.write(row_index, 0, conta_item)
+                if pedido.item.item and pedido.item.item.material:
+                    w_sheet.write(row_index, 1, pedido.item.item.material.nome )
+                else:
+                    w_sheet.write(row_index, 1, pedido.item.material.nome )
+                if pedido.item.item and pedido.item.item.unidade:
+                    w_sheet.write(row_index, 2, pedido.item.item.unidade.nome)
+                else:
+                    w_sheet.write(row_index, 2, pedido.item.unidade.nome)
+
+
+                w_sheet.write(row_index, 3, format_quantidade(pedido.quantidade))
+                w_sheet.write(row_index, 4, format_money(pedido.valor))
+                w_sheet.write(row_index, 5, format_money(pedido.get_total()))
+                contador += 1
+                conta_item += 1
+
+            w_sheet.write(contador+2, 0, u'Total')
+            w_sheet.write(contador+2, 5, format_money(item[1]['total']))
+
+
+        salvou = nome + u'_%s' % solicitacao.id + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+    else:
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
 
 
 
@@ -5146,15 +5223,81 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     template = get_template('ver_ordem_compra_dispensa.html')
 
     html  = template.render(Context(data))
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra.xls')
+        rb = open_workbook(file_path,formatting_info=True)
 
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        w_sheet.write(0, 1, u'Ordem de Compra/Serviço - %s' % ordem.numero)
+        w_sheet.write(1, 1, configuracao.nome)
+        if solicitacao.arp_origem and solicitacao.arp_origem.solicitacao.get_pregao():
+            texto = u'Pregão %s' % solicitacao.arp_origem.solicitacao.get_pregao()
+        elif solicitacao.contrato_origem and solicitacao.contrato_origem.solicitacao.get_pregao():
+            texto = u'Pregão %s' % solicitacao.contrato_origem.solicitacao.get_pregao()
+        elif solicitacao.credenciamento_origem and solicitacao.credenciamento_origem.solicitacao.get_pregao():
+            texto = u'Pregão %s' % solicitacao.credenciamento_origem.solicitacao.get_pregao()
+        else:
+            texto = u'Origem %s' % solicitacao
+
+
+        w_sheet.write(2, 1, texto)
+        w_sheet.write(3, 1,  ordem.solicitacao.objeto)
+        w_sheet.write(4, 1,  ordem.solicitacao.objetivo)
+        w_sheet.write(5, 1,  fornecedor.razao_social)
+        w_sheet.write(6, 1,  fornecedor.endereco)
+        w_sheet.write(7, 1,  fornecedor.cnpj )
+        if hasattr(fornecedor, 'banco') and fornecedor.banco:
+            texto = u'%s / Agência: %s / Conta: %s'% (fornecedor.banco, fornecedor.agencia, fornecedor.conta)
+        else:
+            texto = u'Não Informado.'
+        w_sheet.write(8, 1,  texto)
+        contador = 12
+        conta_item = 1
+
+        for proposta in itens:
+
+            row_index = contador + 1
+
+            w_sheet.write(row_index, 0,  proposta.item.item)
+            w_sheet.write(row_index, 1, u'%s - MARCA: %s' % (proposta.item.material.nome, proposta.marca))
+            w_sheet.write(row_index, 2, proposta.item.unidade.nome)
+            w_sheet.write(row_index, 3, format_quantidade(proposta.item.quantidade))
+            w_sheet.write(row_index, 4, format_money(proposta.valor_maximo))
+            w_sheet.write(row_index, 5, format_money(proposta.get_total()))
+            contador += 1
+            conta_item += 1
+
+        w_sheet.write(contador+2, 0, u'Total')
+        w_sheet.write(contador+2, 5, format_money(total))
+
+
+        salvou = nome + u'_%s' % solicitacao.id + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+    else:
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
 
 @login_required()
 def registrar_adjudicacao(request, pregao_id):
