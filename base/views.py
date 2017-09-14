@@ -3772,15 +3772,18 @@ def imprimir_capa_processo(request, processo_id):
         if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
             origem = solicitacao.arp_origem.solicitacao.get_pregao()
             pedido = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao)[0]
+            fornecedor_pedido = pedido.item.fornecedor
         elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
             origem = solicitacao.contrato_origem.solicitacao.get_pregao()
             pedido = PedidoContrato.objects.filter(solicitacao=solicitacao)[0]
+            fornecedor_pedido = pedido.item.fornecedor
         elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
             origem = solicitacao.credenciamento_origem.solicitacao.get_pregao()
             pedido = PedidoCredenciamento.objects.filter(solicitacao=solicitacao)[0]
+            fornecedor_pedido = pedido.fornecedor
 
         c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
-        c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % (pedido.item.fornecedor))
+        c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % (fornecedor_pedido))
         L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 70),'Helvetica',12,155 * mm)
         y = ALTURA - 126*mm
         for t in L:
