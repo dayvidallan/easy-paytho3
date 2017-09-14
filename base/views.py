@@ -2262,7 +2262,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
 
 
                 }
-                if solicitacao.eh_inexigibilidade() or solicitacao.credenciamento_origem:
+                if solicitacao.eh_inexigibilidade() or solicitacao.eh_pedido():
                     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_inexigibilidade.docx'))
                 elif solicitacao.tipo_aquisicao == solicitacao.DISPENSA_LICITACAO_ATE_8MIL:
                     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_dispensa_ate_8mil.docx'))
