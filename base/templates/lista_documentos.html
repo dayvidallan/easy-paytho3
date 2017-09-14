@@ -82,17 +82,18 @@
                                 </tr>
                             {% endfor %}
                     {% endif %}
-                {% if solicitacao.tem_ordem_compra and solicitacao.tipo == solicitacao.COMPRA %}
-                    <tr>
-                        <td>Ver Ordem de Compra/Serviço</td>
-                        <td><a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank"></a></td>
-                    </tr>
+                    {% if solicitacao.tem_ordem_compra and solicitacao.tipo == solicitacao.COMPRA %}
+                        <tr>
+                            <td>Ver Ordem de Compra/Serviço</td>
+                            <td><a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank"></a></td>
+                        </tr>
 
-                {% elif solicitacao.tem_ordem_compra and solicitacao.tipo == solicitacao.LICITACAO %}
-                    <tr>
-                        <td>Ver Ordem de Compra/Serviço</td>
-                        <td><a href="/base/ver_ordem_compra/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank"></td>
-                    </tr>
+                    {% elif solicitacao.tem_ordem_compra and solicitacao.tipo == solicitacao.LICITACAO %}
+                        <tr>
+                            <td>Ver Ordem de Compra/Serviço</td>
+                            <td><a href="/base/ver_ordem_compra/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank"></a></td>
+                        </tr>
+                    {% endif %}
                 {% endif %}
 
             </tbody>
