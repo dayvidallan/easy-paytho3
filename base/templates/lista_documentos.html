@@ -36,42 +36,43 @@
                         <td>Modelo de Memorando</td>
                         <td><a class="btn btn-info btn-sm" href="/memorando/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
                     </tr>
-
-                    <tr>
-                        <td>Modelo de Termo de Referência</td>
-                        <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
-                    </tr>
-
-                    {% if perms.base.pode_cadastrar_pesquisa_mercadologica and solicitacao.tem_proposta %}
+                    {% if not solicitacao.eh_pedido %}
                         <tr>
-                            <td>Relatório de Propostas</td>
-                            <td><a class="btn btn-info btn-sm" href="/relatorio_propostas/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
+                            <td>Modelo de Termo de Referência</td>
+                            <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
                         </tr>
-                    {% endif %}
-                    {% if solicitacao.itemsolicitacaolicitacao_set.exists %}
-                        <tr>
-                            <td>Relação de Materiais da Solicitação</td>
-                            <td><a class="btn btn-info btn-sm" href="/lista_materiais/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
-                        </tr>
-                    {% endif %}
 
-                    {% if solicitacao.itemquantidadesecretaria_set.count > 1 %}
-                        {% if ve_tudo %}
-                            {% for item in solicitacao.get_pedidos_secretarias %}
-                                <tr>
-                                    <td>Relação de Materiais da Solicitação - Pedido {{ item.secretaria }}</td>
-                                    <td><a class="btn btn-info btn-sm" href="/lista_materiais_por_secretaria/{{solicitacao.id}}/{{item.secretaria.id}}/" target="_blank">Ver Documento</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            {% for item in listas %}
-                                <tr>
-                                    <td>Relação de Materiais da Solicitação - Pedido {{ item.secretaria }}</td>
-                                    <td><a class="btn btn-info btn-sm" href="/lista_materiais_por_secretaria/{{solicitacao.id}}/{{item.secretaria.id}}/" target="_blank">Ver Documento</a></td>
-                                </tr>
-                            {% endfor %}
+                        {% if perms.base.pode_cadastrar_pesquisa_mercadologica and solicitacao.tem_proposta %}
+                            <tr>
+                                <td>Relatório de Propostas</td>
+                                <td><a class="btn btn-info btn-sm" href="/relatorio_propostas/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
+                            </tr>
+                        {% endif %}
+                        {% if solicitacao.itemsolicitacaolicitacao_set.exists %}
+                            <tr>
+                                <td>Relação de Materiais da Solicitação</td>
+                                <td><a class="btn btn-info btn-sm" href="/lista_materiais/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
+                            </tr>
                         {% endif %}
 
+                        {% if solicitacao.itemquantidadesecretaria_set.count > 1 %}
+                            {% if ve_tudo %}
+                                {% for item in solicitacao.get_pedidos_secretarias %}
+                                    <tr>
+                                        <td>Relação de Materiais da Solicitação - Pedido {{ item.secretaria }}</td>
+                                        <td><a class="btn btn-info btn-sm" href="/lista_materiais_por_secretaria/{{solicitacao.id}}/{{item.secretaria.id}}/" target="_blank">Ver Documento</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                {% for item in listas %}
+                                    <tr>
+                                        <td>Relação de Materiais da Solicitação - Pedido {{ item.secretaria }}</td>
+                                        <td><a class="btn btn-info btn-sm" href="/lista_materiais_por_secretaria/{{solicitacao.id}}/{{item.secretaria.id}}/" target="_blank">Ver Documento</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+
+                        {% endif %}
                     {% endif %}
 
                     {% if solicitacao.get_documentos_contrato %}
@@ -82,16 +83,16 @@
                                 </tr>
                             {% endfor %}
                     {% endif %}
-                    {% if solicitacao.tem_ordem_compra and solicitacao.tipo == solicitacao.COMPRA %}
+                    {% if solicitacao.tem_ordem_compra and solicitacao.pode_gerar_ordem and not solicitacao.get_contrato %}
                         <tr>
                             <td>Ver Ordem de Compra/Serviço</td>
-                            <td><a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank"></a></td>
+                            <td><a href="/base/ver_ordem_compra_dispensa/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank">Ver Documento</a></td>
                         </tr>
 
-                    {% elif solicitacao.tem_ordem_compra and solicitacao.tipo == solicitacao.LICITACAO %}
+                    {% elif solicitacao.tem_ordem_compra and solicitacao.tipo == solicitacao.COMPRA %}
                         <tr>
                             <td>Ver Ordem de Compra/Serviço</td>
-                            <td><a href="/base/ver_ordem_compra/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank"></a></td>
+                            <td><a href="/base/ver_ordem_compra/{{solicitacao.id}}/?xls=1" class="btn btn-info btn-sm" target="_blank">Ver Documento</a></td>
                         </tr>
                     {% endif %}
                 {% endif %}

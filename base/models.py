@@ -444,6 +444,9 @@ class SolicitacaoLicitacao(models.Model):
     def pode_gerar_ordem(self):
         return  self.eh_inexigibilidade() or self.eh_dispensa()
 
+    def eh_pedido(self):
+        return self.arp_origem or self.contrato_origem or self.credenciamento_origem
+
     def tem_proposta(self):
         for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):
             if not ItemPesquisaMercadologica.objects.filter(item=item).exists():
