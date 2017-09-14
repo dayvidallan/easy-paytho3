@@ -2189,7 +2189,7 @@ def cadastrar_minuta(request, solicitacao_id):
 def avalia_minuta(request, solicitacao_id, tipo):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     if request.user.has_perm('base.pode_avaliar_minuta') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.data_avaliacao_minuta:
-        if solicitacao.pode_gerar_ordem() or solicitacao.credenciamento_origem:
+        if solicitacao.pode_gerar_ordem() or solicitacao.eh_pedido():
 
             import tempfile
             import zipfile
@@ -2207,16 +2207,40 @@ def avalia_minuta(request, solicitacao_id, tipo):
             lista = list()
             dicionario = {}
             entrou = False
-            for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=solicitacao):
-                total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
-                if total:
-                    lista.append([pesquisa.id, total])
-                    dicionario[pesquisa.id] = total
-                    entrou = True
+            fornecedor_pedido = None
+            if solicitacao.eh_pedido():
+                if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
+                    pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao)
+                    fornecedor_pedido = pedidos[0].item.fornecedor
+                elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
+                    pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao)
+                    fornecedor_pedido = pedidos[0].item.fornecedor
+                elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
+                    pedidos = PedidoCredenciamento.objects.filter(solicitacao=solicitacao)
+                    fornecedor_pedido = pedidos[0].fornecedor
+
+                for pedido in pedidos:
+                    total = pedidos.aggregate(soma=Sum('valor'))['soma']
+                    if total:
+                        lista.append([pedido.id, total])
+                        dicionario[pedido.id] = total
+                        entrou = True
+
+            else:
+                for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=solicitacao):
+                    total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+                    if total:
+                        lista.append([pesquisa.id, total])
+                        dicionario[pesquisa.id] = total
+                        entrou = True
             if entrou:
                 resultado = sorted(dicionario.items(), key=lambda x: x[1])
-                fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
-                itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado[0][0]).order_by('item')
+                if solicitacao.eh_pedido():
+                    fornecedor = fornecedor_pedido
+                    itens = pedidos
+                else:
+                    fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
+                    itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado[0][0]).order_by('item')
                 total = 0
 
                 for item in itens:
