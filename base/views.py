@@ -2189,7 +2189,7 @@ def cadastrar_minuta(request, solicitacao_id):
 def avalia_minuta(request, solicitacao_id, tipo):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     if request.user.has_perm('base.pode_avaliar_minuta') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.data_avaliacao_minuta:
-        if solicitacao.pode_gerar_ordem() or solicitacao.eh_credenciamento():
+        if solicitacao.pode_gerar_ordem() or solicitacao.credenciamento_origem:
 
             import tempfile
             import zipfile
@@ -2238,7 +2238,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
 
 
                 }
-                if solicitacao.eh_inexigibilidade():
+                if solicitacao.eh_inexigibilidade() or solicitacao.credenciamento_origem:
                     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_inexigibilidade.docx'))
                 elif solicitacao.tipo_aquisicao == solicitacao.DISPENSA_LICITACAO_ATE_8MIL:
                     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_dispensa_ate_8mil.docx'))
