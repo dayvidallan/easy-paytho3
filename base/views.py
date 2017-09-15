@@ -5465,7 +5465,7 @@ def visualizar_ata_registro_preco(request, ata_id):
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
 
 
-    pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('item__material', 'setor')
+    pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('setor__secretaria', 'item__material', 'pedido_em')
     tabela  = {}
     itens = ata.itemataregistropreco_set.all()
     if ata.adesao:
@@ -5475,24 +5475,25 @@ def visualizar_ata_registro_preco(request, ata_id):
 
     materiais  = dict()
     secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
-    for num in secretarias:
-        chave = '%s' % num['setor__secretaria__nome']
-        tabela[chave] = materiais
-        for item in pedidos.filter(setor__secretaria__nome=chave):
-            if item.item.fornecedor:
-                nome = u'Fornecedor: %s' % (item.item.fornecedor.razao_social)
-            else:
-                nome = u'Fornecedor: %s' % (item.item.participante.fornecedor.razao_social)
-            materiais[nome] = dict(pedidos=list())
-
-    for pedido in pedidos:
-        if pedido.item.fornecedor:
-            nome = u'Fornecedor: %s' % (pedido.item.fornecedor.razao_social)
-        else:
-            nome = u'Fornecedor: %s' % (pedido.item.participante.fornecedor.razao_social)
-        materiais[nome]['pedidos'].append(pedido)
-
-    resultado = collections.OrderedDict(sorted(tabela.items()))
+    # for num in secretarias:
+    #     chave = '%s' % num['setor__secretaria__nome']
+    #     tabela[chave] = materiais
+    #     for item in pedidos.filter(setor__secretaria__nome=chave):
+    #         if item.item.fornecedor:
+    #             nome = u'Fornecedor: %s' % (item.item.fornecedor.razao_social)
+    #         else:
+    #             nome = u'Fornecedor: %s' % (item.item.participante.fornecedor.razao_social)
+    #         materiais[nome] = dict(pedidos=list())
+    #
+    # for pedido in pedidos:
+    #     if pedido.item.fornecedor:
+    #         nome = u'Fornecedor: %s' % (pedido.item.fornecedor.razao_social)
+    #     else:
+    #         nome = u'Fornecedor: %s' % (pedido.item.participante.fornecedor.razao_social)
+    #     materiais[nome]['pedidos'].append(pedido)
+    #
+    # resultado = collections.OrderedDict(sorted(tabela.items()))
+    # import ipdb; ipdb.set_trace()
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
 

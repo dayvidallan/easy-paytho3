@@ -456,6 +456,36 @@
                         </div>
 
                 {% endfor %}
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+
+                        <tr>
+                            <th width="15%">Secretaria</th>
+                            <th width="70%">Material/Serviço</th>
+                            <th>Quantidade Solicitada</th>
+                            <th>Saldo Atual da Secretaria</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                            <tr>
+                                <td>{{ pedido.setor.secretaria }}</td>
+                                <td>
+                                    {% if pedido.item.material %}
+                                        {{ pedido.item.material }}
+                                    {% else %}
+                                        {{ pedido.item.item.material }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ pedido.quantidade|format_quantidade }}</td>
+                                <td>{{ pedido.item.get_quantidade_disponivel|format_quantidade }}</td>
+                                <td><a href="/base/itens_solicitacao/{{ pedido.solicitacao.id}}/" class="btn btn-info btn-sm ">Visualizar</a></td>
+                            </tr>
+                        {% endfor %}
+                     </tbody>
+                </table>
+
 
 
 
