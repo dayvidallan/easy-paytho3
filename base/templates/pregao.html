@@ -584,9 +584,7 @@
                     {% if buscou and pregao.eh_ativo and recebida_setor %}
                         <div class="pull-right">
                             {% if not participante.excluido_dos_itens %}
-                                {% if pregao.eh_pregao or eh_credenciamento %}
-                                    <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
-                                {% endif %}
+                                <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
                                 {% if not eh_credenciamento %}
                                     <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/2/" class="btn btn-danger">Desclassificar</a>
                                 {% endif %}

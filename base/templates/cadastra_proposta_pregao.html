@@ -28,7 +28,7 @@
     {% if participante %}
         {% if not participante.desclassificado %}
             <div class="pull-right">
-                {% if pregao.eh_pregao %}
+                {% if not pregao.solicitacao.eh_credenciamento %}
                     <a href="/base/desclassificar_do_pregao/{{ participante.id }}/" class="btn btn-danger btn-sm">Desclassificar</a>
                 {% else %}
                     <a href="/base/desclassificar_do_pregao/{{ participante.id }}/" class="btn btn-danger btn-sm">Inabilitar</a>
