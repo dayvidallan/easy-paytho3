@@ -540,14 +540,14 @@ def lances_item(request, item_id):
             rodada_anterior = int(rodada_atual.rodada) - 1
             valor_anterior_registrado = 0
             if PropostaItemPregao.objects.filter(item=item, participante=participante).exists():
-                valor_anterior_registrado = PropostaItemPregao.objects.get(item=item, participante=participante).valor
+                valor_anterior_registrado = PropostaItemPregao.objects.filter(item=item, participante=participante)[0].valor
             if LanceItemRodadaPregao.objects.filter(item=item, participante=participante, rodada__rodada__lt=rodada_atual.rodada, valor__isnull=False).order_by('-rodada__rodada').exists():
 
                 valor_anterior_registrado = LanceItemRodadaPregao.objects.filter(item=item, participante=participante, valor__isnull=False).order_by('-rodada__rodada')[0].valor
 
 
             #if not eh_modalidade_desconto:
-            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
+            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.filter(item=item, participante=participante)[0].valor:
                 messages.error(request, u'Você não pode dar um lance maior do que sua proposta.')
 
                 if tem_empate_beneficio:
