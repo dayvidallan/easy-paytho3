@@ -164,7 +164,7 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
         super(CadastraPrecoParticipantePregaoForm, self).__init__(*args, **kwargs)
         ja_cadastrou = PropostaItemPregao.objects.filter(pregao=self.pregao).values_list('participante', flat=True)
         #self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(pregao = self.pregao, desclassificado=False).exclude(id__in=ja_cadastrou).order_by('id')
-        self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(pregao = self.pregao, desclassificado=False).order_by('id')
+        self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(pregao = self.pregao, desclassificado=False, excluido_dos_itens=False).order_by('id')
 
 
 class PregaoForm(forms.ModelForm):

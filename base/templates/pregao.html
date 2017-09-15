@@ -580,7 +580,7 @@
                          </div>
                     </form>
 
-                {% if buscou and not pregao.eh_pregao and not eh_credenciamento %}
+                {% if buscou and not pregao.eh_pregao and not eh_credenciamento and not participante.excluido_dos_itens %}
                     <div class="pull-right">
                         <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
 
