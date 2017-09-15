@@ -247,6 +247,11 @@
             <li>
                 <a href="#relatorios">Relatórios</a>
             </li>
+            {% if tem_transferencias %}
+                <li>
+                <a href="#transferencias">Transferências</a>
+            </li>
+            {% endif %}
 
         </ul>
    </div>
@@ -346,9 +351,9 @@
                                                 <th>Valor</th>
                                                 <th>Quantidade Inicial</th>
                                                 <th>Quantidade Disponível</th>
-                                                {% if ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
-                                                    <th>Opções</th>
-                                                {% endif %}
+
+                                                <th>Opções</th>
+
 
 
                                             </tr>
@@ -374,8 +379,10 @@
                                                     <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                     <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
                                                     <td>
-                                                        {% if ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
-                                                            <a href="/base/editar_item_arp/{{ opcao.id }}/" class="btn btn-info btn-sm">Transferir Quantidade</a>
+                                                        {% if True or ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
+                                                            {% if opcao.tem_varias_secretarias %}
+                                                                <a href="/base/transferir_quantidade_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a>
+                                                            {% endif %}
                                                             {% if request.user == ata.solicitacao.cadastrado_por and ata.adesao and not ata.liberada_compra %}
                                                                 <a href="/base/editar_item_arp/{{ opcao.id }}/" class="btn btn-info btn-sm">Editar</a>
                                                                 <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_arp/{{opcao.id}}/" class="btn btn-danger btn-sm">Apagar</a>
@@ -568,6 +575,35 @@
             </table>
 
         </div>
+       {% if tem_transferencias %}
+            <div id="transferencias" class="tab-pane">
+                <table class="table table-bordered table-condensed table-striped" width="90%">
+                    <thead>
+                        <tr>
+                            <th>Secretaria de Origem</th>
+                            <th>Secretaria de Destino</th>
+                            <th>Quantidade</th>
+                            <th>Justificativa</th>
+                            <th>Cadstrado Em</th>
+                            <th>Cadstrado Por</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       {% for registro in tem_transferencias %}
+                        <tr>
+                            <td>{{ registro.secretaria_origem }}</td>
+                            <td>{{ registro.secretaria_destino}}</td>
+                            <td>{{ registro.quantidade }}</td>
+                            <td>{{ registro.justificativa }}</td>
+                            <td>{{ registro.cadastrado_em }}</td>
+                            <td>{{ registro.cadastrado_por }}</td>
+                        </tr>
+                       {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+       {% endif %}
+
    </div>
 
 

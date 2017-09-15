@@ -2522,8 +2522,8 @@ class ItemCredenciamento(models.Model):
 
         return 0
 
-    def get_saldo_atual_secretaria(self, setor):
-        pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=setor.secretaria)
+    def get_saldo_atual_secretaria(self, secretaria):
+        pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=secretaria)
         if pedidos.exists():
             return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
         else:
@@ -2569,7 +2569,7 @@ class PedidoCredenciamento(models.Model):
         return self.quantidade * self.valor
 
     def get_saldo_atual(self):
-        return self.item.get_saldo_atual_secretaria(self.setor)
+        return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
 
 class AnexoCredenciamento(models.Model):
@@ -2986,42 +2986,56 @@ class ItemAtaRegistroPreco(models.Model):
                 return self.quantidade
 
         else:
-
-            if not self.ata.adesao:
-                if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                    valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
-                    pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
-                    if pedidos.exists():
-                        return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-                    else:
-                        return valor_total
-            else:
+            valor_pedidos = 0
+            perdeu_item = 0
+            ganhou_item = 0
+            total = 0
+            if self.ata.adesao:
                 total = self.quantidade
-                if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                    total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+
+            if total:
                 pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
                 if pedidos.exists():
-                    return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-                return total
+                    valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
+
+                transferencias = TransferenciaItemARP.objects.filter(item=self)
+                if transferencias.exists():
+                    if transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).exists():
+                        perdeu_item = transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+
+                    if transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).exists():
+                        ganhou_item = transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+
+            return total - valor_pedidos + ganhou_item - perdeu_item
 
         return 0
 
-    def get_saldo_atual_secretaria(self, setor):
-        if not self.ata.adesao:
-            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=setor.secretaria).exists():
-                valor_total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=setor.secretaria)[0].quantidade
-                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=setor.secretaria)
-                if pedidos.exists():
-                    return valor_total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-                else:
-                    return valor_total
-        else:
+    def get_saldo_atual_secretaria(self, secretaria):
 
-            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=setor.secretaria)
+        valor_pedidos = 0
+        perdeu_item = 0
+        ganhou_item = 0
+        total = 0
+        if not self.ata.adesao:
+            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=secretaria).exists():
+                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=secretaria)[0].quantidade
+
+        if total:
+            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, secretaria=secretaria)
             if pedidos.exists():
-                return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-            else:
-                return self.quantidade
+                valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
+
+            transferencias = TransferenciaItemARP.objects.filter(item=self)
+            if transferencias.exists():
+                if transferencias.filter(secretaria_origem=secretaria).exists():
+                    perdeu_item = transferencias.filter(secretaria_origem=secretaria).aggregate(soma=Sum('quantidade'))['soma']
+
+                if transferencias.filter(secretaria_destino=secretaria).exists():
+                    ganhou_item = transferencias.filter(secretaria_destino=secretaria).aggregate(soma=Sum('quantidade'))['soma']
+        return total - valor_pedidos + ganhou_item - perdeu_item
+
 
     def get_total(self):
         return self.quantidade * self.valor
@@ -3039,6 +3053,13 @@ class ItemAtaRegistroPreco(models.Model):
         return self.get_quantidade_consumida() * Decimal(self.valor)
 
 
+    def tem_varias_secretarias(self):
+        if self.item:
+            return ItemQuantidadeSecretaria.objects.filter(item=self.item).count() > 1
+        return False
+
+    def get_secretarias(self):
+        return Secretaria.objects.filter(id__in=ItemQuantidadeSecretaria.objects.filter(item=self.item).values_list('secretaria', flat=True))
 
 class PedidoAtaRegistroPreco(models.Model):
     ata = models.ForeignKey(AtaRegistroPreco)
@@ -3064,7 +3085,7 @@ class PedidoAtaRegistroPreco(models.Model):
         return self.quantidade * self.valor
 
     def get_saldo_atual(self):
-        return self.item.get_saldo_atual_secretaria(self.setor)
+        return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
 
 class FornecedorCRC(models.Model):
@@ -3171,3 +3192,19 @@ class ModeloAta(models.Model):
 
     def __unicode__(self):
         return self.nome
+
+class TransferenciaItemARP(models.Model):
+    secretaria_origem = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Origem', related_name='sec_origem')
+    secretaria_destino = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Destino', related_name='sec_destino')
+    item = models.ForeignKey(ItemAtaRegistroPreco, verbose_name=u'Item da ARP')
+    quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
+    justificativa = models.CharField(u'Justificativa', max_length=5000)
+    cadastrado_em = models.DateTimeField(u'Cadastrado em')
+    cadastrado_por = models.ForeignKey(PessoaFisica)
+
+    class Meta:
+        verbose_name = u'Transferência de Item de ARP'
+        verbose_name_plural = u'Transferências de Itens de ARP'
+
+    def __unicode__(self):
+        return self.quantidade

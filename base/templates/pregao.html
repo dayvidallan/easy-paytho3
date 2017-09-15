@@ -586,6 +586,8 @@
 
                     </div>
                     <br><br>
+                {% elif buscou and not pregao.eh_pregao and not eh_credenciamento and  participante.excluido_dos_itens %}
+                    <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/3/" class="btn btn-success">Reintegrar</a>
                 {% endif %}
 
                 {% if itens_pregao.exists %}
@@ -599,6 +601,8 @@
                                     {% if not eh_credenciamento %}
                                         <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/2/" class="btn btn-danger">Desclassificar</a>
                                     {% endif %}
+                                {% else %}
+                                    <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/3/" class="btn btn-success">Reintegrar</a>
                                 {% endif %}
                                 <br><br>
                             </div>

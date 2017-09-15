@@ -1412,3 +1412,26 @@ class DataRenovaCRCForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(DataRenovaCRCForm, self).__init__(*args, **kwargs)
         self.fields['data'].widget.attrs = {'class': 'vDateField'}
+
+
+class TransfereItemARPForm(forms.ModelForm):
+    justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea)
+
+    class Meta:
+        model = TransferenciaItemARP
+        fields =('secretaria_origem', 'secretaria_destino', 'quantidade', 'justificativa')
+
+    def __init__(self, *args, **kwargs):
+        self.item = kwargs.pop('item', None)
+        super(TransfereItemARPForm, self).__init__(*args, **kwargs)
+        self.fields['secretaria_origem'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
+        self.fields['secretaria_destino'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
+
+
+    def clean(self):
+        if self.cleaned_data.get('secretaria_origem') == self.cleaned_data.get('secretaria_destino'):
+            raise forms.ValidationError(u'Selecione como destino uma secretaria diferente da origem.')
+
+        if self.cleaned_data.get('quantidade') and self.cleaned_data.get('quantidade') > self.item.get_saldo_atual_secretaria(self.cleaned_data.get('secretaria_origem')):
+            raise forms.ValidationError(u'A quantidade solicitada é maior do que a quantidade disponível: %s.' % self.item.get_saldo_atual_secretaria(self.cleaned_data.get('secretaria_origem')))
+

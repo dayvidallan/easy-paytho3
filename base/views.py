@@ -1440,6 +1440,9 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
             elif situacao == u'2':
                 ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.DESCLASSIFICADO, observacoes=form.cleaned_data.get('motivo'))
 
+            elif situacao == u'3':
+                ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.CLASSIFICADO, observacoes=form.cleaned_data.get('motivo'))
+
             historico = HistoricoPregao()
             historico.pregao = pregao
             historico.data = datetime.datetime.now()
@@ -1447,9 +1450,14 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
                 historico.obs = u'Inabilitação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
             elif situacao == u'2':
                 historico.obs = u'Desclassificação do participante: %s de todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
+            elif situacao == u'3':
+                historico.obs = u'Reintegração do participante: %s em todos os itens. Motivo: %s' % (participante, form.cleaned_data.get('motivo'))
 
             historico.save()
-            participante.excluido_dos_itens = True
+            if situacao == u'3':
+                participante.excluido_dos_itens = False
+            else:
+                participante.excluido_dos_itens = True
             participante.save()
 
             if ids_itens_ganhador:
@@ -5486,7 +5494,7 @@ def visualizar_ata_registro_preco(request, ata_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-
+    tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
 
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
@@ -9529,3 +9537,21 @@ def imprimir_aditivo(request, aditivo_id):
     os.unlink(caminho_arquivo)
     return response
 
+@login_required()
+def transferir_quantidade_item_arp(request, itemarp_id):
+    item = get_object_or_404(ItemAtaRegistroPreco, pk=itemarp_id)
+    title = u'Transferir Item entre Secretarias'
+    ata = item.ata
+    if ata.solicitacao.setor_atual == request.user.pessoafisica.setor or True:
+        form = TransfereItemARPForm(request.POST or None, item=item)
+        if form.is_valid():
+            o = form.save(False)
+            o.cadastrado_em = datetime.datetime.now()
+            o.cadastrado_por = request.user.pessoafisica
+            o.item = item
+            o.save()
+            messages.success(request, u'Transferência realizada com sucesso.')
+            return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % ata.id)
+        return render(request, 'transferir_quantidade_item_arp.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied

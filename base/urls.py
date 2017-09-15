@@ -85,6 +85,7 @@ urlpatterns = [
     url(r'^mudar_credenciamento_fornecedor/(?P<credenciamento_id>\d+)/(?P<fornecedor_id>\d+)/(?P<opcao>\d+)/$', views.mudar_credenciamento_fornecedor, name='mudar_credenciamento_fornecedor'),
 
     url(r'^imprimir_aditivo/(?P<aditivo_id>\d+)/$', views.imprimir_aditivo, name='imprimir_aditivo'),
+    url(r'^transferir_quantidade_item_arp/(?P<itemarp_id>\d+)/$', views.transferir_quantidade_item_arp, name='transferir_quantidade_item_arp'),
 
 
     url(r'^cadastrar_credenciamento/(?P<solicitacao_id>\d+)/$', views.cadastrar_credenciamento, name='cadastrar_credenciamento'),
