@@ -580,22 +580,29 @@
                          </div>
                     </form>
 
+                {% if buscou and not pregao.eh_pregao and not eh_credenciamento %}
+                    <div class="pull-right">
+                        <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
+
+                    </div>
+                    <br><br>
+                {% endif %}
+
                 {% if itens_pregao.exists %}
                     {% if buscou and pregao.eh_ativo and recebida_setor %}
-                        <div class="pull-right">
-                            {% if not pregao.eh_pregao and not eh_credenciamento %}
-                                <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
-
-                            {% elif not participante.excluido_dos_itens %}
-                                {% if pregao.eh_pregao %}
-                                    <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
-
-                                {% elif not eh_credenciamento %}
-                                    <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/2/" class="btn btn-danger">Desclassificar</a>
+                        {% if  pregao.eh_pregao or  eh_credenciamento %}
+                            <div class="pull-right">
+                                {% if not participante.excluido_dos_itens %}
+                                    {% if pregao.eh_pregao or eh_credenciamento %}
+                                        <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/1/" class="btn btn-warning">Inabilitar</a>
+                                    {% endif %}
+                                    {% if not eh_credenciamento %}
+                                        <a href="/base/resultado_alterar_todos/{{ pregao.id }}/{{ participante.id }}/2/" class="btn btn-danger">Desclassificar</a>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
-                            <br><br>
-                        </div>
+                                <br><br>
+                            </div>
+                        {% endif %}
                     {% endif %}
 
                     {% if eh_lote %}
