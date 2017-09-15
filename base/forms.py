@@ -1417,11 +1417,11 @@ class DataRenovaCRCForm(forms.Form):
 class TransfereItemARPForm(forms.ModelForm):
     justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea)
     quantidade_atual = forms.CharField(label=u'Saldo Atual')
-    item = forms.CharField(label=u'Item', widget=forms.HiddenInput)
+    id_do_item = forms.CharField(label=u'Item', widget=forms.HiddenInput)
 
     class Meta:
         model = TransferenciaItemARP
-        fields =('secretaria_origem','item', 'quantidade_atual', 'secretaria_destino', 'quantidade', 'justificativa')
+        fields =('secretaria_origem','id_do_item', 'quantidade_atual', 'secretaria_destino', 'quantidade', 'justificativa')
 
     class Media:
             js = ['/static/base/js/transf_item_arp.js']
@@ -1430,7 +1430,7 @@ class TransfereItemARPForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.item = kwargs.pop('item', None)
         super(TransfereItemARPForm, self).__init__(*args, **kwargs)
-        self.fields['item'].initial = self.item.id
+        self.fields['id_do_item'].initial = self.item.id
         self.fields['secretaria_origem'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
         self.fields['secretaria_destino'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
         self.fields['quantidade_atual'].widget.attrs = {'readonly': 'True'}

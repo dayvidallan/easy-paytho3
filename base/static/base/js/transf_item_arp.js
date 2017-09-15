@@ -12,7 +12,7 @@ $(document).ready(function() {
 		botao = $("#buscaestabelecimento");
 		valor_antigo = botao.html();
 		secretaria = $('#id_secretaria_origem').val();
-		item = $('#id_item').val();
+		item = $('#id_id_do_item').val();
 		botao.html('<span class="fa fa-spinner fa-spin"></span>');
 
 		$.ajax({
