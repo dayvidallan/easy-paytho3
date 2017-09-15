@@ -2838,7 +2838,7 @@ class ItemContrato(models.Model):
         else:
             total = self.quantidade
             origem = False
-            if ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=self.contrato.solicitacao.setor_origem.secretaria).exists():
+            if (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=self.contrato.solicitacao.setor_origem.secretaria)[0].quantidade
                 origem = True
             if not (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
