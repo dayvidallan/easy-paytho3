@@ -2837,16 +2837,23 @@ class ItemContrato(models.Model):
 
         else:
             total = self.quantidade
+            origem = False
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=self.contrato.solicitacao.setor_origem.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=self.contrato.solicitacao.setor_origem.secretaria)[0].quantidade
-
+                origem = True
             if not (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
 
             pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
-            if pedidos.exists():
-                return total - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
-            return total + quantidade_aditivo
+
+            if origem:
+                if pedidos.exists():
+                    return total - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
+                return total + quantidade_aditivo
+            else:
+                if pedidos.exists():
+                    return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                return total
 
         return 0
 
