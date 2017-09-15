@@ -9555,3 +9555,14 @@ def transferir_quantidade_item_arp(request, itemarp_id):
         return render(request, 'transferir_quantidade_item_arp.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
+
+def busca_saldo_atual(request):
+    from django.core import serializers
+    if request.method == 'GET':
+        item = request.GET.get('item')
+        secretaria = request.GET.get('secretaria')
+        if secretaria and item:
+            data = ItemAtaRegistroPreco.objects.get(id=item).get_saldo_atual_secretaria(Secretaria.objects.get(id=secretaria))
+        else:
+            data = []
+        return HttpResponse(data, content_type='application/json')

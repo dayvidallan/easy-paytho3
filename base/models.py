@@ -3023,7 +3023,7 @@ class ItemAtaRegistroPreco(models.Model):
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=secretaria)[0].quantidade
 
         if total:
-            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, secretaria=secretaria)
+            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=secretaria)
             if pedidos.exists():
                 valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
 

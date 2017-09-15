@@ -86,7 +86,7 @@ urlpatterns = [
 
     url(r'^imprimir_aditivo/(?P<aditivo_id>\d+)/$', views.imprimir_aditivo, name='imprimir_aditivo'),
     url(r'^transferir_quantidade_item_arp/(?P<itemarp_id>\d+)/$', views.transferir_quantidade_item_arp, name='transferir_quantidade_item_arp'),
-
+    url(r'^busca_saldo_atual/$', views.busca_saldo_atual, name='busca_saldo_atual'),
 
     url(r'^cadastrar_credenciamento/(?P<solicitacao_id>\d+)/$', views.cadastrar_credenciamento, name='cadastrar_credenciamento'),
     url(r'^imprimir_fornecedor/(?P<fornecedor_id>\d+)/$', views.imprimir_fornecedor, name='imprimir_fornecedor'),
