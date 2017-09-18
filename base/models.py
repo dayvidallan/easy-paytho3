@@ -3202,6 +3202,42 @@ class ModeloAta(models.Model):
     def __unicode__(self):
         return self.nome
 
+
+class ModeloDocumento(models.Model):
+
+    TIPO_DOCUMENTO_CHOICES = (
+        (u'Minuta de Edital', u'Minuta de Edital'),
+        (u'Modelo de Edital', u'Modelo de Edital'),
+        (u'Modelos de Termo de Referência', u'Modelos de Termo de Referência'),
+        (u'Parecer Jurídico', u'Parecer Jurídico'),
+        (u'Minuta de Contrato', u'Minuta de Contrato'),
+        (u'Modelo de Rescisão', u'Modelo de Rescisão'),
+    )
+
+    TIPO_DOCUMENTO_OBJETO_CHOICES = (
+        (u'Material de Consumo', u'Material de Consumo'),
+        (u'Material Permanente', u'Material Permanente'),
+        (u'Locação', u'Locação'),
+        (u'Publicidade', u'Publicidade'),
+        (u'Obras e Manutenção', u'Obras e Manutenção'),
+        (u'Serviços e Engenharia', u'Serviços e Engenharia'),
+        (u'Serviços - Outros', u'Serviços - Outros'),
+    )
+    nome = models.CharField(u'Nome do Documento', max_length=1000)
+    tipo = models.CharField(u'Tipo do Documento', max_length=100, choices=TIPO_DOCUMENTO_CHOICES)
+    tipo_objeto = models.CharField(u'Tipo do Objeto', max_length=100, choices=TIPO_DOCUMENTO_OBJETO_CHOICES)
+    palavras_chaves = models.CharField(u'Palavras-Chave', max_length=4000, null=True, blank=True)
+    cadastrado_em = models.DateTimeField(u'Cadastrado Em')
+    cadastrado_por = models.ForeignKey(PessoaFisica)
+    arquivo = models.FileField(u'Arquivo', null=True, blank=True, upload_to=u'upload/modelos_documentos/')
+
+    class Meta:
+        verbose_name = u'Modelo de Documento'
+        verbose_name_plural = u'Modelos de Documentos'
+
+    def __unicode__(self):
+        return self.nome
+
 class TransferenciaItemARP(models.Model):
     secretaria_origem = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Origem', related_name='sec_origem')
     secretaria_destino = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Destino', related_name='sec_destino')

@@ -1379,6 +1379,26 @@ class ModeloAtaForm(forms.ModelForm):
         self.fields['palavras_chaves'].label = u'Palavras-chave (separe por ;)'
         self.fields['arquivo'].required = True
 
+class BuscarModeloDocumentoForm(forms.Form):
+    METHOD = u'GET'
+    nome = forms.CharField(label=u'Filtrar por Nome', required=False)
+    palavra = forms.CharField(label=u'Filtrar por Plavra-chave', required=False)
+    tipo = forms.ChoiceField(label=u'Filtrar por Tipo', required=False, choices=(('', '---------'),) + ModeloDocumento.TIPO_DOCUMENTO_CHOICES)
+    tipo_objeto = forms.ChoiceField(label=u'Filtrar por Tipo do Objeto', required=False, choices=(('', '---------'),) + ModeloDocumento.TIPO_DOCUMENTO_OBJETO_CHOICES)
+
+class ModeloDocumentoForm(forms.ModelForm):
+
+    class Meta:
+        model = ModeloDocumento
+        fields = ('nome', 'tipo', 'tipo_objeto', 'palavras_chaves', 'arquivo')
+
+    def __init__(self, *args, **kwargs):
+        super(ModeloDocumentoForm, self).__init__(*args, **kwargs)
+        self.fields['palavras_chaves'].label = u'Palavras-chave (separe por ;)'
+
+        self.fields['arquivo'].required = True
+
+
 class RelatoriosGerenciaisComprasForm(forms.Form):
     ano = forms.ChoiceField([],
                 required = False,

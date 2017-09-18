@@ -110,7 +110,52 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
+def imprimir_cabecalho(document, configuracao, logo, municipio):
 
+    table = document.add_table(rows=3, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells2 = table.rows[1].cells
+    hdr_cells3 = table.rows[2].cells
+
+
+    style2 = document.styles['Normal']
+    font = style2.font
+    font.name = 'Arial'
+    font.size = Pt(6)
+
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(11)
+
+
+
+    paragraph = hdr_cells[0].paragraphs[0]
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = paragraph.add_run()
+    run.add_picture(logo, width=Inches(1.75))
+    a, b = hdr_cells[:2]
+    a.merge(b)
+
+    paragraph2 = hdr_cells2[0].paragraphs[0]
+    paragraph2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    paragraph2.style = document.styles['Normal']
+    hdr_cells2[0].text =  u'%s' % (configuracao.nome)
+    a, b = hdr_cells2[:2]
+    a.merge(b)
+    a.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+    paragraph3 = hdr_cells2[1].paragraphs[0]
+    paragraph3.style2 = document.styles['Normal']
+    paragraph3.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+
+
+    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    hdr_cells3[0].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+
+    a, b = hdr_cells3[:2]
+    a.merge(b)
 
 def logout(request):
     messages.error(request, u'Usuário não vinculado à um setor. Procure o administrador do sistema.')
@@ -6334,45 +6379,10 @@ def ata_sessao(request, pregao_id):
             total_geral = total_geral + result[1]['total']
 
 
-
     document = Document()
-    table = document.add_table(rows=2, cols=2)
-    hdr_cells = table.rows[0].cells
-    hdr_cells2 = table.rows[1].cells
+    imprimir_cabecalho(document, configuracao, logo, municipio)
 
 
-
-
-    style2 = document.styles['Normal']
-    font = style2.font
-    font.name = 'Arial'
-    font.size = Pt(6)
-
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(11)
-
-
-
-    paragraph = hdr_cells[0].paragraphs[0]
-    run = paragraph.add_run()
-    run.add_picture(logo, width=Inches(1.75))
-
-    paragraph2 = hdr_cells[1].paragraphs[0]
-    paragraph2.style = document.styles['Normal']
-    hdr_cells[1].text =  u'%s' % (configuracao.nome)
-
-
-    paragraph3 = hdr_cells2[1].paragraphs[0]
-    paragraph3.style2 = document.styles['Normal']
-
-
-
-    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
-    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
-    a, b = hdr_cells2[:2]
-    a.merge(b)
     document.add_paragraph()
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -9567,3 +9577,69 @@ def busca_saldo_atual(request):
         else:
             data = []
         return HttpResponse(data, content_type='application/json')
+
+
+@login_required()
+def modelos_documentos(request):
+    title = u'Modelos de Documentos'
+    documentos = ModeloDocumento.objects.all().order_by('-id')
+
+
+    form = BuscarModeloDocumentoForm(request.GET or None)
+
+    if form.is_valid():
+        if form.cleaned_data.get('nome'):
+            documentos = documentos.filter(nome=form.cleaned_data.get('nome'))
+
+        if form.cleaned_data.get('palavra'):
+            documentos = documentos.filter(palavras_chaves__icontains=form.cleaned_data.get('palavra'))
+
+        if form.cleaned_data.get('tipo'):
+            documentos = documentos.filter(tipo=form.cleaned_data.get('tipo'))
+
+        if form.cleaned_data.get('tipo_objeto'):
+            documentos = documentos.filter(tipo_objeto=form.cleaned_data.get('tipo_objeto'))
+
+
+    return render(request, 'modelos_documentos.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_modelo_documento(request):
+    title = u'Cadastrar Modelo de Documento'
+    form = ModeloDocumentoForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.cadastrado_em = datetime.datetime.now()
+        o.cadastrado_por = request.user.pessoafisica
+        o.save()
+        messages.success(request, u'Modelo cadastrado com sucesso.')
+        return HttpResponseRedirect(u'/base/modelos_documentos/')
+
+    return render(request, 'cadastrar_modelo_ata.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_modelo_documento(request, documento_id):
+    title = u'Editar Modelo de Documento'
+    documento = get_object_or_404(ModeloDocumento, pk=documento_id)
+    if request.user.pessoafisica == documento.cadastrado_por:
+        form = ModeloDocumentoForm(request.POST or None, request.FILES or None, instance=documento)
+        if form.is_valid():
+            form.save()
+            messages.success(request, u'Modelo editado com sucesso.')
+            return HttpResponseRedirect(u'/base/modelos_documentos/')
+
+        return render(request, 'cadastrar_modelo_ata.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def deletar_modelo_documento(request, documento_id):
+    documento = get_object_or_404(ModeloDocumento, pk=documento_id)
+    if request.user.pessoafisica == documento.cadastrado_por:
+        documento.delete()
+        messages.success(request, u'Modelo excluído com sucesso.')
+        return HttpResponseRedirect(u'/base/modelos_documentos/')
+
+    else:
+        raise PermissionDenied
