@@ -5020,7 +5020,7 @@ def informar_valor_final_item_lote(request, item_id, pregao_id):
         form = ValorFinalItemLoteForm(request.POST or None)
         if form.is_valid():
             if form.cleaned_data.get('valor') > item.get_valor_total_proposto() or form.cleaned_data.get('valor') > item.valor_medio:
-                messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto nem do que o valor máximo do item.')
+                messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto: %s nem do que o valor máximo do item: %s.' % ( item.get_valor_total_proposto(), item.valor_medio))
                 return HttpResponseRedirect(u'/base/informar_valor_final_item_lote/%s/%s/' % (item.id, pregao.id))
 
 
@@ -5052,9 +5052,9 @@ def informar_valor_final_itens_lote(request, lote_id, pregao_id):
             contador = 0
             for id_do_item in request.POST.getlist('id_item'):
                 item = ItemSolicitacaoLicitacao.objects.get(pk=id_do_item)
-                valor_informado = Decimal(request.POST.getlist('itens')[contador].replace('.','').replace(',','.'))
+                valor_informado = Decimal(request.POST.getlist('itens')[contador])
                 if valor_informado > item.get_valor_total_proposto() or valor_informado > item.valor_medio:
-                    messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto (%s) nem do que o valor máximo do item.' % item.get_valor_total_proposto())
+                    messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto (%s) nem do que o valor máximo do item: %s.' % (item.get_valor_total_proposto(), item.valor_medio))
                     return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
 
 
@@ -5556,7 +5556,7 @@ def visualizar_ata_registro_preco(request, ata_id):
     #     materiais[nome]['pedidos'].append(pedido)
     #
     # resultado = collections.OrderedDict(sorted(tabela.items()))
-    # import ipdb; ipdb.set_trace()
+    
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
 
