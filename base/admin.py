@@ -362,3 +362,17 @@ class AnexoContratoAdmin(NewModelAdmin):
 
 admin.site.register(AnexoContrato, AnexoContratoAdmin)
 
+
+class TipoModeloAdmin(NewModelAdmin):
+    list_display = ('nome', 'ativo', )
+    ordering = ('nome',)
+    search_fields = ('nome',)
+
+admin.site.register(TipoModelo, TipoModeloAdmin)
+
+class TipoObjetoModeloAdmin(NewModelAdmin):
+    list_display = ('nome', 'ativo', )
+    ordering = ('nome',)
+    search_fields = ('nome',)
+
+admin.site.register(TipoObjetoModelo, TipoObjetoModeloAdmin)
