@@ -467,6 +467,8 @@ class SolicitacaoLicitacao(models.Model):
 
         return ItemQuantidadeSecretaria.objects.filter(id__in=ids)
 
+
+
     def tem_pedidos_outras_secretarias(self):
         return ItemQuantidadeSecretaria.objects.filter(solicitacao=self).distinct('secretaria').count() > 1
 
@@ -718,6 +720,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_valor_medio_total(self):
         return self.valor_medio*self.quantidade
+
 
     def get_valor_final_total(self):
         valor = self.get_vencedor()

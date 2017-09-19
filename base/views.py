@@ -8778,44 +8778,108 @@ def anexo_38(request, pregao_id):
         ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
 
 
-    itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False).order_by('item')
-    contador_total = 0
-    for idx, item in enumerate(itens, 0):
+    if not pregao.solicitacao.eh_lote():
+        itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False).order_by('item')
+        contador_total = 0
+        for idx, item in enumerate(itens, 0):
 
-        resultado = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('ordem')
+            resultado = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('ordem')
+            contador = 1
+            for result in resultado:
+                if contador < 6:
+                    row_index = contador_total + 1
+                    # style = xlwt.XFStyle()
+                    # style.alignment.wrap = 1
+                    # w_sheet.write(row_index, 0, item.item)
+                    # w_sheet.write(row_index, 1, item.material.nome[:100])
+                    # w_sheet.write(row_index, 2, contador)
+                    # w_sheet.write(row_index, 3, format_money(result.valor))
+                    # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+                    # w_sheet.write(row_index, 5, u'CNPJ')
+                    # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+
+                    row = [
+                        item.item,
+                        item.material.nome[:100],
+                        contador,
+                        format_money(result.valor),
+                        result.participante.fornecedor.razao_social,
+                        u'CNPJ',
+                        str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
+
+
+                    ]
+                    for col_num in xrange(len(row)):
+                        c = ws.cell(row=row_index + 1, column=col_num + 1)
+                        c.value = row[col_num]
+                        #c.style.alignment.wrap_text = True
+                    contador += 1
+                    contador_total += 1
+
+    else:
+        contador_total = 0
         contador = 1
-        for result in resultado:
-            if contador < 6:
-                row_index = contador_total + 1
-                # style = xlwt.XFStyle()
-                # style.alignment.wrap = 1
-                # w_sheet.write(row_index, 0, item.item)
-                # w_sheet.write(row_index, 1, item.material.nome[:100])
-                # w_sheet.write(row_index, 2, contador)
-                # w_sheet.write(row_index, 3, format_money(result.valor))
-                # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
-                # w_sheet.write(row_index, 5, u'CNPJ')
-                # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+        tabela = {}
+        itens = {}
+        resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item__item')
+        chaves =  resultado.values('item__item').order_by('item__item')
+        for num in sorted(chaves):
+            chave = '%s' % num['item__item']
+            tabela[chave] = []
+            itens[chave] =  []
 
-                row = [
-                    item.item,
-                    item.material.nome[:100],
-                    contador,
-                    format_money(result.valor),
-                    result.participante.fornecedor.razao_social,
-                    u'CNPJ',
-                    str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
+        for item in resultado.order_by('item','ordem'):
+            chave = '%s' % str(item.item.item)
+            tabela[chave].append(item)
+            itens[chave] = item.item.get_itens_do_lote()
 
+        from blist import sorteddict
 
-                ]
-                for col_num in xrange(len(row)):
-                    c = ws.cell(row=row_index + 1, column=col_num + 1)
-                    c.value = row[col_num]
-                    #c.style.alignment.wrap_text = True
-                contador += 1
-                contador_total += 1
+        def my_key(dict_key):
+               try:
+                   with transaction.atomic():
+                      return int(dict_key)
+               except ValueError:
+                      return dict_key
 
 
+        resultado =  sorteddict(my_key, **tabela)
+
+        for result in resultado.items():
+
+            if result[1]:
+                for registro in result[1]:
+
+
+                    if contador < 6:
+                        row_index = contador_total + 1
+                        # style = xlwt.XFStyle()
+                        # style.alignment.wrap = 1
+                        # w_sheet.write(row_index, 0, item.item)
+                        # w_sheet.write(row_index, 1, item.material.nome[:100])
+                        # w_sheet.write(row_index, 2, contador)
+                        # w_sheet.write(row_index, 3, format_money(result.valor))
+                        # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+                        # w_sheet.write(row_index, 5, u'CNPJ')
+                        # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+
+                        row = [
+                            result[0],
+                            u'Lote %s' % result[0],
+                            registro.ordem,
+                            format_money(registro.valor),
+                            registro.participante.fornecedor.razao_social,
+                            u'CNPJ',
+                            str(registro.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
+
+
+                        ]
+                        for col_num in xrange(len(row)):
+                            c = ws.cell(row=row_index + 1, column=col_num + 1)
+                            c.value = row[col_num]
+                            #c.style.alignment.wrap_text = True
+                        contador += 1
+                        contador_total += 1
 
 
     wb.save(response)
