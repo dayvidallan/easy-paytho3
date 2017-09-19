@@ -829,7 +829,6 @@ class ItemSolicitacaoLicitacao(models.Model):
         if self.get_lance_minimo_valor():
             reducao = self.get_lance_minimo_valor() / self.valor_medio
             ajuste= 1-reducao
-            import ipdb; ipdb.set_trace()
             return u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
         return None
 

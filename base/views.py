@@ -112,21 +112,21 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
 
 def imprimir_cabecalho(document, configuracao, logo, municipio):
 
-    table = document.add_table(rows=3, cols=2)
+    table = document.add_table(rows=1, cols=2)
     hdr_cells = table.rows[0].cells
-    hdr_cells2 = table.rows[1].cells
-    hdr_cells3 = table.rows[2].cells
+    # hdr_cells2 = table.rows[1].cells
+    # hdr_cells3 = table.rows[2].cells
 
 
-    style2 = document.styles['Normal']
-    font = style2.font
-    font.name = 'Arial'
-    font.size = Pt(6)
-
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(11)
+    # style2 = document.styles['Normal']
+    # font = style2.font
+    # font.name = 'Arial'
+    # font.size = Pt(6)
+    #
+    # style = document.styles['Normal']
+    # font = style.font
+    # font.name = 'Arial'
+    # font.size = Pt(11)
 
 
 
@@ -137,25 +137,35 @@ def imprimir_cabecalho(document, configuracao, logo, municipio):
     a, b = hdr_cells[:2]
     a.merge(b)
 
-    paragraph2 = hdr_cells2[0].paragraphs[0]
-    paragraph2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    paragraph2.style = document.styles['Normal']
-    hdr_cells2[0].text =  u'%s' % (configuracao.nome)
-    a, b = hdr_cells2[:2]
-    a.merge(b)
-    a.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    #document.add_paragraph()
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'%s' % (configuracao.nome))
 
-    paragraph3 = hdr_cells2[1].paragraphs[0]
-    paragraph3.style2 = document.styles['Normal']
-    paragraph3.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #document.add_paragraph()
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'Endereço: %s, %s' % (configuracao.endereco, municipio))
 
-
-
-    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
-    hdr_cells3[0].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
-
-    a, b = hdr_cells3[:2]
-    a.merge(b)
+    # paragraph2 = hdr_cells2[0].paragraphs[0]
+    # paragraph2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # paragraph2.style = document.styles['Normal']
+    # hdr_cells2[0].text =  u'%s' % (configuracao.nome)
+    # a, b = hdr_cells2[:2]
+    # a.merge(b)
+    # a.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    #
+    # paragraph3 = hdr_cells2[1].paragraphs[0]
+    # paragraph3.style2 = document.styles['Normal']
+    # paragraph3.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #
+    #
+    #
+    # #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    # hdr_cells3[0].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+    #
+    # a, b = hdr_cells3[:2]
+    # a.merge(b)
 
 def logout(request):
     messages.error(request, u'Usuário não vinculado à um setor. Procure o administrador do sistema.')
@@ -3147,28 +3157,29 @@ def relatorio_ata_registro_preco(request, pregao_id):
     from docx.shared import Inches, Pt
 
     document = Document()
-    table = document.add_table(rows=1, cols=2)
-    hdr_cells = table.rows[0].cells
-
-
-    style2 = document.styles['Normal']
-    font = style2.font
-    font.name = 'Arial'
-    font.size = Pt(6)
-
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(11)
-
-
-    paragraph = hdr_cells[0].paragraphs[0]
-    run = paragraph.add_run()
-    run.add_picture(logo, width=Inches(1.75))
-
-    paragraph2 = hdr_cells[1].paragraphs[0]
-    paragraph2.style = document.styles['Normal']
-    hdr_cells[1].text =  u'%s' % (configuracao.nome)
+    # table = document.add_table(rows=1, cols=2)
+    # hdr_cells = table.rows[0].cells
+    #
+    #
+    # style2 = document.styles['Normal']
+    # font = style2.font
+    # font.name = 'Arial'
+    # font.size = Pt(6)
+    #
+    # style = document.styles['Normal']
+    # font = style.font
+    # font.name = 'Arial'
+    # font.size = Pt(11)
+    #
+    #
+    # paragraph = hdr_cells[0].paragraphs[0]
+    # run = paragraph.add_run()
+    # run.add_picture(logo, width=Inches(1.75))
+    #
+    # paragraph2 = hdr_cells[1].paragraphs[0]
+    # paragraph2.style = document.styles['Normal']
+    # hdr_cells[1].text =  u'%s' % (configuracao.nome)
+    imprimir_cabecalho(document, configuracao, logo, municipio)
 
 
 
@@ -3991,44 +4002,45 @@ def extrato_inicial(request, pregao_id):
     from docx.shared import Inches, Pt
 
     document = Document()
-    table = document.add_table(rows=2, cols=2)
-    hdr_cells = table.rows[0].cells
-    hdr_cells2 = table.rows[1].cells
-
-
-
-
-    style2 = document.styles['Normal']
-    font = style2.font
-    font.name = 'Arial'
-    font.size = Pt(6)
-
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(11)
-
-
-
-    paragraph = hdr_cells[0].paragraphs[0]
-    run = paragraph.add_run()
-    run.add_picture(logo, width=Inches(1.75))
-
-    paragraph2 = hdr_cells[1].paragraphs[0]
-    paragraph2.style = document.styles['Normal']
-    hdr_cells[1].text =  u'%s' % (configuracao.nome)
-
-
-    paragraph3 = hdr_cells2[1].paragraphs[0]
-    paragraph3.style2 = document.styles['Normal']
-
-
-
-    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
-
-    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
-    a, b = hdr_cells2[:2]
-    a.merge(b)
+    # table = document.add_table(rows=2, cols=2)
+    # hdr_cells = table.rows[0].cells
+    # hdr_cells2 = table.rows[1].cells
+    #
+    #
+    #
+    #
+    # style2 = document.styles['Normal']
+    # font = style2.font
+    # font.name = 'Arial'
+    # font.size = Pt(6)
+    #
+    # style = document.styles['Normal']
+    # font = style.font
+    # font.name = 'Arial'
+    # font.size = Pt(11)
+    #
+    #
+    #
+    # paragraph = hdr_cells[0].paragraphs[0]
+    # run = paragraph.add_run()
+    # run.add_picture(logo, width=Inches(1.75))
+    #
+    # paragraph2 = hdr_cells[1].paragraphs[0]
+    # paragraph2.style = document.styles['Normal']
+    # hdr_cells[1].text =  u'%s' % (configuracao.nome)
+    #
+    #
+    # paragraph3 = hdr_cells2[1].paragraphs[0]
+    # paragraph3.style2 = document.styles['Normal']
+    #
+    #
+    #
+    # #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    #
+    # hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+    # a, b = hdr_cells2[:2]
+    # a.merge(b)
+    imprimir_cabecalho(document, configuracao, logo, municipio)
     document.add_paragraph()
     p = document.add_paragraph()
     p.alignment = 3
@@ -6709,43 +6721,44 @@ def ata_sessao_credenciamento(request, pregao_id):
     from docx.shared import Inches, Pt
 
     document = Document()
-    table = document.add_table(rows=2, cols=2)
-    hdr_cells = table.rows[0].cells
-    hdr_cells2 = table.rows[1].cells
-
-
-
-
-    style2 = document.styles['Normal']
-    font = style2.font
-    font.name = 'Arial'
-    font.size = Pt(6)
-
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(11)
-
-
-
-    paragraph = hdr_cells[0].paragraphs[0]
-    run = paragraph.add_run()
-    run.add_picture(logo, width=Inches(1.75))
-
-    paragraph2 = hdr_cells[1].paragraphs[0]
-    paragraph2.style = document.styles['Normal']
-    hdr_cells[1].text =  u'%s' % (configuracao.nome)
-
-
-    paragraph3 = hdr_cells2[1].paragraphs[0]
-    paragraph3.style2 = document.styles['Normal']
-
-
-
-    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
-    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
-    a, b = hdr_cells2[:2]
-    a.merge(b)
+    # table = document.add_table(rows=2, cols=2)
+    # hdr_cells = table.rows[0].cells
+    # hdr_cells2 = table.rows[1].cells
+    #
+    #
+    #
+    #
+    # style2 = document.styles['Normal']
+    # font = style2.font
+    # font.name = 'Arial'
+    # font.size = Pt(6)
+    #
+    # style = document.styles['Normal']
+    # font = style.font
+    # font.name = 'Arial'
+    # font.size = Pt(11)
+    #
+    #
+    #
+    # paragraph = hdr_cells[0].paragraphs[0]
+    # run = paragraph.add_run()
+    # run.add_picture(logo, width=Inches(1.75))
+    #
+    # paragraph2 = hdr_cells[1].paragraphs[0]
+    # paragraph2.style = document.styles['Normal']
+    # hdr_cells[1].text =  u'%s' % (configuracao.nome)
+    #
+    #
+    # paragraph3 = hdr_cells2[1].paragraphs[0]
+    # paragraph3.style2 = document.styles['Normal']
+    #
+    #
+    #
+    # #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    # hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+    # a, b = hdr_cells2[:2]
+    # a.merge(b)
+    imprimir_cabecalho(document, configuracao, logo, municipio)
     document.add_paragraph()
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -9074,36 +9087,36 @@ def imprimir_aditivo(request, aditivo_id):
 
     document = Document()
 
-    table = document.add_table(rows=2, cols=2)
-    hdr_cells = table.rows[0].cells
-    hdr_cells2 = table.rows[1].cells
-    style2 = document.styles['Normal']
-    font = style2.font
-    font.name = 'Arial'
-    font.size = Pt(6)
-
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(11)
-
-    paragraph = hdr_cells[0].paragraphs[0]
-    run = paragraph.add_run()
-    run.add_picture(logo, width=Inches(1.75))
-
-    paragraph2 = hdr_cells[1].paragraphs[0]
-    paragraph2.style = document.styles['Normal']
-    hdr_cells[1].text =  u'%s' % (configuracao.nome)
-
-
-    paragraph3 = hdr_cells2[1].paragraphs[0]
-    paragraph3.style2 = document.styles['Normal']
-
-    #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
-    hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
-    a, b = hdr_cells2[:2]
-    a.merge(b)
-
+    # table = document.add_table(rows=2, cols=2)
+    # hdr_cells = table.rows[0].cells
+    # hdr_cells2 = table.rows[1].cells
+    # style2 = document.styles['Normal']
+    # font = style2.font
+    # font.name = 'Arial'
+    # font.size = Pt(6)
+    #
+    # style = document.styles['Normal']
+    # font = style.font
+    # font.name = 'Arial'
+    # font.size = Pt(11)
+    #
+    # paragraph = hdr_cells[0].paragraphs[0]
+    # run = paragraph.add_run()
+    # run.add_picture(logo, width=Inches(1.75))
+    #
+    # paragraph2 = hdr_cells[1].paragraphs[0]
+    # paragraph2.style = document.styles['Normal']
+    # hdr_cells[1].text =  u'%s' % (configuracao.nome)
+    #
+    #
+    # paragraph3 = hdr_cells2[1].paragraphs[0]
+    # paragraph3.style2 = document.styles['Normal']
+    #
+    # #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
+    # hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
+    # a, b = hdr_cells2[:2]
+    # a.merge(b)
+    imprimir_cabecalho(document, configuracao, logo, municipio)
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.add_run(u'')
