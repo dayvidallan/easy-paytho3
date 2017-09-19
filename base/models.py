@@ -3202,6 +3202,30 @@ class ModeloAta(models.Model):
         return self.nome
 
 
+class TipoModelo(models.Model):
+    nome = models.CharField(u'Nome', max_length=500)
+    ativo = models.BooleanField(u'Ativo', default=True)
+
+    class Meta:
+        verbose_name = u'Tipo do Modelo'
+        verbose_name_plural = u'Tipos do Modelo'
+
+    def __unicode__(self):
+        return self.nome
+
+
+class TipoObjetoModelo(models.Model):
+    nome = models.CharField(u'Nome', max_length=500)
+    ativo = models.BooleanField(u'Ativo', default=True)
+
+    class Meta:
+        verbose_name = u'Tipo de Objeto do Modelo'
+        verbose_name_plural = u'Tipos de Objetos do Modelo'
+
+    def __unicode__(self):
+        return self.nome
+
+
 class ModeloDocumento(models.Model):
 
     TIPO_DOCUMENTO_CHOICES = (
@@ -3223,8 +3247,8 @@ class ModeloDocumento(models.Model):
         (u'Serviços - Outros', u'Serviços - Outros'),
     )
     nome = models.CharField(u'Nome do Documento', max_length=1000)
-    tipo = models.CharField(u'Tipo do Documento', max_length=100, choices=TIPO_DOCUMENTO_CHOICES)
-    tipo_objeto = models.CharField(u'Tipo do Objeto', max_length=100, choices=TIPO_DOCUMENTO_OBJETO_CHOICES)
+    tipo = models.ForeignKey(TipoModelo, null=True)
+    tipo_objeto = models.ForeignKey(TipoObjetoModelo, null=True)
     palavras_chaves = models.CharField(u'Palavras-Chave', max_length=4000, null=True, blank=True)
     cadastrado_em = models.DateTimeField(u'Cadastrado Em')
     cadastrado_por = models.ForeignKey(PessoaFisica)
@@ -3252,3 +3276,5 @@ class TransferenciaItemARP(models.Model):
 
     def __unicode__(self):
         return self.quantidade
+
+

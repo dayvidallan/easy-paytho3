@@ -159,5 +159,96 @@
         "fields": {
             "nome": "Menor Preço"
         }
+    },
+    {
+        "model": "base.tipomodelo",
+        "pk": 1,
+        "fields": {
+            "nome": "Minuta de Edital"
+        }
+    },
+    {
+        "model": "base.tipomodelo",
+        "pk": 2,
+        "fields": {
+            "nome": "Modelo de Edital"
+        }
+    },
+    {
+        "model": "base.tipomodelo",
+        "pk": 3,
+        "fields": {
+            "nome": "Modelos de Termo de Referência"
+        }
+    },
+    {
+        "model": "base.tipomodelo",
+        "pk": 4,
+        "fields": {
+            "nome": "Parecer Jurídico"
+        }
+    },
+    {
+        "model": "base.tipomodelo",
+        "pk": 5,
+        "fields": {
+            "nome": "Minuta de Contrato"
+        }
+    },
+    {
+        "model": "base.tipomodelo",
+        "pk": 6,
+        "fields": {
+            "nome": "Modelo de Rescisão"
+        }
+    },
+    {
+        "model": "base.tipoobjetomodelo",
+        "pk": 1,
+        "fields": {
+            "nome": "Material de Consumo"
+        }
+    },
+    {
+        "model": "base.tipoobjetomodelo",
+        "pk": 2,
+        "fields": {
+            "nome": "Material Permanente"
+        }
+    },
+    {
+        "model": "base.tipoobjetomodelo",
+        "pk": 3,
+        "fields": {
+            "nome": "Locação"
+        }
+    },
+    {
+        "model": "base.tipoobjetomodelo",
+        "pk": 4,
+        "fields": {
+            "nome": "Publicidade"
+        }
+    },
+    {
+        "model": "base.tipoobjetomodelo",
+        "pk": 5,
+        "fields": {
+            "nome": "Obras e Manutenção"
+        }
+    },
+    {
+        "model": "base.tipoobjetomodelo",
+        "pk": 6,
+        "fields": {
+            "nome": "Serviços e Engenharia"
+        }
+    },
+    {
+        "model": "base.tipoobjetomodelo",
+        "pk": 7,
+        "fields": {
+            "nome": "Serviços - Outros"
+        }
     }
 ]

@@ -1383,8 +1383,8 @@ class BuscarModeloDocumentoForm(forms.Form):
     METHOD = u'GET'
     nome = forms.CharField(label=u'Filtrar por Nome', required=False)
     palavra = forms.CharField(label=u'Filtrar por Plavra-chave', required=False)
-    tipo = forms.ChoiceField(label=u'Filtrar por Tipo', required=False, choices=(('', '---------'),) + ModeloDocumento.TIPO_DOCUMENTO_CHOICES)
-    tipo_objeto = forms.ChoiceField(label=u'Filtrar por Tipo do Objeto', required=False, choices=(('', '---------'),) + ModeloDocumento.TIPO_DOCUMENTO_OBJETO_CHOICES)
+    tipo = forms.ModelChoiceField(TipoModelo.objects, label=u'Filtrar por Tipo', required=False)
+    tipo_objeto = forms.ModelChoiceField(TipoObjetoModelo.objects, label=u'Filtrar por Tipo do Objeto', required=False)
 
 class ModeloDocumentoForm(forms.ModelForm):
 
@@ -1397,6 +1397,8 @@ class ModeloDocumentoForm(forms.ModelForm):
         self.fields['palavras_chaves'].label = u'Palavras-chave (separe por ;)'
 
         self.fields['arquivo'].required = True
+        self.fields['tipo'].queryset = TipoModelo.objects.filter(ativo=True)
+        self.fields['tipo_objeto'].queryset = TipoObjetoModelo.objects.filter(ativo=True)
 
 
 class RelatoriosGerenciaisComprasForm(forms.Form):
