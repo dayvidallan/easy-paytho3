@@ -721,6 +721,15 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_medio_total(self):
         return self.valor_medio*self.quantidade
 
+    def faltou_lance_participante(self):
+        if not RodadaPregao.objects.filter(item=self).exists():
+            return False
+        rodada_atual = self.get_rodada_atual()
+        fornecedores_lance = PropostaItemPregao.objects.filter(item=self, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
+        for fornecedor in fornecedores_lance:
+            if not LanceItemRodadaPregao.objects.filter(rodada=rodada_atual, item=self, participante=fornecedor.participante).exists() and not LanceItemRodadaPregao.objects.filter(item=self, participante=fornecedor.participante, valor__isnull=True).exists():
+                return fornecedor.participante
+        return False
 
     def get_valor_final_total(self):
         valor = self.get_vencedor()

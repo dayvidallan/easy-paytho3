@@ -2011,6 +2011,9 @@ def alterar_valor_lance(request, lance_id):
 def avancar_proximo_item(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     if request.user.has_perm('base.pode_cadastrar_pregao') and item.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        if item.faltou_lance_participante():
+            messages.error(request, u'A empresa %s não registrou lance na rodada atual nem declinou em nenhuma das rodadas.' % item.faltou_lance_participante())
+            return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
         if item.tem_empate_beneficio():
             messages.error(request, u'Este item tem um empate.')
             return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
