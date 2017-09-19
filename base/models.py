@@ -934,7 +934,6 @@ class ItemSolicitacaoLicitacao(models.Model):
                     if item.participante.me_epp and item.valor <= limite_lance and LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante).count() <= LanceItemRodadaPregao.objects.filter(item=self, participante=self.get_lance_minimo().participante).count() and ((declinou_antes and not LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante, rodada=rodada_atual, valor__isnull=True).exists()) or (not declinou_antes and rodada_atual and not LanceItemRodadaPregao.objects.filter(item=self, participante=item.participante, rodada=rodada_atual, valor__isnull=True).count() > 1)):
 
                         return item.participante
-
                 propostas = PropostaItemPregao.objects.filter(item=self, concorre=True, desistencia=False, desclassificado=False)
                 for proposta in propostas:
                     declinou_antes = rodada_atual and LanceItemRodadaPregao.objects.filter(item=self, participante=proposta.participante, rodada__rodada__lt=rodada_atual.rodada, valor__isnull=True).exists()
