@@ -5057,13 +5057,13 @@ def informar_valor_final_itens_lote(request, lote_id, pregao_id):
                     messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto (%s) nem do que o valor máximo do item: %s.' % (item.get_valor_total_proposto(), item.valor_medio))
                     return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
 
-
-                valor = PropostaItemPregao.objects.filter(participante=vencedor, item__in=ids_itens_do_lote).aggregate(total=Sum('valor_item_lote'))['total'] or 0
-                if (valor + valor_informado) > lote.get_total_lance_ganhador():
-                    messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador.')
+                valor_final = valor_informado * item.quantidade
+                valor = PropostaItemPregao.objects.filter(participante=vencedor, item__in=ids_itens_do_lote).exclude(item=item).aggregate(total=Sum('valor_item_lote'))['total'] or 0
+                if (valor + valor_final) > lote.get_total_lance_ganhador():
+                    messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador: %s.' % lote.get_total_lance_ganhador())
                     return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
 
-                valor_final = valor_informado * item.quantidade
+
                 PropostaItemPregao.objects.filter(participante=vencedor, item=item).update(valor_item_lote=valor_final)
                 contador += 1
             messages.success(request, u'Valor cadastrado com sucesso.')
@@ -5556,7 +5556,7 @@ def visualizar_ata_registro_preco(request, ata_id):
     #     materiais[nome]['pedidos'].append(pedido)
     #
     # resultado = collections.OrderedDict(sorted(tabela.items()))
-    
+
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
 
@@ -6955,12 +6955,12 @@ def editar_valor_final(request, item_id, pregao_id):
             itens_do_lote = ItemLote.objects.filter(lote=lote).values_list('item', flat=True)
 
             if form.cleaned_data.get('valor') > item.get_valor_total_proposto() or form.cleaned_data.get('valor') > item.valor_medio:
-                messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto nem do que o valor máximo do item.')
+                messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto: %s nem do que o valor máximo do item: %s.' % (item.get_valor_total_proposto(), item.valor_medio))
                 return HttpResponseRedirect(u'/base/editar_valor_final/%s/%s/' % (item.id, pregao.id))
 
             valor = PropostaItemPregao.objects.filter(item__in=itens_do_lote, participante=lote.get_empresa_vencedora()).exclude(item=item).aggregate(total=Sum('valor_item_lote'))['total'] or 0
             if (valor + form.cleaned_data.get('valor')*item.quantidade) > lote.get_total_lance_ganhador():
-                messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador.')
+                messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador: %s.' % lote.get_total_lance_ganhador())
                 return HttpResponseRedirect(u'/base/editar_valor_final/%s/%s/' % (item_id, pregao.id))
 
             valor_final = form.cleaned_data.get('valor') * item.quantidade
