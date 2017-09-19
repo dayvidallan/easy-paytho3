@@ -937,7 +937,7 @@ class FiltraFornecedorPedidoForm(forms.Form):
         self.fields['vencedor'].queryset = Fornecedor.objects.filter(id__in=self.participantes)
 
 class ValorFinalItemLoteForm(forms.Form):
-    valor = forms.DecimalField(label=u'Valor')
+    valor = forms.DecimalField(label=u'Valor', max_digits=12, decimal_places=2)
     participante_id = forms.CharField(widget=forms.HiddenInput(), required=False)
     def __init__(self, *args, **kwargs):
         self.participante_id = kwargs.pop('participante_id', None)

@@ -2482,17 +2482,23 @@ def importar_itens(request, solicitacao_id):
                 except XLRDError:
                     raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
 
-                for row in range(3, sheet.nrows):
+                for row in range(1, sheet.nrows):
 
-                    #codigo = unicode(sheet.cell_value(row, 0)).strip()
-                    especificacao = unicode(sheet.cell_value(row, 1)).strip()
-                    unidade = unicode(sheet.cell_value(row, 2)).strip()
-                    qtd = unicode(sheet.cell_value(row, 3)).strip()
-                    if row == 3:
+
+                    especificacao = unicode(sheet.cell_value(row, 0)).strip()
+                    unidade = unicode(sheet.cell_value(row, 1)).strip()
+                    qtd = unicode(sheet.cell_value(row, 2)).strip()
+                    if row == 1:
                         if especificacao != u'ESPECIFICAÇÃO DO PRODUTO' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
                             raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
                     else:
                         if especificacao and unidade and qtd:
+                            try:
+                                with transaction.atomic():
+                                    Decimal(qtd)
+                            except:
+                                messages.error(request, u'a quantidade %s %s é inválida.' % (qtd))
+                                return HttpResponseRedirect(u'/base/importar_itens/%s/' % solicitacao.id)
                             if TipoUnidade.objects.filter(nome=unidade).exists():
                                 un = TipoUnidade.objects.filter(nome=unidade)[0]
                             else:
@@ -2516,7 +2522,7 @@ def importar_itens(request, solicitacao_id):
                                 material.save()
                             novo_item.material = material
                             novo_item.unidade = un
-                            novo_item.quantidade = sheet.cell_value(row, 3)
+                            novo_item.quantidade = sheet.cell_value(row, 2)
                             novo_item.save()
 
                             novo_item_qtd = ItemQuantidadeSecretaria()
