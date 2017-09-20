@@ -318,7 +318,7 @@
             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and solicitacao.credenciamento_origem %}
                 <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Emitir Termo</a>
             {% endif %}
-            {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.tem_ordem_compra and not solicitacao.contrato_set.exists and not solicitacao.credenciamento_origem and not solicitacao.contrato_origem  %}
+            {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.tem_ordem_compra and not solicitacao.contrato_set.exists  %}
                 <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
 
             {% endif %}
