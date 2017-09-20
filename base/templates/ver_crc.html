@@ -16,6 +16,7 @@
             {% if registro %}
                 <a class="btn btn-success" href="/base/cadastrar_crc/{{ fornecedor.id }}/">Editar CRC</a>
                 <a onclick="return confirm('Você tem certeza que deseja renovar a validade do CRC?')" class="btn btn-default" href="/base/renovar_crc/{{ fornecedor.id }}/">Renovar CRC</a>
+                <a class="btn btn-success" href="/base/cadastrar_certidao_crc/{{ registro.id }}/">Anexar Certidão</a>
                 <a class="btn btn-info" href="/base/imprimir_crc/{{ fornecedor.id }}/">Imprimir CRC</a>
             {% else %}
             <a class="btn btn-success" href="/base/cadastrar_crc/{{ fornecedor.id }}/">Cadastrar CRC</a>
@@ -201,6 +202,31 @@
                 {% endfor %}
             {% else %}
                 <p class="alert alert-warning">Nenhum CNAES Secundário.</p>
+            {% endif %}
+            {% if certidoes.exists %}
+                <h3>Certidões</h3><hr>
+
+
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+
+                             <tr>
+                                <th>Nome</th>
+                                <th>Validade</th>
+                                <th>Arquivo</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% for certidao in certidoes %}
+                            <tr>
+                                <td>{{ certidao.nome }}</td>
+                                <td>{{ certidao.validade }}</td>
+                                <td><a href="/media/{{ certidao.arquivo }}">Ver Certidão</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br><br>
             {% endif %}
         {% else %}
             <br><br><br>

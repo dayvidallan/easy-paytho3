@@ -2488,9 +2488,9 @@ def importar_itens(request, solicitacao_id):
                 for row in range(1, sheet.nrows):
 
 
-                    especificacao = unicode(sheet.cell_value(row, 0)).strip()
-                    unidade = unicode(sheet.cell_value(row, 1)).strip()
-                    qtd = unicode(sheet.cell_value(row, 2)).strip()
+                    especificacao = unicode(sheet.cell_value(row, 1)).strip()
+                    unidade = unicode(sheet.cell_value(row, 2)).strip()
+                    qtd = unicode(sheet.cell_value(row, 3)).strip()
                     if row == 1:
                         if especificacao != u'ESPECIFICAÇÃO DO PRODUTO' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
                             raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
@@ -2525,7 +2525,7 @@ def importar_itens(request, solicitacao_id):
                                 material.save()
                             novo_item.material = material
                             novo_item.unidade = un
-                            novo_item.quantidade = sheet.cell_value(row, 2)
+                            novo_item.quantidade = sheet.cell_value(row, 3)
                             novo_item.save()
 
                             novo_item_qtd = ItemQuantidadeSecretaria()
@@ -3253,7 +3253,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells[0].text = u'Email: %s' % fornecedor.email
                 p = document.add_paragraph()
 
-                table = document.add_table(rows=itens+1, cols=6)
+                table = document.add_table(rows=itens+2, cols=6)
                 hdr_cells = table.rows[0].cells
                 hdr_cells[0].text = u'Lote / Item'
                 hdr_cells[1].text = u'Objeto'
@@ -7900,6 +7900,7 @@ def ver_crc(request, fornecedor_id):
             registro = FornecedorCRC.objects.filter(fornecedor=fornecedor)[0]
             cnaes = CnaeSecundario.objects.filter(crc=registro)
             socios = SocioCRC.objects.filter(crc=registro)
+            certidoes = CertidaoCRC.objects.filter(crc=registro)
         return render(request, 'ver_crc.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
@@ -9729,3 +9730,17 @@ def deletar_modelo_documento(request, documento_id):
 
     else:
         raise PermissionDenied
+
+@login_required()
+def cadastrar_certidao_crc(request, crc_id):
+    crc = get_object_or_404(FornecedorCRC, pk=crc_id)
+    title = u'Cadastrar Certidão - %s' % crc.fornecedor
+    form = CertidaoCRCForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        o = form.save(False)
+        o.crc = crc
+        o.save()
+        messages.success(request, u'Certidão cadastrada com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/{}/'.format(crc.fornecedor.id))
+
+    return render(request, 'cadastrar_certidao_crc.html', locals(), RequestContext(request))

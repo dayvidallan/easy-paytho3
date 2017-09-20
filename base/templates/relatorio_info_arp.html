@@ -112,7 +112,7 @@ ul{
 
                                 <table border="1" width="100%" cellpadding="5" cellspacing="5">
                                     <thead>
-
+                                        <tr><th colspan="7">{{ lote }}</th></tr>
                                         <tr>
                                             <th>Item</th>
                                             <th>Material/Serviço</th>
@@ -125,24 +125,24 @@ ul{
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for opcao in ata.itemataregistropreco_set.all %}
+                                        {% for opcao in lote.get_itens_do_lote %}
                                             <tr>
                                                 {% if ata.adesao %}
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>{{ opcao.material|truncatechars:500 }}</td>
                                                 {% else %}
-                                                    <td>{{ opcao.item }}</td>
-                                                    <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                    <td>{{ opcao }}</td>
+                                                    <td>{{ opcao.material|truncatechars:500 }}</td>
                                                 {% endif %}
-                                                <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                                                <td>{{ opcao.get_item_arp.marca|default_if_none:"-" }}</td>
+                                                <td>{{ opcao.get_item_arp.unidade|default_if_none:"-" }}</td>
                                                 {% if ata.adesao %}
-                                                    <td>{{ opcao.fornecedor }}</td>
+                                                    <td>{{ opcao.get_item_arp.fornecedor }}</td>
                                                 {% else %}
-                                                    <td>{{ opcao.participante }}</td>
+                                                    <td>{{ opcao.get_item_arp.participante }}</td>
                                                 {% endif %}
-                                                <td>{{ opcao.valor|format_money }}</td>
-                                                <td>{{ opcao.quantidade|format_quantidade }}</td>
+                                                <td>{{ opcao.get_item_arp.valor|format_money }}</td>
+                                                <td>{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>

@@ -165,7 +165,6 @@
 
 
 {% block content %}
-    <h4>Cadastrado por: {{ ata.cadastrado_por }} </h4>
     <div class="pull-right">
 
 
@@ -284,6 +283,7 @@
 
                                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                             <thead>
+                                                <tr><th colspan="8">{{ lote }}</th></tr>
 
                                                 <tr>
                                                     <th>Item</th>
@@ -299,25 +299,25 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for opcao in ata.get_itens %}
+                                                {% for opcao in lote.get_itens_do_lote %}
                                                     <tr>
                                                         {% if ata.adesao %}
                                                             <td>{{ forloop.counter }}</td>
                                                             <td>{{ opcao.material|truncatechars:500 }}</td>
                                                         {% else %}
-                                                            <td>{{ opcao.item }}</td>
-                                                            <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                            <td>{{ opcao }}</td>
+                                                            <td>{{ opcao.material|truncatechars:500 }}</td>
                                                         {% endif %}
-                                                        <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                        <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                                                        <td>{{ opcao.get_item_arp.marca|default_if_none:"-" }}</td>
+                                                        <td>{{ opcao.get_item_arp.unidade|default_if_none:"-" }}</td>
                                                         {% if ata.adesao %}
-                                                            <td>{{ opcao.fornecedor.razao_social }}</td>
+                                                            <td>{{ opcao.get_item_arp.fornecedor.razao_social }}</td>
                                                         {% else %}
-                                                            <td>{{ opcao.participante.fornecedor.razao_social }}</td>
+                                                            <td>{{ opcao.get_item_arp.participante.fornecedor.razao_social }}</td>
                                                         {% endif %}
-                                                        <td>{{ opcao.valor|format_money }}</td>
-                                                        <td>{{ opcao.quantidade|format_quantidade }}</td>
-                                                        <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                                                        <td>{{ opcao.get_item_arp.valor|format_money }}</td>
+                                                        <td>{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
+                                                        <td>{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                                     </tr>

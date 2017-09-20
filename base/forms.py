@@ -1464,3 +1464,12 @@ class TransfereItemARPForm(forms.ModelForm):
         if self.cleaned_data.get('quantidade') and self.cleaned_data.get('quantidade') > self.item.get_saldo_atual_secretaria(self.cleaned_data.get('secretaria_origem')):
             raise forms.ValidationError(u'A quantidade solicitada é maior do que a quantidade disponível: %s.' % self.item.get_saldo_atual_secretaria(self.cleaned_data.get('secretaria_origem')))
 
+class CertidaoCRCForm(forms.ModelForm):
+
+    class Meta:
+        model = CertidaoCRC
+        fields = ('nome', 'validade', 'arquivo')
+
+    def __init__(self, *args, **kwargs):
+        super(CertidaoCRCForm, self).__init__(*args, **kwargs)
+        self.fields['validade'].widget.attrs = {'class': 'vDateField'}

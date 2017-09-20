@@ -289,6 +289,7 @@ urlpatterns = [
     url(r'^notificacoes/$', views.notificacoes, name='notificacoes'),
     url(r'^editar_item_arp/(?P<item_id>\d+)/$', views.editar_item_arp, name='editar_item_arp'),
     url(r'^apagar_item_arp/(?P<item_id>\d+)/$', views.apagar_item_arp, name='apagar_item_arp'),
+    url(r'^cadastrar_certidao_crc/(?P<crc_id>\d+)/$', views.cadastrar_certidao_crc, name='cadastrar_certidao_crc'),
 
 
 

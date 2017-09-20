@@ -405,7 +405,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def tem_item_sem_pesquisa(self):
-        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self):
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=False):
             if not item.recebeu_pesquisa_todos_fornecedores():
                 return True
         return False
@@ -869,6 +869,9 @@ class ItemSolicitacaoLicitacao(models.Model):
         if self.tem_empate_beneficio():
             return ParticipantePregao.objects.get(id=self.tem_empate_beneficio().id)
 
+    def get_item_arp(self):
+        if ItemAtaRegistroPreco.objects.filter(item=self).exists():
+            return ItemAtaRegistroPreco.objects.filter(item=self)[0]
 
     def get_proximo_lance(self):
         # if self.tem_empate_beneficio():
@@ -3289,3 +3292,15 @@ class TransferenciaItemARP(models.Model):
         return self.quantidade
 
 
+class CertidaoCRC(models.Model):
+    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC')
+    nome = models.CharField(u'Nome', max_length=1000)
+    validade = models.DateField(u'Validade')
+    arquivo = models.FileField(u'Arquivo', null=True, blank=True, upload_to=u'upload/crc/')
+
+    class Meta:
+        verbose_name = u'Certidão CRC'
+        verbose_name_plural = u'Certidões CRC'
+
+    def __unicode__(self):
+        return self.nome
