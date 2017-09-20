@@ -4689,11 +4689,8 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
         participantes = Fornecedor.objects.filter(id__in=itens_contrato.values_list('fornecedor', flat=True))
         form = FiltraFornecedorPedidoForm(request.POST or None, participantes=participantes)
 
-    eh_lote = solicitacao.eh_lote()
-    if eh_lote:
-        resultados = solicitacao.get_lotes()
-    else:
-        resultados = itens_contrato
+    eh_lote = False
+    resultados = itens_contrato
     buscou = False
 
     if form.is_valid():

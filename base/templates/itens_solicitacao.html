@@ -317,11 +317,10 @@
             {% endif %}
             {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and solicitacao.credenciamento_origem %}
                 <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Emitir Termo</a>
+            {% endif %}
+            {% if perms.base.pode_gerenciar_contrato and recebida_no_setor and not solicitacao.tem_ordem_compra and not solicitacao.contrato_set.exists and not solicitacao.credenciamento_origem and not solicitacao.contrato_origem  %}
+                <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
 
-                {% if not solicitacao.tem_ordem_compra and not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists and not solicitacao.credenciamento_origem  and not solicitacao.contrato_origem %}
-                    <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
-
-                {% endif %}
             {% endif %}
             <!--{% if perms.base.pode_avaliar_minuta and recebida_no_setor and solicitacao.credenciamento_origem and not solicitacao.termo_inexigibilidade %}-->
                 <!--<a href="/base/cadastrar_termo_inexigibilidade/{{solicitacao.id}}/" class="btn btn-success">Cadastrar Termo de Inexigibilidade</a>-->

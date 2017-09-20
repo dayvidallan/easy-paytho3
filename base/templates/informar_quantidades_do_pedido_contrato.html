@@ -42,7 +42,7 @@
         </form>
 
 
-            {% if solicitacao.eh_lote %}
+            {% if eh_lote %}
                 {% for lote in resultados %}
                     <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
                         {% csrf_token %}
@@ -71,9 +71,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for resultado in lote.get_itens_do_lote %}
+                                {% for resultado in resultados %}
                                     <tr>
-                                        <td>{{ resultado }}</td>
+                                        <td>{{ resultado.item }}</td>
                                         <td>{{ resultado.material|truncatechars:500 }}</td>
                                         <td>{{ resultado.get_marca_item_lote|default_if_none:"-" }}</td>
                                         <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
