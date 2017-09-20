@@ -123,7 +123,7 @@ ul{
                             <tr>
 
                                 {% if not eh_lote %}
-                                    <th width="7%">Item</th>
+                                    <th width="7%">Item/Lote</th>
                                     <th>Especificação</th>
                                     <th width="20%">Unidade</th>
                                 {% else %}
@@ -141,10 +141,12 @@ ul{
                             {%  for pedido in pedidos.pedidos %}
 
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+
                                     {% if pedido.item.item.material %}
+                                        <td>{{ pedido.item.item }}</td>
                                         <td  style="text-align: left;">{{ pedido.item.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% else %}
+                                        <td>{{ pedido.item.material }}</td>
                                         <td  style="text-align: left;">{{ pedido.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% endif %}
                                     {% if not eh_lote %}
