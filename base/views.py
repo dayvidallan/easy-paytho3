@@ -1500,7 +1500,7 @@ def cadastrar_anexo_pregao(request, pregao_id):
 
                 for registro in registros:
                     texto = u'Olá, %s. O arquivo %s foi adicionado no portal da transparência da %s. Endereço para visualização: %s ' % (registro.responsavel, arquivo_nome, config.nome, link)
-                    send_mail('Easy Gestão Pública - Novo Arquivo Cadastrado', texto, settings.EMAIL_HOST_USER, [registro.email], fail_silently=False)
+                    send_mail('Easy Gestão Pública - Novo Arquivo Cadastrado', texto, settings.EMAIL_HOST_USER, [registro.email], fail_silently=True)
 
             messages.success(request, u'Anexo cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/pregao/%s/#anexos' % pregao.id)
