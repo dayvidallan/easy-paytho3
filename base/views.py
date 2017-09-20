@@ -302,11 +302,12 @@ def cadastra_proposta_pregao(request, pregao_id):
                 edicao=True
             else:
                 itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
-        if edicao or selecionou:
+        if edicao or selecionou or request.POST:
             form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao, initial=dict(fornecedor=participante))
         else:
             form = CadastraPrecoParticipantePregaoForm(request.POST or None, request.FILES, pregao=pregao)
         if form.is_valid():
+
             arquivo_up = form.cleaned_data.get('arquivo')
             fornecedor = form.cleaned_data.get('fornecedor')
             if arquivo_up:
@@ -394,10 +395,14 @@ def cadastra_proposta_pregao(request, pregao_id):
                                 nova_proposta_para_lote.save()
 
             messages.success(request, u'Proposta cadastrada com sucesso.')
-            return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
+            return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s&preencheu=True' % (pregao.id, fornecedor.id))
         else:
             if edicao or selecionou:
-                form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao, initial=dict(fornecedor=participante))
+                if request.GET.get('preencheu'):
+                    form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao, preencher_box=True, initial=dict(fornecedor=participante))
+                else:
+                    form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao, initial=dict(fornecedor=participante))
+
             else:
                 form = CadastraPrecoParticipantePregaoForm(request.POST or None, pregao=pregao)
 
@@ -2776,7 +2781,10 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['lance'].append(item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if eh_lote:
+                valor = valor + item.get_valor_total_item_lote()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
 
@@ -5492,7 +5500,7 @@ def termo_homologacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
     if pregao.eh_pregao():
         template = get_template('termo_homologacao.html')
     else:

@@ -155,16 +155,18 @@ class CadastraPrecoParticipantePregaoForm(forms.Form):
     preencher = forms.BooleanField(label=u'Preencher Manualmente', initial=False, required=False)
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
 
-
     class Media:
             js = ['/static/base/js/propostapregao.js']
 
     def __init__(self, *args, **kwargs):
         self.pregao = kwargs.pop('pregao',None)
+        self.preencher_box = kwargs.pop('preencher_box',None)
         super(CadastraPrecoParticipantePregaoForm, self).__init__(*args, **kwargs)
         ja_cadastrou = PropostaItemPregao.objects.filter(pregao=self.pregao).values_list('participante', flat=True)
         #self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(pregao = self.pregao, desclassificado=False).exclude(id__in=ja_cadastrou).order_by('id')
         self.fields['fornecedor'].queryset = ParticipantePregao.objects.filter(pregao = self.pregao, desclassificado=False, excluido_dos_itens=False).order_by('id')
+        if self.preencher_box:
+            self.fields['preencher'].initial=True
 
 
 class PregaoForm(forms.ModelForm):

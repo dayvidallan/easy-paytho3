@@ -69,32 +69,34 @@ ul{
                     <table border="1" width="100%" cellpadding="5" cellspacing="5">
                         <thead>
                             <tr>
-                                <th>Lote</th>
-                                <th>Itens do Lote</th>
+
+                                <th width="15%">Item/Lote</th>
+                                <th>Especificação</th>
+                                <th width="20%">Unidade</th>
+
+                                <th width="10%">Qtd.</th>
                                 <th>Total</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             {%  for item in lances.lance %}
+                                {% for registro in item.get_itens_do_lote %}
+                                    <tr>
+                                        <td>{{ registro }}</td>
+                                        <td>{{ registro.material }}</td>
+                                        <td>{{ registro.unidade }}</td>
+                                        <td>{{ registro.quantidade }}</td>
+                                        <td>{{ registro.get_valor_unitario_final|format_money }}</td>
 
-                                <tr>
-                                    <td>{{ item.item }}</td>
-                                    <td>
-                                        {% for item in item.get_itens_do_lote %}
-                                            {{ item }}<br>
-                                        {% endfor %}
-                                    </td>
-                                    <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                                        <td>R$ {{ registro.get_valor_item_lote|format_money  }}</td>
 
 
-                                </tr>
+                                    </tr>
+                                 {% endfor %}
                             {% endfor %}
-                            {% if eh_lote %}
-                                <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
-                            {% else %}
-                                <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="6"><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
-                            {% endif %}
+                            <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+
                         </tbody>
                     </table>
 
