@@ -100,46 +100,90 @@ ul{
    </table>
 
     <br>
+        {% if ata.solicitacao.eh_lote %}
+            <h3>Lotes da Ata de Registro de Preço</h3>
+            {% for lote in ata.solicitacao.get_lotes %}
+                <table border="1" width="100%" cellpadding="5" cellspacing="5">
 
-        <h3>Itens da Ata de Registro de Preço</h3>
-        <table border="1" width="100%" cellpadding="5" cellspacing="5">
+                    <thead>
 
-            <thead>
-
-                <tr>
-                    <th width="5%">Item</th>
-                    <th width="65%">Material/Serviço</th>
-                    <th width="10%">Unidade</th>
-                    <th width="10%">Valor Unitário</th>
-                    <th width="10%">Quantidade Consumida</th>
-                    <th width="10%">Total</th>
+                        <tr>
+                            <th width="5%">Item</th>
+                            <th width="65%">Material/Serviço</th>
+                            <th width="10%">Unidade</th>
+                            <th width="10%">Valor Unitário</th>
+                            <th width="10%">Quantidade Consumida</th>
+                            <th width="10%">Total</th>
 
 
-                </tr>
-            </thead>
-            <tbody>
-                {% for opcao in itens %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {% for opcao in lote.get_itens_do_lote %}
+                            <tr>
+                                {% if opcao %}
+                                    <td>{{ opcao }}</td>
+                                    <td>{{ opcao.material|truncatechars:500 }} - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+                                {% else %}
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ opcao.material|truncatechars:500 }}  - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+
+                                {% endif %}
+                                <td>{{ opcao.get_item_arp.unidade|default_if_none:"-" }}</td>
+                                <td>{{ opcao.get_item_arp.valor|format_money }}</td>
+                                <td>{{ opcao.get_item_arp.get_quantidade_consumida|format_quantidade }}</td>
+                                <td>{{ opcao.get_item_arp.get_valor_total_consumido|format_money }}</td>
+                            </tr>
+                        {% endfor %}
+                         <tr>
+                             <td colspan="5">Total</td>
+                             <td>{{ total|format_money }}</td>
+                         </tr>
+                    </tbody>
+                </table>
+            {% endfor %}
+
+        {% else %}
+            <h3>Itens da Ata de Registro de Preço</h3>
+            <table border="1" width="100%" cellpadding="5" cellspacing="5">
+
+                <thead>
+
                     <tr>
-                        {% if opcao.item %}
-                            <td>{{ opcao.item.item }}</td>
-                            <td>{{ opcao.item.material|truncatechars:500 }} - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
-                        {% else %}
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ opcao.material|truncatechars:500 }}  - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+                        <th width="5%">Item</th>
+                        <th width="65%">Material/Serviço</th>
+                        <th width="10%">Unidade</th>
+                        <th width="10%">Valor Unitário</th>
+                        <th width="10%">Quantidade Consumida</th>
+                        <th width="10%">Total</th>
 
-                        {% endif %}
-                        <td>{{ opcao.unidade|default_if_none:"-" }}</td>
-                        <td>{{ opcao.valor|format_money }}</td>
-                        <td>{{ opcao.get_quantidade_consumida|format_quantidade }}</td>
-                        <td>{{ opcao.get_valor_total_consumido|format_money }}</td>
+
                     </tr>
-                {% endfor %}
-                 <tr>
-                     <td colspan="5">Total</td>
-                     <td>{{ total|format_money }}</td>
-                 </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for opcao in itens %}
+                        <tr>
+                            {% if opcao.item %}
+                                <td>{{ opcao.item.item }}</td>
+                                <td>{{ opcao.item.material|truncatechars:500 }} - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+                            {% else %}
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ opcao.material|truncatechars:500 }}  - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+
+                            {% endif %}
+                            <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                            <td>{{ opcao.valor|format_money }}</td>
+                            <td>{{ opcao.get_quantidade_consumida|format_quantidade }}</td>
+                            <td>{{ opcao.get_valor_total_consumido|format_money }}</td>
+                        </tr>
+                    {% endfor %}
+                     <tr>
+                         <td colspan="5">Total</td>
+                         <td>{{ total|format_money }}</td>
+                     </tr>
+                </tbody>
+            </table>
+        {% endif %}
 
 
 

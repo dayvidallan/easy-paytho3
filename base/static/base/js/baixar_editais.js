@@ -1,14 +1,15 @@
 $(document).ready(function() {
 	$('#mensagem_erro').hide();
+	$('#dados').hide();
 
 
 	$("#buscapessoa").click(function(event) {
 		$("#mensagem_erro").hide();
+		$('#dados').show();
 		botao = $("#buscapessoa");
 		valor_antigo = botao.html();
 		pessoa = $('#id_campo_busca').val();
 		botao.html('<span class="fa fa-spinner fa-spin"></span>');
-
 
 		$.ajax({
 			method: "GET",

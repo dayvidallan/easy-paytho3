@@ -11,25 +11,16 @@
 
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}
-              <div class="col-xs-6 col-md-2">
-                    <div class="controls">
-                        <div class="form-group">
-
-
-                            <label class="control-label  " for="id_campo_busca">Informe seu CNPJ ou seu CPF</label>
-
-
-                            <div class=" ">
-                                <input class=" form-control" id="id_campo_busca" name="campo_busca" type="text"  />
-
-
-
-
+            <div class="col-xs-6 col-md-2">
+                <div class="controls">
+                    <div class="form-group">
+                        <label class="control-label  " for="id_campo_busca">Informe seu CNPJ ou seu CPF</label>
+                        <div class=" ">
+                            <input class=" form-control" id="id_campo_busca" name="campo_busca" type="text"  />
+                        </div>
                     </div>
-
                 </div>
-                    </div>
-              </div>
+            </div>
 
                 <div class="col-xs-1 col-md-1">
                     <br>
@@ -38,7 +29,7 @@
                       </button></p>
                 </div>
 
-
+            <div id="dados">
 
                 <div class="col-xs-12">
                     <div id="mensagem_erro" class="alert alert-warning"></div>
@@ -51,7 +42,7 @@
                 </div>
                     <br>
                 </div>
-
+            </div>
 
         </form>
 

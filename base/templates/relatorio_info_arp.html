@@ -99,8 +99,9 @@ ul{
        </tr>
    </table>
    <br>
-        <h3>Itens da Ata</h3>
+
         {% if ata.solicitacao.eh_lote %}
+            <h3>Lotes da Ata</h3>
             <table border="1" width="100%" cellpadding="5" cellspacing="5">
 
                 <tbody>
@@ -155,6 +156,7 @@ ul{
                 </tbody>
             </table>
         {% else %}
+            <h3>Itens da Ata</h3>
             <table border="1" width="100%" cellpadding="5" cellspacing="5">
                 <thead>
 
