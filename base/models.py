@@ -1587,7 +1587,19 @@ class Pregao(models.Model):
         return previsto, final, total_desconto_geral, economizado
 
 
+    def tem_lote_sem_valor_unitario(self):
+        if not self.solicitacao.eh_lote():
+            return False
 
+        else:
+
+            lotes = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True)
+            for lote in lotes:
+                for item in lote.get_itens_do_lote():
+                    if not item.get_valor_unitario_final():
+                        return True
+
+        return False
 
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):

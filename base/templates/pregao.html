@@ -809,15 +809,19 @@
                 <br><br>
                 {% if pregao.tem_resultado %}
                     {% if pregao.eh_pregao %}
-                        <fieldset>
-                            <legend>Adjudicação</legend>
-                            {% if not pregao.data_adjudicacao and recebida_setor %}
-                                <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
-                            {% else %}
-                                <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
-                                <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
-                            {% endif %}
-                        </fieldset>
+                        {% if pregao.solicitacao.eh_lote and pregao.tem_lote_sem_valor_unitario %}
+                            <p class="alert alert-danger">Informe os valores unitários dos itens dos lotes.</p>
+                        {% else %}
+                            <fieldset>
+                                <legend>Adjudicação</legend>
+                                {% if not pregao.data_adjudicacao and recebida_setor %}
+                                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-success">Registrar Adjudicação</a>
+                                {% else %}
+                                    <a href="/base/termo_adjudicacao/{{ pregao.pk }}/" class="btn btn-info" target="_blank">Ver Termo de Adjudicação</a>
+                                    <a href="/base/registrar_adjudicacao/{{ pregao.pk }}/" class="btn btn-default" target="_blank">Editar Termo de Adjudicação</a>
+                                {% endif %}
+                            </fieldset>
+                        {% endif %}
 
                     {% endif %}
                     <br>
