@@ -2905,7 +2905,7 @@ class ItemContrato(models.Model):
 
     def get_aditivo_permitido_valor_soma(self):
         total_valor = 0
-        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_VALOR):
+        for item in AditivoItemContrato.objects.filter(item=self, tipo__in=[Aditivo.ACRESCIMO_VALOR, Aditivo.ACRESCIMO_QUANTITATIVOS]):
             total_valor += item.indice
 
         if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
@@ -2921,7 +2921,7 @@ class ItemContrato(models.Model):
     def get_aditivo_permitido_valor_subtrai(self):
         total_valor = 0
 
-        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_VALOR):
+        for item in AditivoItemContrato.objects.filter(item=self, tipo__in=[Aditivo.SUPRESSAO_VALOR, Aditivo.SUPRESSAO_QUANTITATIVO]):
             total_valor += item.indice
         if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
             if total_valor > 50:
@@ -2934,7 +2934,7 @@ class ItemContrato(models.Model):
 
     def get_aditivo_permitido_quantitativo_soma(self):
         total_quantitativo = 0
-        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_QUANTITATIVOS):
+        for item in AditivoItemContrato.objects.filter(item=self, tipo__in=[Aditivo.ACRESCIMO_VALOR, Aditivo.ACRESCIMO_QUANTITATIVOS]):
             total_quantitativo += item.indice
 
         if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
@@ -2944,7 +2944,7 @@ class ItemContrato(models.Model):
 
     def get_aditivo_permitido_quantitativo_subtrai(self):
         total_quantitativo = 0
-        for item in AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_QUANTITATIVO):
+        for item in AditivoItemContrato.objects.filter(item=self, tipo__in=[Aditivo.SUPRESSAO_VALOR, Aditivo.SUPRESSAO_QUANTITATIVO]):
             total_quantitativo += item.indice
         if self.contrato.pregao and self.contrato.pregao.objeto_tipo == Pregao.SERVICOS_REFORMA_E_EQUIPAMENTO:
             return str((self.quantidade*(50-total_quantitativo))/100).replace(',', '.')
