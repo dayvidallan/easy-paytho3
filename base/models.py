@@ -2769,6 +2769,7 @@ class Aditivo(models.Model):
     de_valor = models.BooleanField(verbose_name=u'Aditivo de Valor', default=False)
     tipo = models.CharField(u'Tipo de Aditivo', null=True, blank=True, choices=TIPO_CHOICES, max_length=50)
     indice = models.DecimalField(u'Índice de Reajuste', decimal_places=2, max_digits=10, null=True, blank=True)
+    valor_atual = models.DecimalField(u'Valor Atual', decimal_places=2, max_digits=10, null=True, blank=True)
 
     class Meta:
         ordering = ['ordem']
@@ -2790,6 +2791,14 @@ class Aditivo(models.Model):
         if len(tipo)==0:
             tipo = u'Indefinido'
         return u'%sº Aditivo (%s)' % (self.ordem, tipo[:-2])
+
+    def get_valor_atual_aditivo_anterior(self):
+        if self.ordem == 1:
+            return self.contrato.valor
+
+        if Aditivo.objects.filter(tipo=self.tipo, contrato=self.contrato, ordem=self.ordem-1, valor_atual__isnull=False).exists():
+            return Aditivo.objects.filter(tipo=self.tipo, contrato=self.contrato, ordem=self.ordem-1)[0].valor_atual
+        return 0
 
 
 class AditivoItemContrato(models.Model):

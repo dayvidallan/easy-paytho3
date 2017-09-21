@@ -8219,6 +8219,11 @@ def aditivar_contrato(request, contrato_id):
                     aditivo.valor =   total_ajuste /   qtd_ajuste
 
 
+            valor_final = Decimal(0.00)
+            for item in ItemContrato.objects.filter(contrato=contrato):
+                valor_final += (item.get_valor_item_contrato(numero=True) * item.quantidade)
+
+            aditivo.valor_atual = valor_final
             aditivo.save()
             messages.success(request, u'Aditivo cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)
@@ -9472,12 +9477,13 @@ def imprimir_aditivo(request, aditivo_id):
         p.add_run(u'CLÁUSULA SEGUNDA: ').bold=True
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        valor_final = Decimal(0.00)
-        for item in ItemContrato.objects.filter(contrato=contrato):
-            valor_final += (item.get_valor_item_contrato(numero=True) * item.quantidade)
 
-        #valor_final = aditivo.contrato.valor + ((aditivo.indice/100) * aditivo.contrato.valor)
-        texto = u'''A alteração do valor passando de R$ %s (%s) para R$ %s (%s)''' % (format_money(aditivo.contrato.valor), format_numero_extenso(aditivo.contrato.valor), format_money(valor_final), format_numero_extenso(valor_final))
+        valor_atual = 0
+        if aditivo.valor_atual:
+            valor_atual = aditivo.valor_atual
+
+        valor_antes_do_aditivo = aditivo.get_valor_atual_aditivo_anterior()
+        texto = u'''A alteração do valor passando de R$ %s (%s) para R$ %s (%s)''' % (format_money(valor_antes_do_aditivo), format_numero_extenso(valor_antes_do_aditivo), format_money(valor_atual), format_numero_extenso(valor_atual))
         p.add_run(texto)
 
         p = document.add_paragraph()
@@ -9490,7 +9496,7 @@ def imprimir_aditivo(request, aditivo_id):
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
-        valor = valor_final - aditivo.contrato.valor
+        valor = valor_atual - valor_antes_do_aditivo
         texto = u'''
         A despesa com a prestação do serviço objeto deste termo aditivo ao Contrato, no valor de R$ %s (%s), que será mediante a emissão da nota de empenho, em conformidade com as dotações orçamentárias listadas abaixo.
         ''' % (format_money(valor), format_numero_extenso(valor))
