@@ -2942,7 +2942,7 @@ class ItemContrato(models.Model):
         else:
             return str((self.quantidade*(25-total_quantitativo))/100).replace(',', '.')
 
-    def get_valor_item_contrato(self):
+    def get_valor_item_contrato(self, numero=False):
 
         total = self.valor
         if AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.ACRESCIMO_VALOR, valor__isnull=False).exists():
@@ -2950,7 +2950,10 @@ class ItemContrato(models.Model):
 
         if AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_VALOR, valor__isnull=False).exists():
             total -= AditivoItemContrato.objects.filter(item=self, tipo=Aditivo.SUPRESSAO_VALOR).aggregate(total=Sum('valor'))['total']
-        return str(total).replace(',', '.')
+        if numero:
+            return total
+        else:
+            return str(total).replace(',', '.')
 
 
 class PedidoContrato(models.Model):

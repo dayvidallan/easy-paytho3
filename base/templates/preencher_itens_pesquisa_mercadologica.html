@@ -36,7 +36,7 @@ function exibir_esconder_campo() {
 
 
   $(document).ready(function() {
-
+     $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
      exibir_esconder_campo();
 
      $('#preencher').on('change', function(){

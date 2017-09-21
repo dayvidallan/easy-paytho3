@@ -2707,9 +2707,14 @@ def relatorio_economia(request, pregao_id):
 
 
 
-            reducao = tabela[chave]['total_final'] / tabela[chave]['total_previsto']
-            ajuste= 1-reducao
-            tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+    for num in chaves:
+        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        chave = u'%s' % fornecedor
+        reducao = tabela[chave]['total'] / tabela[chave]['total_previsto']
+        ajuste= 1-reducao
+        tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+
+
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
@@ -9152,6 +9157,7 @@ def ver_relatorios_gerenciais_compras(request):
 def imprimir_aditivo(request, aditivo_id):
     aditivo = get_object_or_404(Aditivo, pk=aditivo_id)
     configuracao = get_config(aditivo.contrato.solicitacao.setor_origem.secretaria)
+    contrato = aditivo.contrato
 
     logo = None
     if configuracao.logo:
@@ -9466,7 +9472,11 @@ def imprimir_aditivo(request, aditivo_id):
         p.add_run(u'CLÁUSULA SEGUNDA: ').bold=True
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        valor_final = aditivo.contrato.valor + aditivo.valor
+        valor_final = Decimal(0.00)
+        for item in ItemContrato.objects.filter(contrato=contrato):
+            valor_final += (item.get_valor_item_contrato(numero=True) * item.quantidade)
+
+        #valor_final = aditivo.contrato.valor + ((aditivo.indice/100) * aditivo.contrato.valor)
         texto = u'''A alteração do valor passando de R$ %s (%s) para R$ %s (%s)''' % (format_money(aditivo.contrato.valor), format_numero_extenso(aditivo.contrato.valor), format_money(valor_final), format_numero_extenso(valor_final))
         p.add_run(texto)
 

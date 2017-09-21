@@ -421,7 +421,7 @@ class ContinuaPesquisaMercadologicaForm(forms.ModelForm):
             self.fields['numero_ata'].required = True
             self.fields['vigencia_ata'].required = True
             self.fields['orgao_gerenciador_ata'].required = True
-           # self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
+            self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
         # if not self.request.user.is_authenticated() or (self.solicitacao.tipo_aquisicao in [SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]):
         #     self.fields['origem_opcao'] = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor')]), initial=True)
 

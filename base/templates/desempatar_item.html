@@ -41,7 +41,7 @@
                     <tr>
                         <td>{{ resultado.ordem }}</td>
                         <td>{{ resultado.participante }}</td>
-                        <td>{{ resultado.marca }}</td>
+                        <td>{{ resultado.marca|default_if_none:"-" }}</td>
                         <td>{{ resultado.valor }}</td>
                         <td>
                             {% if resultado.empate or eh_credenciamento %}

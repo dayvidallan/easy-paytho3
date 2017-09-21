@@ -610,6 +610,9 @@
                     {% endif %}
 
                     {% if eh_lote %}
+                        {% if pregao.tem_empate_ficto %}
+                            <center><h3><font color="red">Empate ficto entre os concorrentes.</font></h3></center>
+                        {% endif %}
                         {% for lote in itens_pregao %}
                             <h2>Lote {{lote.item}}</h2>
                             <table class="table table-bordered table-condensed table-striped">

@@ -87,35 +87,46 @@ ul{
 {% endblock %}
 
 {% block content %}
+    {% if pesquisa.origem == pesquisa.FORNECEDOR %}
 
-    <h3><b>Dados do Fornecedor</b></h3>
-    <table border="0" width="100%" cellpadding="5" cellspacing="5">
-      <tr>
-        <td width="70%">Razão Social: <b>{{ pesquisa.razao_social }} </b></td>
-        <td width="30%">CNPJ: {{ pesquisa.cnpj }}</td>
-      </tr>
-      <tr>
-        <td width="70%">Inscrição Estadual: {{ pesquisa.ie }}</td>
-        <td width="30%">Endereço: {{ pesquisa.endereco }}</td>
+        <h3><b>Dados do Fornecedor</b></h3>
+        <table border="0" width="100%" cellpadding="5" cellspacing="5">
+          <tr>
+            <td width="70%">Razão Social: <b>{{ pesquisa.razao_social }} </b></td>
+            <td width="30%">CNPJ: {{ pesquisa.cnpj }}</td>
+          </tr>
+          <tr>
+            <td width="70%">Inscrição Estadual: {{ pesquisa.ie }}</td>
+            <td width="30%">Endereço: {{ pesquisa.endereco }}</td>
 
-      </tr>
-      <tr>
-        <td width="70%">Email: {{ pesquisa.email }}</td>
-        <td width="30%">Telefone: {{ pesquisa.telefone }}</td>
+          </tr>
+          <tr>
+            <td width="70%">Email: {{ pesquisa.email }}</td>
+            <td width="30%">Telefone: {{ pesquisa.telefone }}</td>
 
 
-      </tr>
-      <tr>
-        <td width="70%">Nome do Representante: <b>{{ pesquisa.nome_representante }}</b></td>
-        <td width="30%">CPF do Representante: {{ pesquisa.cpf_representante }}</td>
+          </tr>
+          <tr>
+            <td width="70%">Nome do Representante: <b>{{ pesquisa.nome_representante }}</b></td>
+            <td width="30%">CPF do Representante: {{ pesquisa.cpf_representante }}</td>
 
-      </tr>
-      <tr>
-        <td width="70%">Endereco do Representante: {{ pesquisa.endereco_representante }}</td>
-        <td width="30%">RG do Representante: {{ pesquisa.rg_representante }}</td>
+          </tr>
+          <tr>
+            <td width="70%">Endereco do Representante: {{ pesquisa.endereco_representante }}</td>
+            <td width="30%">RG do Representante: {{ pesquisa.rg_representante }}</td>
 
-      </tr>
-    </table>
+          </tr>
+        </table>
+    {% else %}
+        <h3><b>Dados da Ata de Registro de Preço</b></h3>
+        <table border="0" width="100%" cellpadding="5" cellspacing="5">
+          <tr>
+            <td width="30%">Número: <b>{{ pesquisa.numero_ata }} </b></td>
+            <td width="30%">Órgão: <b>{{ pesquisa.orgao_gerenciador_ata }}</b></td>
+            <td width="35%">Vigência: <b>{{ pesquisa.vigencia_ata }}</b></td>
+          </tr>
+        </table>
+    {% endif %}
 
     <h3><b>Itens da Proposta</b></h3>
     <table border="1" width="100%" cellpadding="5" cellspacing="5">
