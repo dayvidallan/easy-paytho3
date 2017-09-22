@@ -2772,10 +2772,10 @@ class Aditivo(models.Model):
     SUPRESSAO_VALOR = u'Supressão de Valor'
     TIPO_CHOICES = (
         (u'', '-----------------'),
-        #(ACRESCIMO_QUANTITATIVOS, ACRESCIMO_QUANTITATIVOS),
+        (ACRESCIMO_QUANTITATIVOS, ACRESCIMO_QUANTITATIVOS),
         (ACRESCIMO_VALOR, ACRESCIMO_VALOR),
         (REAJUSTE_FINANCEIRO, REAJUSTE_FINANCEIRO),
-        #(SUPRESSAO_QUANTITATIVO,SUPRESSAO_QUANTITATIVO),
+        (SUPRESSAO_QUANTITATIVO,SUPRESSAO_QUANTITATIVO),
         (SUPRESSAO_VALOR, SUPRESSAO_VALOR),
     )
     contrato = models.ForeignKey(Contrato, related_name='aditivos_set' , on_delete=models.CASCADE)
