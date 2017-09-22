@@ -981,6 +981,8 @@
                                 <tr>
                                     {% if pregao.eh_credenciamento %}
                                         <td><a href="/base/ata_sessao_credenciamento/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
+                                    {% elif pregao.eh_pregao_outras_modalidades %}
+                                        <td><a href="/base/ata_sessao_outras_modalidades/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
                                     {% else %}
                                         <td><a href="/base/ata_sessao/{{ pregao.id }}/" target="_blank">Ata da Sessão</a></td>
                                     {% endif %}

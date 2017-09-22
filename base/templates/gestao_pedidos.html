@@ -2,9 +2,11 @@
 {% load staticfiles %}
 {% load bootstrap %}
 {% load app_filters %}
+{% load pagination_tags %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/gestao_pedidos_tipo/">Gestão de Pedidos<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
@@ -171,254 +173,32 @@
 
 {% block content %}
 
+    {%  if contratos.exists %}
+        {% autopaginate contratos 10 %}
+        {% paginate %} <br>
+        {%  for contrato in contratos %}
+            {% if contrato.solicitacao.eh_lote %}
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th><a data-toggle="collapse" data-target="#demoa{{contrato.id}}">{{ contrato }}</a></th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-    <div>
+                        <tr>
+                            <td>
+                                <div id="demoa{{contrato.id}}" class="collapse">
+                                    {% for lote in contrato.get_lotes %}
 
-        <ul class="nav nav-tabs">
-
-            <li class="active">
-                <a data-toggle="tab" href="#contratos">Meus Contratos</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#atas">Minhas Atas</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#credenciamentos">Meus Credenciamentos</a>
-            </li>
-
-
-
-        </ul>
-    </div>
-    <div class="tab-content">
-        <div id="contratos" class="tab-pane in active">
-            {%  if contratos.exists %}
-                {%  for contrato in contratos %}
-                    {% if contrato.solicitacao.eh_lote %}
-                        <table class="table table-bordered table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th><a data-toggle="collapse" data-target="#demoa{{contrato.id}}">{{ contrato }}</a></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <tr>
-                                    <td>
-                                        <div id="demoa{{contrato.id}}" class="collapse">
-                                            {% for lote in contrato.get_lotes %}
-
-                                                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th colspan="5">{{lote}}</th>
-                                                            <th align="right">
-                                                                <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
-                                                                <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
-                                                            </th>
-                                                        </tr>
-                                                        <tr>
-                                                            <th  width="5%">Item</th>
-                                                            <th width="45%">Material/Serviço</th>
-                                                            <th width="10%">Marca</th>
-                                                            <th width="20%">Empresa</th>
-                                                            <th width="5%">Valor</th>
-                                                            <th width="5%">Quantidade Disponível</th>
-
-
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for item in lote.get_itens_do_lote %}
-                                                            <tr>
-                                                                <td>{{ item }}</td>
-                                                                <td>{{ item.material }}</td>
-                                                                <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
-                                                                <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
-                                                                <td>{{ item.get_valor_item_lote|format_money }}</td>
-                                                                <td>{{ item.get_item_tipo_contrato.get_quantidade_disponivel|format_quantidade }}</td>
-
-
-                                                            </tr>
-                                                        {% endfor%}
-
-                                                    </tbody>
-                                                </table>
-                                            {% endfor %}
-
-                                        </div>
-
-
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <table class="table table-bordered table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th><a data-toggle="collapse" data-target="#demob{{contrato.id}}">{{ contrato }}</a></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <tr>
-                                    <td>
-                                        <div id="demob{{contrato.id}}" class="collapse">
-                                            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <td colspan="7" align="right">
-                                                            <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
-                                                            <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
-                                                        </td>
-
-                                                    </tr>
-                                                    <tr>
-                                                        <th  width="5%">Item</th>
-                                                        <th width="45%">Material/Serviço</th>
-                                                        <th width="10%">Marca</th>
-                                                        <th width="10%">Unidade</th>
-                                                        <th width="20%">Empresa</th>
-                                                        <th width="5%">Valor</th>
-                                                        <th width="5%">Quantidade Disponível</th>
-
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for opcao in contrato.itemcontrato_set.all %}
-                                                        <tr>
-                                                            {% if opcao.item %}
-                                                                <td>{{ opcao.item }}</td>
-                                                                <td>{{ opcao.item.material|truncatechars:500 }}</td>
-                                                            {% else %}
-                                                                <td>{{ forloop.counter }}</td>
-                                                                <td>{{ opcao.material|truncatechars:500 }}</td>
-
-                                                            {% endif %}
-                                                            <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                            <td>{{ opcao.unidade|default_if_none:"-" }}</td>
-                                                            {% if opcao.participante %}
-                                                                <td>{{ opcao.participante }}</td>
-                                                            {% else %}
-                                                                <td>{{ opcao.fornecedor }}</td>
-                                                            {% endif %}
-                                                            <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
-                                                            <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
-
-                                                        </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    {% endif %}
-                {% endfor %}
-            {% else %}
-                    <p class="alert alert-warning">Nenhum contrato cadastrado.</p>
-            {% endif %}
-        </div>
-
-       <div id="atas" class="tab-pane">
-
-
-        {%  if atas.exists %}
-            {%  for ata in atas %}
-                {% if ata.solicitacao.eh_lote %}
-                    <table class="table table-bordered table-condensed table-striped">
-                        <thead>
-                            <tr>
-                                <th><a data-toggle="collapse" data-target="#democ{{ata.id}}">{% if ata.solicitacao.tipo_aquisicao == ata.solicitacao.TIPO_AQUISICAO_ADESAO_ARP %} Adesão à {% endif %}{{ ata }}</a></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            <tr>
-                                <td>
-                                    <div id="democ{{ata.id}}" class="collapse">
-                                            <a class="btn btn-success"  href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
-                                            <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
-                                            {% for lote in ata.solicitacao.get_lotes %}
-
-                                                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                                                    <thead>
-
-                                                        <tr>
-                                                            <th colspan="5">{{lote}}</th>
-
-                                                            <th align="right"></th>
-
-                                                        </tr>
-                                                        <tr>
-                                                            <th  width="5%">Item</th>
-                                                            <th width="45%">Material/Serviço</th>
-                                                            <th width="10%">Marca</th>
-                                                            <th width="20%">Empresa</th>
-                                                            <th width="5%">Valor</th>
-                                                            <th width="5%">Quantidade Disponível</th>
-
-
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for opcao in lote.get_itens_do_lote %}
-                                                            <tr>
-                                                                {% if ata.adesao %}
-                                                                    <td>{{ forloop.counter }}</td>
-                                                                    <td>{{ opcao.material|truncatechars:500 }}</td>
-                                                                {% else %}
-                                                                    <td>{{ opcao }}</td>
-                                                                    <td>{{ opcao.material|truncatechars:500 }}</td>
-                                                                {% endif %}
-                                                                <td>{{ opcao.get_item_arp.marca|default_if_none:"-" }}</td>
-                                                                {% if ata.adesao %}
-                                                                    <td>{{ opcao.get_item_arp.fornecedor }}</td>
-                                                                {% else %}
-                                                                    <td>{{ opcao.get_item_arp.participante }}</td>
-                                                                {% endif %}
-                                                                <td>{{ opcao.get_item_arp.valor }}</td>
-                                                                <td>{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }}</td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            {% endfor %}
-
-
-
-                                    </div>
-
-
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                {% else %}
-                    <table class="table table-bordered table-condensed table-striped">
-                        <thead>
-                            <tr>
-                                <th><a data-toggle="collapse" data-target="#demod{{ata.id}}">{% if ata.solicitacao.tipo_aquisicao == ata.solicitacao.TIPO_AQUISICAO_ADESAO_ARP %} Adesão à {% endif %}{{ ata }}</a></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            <tr>
-                                <td>
-                                    <div id="demod{{ata.id}}" class="collapse">
                                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                             <thead>
                                                 <tr>
-                                                    <td colspan="6" align="right">
-                                                        <a class="btn btn-success" href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
-                                                        <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
-                                                    </td>
-
+                                                    <th colspan="5">{{lote}}</th>
+                                                    <th align="right">
+                                                        <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
+                                                        <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
+                                                    </th>
                                                 </tr>
                                                 <tr>
                                                     <th  width="5%">Item</th>
@@ -432,85 +212,87 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for opcao in ata.itemataregistropreco_set.all %}
+                                                {% for item in lote.get_itens_do_lote %}
                                                     <tr>
-                                                        {% if ata.adesao %}
-                                                            <td>{{ forloop.counter }}</td>
-                                                            <td>{{ opcao.material|truncatechars:500 }}</td>
-                                                        {% else %}
-                                                            <td>{{ opcao.item }}</td>
-                                                            <td>{{ opcao.item.material|truncatechars:500 }}</td>
-                                                        {% endif %}
-                                                        <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                        {% if ata.adesao %}
-                                                            <td>{{ opcao.fornecedor }}</td>
-                                                        {% else %}
-                                                            <td>{{ opcao.participante }}</td>
-                                                        {% endif %}
-                                                        <td>{{ opcao.valor }}</td>
-                                                        <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                                                        <td>{{ item }}</td>
+                                                        <td>{{ item.material }}</td>
+                                                        <td>{{ item.get_marca_item_lote|default_if_none:"-" }}</td>
+                                                        <td>{{ lote.get_vencedor.participante.fornecedor }}</td>
+                                                        <td>{{ item.get_valor_item_lote|format_money }}</td>
+                                                        <td>{{ item.get_item_tipo_contrato.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                                     </tr>
-                                                {% endfor %}
+                                                {% endfor%}
+
                                             </tbody>
                                         </table>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                {% endif %}
-            {% endfor %}
-        {% else %}
-            <p class="alert alert-warning">Nenhuma ata cadastrada.</p>
-        {% endif %}
-    </div>
-    <div id="credenciamentos" class="tab-pane">
+                                    {% endfor %}
+
+                                </div>
 
 
-        {%  if credenciamentos.exists %}
-            {%  for credenciamento in credenciamentos %}
+                            </td>
+                        </tr>
 
+                    </tbody>
+                </table>
+            {% else %}
                 <table class="table table-bordered table-condensed table-striped">
                     <thead>
                         <tr>
-                            <th><a data-toggle="collapse" data-target="#demodc{{credenciamento.id}}">{{ credenciamento }}</a></th>
+                            <th><a data-toggle="collapse" data-target="#demob{{contrato.id}}">{{ contrato }}</a></th>
                         </tr>
                     </thead>
                     <tbody>
 
                         <tr>
                             <td>
-                                <div id="demodc{{credenciamento.id}}" class="collapse">
+                                <div id="demob{{contrato.id}}" class="collapse">
                                     <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                         <thead>
                                             <tr>
-                                                <td colspan="6" align="right">
-                                                    <a class="btn btn-success" href="/base/novo_pedido_compra_credenciamento/{{ credenciamento.pk }}/">Novo Pedido</a>
-                                                    <a class="btn btn-default" href="/base/documentos_credenciamentos/{{ credenciamento.pk }}/">Documentos</a>
-
+                                                <td colspan="7" align="right">
+                                                    <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
+                                                    <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
                                                 </td>
 
                                             </tr>
                                             <tr>
-
                                                 <th  width="5%">Item</th>
-                                                <th width="75%">Material/Serviço</th>
-                                                <th width="10%">Valor</th>
-                                                <th width="10%">Quantidade Disponível</th>
+                                                <th width="45%">Material/Serviço</th>
+                                                <th width="10%">Marca</th>
+                                                <th width="10%">Unidade</th>
+                                                <th width="20%">Empresa</th>
+                                                <th width="5%">Valor</th>
+                                                <th width="5%">Quantidade Disponível</th>
+
+
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for opcao in credenciamento.itemcredenciamento_set.all %}
+                                            {% for opcao in contrato.itemcontrato_set.all %}
                                                 <tr>
-                                                    <td>{{ opcao.item }}</td>
-                                                    <td>{{ opcao.item.material|truncatechars:500 }}</td>
-                                                    <td>{{ opcao.valor }}</td>
+                                                    {% if opcao.item %}
+                                                        <td>{{ opcao.item }}</td>
+                                                        <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                    {% else %}
+                                                        <td>{{ forloop.counter }}</td>
+                                                        <td>{{ opcao.material|truncatechars:500 }}</td>
+
+                                                    {% endif %}
+                                                    <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                    <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                                                    {% if opcao.participante %}
+                                                        <td>{{ opcao.participante }}</td>
+                                                    {% else %}
+                                                        <td>{{ opcao.fornecedor }}</td>
+                                                    {% endif %}
+                                                    <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
                                                     <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+
                                                 </tr>
                                             {% endfor %}
-                                        </tbody>
                                         </tbody>
                                     </table>
                                 </div>
@@ -518,12 +300,209 @@
                         </tr>
                     </tbody>
                 </table>
+            {% endif %}
+        {% endfor %}
+        {% paginate %}
+    {% endif %}
 
-            {% endfor %}
-        {% else %}
-            <p class="alert alert-warning">Nenhum credenciamento cadastrado.</p>
-        {% endif %}
-    </div>
+
+
+    {%  if atas.exists %}
+        {% autopaginate atas 10 %}
+        {% paginate %}
+        {%  for ata in atas %}
+            {% if ata.solicitacao.eh_lote %}
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th><a data-toggle="collapse" data-target="#democ{{ata.id}}">{% if ata.solicitacao.tipo_aquisicao == ata.solicitacao.TIPO_AQUISICAO_ADESAO_ARP %} Adesão à {% endif %}{{ ata }}</a></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>
+                                <div id="democ{{ata.id}}" class="collapse">
+                                        <a class="btn btn-success"  href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
+                                        <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
+                                        {% for lote in ata.solicitacao.get_lotes %}
+
+                                            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                                <thead>
+
+                                                    <tr>
+                                                        <th colspan="5">{{lote}}</th>
+
+                                                        <th align="right"></th>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <th  width="5%">Item</th>
+                                                        <th width="45%">Material/Serviço</th>
+                                                        <th width="10%">Marca</th>
+                                                        <th width="20%">Empresa</th>
+                                                        <th width="5%">Valor</th>
+                                                        <th width="5%">Quantidade Disponível</th>
+
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for opcao in lote.get_itens_do_lote %}
+                                                        <tr>
+                                                            {% if ata.adesao %}
+                                                                <td>{{ forloop.counter }}</td>
+                                                                <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                            {% else %}
+                                                                <td>{{ opcao }}</td>
+                                                                <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                            {% endif %}
+                                                            <td>{{ opcao.get_item_arp.marca|default_if_none:"-" }}</td>
+                                                            {% if ata.adesao %}
+                                                                <td>{{ opcao.get_item_arp.fornecedor }}</td>
+                                                            {% else %}
+                                                                <td>{{ opcao.get_item_arp.participante }}</td>
+                                                            {% endif %}
+                                                            <td>{{ opcao.get_item_arp.valor }}</td>
+                                                            <td>{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        {% endfor %}
+
+
+
+                                </div>
+
+
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            {% else %}
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th><a data-toggle="collapse" data-target="#demod{{ata.id}}">{% if ata.solicitacao.tipo_aquisicao == ata.solicitacao.TIPO_AQUISICAO_ADESAO_ARP %} Adesão à {% endif %}{{ ata }}</a></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>
+                                <div id="demod{{ata.id}}" class="collapse">
+                                    <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                        <thead>
+                                            <tr>
+                                                <td colspan="6" align="right">
+                                                    <a class="btn btn-success" href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
+                                                    <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <th  width="5%">Item</th>
+                                                <th width="45%">Material/Serviço</th>
+                                                <th width="10%">Marca</th>
+                                                <th width="20%">Empresa</th>
+                                                <th width="5%">Valor</th>
+                                                <th width="5%">Quantidade Disponível</th>
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for opcao in ata.itemataregistropreco_set.all %}
+                                                <tr>
+                                                    {% if ata.adesao %}
+                                                        <td>{{ forloop.counter }}</td>
+                                                        <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                    {% else %}
+                                                        <td>{{ opcao.item }}</td>
+                                                        <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                    {% endif %}
+                                                    <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                    {% if ata.adesao %}
+                                                        <td>{{ opcao.fornecedor }}</td>
+                                                    {% else %}
+                                                        <td>{{ opcao.participante }}</td>
+                                                    {% endif %}
+                                                    <td>{{ opcao.valor }}</td>
+                                                    <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+
+
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endif %}
+        {% endfor %}
+        {% paginate %}
+    {% endif %}
+    {%  if credenciamentos.exists %}
+        {% autopaginate credenciamentos 10 %}
+        {% paginate %}
+        {%  for credenciamento in credenciamentos %}
+
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th><a data-toggle="collapse" data-target="#demodc{{credenciamento.id}}">{{ credenciamento }}</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>
+                            <div id="demodc{{credenciamento.id}}" class="collapse">
+                                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="6" align="right">
+                                                <a class="btn btn-success" href="/base/novo_pedido_compra_credenciamento/{{ credenciamento.pk }}/">Novo Pedido</a>
+                                                <a class="btn btn-default" href="/base/documentos_credenciamentos/{{ credenciamento.pk }}/">Documentos</a>
+
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+
+                                            <th  width="5%">Item</th>
+                                            <th width="75%">Material/Serviço</th>
+                                            <th width="10%">Valor</th>
+                                            <th width="10%">Quantidade Disponível</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for opcao in credenciamento.itemcredenciamento_set.all %}
+                                            <tr>
+                                                <td>{{ opcao.item }}</td>
+                                                <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                                <td>{{ opcao.valor }}</td>
+                                                <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+        {% paginate %}
+    {% endif %}
+    {% if sem_registro %}
+        <p class="alert alert-info">{{ sem_registro }}</p>
+    {% endif %}
 
 
 {% endblock %}

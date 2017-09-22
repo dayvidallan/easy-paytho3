@@ -673,15 +673,19 @@ class AbrirProcessoForm(forms.ModelForm):
 
 class GestaoContratoForm(forms.Form):
     METHOD = u'GET'
-    info = forms.CharField(label=u'Digite o número do contrato ou do ata', required=False)
+    info = forms.CharField(label=u'Digite o número de identificação', required=False)
     ano = forms.ChoiceField([],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Filtrar por Fornecedor', required=False)
 
     def __init__(self, *args, **kwargs):
+        self.tipo = kwargs.pop('tipo', None)
         super(GestaoContratoForm, self).__init__(*args, **kwargs)
+        if not (self.tipo == u'1'):
+            del self.fields['fornecedor']
         ano_limite = datetime.date.today().year
         pregoes = Pregao.objects.all().order_by('data_abertura')
         ANO_CHOICES = []

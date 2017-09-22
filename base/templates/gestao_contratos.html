@@ -5,6 +5,7 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/gestao_contratos_tipo/">Gestão de Contratos <i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 
@@ -194,6 +195,15 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            {% if tipo_id == '1'%}
+                                <div class="col-xs-2 col-md-2">
+                                    <div class="controls">{{ form.fornecedor|bootstrap }}
+                                        {% if form.fornecedor.help_text %}
+                                            <p class="help-inline"><small>{{ form.fornecedor.help_text }}</small></p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
                             <div class="col-xs-2 col-md-2">
                                 <div class="controls">{{ form.secretaria|bootstrap }}
                                     {% if form.secretaria.help_text %}
@@ -210,85 +220,20 @@
 
                 </fieldset>
             {% endif %}
-        <ul class="nav nav-tabs">
 
-            <li class="active">
-                <a data-toggle="tab" href="#contratos">Meus Contratos</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#atas">Minhas Atas</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#credenciamentos">Meus Credenciamentos</a>
-            </li>
-
-
-
-        </ul>
     </div>
-    <div class="tab-content">
-        <div id="contratos" class="tab-pane in active">
-            {%  if contratos.exists %}
-                <div class="pull-right">
-                    <a class="btn btn-info" href="/base/ver_relatorios_gerenciais_contratos/">Relatórios Gerenciais</a>
-                </div>
 
-                <h4>{{ contratos.count }} registro(s) encontrado(s).</h4>
-                <br>
-                <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nº do Contrato</th>
-                            <th>Nº Processo</th>
-                            <th>Solicitação de Origem</th>
-                            <th>Objeto</th>
-                            <th>Data da Assinatura do Contrato</th>
-                            <th>Vigência</th>
-                            <th>Valor</th>
-                            <th>Situação</th>
-                            <th>Opções</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in contratos %}
-                            <tr>
-                                <td>{{ item.numero }}</td>
-                                <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
-                                <td>{{ item.solicitacao.num_memorando }}</td>
-                                <td>{{ item.solicitacao.objeto }}</td>
-                                <td>{{ item.data_inicio }}</td>
-                                <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
-                                <td>R$ {{ item.valor|format_money }}</td>
-                                <td>{{ item.get_situacao }}</td>
-                                <td>
-                                    <a href="/base/visualizar_contrato/{{item.id}}/" class="btn btn-info btn-sm">Visualizar</a>
-
-                                </td>
-
-
-                            </tr>
-                        {% endfor%}
-
-                    </tbody>
-                </table>
-            {% else %}
-                    <p class="alert alert-warning">Nenhum contrato cadastrado.</p>
-            {% endif %}
-        </div>
-
-       <div id="atas" class="tab-pane">
-
-
-        {%  if atas.exists %}
+    {%  if registros.exists %}
             <div class="pull-right">
-                <a class="btn btn-info" href="/base/ver_relatorios_gerenciais_atas/">Relatórios Gerenciais</a>
+                <a class="btn btn-info" href="/base/{{ url_relatorio}}/">Relatórios Gerenciais</a>
             </div>
-            <h4>{{ atas.count }} registro(s) encontrado(s).</h4>
-           <br>
+
+            <h4>{{ registros.count }} registro(s) encontrado(s).</h4>
+            <br>
             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
-                        <th>Nº da ARP</th>
+                        <th>Nº do Contrato</th>
                         <th>Nº Processo</th>
                         <th>Solicitação de Origem</th>
                         <th>Objeto</th>
@@ -300,72 +245,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in atas %}
+                    {% for item in registros %}
                         <tr>
                             <td>{{ item.numero }}</td>
                             <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
                             <td>{{ item.solicitacao.num_memorando }}</td>
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
-                            <td>{{ item.data_fim|default_if_none:"-" }}</td>
-                            <td>
-                                {% if item.valor %}
-                                    R$ {{ item.valor|format_money }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>{{ item.get_situacao }}</td>
-                            <td>
-                                <a href="/base/visualizar_ata_registro_preco/{{item.id}}/" class="btn btn-info">Visualizar</a>
-                            </td>
-
-
-                        </tr>
-                    {% endfor%}
-
-                </tbody>
-            </table>
-        {% else %}
-            <p class="alert alert-warning">Nenhuma ata cadastrada.</p>
-        {% endif %}
-    </div>
-    <div id="credenciamentos" class="tab-pane">
-
-
-        {%  if credenciamentos.exists %}
-            <div class="pull-right">
-                <a class="btn btn-info" href="/base/ver_relatorios_gerenciais_credenciamentos/">Relatórios Gerenciais</a>
-            </div>
-            <h4>{{ credenciamentos.count }} registro(s) encontrado(s).</h4>
-        <br>
-            <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
-                <thead>
-                    <tr>
-                        <th>Nº do Credenciamento</th>
-                        <th>Nº Processo</th>
-                        <th>Solicitação de Origem</th>
-                        <th>Objeto</th>
-                        <th>Data da Assinatura do Contrato</th>
-                        <th>Vigência</th>
-                        <th>Valor</th>
-                        <th>Situação</th>
-                        <th>Opções</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in credenciamentos %}
-                        <tr>
-                            <td>{{ item.numero }}</td>
-                            <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
-                            <td>{{ item.solicitacao.num_memorando }}</td>
-                            <td>{{ item.solicitacao.objeto }}</td>
-                            <td>{{ item.data_inicio }}</td>
-                            <td>{{ item.data_fim|default_if_none:"-" }}</td>
+                            <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
                             <td>R$ {{ item.valor|format_money }}</td>
                             <td>{{ item.get_situacao }}</td>
                             <td>
-                                <a href="/base/visualizar_credenciamento/{{item.id}}/" class="btn btn-info">Visualizar</a>
+                                <a href="/base/visualizar_{{tipo}}/{{item.id}}/" class="btn btn-info btn-sm">Visualizar</a>
+
                             </td>
 
 
@@ -375,9 +267,10 @@
                 </tbody>
             </table>
         {% else %}
-            <p class="alert alert-warning">Nenhum credenciamento cadastrado.</p>
+                <p class="alert alert-warning">Nenhum contrato cadastrado.</p>
         {% endif %}
-    </div>
+
+
 
 
 {% endblock %}

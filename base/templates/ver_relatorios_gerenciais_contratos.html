@@ -6,7 +6,7 @@
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
-    <a href="/base/gestao_contratos/">Contratos<i class="fa fa-angle-right"></i></a>
+    <a href="/base/gestao_contratos_tipo/">Contratos<i class="fa fa-angle-right"></i></a>
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 {% block extrajs %}
@@ -19,7 +19,7 @@
 {% endblock %}
 {% block content %}
     <div class="pull-right">
-        <a class="btn btn-info" href="/base/gestao_contratos/">Voltar</a>
+        <a class="btn btn-info" href="/base/gestao_contratos_tipo/">Voltar</a>
     </div>
     <br>
     <fieldset>
@@ -72,7 +72,7 @@
     </fieldset>
 
     {% if contratos.exists %}
-        <h3>{{ contratos.count }} registros encontrados</h3>
+        <h4>{{ contratos.count }} registros encontrados.</h4>
 
         <table class="table table-bordered table-condensed table-striped">
             <thead>

@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^cadastros/$', views.cadastros, name='cadastros'),
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^busca_pessoa/$', views.busca_pessoa, name='busca_pessoa'),
+    url(r'^gestao_pedidos_tipo/$', views.gestao_pedidos_tipo, name='gestao_pedidos_tipo'),
+
 
     url(r'^modelos_atas/(?P<pregao_id>\d+)/$', views.modelos_atas, name='modelos_atas'),
     url(r'^modelos_documentos/$', views.modelos_documentos, name='modelos_documentos'),
@@ -20,6 +22,7 @@ urlpatterns = [
     url(r'^cadastrar_modelo_ata/(?P<pregao_id>\d+)/$', views.cadastrar_modelo_ata, name='cadastrar_modelo_ata'),
     url(r'^editar_modelo_ata/(?P<ata_id>\d+)/(?P<pregao_id>\d+)/$', views.editar_modelo_ata, name='editar_modelo_ata'),
     url(r'^deletar_modelo_ata/(?P<ata_id>\d+)/(?P<pregao_id>\d+)/$', views.deletar_modelo_ata, name='deletar_modelo_ata'),
+    url(r'^ata_sessao_outras_modalidades/(?P<pregao_id>\d+)/$', views.ata_sessao_outras_modalidades, name='ata_sessao_outras_modalidades'),
 
 
     url(r'^administracao/$', views.administracao, name='administracao'),
@@ -127,8 +130,9 @@ urlpatterns = [
     url(r'^editar_meu_perfil/(?P<pessoa_id>\d+)/$', views.editar_meu_perfil, name='editar_meu_perfil'),
     url(r'^editar_pedido/(?P<pedido_id>\d+)/$', views.editar_pedido, name='editar_pedido'),
     url(r'^aprovar_todos_pedidos/(?P<item_id>\d+)/$', views.aprovar_todos_pedidos, name='aprovar_todos_pedidos'),
-    url(r'^gestao_pedidos/$', views.gestao_pedidos, name='gestao_pedidos'),
-    url(r'^gestao_contratos/$', views.gestao_contratos, name='gestao_contratos'),
+    url(r'^gestao_pedidos/(?P<tipo_id>\d+)/$', views.gestao_pedidos, name='gestao_pedidos'),
+    url(r'^gestao_contratos_tipo/$', views.gestao_contratos_tipo, name='gestao_contratos_tipo'),
+    url(r'^gestao_contratos/(?P<tipo_id>\d+)/$', views.gestao_contratos, name='gestao_contratos'),
     url(r'^ver_ordem_compra_dispensa/(?P<solicitacao_id>\d+)/$', views.ver_ordem_compra_dispensa, name='ver_ordem_compra_dispensa'),
     url(r'^excluir_solicitacao_pedido/(?P<solicitacao_id>\d+)/$', views.excluir_solicitacao_pedido, name='excluir_solicitacao_pedido'),
 

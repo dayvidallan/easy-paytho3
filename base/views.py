@@ -4243,47 +4243,86 @@ def aprovar_todos_pedidos(request, item_id):
     messages.success(request, u'Pedidos aprovados com sucesso.')
     return HttpResponseRedirect(u'/base/ver_pedidos_secretaria/%s/' % item.id)
 
+
+def gestao_contratos_tipo(request):
+    title = u'Gestão de Contratos'
+    return render(request, 'gestao_contratos_tipo.html', locals(), RequestContext(request))
+
 @login_required()
-def gestao_pedidos(request):
+def gestao_pedidos_tipo(request):
+    title = u'Gestão de Pedidos'
+    return render(request, 'gestao_pedidos_tipo.html', locals(), RequestContext(request))
+
+
+
+@login_required()
+def gestao_pedidos(request, tipo_id):
     setor = request.user.pessoafisica.setor
-    title=u'Gestão de Pedidos - %s' % (setor.secretaria)
+
     meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
-
-    atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
+    contratos = atas = credenciamentos = sem_registro = nome = None
+    if tipo_id == u'1':
+        nome = u'Contratos'
+        contratos = Contrato.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
+        if not contratos.exists():
+            sem_registro = u'Nenhum contrato disponível para pedidos.'
+    elif tipo_id == u'2':
+        nome = u'Atas de Registro de Preço'
+        atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
+        if not atas.exists():
+            sem_registro = u'Nenhuma ata disponível para pedidos.'
     #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
-    contratos = Contrato.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
-    credenciamentos = Credenciamento.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
-
+    elif tipo_id == u'3':
+        nome = u'Credenciamentos'
+        credenciamentos = Credenciamento.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
+        if not credenciamentos.exists():
+            sem_registro = u'Nenhum credenciamento disponível para pedidos.'
     pode_editar = request.user.groups.filter(name=u'Gerente')
+    title=u'Gestão de Pedidos - %s' % nome
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
 
 @login_required()
-def gestao_contratos(request):
+def gestao_contratos(request, tipo_id):
     setor = request.user.pessoafisica.setor
     pode_editar = False
     if request.user.groups.filter(name=u'Gerente'):
-        title=u'Gestão de Contratos - %s/%s' % (setor.sigla, setor.secretaria.sigla)
+
         solicitacoes = SolicitacaoLicitacao.objects.filter(setor_origem__secretaria=setor.secretaria)
 
-        atas = AtaRegistroPreco.objects.all().order_by('id')
-        contratos = Contrato.objects.all().order_by('id')
-        credenciamentos = Credenciamento.objects.all().order_by('id')
+        nome = None
+        if tipo_id == u'1':
+            registros = Contrato.objects.all().order_by('id')
+            nome = u'Contratos'
+            tipo = u'contrato'
+            url_relatorio = 'ver_relatorios_gerenciais_contratos'
+        elif tipo_id == u'2':
+            registros = AtaRegistroPreco.objects.all().order_by('id')
+            nome = u'Atas de Registro de Preço'
+            url_relatorio = 'ver_relatorios_gerenciais_atas'
+            tipo = 'ata_registro_preco'
+        elif tipo_id == u'3':
+            registros = Credenciamento.objects.all().order_by('id')
+            nome = u'Credenciamentos'
+            url_relatorio = 'ver_relatorios_gerenciais_credenciamentos'
+            tipo = u'credenciamento'
         pode_editar = True
-        form = GestaoContratoForm(request.GET or None)
+        form = GestaoContratoForm(request.GET or None, tipo=tipo_id)
         if form.is_valid():
             if form.cleaned_data.get('info'):
-                atas = atas.filter(numero__icontains=form.cleaned_data.get('info'))
-                contratos = contratos.filter(numero__icontains=form.cleaned_data.get('info'))
-                credenciamentos = credenciamentos.filter(numero__icontains=form.cleaned_data.get('info'))
+                registros = registros.filter(numero__icontains=form.cleaned_data.get('info'))
+
             if form.cleaned_data.get('ano'):
-                atas = atas.filter(data_inicio__year=form.cleaned_data.get('ano'))
-                contratos = contratos.filter(data_inicio__year=form.cleaned_data.get('ano'))
-                credenciamentos = credenciamentos.filter(data_inicio__year=form.cleaned_data.get('ano'))
+                registros = registros.filter(data_inicio__year=form.cleaned_data.get('ano'))
+
 
             if form.cleaned_data.get('secretaria'):
-                atas = atas.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
-                contratos = contratos.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
-                credenciamentos = credenciamentos.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+                registros = registros.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
+            if tipo_id == u'1' and form.cleaned_data.get('fornecedor'):
+                itens = ItemContrato.objects.filter(Q(fornecedor=form.cleaned_data.get('fornecedor')) | Q(participante__fornecedor=form.cleaned_data.get('fornecedor')))
+                registros = registros.filter(id__in=itens.values_list('contrato', flat=True))
+
+        title=u'Gestão de %s' % nome
 
     else:
         return HttpResponseRedirect(u'/')
@@ -6423,7 +6462,7 @@ def ata_sessao(request, pregao_id):
 
     comissao = u', '.join(comissao)
     texto = u'''
-    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital..  As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s
+    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as propostas de preços e as documentações de habilitação, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Termo de Referência (Anexo I) deste Edital. As especificações técnicas dos serviços, objeto deste Pregão, estão contidas no Anexo I do Termo de Referência do Edital. Presentes o Pregoeiro, %s bem como, a Equipe de Apoio constituída pelos servidores: %s - Portaria: %s
     ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.objeto, pregao.responsavel, comissao, portaria)
 
     if pregao.comissao and pregao.comissao.data_designacao:
@@ -6555,16 +6594,16 @@ def ata_sessao(request, pregao_id):
             p.alignment = 3
             p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), format_numero_extenso(total_geral), tipo))
 
-
-        p = document.add_paragraph()
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
-
-
-        for item in ocorrencias:
+        if ocorrencias:
             p = document.add_paragraph()
-            #p.alignment = 3
-            p.add_run(item)
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
+
+
+            for item in ocorrencias:
+                p = document.add_paragraph()
+                #p.alignment = 3
+                p.add_run(item)
 
 
         p = document.add_paragraph()
@@ -6740,43 +6779,7 @@ def ata_sessao_credenciamento(request, pregao_id):
     from docx.shared import Inches, Pt
 
     document = Document()
-    # table = document.add_table(rows=2, cols=2)
-    # hdr_cells = table.rows[0].cells
-    # hdr_cells2 = table.rows[1].cells
-    #
-    #
-    #
-    #
-    # style2 = document.styles['Normal']
-    # font = style2.font
-    # font.name = 'Arial'
-    # font.size = Pt(6)
-    #
-    # style = document.styles['Normal']
-    # font = style.font
-    # font.name = 'Arial'
-    # font.size = Pt(11)
-    #
-    #
-    #
-    # paragraph = hdr_cells[0].paragraphs[0]
-    # run = paragraph.add_run()
-    # run.add_picture(logo, width=Inches(1.75))
-    #
-    # paragraph2 = hdr_cells[1].paragraphs[0]
-    # paragraph2.style = document.styles['Normal']
-    # hdr_cells[1].text =  u'%s' % (configuracao.nome)
-    #
-    #
-    # paragraph3 = hdr_cells2[1].paragraphs[0]
-    # paragraph3.style2 = document.styles['Normal']
-    #
-    #
-    #
-    # #hdr_cells2[0].text =  u'Sistema Orçamentário, Financeiro e Contábil'
-    # hdr_cells2[1].text =  u'Endereço: %s, %s' % (configuracao.endereco, municipio)
-    # a, b = hdr_cells2[:2]
-    # a.merge(b)
+
     imprimir_cabecalho(document, configuracao, logo, municipio)
     document.add_paragraph()
     p = document.add_paragraph()
@@ -6916,6 +6919,285 @@ def ata_sessao_credenciamento(request, pregao_id):
     arquivo.close()
     os.unlink(caminho_arquivo)
     return response
+
+
+@login_required()
+def ata_sessao_outras_modalidades(request, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+
+    if pregao.comissao:
+        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+    else:
+        configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
+
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+
+    municipio = None
+    if get_config_geral():
+        municipio = get_config_geral().municipio
+
+    participantes = []
+    ocorrencias = []
+    comissao  = []
+    membros = []
+    licitantes = []
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+        nome = u'%s' % item.fornecedor
+        participantes.append(nome.replace('&',"e"))
+        me = u'Não'
+        if item.me_epp:
+            me = u'Sim'
+        texto = u'%s - %s - %s - %s - %s' % (item.fornecedor.cnpj, nome.replace('&',"e"), me, item.nome_representante, item.cpf_representante)
+        licitantes.append(texto)
+
+
+
+    #     unidades.append(item.unidade)
+    #     descricoes.append(item.material.nome)
+
+    for item in HistoricoPregao.objects.filter(pregao=pregao):
+        nome = u'%s'% item.obs
+        ocorrencias.append(nome.replace('&',"e"))
+    portaria = None
+    if pregao.comissao:
+        for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao).order_by('-funcao'):
+            nome = u'%s'% (item.membro.nome)
+            if not (item.funcao == MembroComissaoLicitacao.PREGOEIRO):
+                comissao.append(nome.replace('&',"e"))
+
+            texto = u'%s, %s,  %s ' % (nome, item.matricula, item.funcao)
+            membros.append(texto)
+
+        portaria = pregao.comissao.nome
+        tipo = u'%s %s' % (pregao.tipo, pregao.criterio)
+
+
+
+    eh_lote = pregao.criterio.id == CriterioPregao.LOTE
+
+
+    tabela = {}
+    total = {}
+
+    if eh_lote:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    else:
+        itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
+    resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO)
+    chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
+    for num in chaves:
+        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        chave = u'%s' % fornecedor
+        tabela[chave] = dict(lance = list(), total = 0)
+
+    for item in itens_pregao.order_by('item'):
+        if item.get_vencedor():
+            chave = u'%s' % item.get_vencedor().participante.fornecedor
+            tabela[chave]['lance'].append(item)
+            valor = tabela[chave]['total']
+            valor = valor + item.get_total_lance_ganhador()
+            tabela[chave]['total'] = valor
+
+    total_geral = Decimal()
+    resultado_pregao = u''
+    resultado = collections.OrderedDict(sorted(tabela.items()))
+
+    if pregao.criterio.nome == u'Por Item':
+        nome_tipo = u'Itens'
+    else:
+        nome_tipo = u'Lotes'
+
+    for result in resultado.items():
+        if result[1]['total'] != 0:
+            result[0]
+            lista = []
+            for item in result[1]['lance']:
+                lista.append(item.item)
+
+
+
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            total_geral = total_geral + result[1]['total']
+
+
+    document = Document()
+    imprimir_cabecalho(document, configuracao, logo, municipio)
+
+
+    document.add_paragraph()
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'Ata de %s' % pregao).bold = True
+
+
+
+    comissao = u', '.join(comissao)
+    texto = u'''
+    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as documentações de habilitação e propostas de preços, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Projeto Base/Termo de Referência. anexo à este Edital. Presentes o Presidente da CPL, %s bem como os Membros da CPL, constituída pelos servidores: %s - Portaria: %s
+    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.objeto, pregao.responsavel, comissao, portaria)
+
+    if pregao.comissao and pregao.comissao.data_designacao:
+        texto += u'Data de Designação: %s.' % pregao.comissao.data_designacao.strftime('%d/%m/%Y')
+    else:
+        texto += '.'
+
+    texto += u' O Presidente e os Membros da CPL iniciaram a sessão informando os procedimentos da mesma. '
+    #document.add_paragraph(texto)
+    p = document.add_paragraph()
+    p.alignment = 3
+    p.add_run(texto)
+
+
+
+    texto = u'''
+    Antes da abertura da sessão, realizou-se o credenciamento do (os) representante (es), feito a partir da apresentação da cédula de identidade ou documento equivalente, e procuração por instrumento público ou particular com firma reconhecida em cartório (documentos do outorgante, poderão ser conferidos na habilitação), atos esses documentados conforme listagem do (os) presente (es), que foram numeradas e juntadas aos autos às fls.
+    '''
+    p.alignment = 3
+    p.add_run(texto)
+    table = document.add_table(rows=1, cols=2)
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Empresa'
+    hdr_cells[1].text = 'Representante'
+
+
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+        me = u'Não Compareceu'
+        if item.nome_representante:
+            me = item.nome_representante
+
+        row_cells = table.add_row().cells
+        row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+        row_cells[1].text = u'%s' % me
+        texto = u'''
+
+    Aberta a sessão, o Sr. Presidente e Membros da CPL, deram início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:
+        a) Objetivos da Licitação;
+        b) Ordenação dos trabalhos;
+        c) Forma e ordem em que os licitantes pediriam a palavra;
+        d) Vedação a intervenções fora da ordem definida;
+        e) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;
+        f) Pedido para que não se retirasse (em) antes do término, em face à possibilidade de repregoar;
+        g) Observou o Presidente, que ele e a Comissão de Licitação têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e
+        h)  Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).
+        Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es).
+        Em seguida passou-se à abertura do (os) envelope (es) de Habilitação, observando-se os seguintes passos:
+                Abertura;
+                Conferência do conteúdo; e
+                Numeração.
+        Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final.
+        Dando continuidade procedeu-se à análise da (as) Documentações, quando foi verificado se atendia (am) ao (os) requisitos do edital.
+    '''
+    p = document.add_paragraph(texto)
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DA HABILITAÇÃO').bold = True
+    texto += u'''
+    Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente e Membros da CPL, passaram a analisar a Aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital.
+    Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.
+    '''
+    #document.add_paragraph(texto)
+    p = document.add_paragraph()
+    p.alignment = 3
+    p.add_run(texto)
+
+
+    if pregao.tem_resultado():
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DO RESULTADO').bold = True
+
+        p = document.add_paragraph()
+        p.alignment = 3
+
+        p.add_run(u'Diante da aceitabilidade da proposta e regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente e os Membros da CPL declararam como vencedora(s) do certame, a(s) empresa(s): ')
+
+
+        p.add_run(resultado_pregao)
+
+        p = document.add_paragraph()
+        p.alignment = 3
+        p.add_run(u'O valor global do certame, considerando o somatório dos itens licitados, será de R$ %s (%s), respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de %s.' % (format_money(total_geral), format_numero_extenso(total_geral), tipo))
+
+    if ocorrencias:
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
+
+
+        for item in ocorrencias:
+            p = document.add_paragraph()
+            #p.alignment = 3
+            p.add_run(item)
+
+
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DO ENCERRAMENTO').bold = True
+
+    p = document.add_paragraph()
+    p.alignment = 3
+    p.add_run(u'O Presidente e Membros da CPL, após encerramento desta fase, concedeu aos proponentes vistas ao processo e a todos os documentos. Franqueada a palavra, para observações, questionamentos e/ou interposição de recursos, caso alguém assim desejasse, como nenhum dos proponentes manifestou intenção de recorrer, pelo que renunciam, desde logo, em caráter irrevogável e irretratável, ao direito de interposição de recurso. Nada mais havendo a tratar, o Presidente e os Membros da CPL declararam encerrados os trabalhos, lavrando-se a presente Ata que vai assinada pelos presentes.')
+
+
+    for item in membros:
+
+        texto = item.split(',')
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(texto[0])
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'Matrícula: %s' % texto[1])
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(texto[2])
+
+
+
+    for item in ParticipantePregao.objects.filter(pregao=pregao):
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.DOUBLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        texto = u'%s (%s)' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+        p.add_run(texto)
+        p = document.add_paragraph()
+        #p.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        if item.nome_representante:
+            texto = item.nome_representante
+            if item.cpf_representante:
+                texto += u' (CPF: %s)' % item.cpf_representante
+            p.add_run(texto)
+
+
+    document.add_page_break()
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT, 'upload/pregao/atas/ata_sessao_%s.docx' % pregao.id)
+    document.save(caminho_arquivo)
+
+
+
+    nome_arquivo = caminho_arquivo.split('/')[-1]
+    extensao = nome_arquivo.split('.')[-1]
+    arquivo = open(caminho_arquivo, "rb")
+
+    content_type = caminho_arquivo.endswith('.pdf') and 'application/pdf' or 'application/vnd.ms-word'
+    response = HttpResponse(arquivo.read(), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+    arquivo.close()
+    os.unlink(caminho_arquivo)
+    return response
+
 
 
 @login_required()
