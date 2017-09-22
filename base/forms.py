@@ -1181,7 +1181,10 @@ class RelatoriosGerenciaisContratosForm(forms.Form):
 
 
     def __init__(self, *args, **kwargs):
+        self.fornecedor = kwargs.pop('fornecedor', None)
         super(RelatoriosGerenciaisContratosForm, self).__init__(*args, **kwargs)
+        if not self.fornecedor:
+            del self.fields['fornecedor']
         ano_limite = datetime.date.today().year
         contratos = Contrato.objects.all().order_by('data_inicio')
         ANO_CHOICES = []

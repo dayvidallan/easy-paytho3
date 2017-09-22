@@ -7780,7 +7780,7 @@ def ver_relatorios_gerenciais_contratos(request):
     eh_gerente = request.user.groups.filter(name='Gerente')
     if eh_gerente:
 
-        form = RelatoriosGerenciaisContratosForm(request.POST or None)
+        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=True)
 
         if form.is_valid():
             contratos = Contrato.objects.all().order_by('numero')
@@ -7851,7 +7851,7 @@ def ver_relatorios_gerenciais_atas(request):
     eh_gerente = request.user.groups.filter(name='Gerente')
     if eh_gerente:
 
-        form = RelatoriosGerenciaisContratosForm(request.POST or None)
+        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=False)
 
         if form.is_valid():
             contratos = AtaRegistroPreco.objects.all().order_by('numero')
@@ -7918,7 +7918,7 @@ def ver_relatorios_gerenciais_credenciamentos(request):
     eh_gerente = request.user.groups.filter(name='Gerente')
     if eh_gerente:
 
-        form = RelatoriosGerenciaisContratosForm(request.POST or None)
+        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=False)
 
         if form.is_valid():
             contratos = Credenciamento.objects.all().order_by('numero')
@@ -9013,6 +9013,25 @@ def notificacoes(request):
             tem_notificacao = True
 
     if request.user.has_perm('base.pode_gerenciar_contrato'):
+        ids_a_vencer = list()
+        contratos_a_vencer = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False)
+        hoje = datetime.now().date()
+        for contrato in contratos_a_vencer:
+            vencimento = contrato.get_data_vencimento()
+            if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
+                ids_a_vencer.append(contrato.id)
+        contratos_a_vencer = contratos_a_vencer.filter(id__in=ids_a_vencer)
+
+
+        ids_atas_a_vencer = list()
+        atas_a_vencer = AtaRegistroPreco.objects.filter(suspenso=False, cancelado=False, concluido=False)
+        hoje = datetime.now().date()
+        for ata in atas_a_vencer:
+            vencimento = ata.get_data_vencimento()
+            if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
+                ids_atas_a_vencer.append(ata.id)
+        atas_a_vencer = atas_a_vencer.filter(id__in=ids_atas_a_vencer)
+
         contratos_sem_vigencia = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False, data_inicio__lte=hoje)
         ids_vencidos = list()
         for item in contratos_sem_vigencia:
