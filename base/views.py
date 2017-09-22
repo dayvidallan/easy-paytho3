@@ -7788,6 +7788,7 @@ def ver_relatorios_gerenciais_contratos(request):
             situacao = form.cleaned_data.get('situacao')
             visualizar = form.cleaned_data.get('visualizar')
             secretaria = form.cleaned_data.get('secretaria')
+            fornecedor = form.cleaned_data.get('fornecedor')
             ano = form.cleaned_data.get('ano')
             hoje = datetime.date.today()
             total = 0
@@ -7806,6 +7807,9 @@ def ver_relatorios_gerenciais_contratos(request):
             if secretaria:
                 contratos = contratos.filter(solicitacao__setor_origem__secretaria=secretaria)
 
+            if fornecedor:
+                itens = ItemContrato.objects.filter(Q(fornecedor=form.cleaned_data.get('fornecedor')) | Q(participante__fornecedor=form.cleaned_data.get('fornecedor')))
+                contratos = contratos.filter(id__in=itens.values_list('contrato', flat=True))
 
             if visualizar == u'2':
                 destino_arquivo = u'upload/resultados/relatorio_gerencial_contratos_%s.pdf' %  request.user.pessoafisica.id

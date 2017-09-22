@@ -1176,6 +1176,7 @@ class RelatoriosGerenciaisContratosForm(forms.Form):
     #modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Vigentes'), (3, u'Concluídos')) )
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Filtrar por Fornecedor', required=False)
     visualizar = forms.ChoiceField(label=u'Modo de Visualização', required=False, choices=((u'1', u'Na Tela'),(u'2', u'Gerar PDF'),),)
 
 
