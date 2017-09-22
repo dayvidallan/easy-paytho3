@@ -2463,6 +2463,7 @@ class AtaRegistroPreco(models.Model):
         else:
             return 1
 
+
 class Credenciamento(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
     valor = models.DecimalField(decimal_places=2,max_digits=20, null=True)
@@ -2748,6 +2749,13 @@ class Contrato(models.Model):
             return ItemSolicitacaoLicitacao.objects.filter(id__in=ids)
         return None
 
+    def get_data_vencimento(self):
+        data_vencimento = self.data_fim
+        aditivos = self.aditivos_set.all()
+        for aditivo in aditivos:
+            if aditivo.de_prazo and aditivo.data_fim and aditivo.data_fim > data_vencimento:
+                data_vencimento = aditivo.data_fim
+        return data_vencimento
 
     def get_ordem(self):
         if Aditivo.objects.filter(contrato=self).exists():

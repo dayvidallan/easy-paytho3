@@ -9015,7 +9015,7 @@ def notificacoes(request):
     if request.user.has_perm('base.pode_gerenciar_contrato'):
         ids_a_vencer = list()
         contratos_a_vencer = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False)
-        hoje = datetime.now().date()
+        hoje = datetime.datetime.now().date()
         for contrato in contratos_a_vencer:
             vencimento = contrato.get_data_vencimento()
             if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
@@ -9025,9 +9025,9 @@ def notificacoes(request):
 
         ids_atas_a_vencer = list()
         atas_a_vencer = AtaRegistroPreco.objects.filter(suspenso=False, cancelado=False, concluido=False)
-        hoje = datetime.now().date()
+        hoje = datetime.datetime.now().date()
         for ata in atas_a_vencer:
-            vencimento = ata.get_data_vencimento()
+            vencimento = ata.data_fim
             if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
                 ids_atas_a_vencer.append(ata.id)
         atas_a_vencer = atas_a_vencer.filter(id__in=ids_atas_a_vencer)
