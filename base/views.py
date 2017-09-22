@@ -7778,9 +7778,10 @@ def ver_relatorios_gerenciais_licitacao(request):
 def ver_relatorios_gerenciais_contratos(request):
     title=u'Relatórios Gerenciais dos Contratos'
     eh_gerente = request.user.groups.filter(name='Gerente')
+    exibe_fornecedor = True
     if eh_gerente:
 
-        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=True)
+        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=exibe_fornecedor)
 
         if form.is_valid():
             contratos = Contrato.objects.all().order_by('numero')
@@ -7849,9 +7850,10 @@ def ver_relatorios_gerenciais_contratos(request):
 def ver_relatorios_gerenciais_atas(request):
     title=u'Relatórios Gerenciais das Atas'
     eh_gerente = request.user.groups.filter(name='Gerente')
+    exibe_fornecedor = False
     if eh_gerente:
 
-        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=False)
+        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=exibe_fornecedor)
 
         if form.is_valid():
             contratos = AtaRegistroPreco.objects.all().order_by('numero')
@@ -7916,9 +7918,10 @@ def ver_relatorios_gerenciais_atas(request):
 def ver_relatorios_gerenciais_credenciamentos(request):
     title=u'Relatórios Gerenciais dos Credenciamentos'
     eh_gerente = request.user.groups.filter(name='Gerente')
+    exibe_fornecedor = False
     if eh_gerente:
 
-        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=False)
+        form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=exibe_fornecedor)
 
         if form.is_valid():
             contratos = Credenciamento.objects.all().order_by('numero')
