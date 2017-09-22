@@ -9017,7 +9017,7 @@ def notificacoes(request):
         contratos_a_vencer = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False)
         hoje = datetime.datetime.now().date()
         for contrato in contratos_a_vencer:
-            vencimento = contrato.get_data_vencimento()
+            vencimento = contrato.get_data_fim()
             if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
                 ids_a_vencer.append(contrato.id)
         contratos_a_vencer = contratos_a_vencer.filter(id__in=ids_a_vencer)

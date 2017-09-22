@@ -2749,13 +2749,7 @@ class Contrato(models.Model):
             return ItemSolicitacaoLicitacao.objects.filter(id__in=ids)
         return None
 
-    def get_data_vencimento(self):
-        data_vencimento = self.data_fim
-        aditivos = self.aditivos_set.all()
-        for aditivo in aditivos:
-            if aditivo.de_prazo and aditivo.data_fim and aditivo.data_fim > data_vencimento:
-                data_vencimento = aditivo.data_fim
-        return data_vencimento
+
 
     def get_ordem(self):
         if Aditivo.objects.filter(contrato=self).exists():
