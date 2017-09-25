@@ -8526,7 +8526,7 @@ def aditivar_contrato(request, contrato_id):
             if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
                 aditivo.indice_total_contrato = form.cleaned_data.get('indice_reajuste')
             else:
-                reducao = (valor_final - contrato.get_valor_aditivado()) / (contrato.get_valor_aditivado()/100)
+                reducao = (valor_final - contrato.valor) / (contrato.valor/100)
                 aditivo.indice_total_contrato = reducao
             aditivo.save()
             messages.success(request, u'Aditivo cadastrado com sucesso.')
