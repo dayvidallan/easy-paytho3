@@ -702,7 +702,7 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
     id_user = '%s' % request.user.pessoafisica.id
     request.session[id_user] = solicitacao_id
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado() and not solicitacao.prazo_aberto:
+    if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto:
         form = CadastrarItemSolicitacaoForm(request.POST or None, initial=dict(solicitacao=solicitacao), solicitacao=solicitacao)
         if form.is_valid():
             o = form.save(False)
