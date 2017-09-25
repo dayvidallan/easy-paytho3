@@ -786,7 +786,7 @@ def cadastrar_item_solicitacao(request, solicitacao_id):
     id_user = '%s' % request.user.pessoafisica.id
     request.session[id_user] = solicitacao_id
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado() and not solicitacao.prazo_aberto:
+    if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto:
         form = CadastrarItemSolicitacaoForm(request.POST or None, initial=dict(solicitacao=solicitacao), solicitacao=solicitacao)
         if form.is_valid():
             o = form.save(False)
@@ -10000,7 +10000,6 @@ def modelos_documentos(request):
     title = u'Modelos de Documentos'
     documentos = ModeloDocumento.objects.all().order_by('-id')
 
-
     form = BuscarModeloDocumentoForm(request.GET or None)
 
     if form.is_valid():
@@ -10020,6 +10019,7 @@ def modelos_documentos(request):
     return render(request, 'modelos_documentos.html', locals(), RequestContext(request))
 
 
+
 @login_required()
 def cadastrar_modelo_documento(request):
     title = u'Cadastrar Modelo de Documento'
@@ -10031,6 +10031,7 @@ def cadastrar_modelo_documento(request):
         o.save()
         messages.success(request, u'Modelo cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/modelos_documentos/')
+
 
     return render(request, 'cadastrar_modelo_ata.html', locals(), RequestContext(request))
 

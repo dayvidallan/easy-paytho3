@@ -156,6 +156,9 @@ BOOTSTRAP3 = {
 
 SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br:86'
 
+DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = ['base.MaterialConsumo', ]
+
+
 try:
     from settings_base import *
 except ImportError, e:
