@@ -8520,11 +8520,14 @@ def aditivar_contrato(request, contrato_id):
                         elif adit.tipo == Aditivo.SUPRESSAO_QUANTITATIVO:
                             if adit.valor:
                                 quantidade_aditivo -= adit.valor
-                print ">>>>>>>>>", item.get_valor_item_contrato(numero=True), (item.quantidade + quantidade_aditivo)
                 valor_final += (item.get_valor_item_contrato(numero=True) * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
 
             aditivo.valor_atual = valor_final
-            aditivo.indice_total_contrato = 100 - ((contrato.get_valor_aditivado()*100)/valor_final)
+            if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
+                aditivo.indice_total_contrato = form.cleaned_data.get('indice_reajuste')
+            else:
+                reducao = (valor_final - contrato.get_valor_aditivado()) / (contrato.get_valor_aditivado()/100)
+                aditivo.indice_total_contrato = reducao
             aditivo.save()
             messages.success(request, u'Aditivo cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)

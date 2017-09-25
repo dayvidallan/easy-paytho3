@@ -2721,8 +2721,8 @@ class Contrato(models.Model):
             return 1
 
     def get_total_indices_aditivos(self):
-        if Aditivo.objects.filter(contrato=self, indice_total_contrato__isnull=False).exists():
-            return Aditivo.objects.filter(contrato=self, indice_total_contrato__isnull=False).aggregate(soma=Sum('indice_total_contrato'))['soma']
+        if Aditivo.objects.filter(contrato=self, indice_total_contrato__isnull=False).exclude(tipo=Aditivo.REAJUSTE_FINANCEIRO).exists():
+            return Aditivo.objects.filter(contrato=self, indice_total_contrato__isnull=False).exclude(tipo=Aditivo.REAJUSTE_FINANCEIRO).aggregate(soma=Sum('indice_total_contrato'))['soma']
         return 0
 
     def get_data_fim(self):
