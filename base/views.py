@@ -9598,19 +9598,10 @@ def imprimir_aditivo(request, aditivo_id):
         num_processo = u' '
         if aditivo.contrato.solicitacao.processo:
             num_processo = aditivo.contrato.solicitacao.processo.numero
-        porcentagem = 0
-        if aditivo.ordem == 1:
-            porcentagem = 100 - ((aditivo.contrato.get_valor_aditivado()*100)/aditivo.valor_atual)
-
-        else:
-            aditivo_anterior = Aditivo.objects.filter(contrato=aditivo.contrato, ordem=aditivo.ordem-1)
-            if aditivo_anterior.exists():
-                aditivo_anterior = aditivo_anterior[0]
-                porcentagem = 100 - ((aditivo_anterior.valor_atual*100)/aditivo.valor_atual)
         texto = u'''
         O objeto do presente aditivo é PRORROGAR em %s dias a vigência e ACRESCER o valor do contrato %s em %s%% (%s por cento)
         do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
-        ''' % (dias, aditivo.contrato.numero, porcentagem, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        ''' % (dias, aditivo.contrato.numero, aditivo.indice_total_contrato, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
         p.add_run(texto)
 
 
@@ -9794,19 +9785,10 @@ def imprimir_aditivo(request, aditivo_id):
         num_processo = u' '
         if aditivo.contrato.solicitacao.processo:
             num_processo = aditivo.contrato.solicitacao.processo.numero
-        porcentagem = 0
-        if aditivo.ordem == 1:
-            porcentagem = 100 - ((aditivo.contrato.get_valor_aditivado()*100)/aditivo.valor_atual)
-
-        else:
-            aditivo_anterior = Aditivo.objects.filter(contrato=aditivo.contrato, ordem=aditivo.ordem-1)
-            if aditivo_anterior.exists():
-                aditivo_anterior = aditivo_anterior[0]
-                porcentagem = 100 - ((aditivo_anterior.valor_atual*100)/aditivo.valor_atual)
 
         texto = u'''
         O objeto do presente aditivo é ACRESCER o valor do contrato %s em %s%% do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
-        ''' % (aditivo.contrato.numero, porcentagem.quantize(Decimal(10) ** -2), num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        ''' % (aditivo.contrato.numero, aditivo.indice_total_contrato, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
         p.add_run(texto)
 
 
