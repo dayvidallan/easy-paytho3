@@ -1324,7 +1324,7 @@ def planilha_propostas(request, solicitacao_id):
         style = xlwt.XFStyle()
         style.alignment.wrap = 1
 
-        w_sheet.write(row_index, 0, item.item)
+        w_sheet.write(row_index, 0, item.__unicode__()[5:])
         w_sheet.write(row_index, 1, item.material.nome, style)
         w_sheet.write(row_index, 2, item.unidade.nome)
         w_sheet.write(row_index, 3, item.quantidade)
