@@ -8528,7 +8528,7 @@ def aditivar_contrato(request, contrato_id):
             else:
                 reducao = (valor_final - contrato.get_valor_aditivado()) / (contrato.get_valor_aditivado()/100)
                 if Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1).exists():
-                    reducao = reducao - Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1)[0].indice_total_contrato
+                    reducao = ((valor_final - Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1)[0].valor_atual) *100) / contrato.get_valor_aditivado()
                 aditivo.indice_total_contrato = reducao
             aditivo.save()
             messages.success(request, u'Aditivo cadastrado com sucesso.')
