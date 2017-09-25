@@ -206,6 +206,7 @@
                 <th>Vigência</th>
                 <th>Valor Inicial</th>
                 <th>Valor Aditivado</th>
+                <th>Total do Aditivo do Contrato</th>
                 <th>Situação</th>
             </tr>
         </thead>
@@ -219,6 +220,7 @@
                 <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
                 <td>{{ contrato.get_valor_aditivado|format_money }}</td>
                 <td>{{ contrato.get_valor_total_com_aditivos|format_money }}</td>
+                <td>{{ contrato.get_total_indices_aditivos }}%</td>
                 <td>{{ contrato.get_situacao }}</td>
             </tr>
         </tbody>
@@ -379,7 +381,7 @@
                                 <td>{{ item.ordem }}</td>
                                 <td>{{ item }}</td>
                                 <td>{{ item.tipo }}</td>
-                                <td>{{ item.indice|default_if_none:"-"  }}</td>
+                                <td>{{ item.indice_total_contrato|default_if_none:"-"  }}</td>
                                 <td>{{ item.data_fim|default_if_none:"-" }}</td>
                                 <td><a href="/base/imprimir_aditivo/{{ item.id }}/" class="btn btn-default">Modelo</a></td>
                             </tr>

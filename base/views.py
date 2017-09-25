@@ -8508,12 +8508,23 @@ def aditivar_contrato(request, contrato_id):
 
                     aditivo.valor =   total_ajuste /   qtd_ajuste
 
-
             valor_final = Decimal(0.00)
             for item in ItemContrato.objects.filter(contrato=contrato):
-                valor_final += (item.get_valor_item_contrato(numero=True) * item.get_quantidade_disponivel())
+                quantidade_aditivo = 0
+                aditivos = AditivoItemContrato.objects.filter(item=item)
+                if aditivos.exists():
+                    for adit in aditivos:
+                        if adit.tipo == Aditivo.ACRESCIMO_QUANTITATIVOS:
+                            if adit.valor:
+                                quantidade_aditivo += adit.valor
+                        elif adit.tipo == Aditivo.SUPRESSAO_QUANTITATIVO:
+                            if adit.valor:
+                                quantidade_aditivo -= adit.valor
+                print ">>>>>>>>>", item.get_valor_item_contrato(numero=True), (item.quantidade + quantidade_aditivo)
+                valor_final += (item.get_valor_item_contrato(numero=True) * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
 
             aditivo.valor_atual = valor_final
+            aditivo.indice_total_contrato = 100 - ((contrato.get_valor_aditivado()*100)/valor_final)
             aditivo.save()
             messages.success(request, u'Aditivo cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % contrato.id)

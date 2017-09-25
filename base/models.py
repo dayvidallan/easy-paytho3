@@ -2720,6 +2720,11 @@ class Contrato(models.Model):
         else:
             return 1
 
+    def get_total_indices_aditivos(self):
+        if Aditivo.objects.filter(contrato=self, indice_total_contrato__isnull=False).exists():
+            return Aditivo.objects.filter(contrato=self, indice_total_contrato__isnull=False).aggregate(soma=Sum('indice_total_contrato'))['soma']
+        return 0
+
     def get_data_fim(self):
         if not Aditivo.objects.filter(contrato=self, de_prazo=True).exists():
             return self.data_fim
@@ -2793,6 +2798,7 @@ class Aditivo(models.Model):
     de_valor = models.BooleanField(verbose_name=u'Aditivo de Valor', default=False)
     tipo = models.CharField(u'Tipo de Aditivo', null=True, blank=True, choices=TIPO_CHOICES, max_length=50)
     indice = models.DecimalField(u'Índice de Reajuste', decimal_places=2, max_digits=10, null=True, blank=True)
+    indice_total_contrato = models.DecimalField(u'Índice Total', decimal_places=2, max_digits=10, null=True, blank=True)
     valor_atual = models.DecimalField(u'Valor Atual', decimal_places=2, max_digits=10, null=True, blank=True)
 
     class Meta:
