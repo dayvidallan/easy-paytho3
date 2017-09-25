@@ -8527,6 +8527,8 @@ def aditivar_contrato(request, contrato_id):
                 aditivo.indice_total_contrato = form.cleaned_data.get('indice_reajuste')
             else:
                 reducao = (valor_final - contrato.get_valor_aditivado()) / (contrato.get_valor_aditivado()/100)
+                if Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1).exists():
+                    reducao = reducao - Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1)[0].indice_total_contrato
                 aditivo.indice_total_contrato = reducao
             aditivo.save()
             messages.success(request, u'Aditivo cadastrado com sucesso.')
