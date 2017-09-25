@@ -644,6 +644,11 @@ def format_numero(num):
     e = NumeroPorExtenso(num)
     return u'%s' % e.extenso_cardinal
 
+@register.filter(is_safe=True)
+def format_numero_decimal(num):
+
+    e = NumeroPorExtenso(num)
+    return u'%s' % e.extenso_cardinal
 
 @register.filter(is_safe=True)
 def format_numero_extenso(num):

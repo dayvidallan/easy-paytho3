@@ -204,7 +204,8 @@
                 <th>Nº Processo</th>
                 <th>Data da Assinatura do Contrato</th>
                 <th>Vigência</th>
-                <th>Valor Global</th>
+                <th>Valor Inicial</th>
+                <th>Valor Aditivado</th>
                 <th>Situação</th>
             </tr>
         </thead>
@@ -217,6 +218,7 @@
                 <td>{{ contrato.data_inicio }}</td>
                 <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
                 <td>{{ contrato.get_valor_aditivado|format_money }}</td>
+                <td>{{ contrato.get_valor_total_com_aditivos|format_money }}</td>
                 <td>{{ contrato.get_situacao }}</td>
             </tr>
         </tbody>
@@ -289,7 +291,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for opcao in contrato.itemcontrato_set.all %}
+                                        {% for opcao in itens %}
                                             <tr>
                                                 {% if opcao.item %}
                                                     <td>{{ opcao.item }}</td>

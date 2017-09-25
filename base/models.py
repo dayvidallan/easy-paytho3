@@ -2697,6 +2697,12 @@ class Contrato(models.Model):
                 total += aditivo.valor
         return total
 
+    def get_valor_total_com_aditivos(self):
+        if Aditivo.objects.filter(contrato=self).exists():
+            return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual
+
+        return self.get_valor_aditivado()
+
     def get_aditivo_permitido_valor(self):
         total_valor = 0
         for aditivo in self.aditivos_set.filter(tipo=Aditivo.REAJUSTE_FINANCEIRO):

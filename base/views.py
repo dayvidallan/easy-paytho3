@@ -5568,6 +5568,7 @@ def visualizar_contrato(request, solicitacao_id):
     pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
+    itens = ItemContrato.objects.filter(contrato=contrato).order_by('item__item')
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
@@ -8386,7 +8387,7 @@ def aditivar_contrato(request, contrato_id):
         contrato = get_object_or_404(Contrato, pk=contrato_id)
         title = u'Aditivar Contrato: %s' % contrato
         form = AditivarContratoForm(request.POST or None, contrato=contrato)
-        itens = ItemContrato.objects.filter(contrato=contrato).order_by('material__nome')
+        itens = ItemContrato.objects.filter(contrato=contrato).order_by('item__item')
         if form.is_valid():
             aditivo = Aditivo()
             aditivo.contrato = contrato
@@ -9583,11 +9584,19 @@ def imprimir_aditivo(request, aditivo_id):
         num_processo = u' '
         if aditivo.contrato.solicitacao.processo:
             num_processo = aditivo.contrato.solicitacao.processo.numero
+        porcentagem = 0
+        if aditivo.ordem == 1:
+            porcentagem = 100 - ((aditivo.contrato.get_valor_aditivado()*100)/aditivo.valor_atual)
 
+        else:
+            aditivo_anterior = Aditivo.objects.filter(contrato=aditivo.contrato, ordem=aditivo.ordem-1)
+            if aditivo_anterior.exists():
+                aditivo_anterior = aditivo_anterior[0]
+                porcentagem = 100 - ((aditivo_anterior.valor_atual*100)/aditivo.valor_atual)
         texto = u'''
         O objeto do presente aditivo é PRORROGAR em %s dias a vigência e ACRESCER o valor do contrato %s em %s%% (%s por cento)
         do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
-        ''' % (dias, aditivo.contrato.numero, aditivo.indice, format_numero(aditivo.indice), num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        ''' % (dias, aditivo.contrato.numero, porcentagem, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
         p.add_run(texto)
 
 
@@ -9771,12 +9780,19 @@ def imprimir_aditivo(request, aditivo_id):
         num_processo = u' '
         if aditivo.contrato.solicitacao.processo:
             num_processo = aditivo.contrato.solicitacao.processo.numero
+        porcentagem = 0
+        if aditivo.ordem == 1:
+            porcentagem = 100 - ((aditivo.contrato.get_valor_aditivado()*100)/aditivo.valor_atual)
 
+        else:
+            aditivo_anterior = Aditivo.objects.filter(contrato=aditivo.contrato, ordem=aditivo.ordem-1)
+            if aditivo_anterior.exists():
+                aditivo_anterior = aditivo_anterior[0]
+                porcentagem = 100 - ((aditivo_anterior.valor_atual*100)/aditivo.valor_atual)
 
         texto = u'''
-        O objeto do presente aditivo é ACRESCER o valor do contrato %s em %s%% (%s por cento)
-        do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
-        ''' % (aditivo.contrato.numero, aditivo.indice, format_numero(aditivo.indice), num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        O objeto do presente aditivo é ACRESCER o valor do contrato %s em %s%% do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
+        ''' % (aditivo.contrato.numero, porcentagem.quantize(Decimal(10) ** -2), num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
         p.add_run(texto)
 
 
