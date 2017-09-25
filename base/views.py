@@ -8510,7 +8510,7 @@ def aditivar_contrato(request, contrato_id):
 
             valor_final = Decimal(0.00)
             for item in ItemContrato.objects.filter(contrato=contrato):
-                valor_final += (item.get_valor_item_contrato(numero=True) * item.quantidade)
+                valor_final += (item.get_valor_item_contrato(numero=True) * item.get_quantidade_disponivel())
 
             aditivo.valor_atual = valor_final
             aditivo.save()
