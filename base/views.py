@@ -10100,3 +10100,16 @@ def cadastrar_certidao_crc(request, crc_id):
         return HttpResponseRedirect(u'/base/ver_crc/{}/'.format(crc.fornecedor.id))
 
     return render(request, 'cadastrar_certidao_crc.html', locals(), RequestContext(request))
+
+
+@login_required()
+def editar_processo(request, processo_id):
+    title = u'Editar Processo'
+    processo = get_object_or_404(Processo, pk=processo_id)
+    form = EditarProcessoForm(request.POST or None, instance=processo)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Processo alterado com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_processo/{}/'.format(processo.id))
+
+    return render(request, 'editar_processo.html', locals(), RequestContext(request))

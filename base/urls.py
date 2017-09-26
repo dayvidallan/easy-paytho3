@@ -327,6 +327,7 @@ urlpatterns = [
 
 
     url(r'^ativar_item_pregao/(?P<item_id>\d+)/$', views.ativar_item_pregao, name='ativar_item_pregao'),
+    url(r'^editar_processo/(?P<processo_id>\d+)/$', views.editar_processo, name='editar_processo'),
 
 
 

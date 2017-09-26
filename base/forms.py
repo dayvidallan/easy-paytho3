@@ -1483,3 +1483,8 @@ class CertidaoCRCForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CertidaoCRCForm, self).__init__(*args, **kwargs)
         self.fields['validade'].widget.attrs = {'class': 'vDateField'}
+
+class EditarProcessoForm(forms.ModelForm):
+    class Meta:
+        model = Processo
+        fields = ('numero', 'objeto', 'palavras_chave')
