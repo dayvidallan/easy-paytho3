@@ -3897,9 +3897,9 @@ def imprimir_capa_processo(request, processo_id):
 
         c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
         c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % truncatechars(fornecedor_pedido.razao_social, 150))
-        c.drawString(32*mm, ALTURA - 128*mm, u'CNPJ: %s' % fornecedor_pedido.cnpj)
-        L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 70),'Helvetica',12,155 * mm)
-        y = ALTURA - 134*mm
+
+        L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 200),'Helvetica',12,155 * mm)
+        y = ALTURA - 128*mm
         for t in L:
             c.drawString(32*mm,y,t)
             y -= 5*mm
