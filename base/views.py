@@ -5135,6 +5135,11 @@ def gerar_ordem_compra(request, solicitacao_id):
         messages.error(request, u'Esta solicitação possui mais de uma proposta empatada com o melhor valor.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
 
+    if OrdemCompra.objects.filter(solicitacao=solicitacao).exists():
+        messages.error(request, u'Esta solicitação já possui uma ordem de compra.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
+        
+
     id_sessao = "%s_solicitacao" % (request.user.pessoafisica.id)
     request.session[id_sessao] = solicitacao.id
     title = u'Gerar Ordem de Compra/Serviço - %s' % solicitacao
