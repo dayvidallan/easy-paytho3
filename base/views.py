@@ -3896,9 +3896,10 @@ def imprimir_capa_processo(request, processo_id):
             fornecedor_pedido = pedido.fornecedor
 
         c.drawString(32*mm, ALTURA - 112*mm, u'Origem: %s' % (origem))
-        c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % (fornecedor_pedido))
+        c.drawString(32*mm, ALTURA - 120*mm, u'Interessado: %s' % truncatechars(fornecedor_pedido.razao_social, 150))
+        c.drawString(32*mm, ALTURA - 128*mm, u'CNPJ: %s' % fornecedor_pedido.cnpj)
         L = simpleSplit('Objeto: %s' % truncatechars(processo.objeto, 70),'Helvetica',12,155 * mm)
-        y = ALTURA - 126*mm
+        y = ALTURA - 134*mm
         for t in L:
             c.drawString(32*mm,y,t)
             y -= 5*mm
@@ -5138,7 +5139,7 @@ def gerar_ordem_compra(request, solicitacao_id):
     if OrdemCompra.objects.filter(solicitacao=solicitacao).exists():
         messages.error(request, u'Esta solicitação já possui uma ordem de compra.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)
-        
+
 
     id_sessao = "%s_solicitacao" % (request.user.pessoafisica.id)
     request.session[id_sessao] = solicitacao.id
