@@ -8520,7 +8520,7 @@ def aditivar_contrato(request, contrato_id):
                         elif adit.tipo == Aditivo.SUPRESSAO_QUANTITATIVO:
                             if adit.valor:
                                 quantidade_aditivo -= adit.valor
-                valor_final += (item.get_valor_item_contrato(numero=True) * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
+                valor_final += (item.valor * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
 
             aditivo.valor_atual = valor_final
             if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
