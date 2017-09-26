@@ -3869,7 +3869,7 @@ def imprimir_capa_processo(request, processo_id):
 
     from django.template.defaultfilters import truncatechars
     # INFORMAÇÕES SOBRE O DOCUMENTO
-    c.rect(30*mm, ALTURA - 129*mm, 160*mm, 47*mm)
+    c.rect(30*mm, ALTURA - 145*mm, 160*mm, 62*mm)
     c.setFont('Helvetica', 12)
     c.drawString(32*mm, ALTURA - 88*mm, u'Data: %s' % processo.data_cadastro.strftime('%d/%m/%Y'))
     #c.drawString(110*mm, ALTURA - 88*mm, u'Campus: %s' % processo.uo.setor.sigla)
@@ -3912,20 +3912,20 @@ def imprimir_capa_processo(request, processo_id):
     # TRAMITAÇÃO
 
     c.setFont('Helvetica-Bold', 16)
-    c.drawCentredString(110*mm, 158*mm, u'TRAMITAÇÃO')
+    c.drawCentredString(110*mm, 145*mm, u'TRAMITAÇÃO')
 
     # Linhas verticais
     for h in range(30, 201, 80):
-        c.line(h*mm, 20*mm, h*mm, 152*mm)
+        c.line(h*mm, 20*mm, h*mm, 128*mm)
 
     # Linhas horizontais
-    for v in range(20, 153, 12):
+    for v in range(20, 138, 12):
         c.line(30*mm, v*mm, 190*mm, v*mm)
 
     # Escrevendo "Data e Destino"
     c.setFont('Helvetica', 11)
     for h in range(30, 130, 80): # horizontal
-        for v in range(20, 150, 12): # vertical
+        for v in range(20, 126, 12): # vertical
             c.drawString(h*mm + 2*mm, v*mm + 4*mm, u'Data: ___/___/______    Destino:')
 
     c.showPage()
@@ -8528,7 +8528,6 @@ def aditivar_contrato(request, contrato_id):
                     valor_final += (item.valor * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
                 elif eh_valor:
                     valor_final += (item.get_valor_item_contrato(numero=True) * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
-
             aditivo.valor_atual = valor_final
             if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
                 aditivo.indice_total_contrato = form.cleaned_data.get('indice_reajuste')
