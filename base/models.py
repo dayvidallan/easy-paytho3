@@ -2826,8 +2826,8 @@ class Aditivo(models.Model):
         if self.ordem == 1:
             return self.contrato.valor
 
-        if Aditivo.objects.filter(tipo=self.tipo, contrato=self.contrato, ordem=self.ordem-1, valor_atual__isnull=False).exists():
-            return Aditivo.objects.filter(tipo=self.tipo, contrato=self.contrato, ordem=self.ordem-1)[0].valor_atual
+        if Aditivo.objects.filter(contrato=self.contrato, ordem=self.ordem-1, valor_atual__isnull=False).exists():
+            return Aditivo.objects.filter(contrato=self.contrato, ordem=self.ordem-1)[0].valor_atual
         return 0
 
 
