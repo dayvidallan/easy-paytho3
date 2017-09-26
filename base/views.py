@@ -8392,7 +8392,7 @@ def aditivar_contrato(request, contrato_id):
             aditivo = Aditivo()
             aditivo.contrato = contrato
             aditivo.ordem = contrato.get_ordem()
-
+            eh_quantidade = eh_valor = eh_reajuste = 0
             if form.cleaned_data.get('data_final'):
                 aditivo.de_prazo = True
                 aditivo.data_inicio = form.cleaned_data.get('data_inicial')
@@ -8405,6 +8405,7 @@ def aditivar_contrato(request, contrato_id):
 
                 if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
                     aditivo.de_valor = True
+                    eh_reajuste = True
                     aditivo.valor = ((form.cleaned_data.get('indice_reajuste')/100) * contrato.get_valor_aditivado())
                     for item in ItemContrato.objects.filter(contrato=contrato):
                         item.valor = item.valor + ((form.cleaned_data.get('indice_reajuste')/100) * item.valor)
@@ -8415,7 +8416,7 @@ def aditivar_contrato(request, contrato_id):
                     qtd_ajuste = 0
                     if form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_QUANTITATIVOS:
                         aditivo.de_valor = True
-
+                        eh_quantidade = True
                         for idx, indice_informado in enumerate(request.POST.getlist('quantidade_soma'), 1):
 
                             if indice_informado and int(indice_informado) > 0:
@@ -8439,6 +8440,7 @@ def aditivar_contrato(request, contrato_id):
 
                     elif form.cleaned_data.get('opcoes') == Aditivo.SUPRESSAO_QUANTITATIVO:
                         aditivo.de_valor = True
+                        eh_quantidade = True
                         for idx, indice_informado in enumerate(request.POST.getlist('quantidade_subtrai'), 1):
                             if indice_informado and int(indice_informado) > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
@@ -8462,6 +8464,7 @@ def aditivar_contrato(request, contrato_id):
 
                     elif form.cleaned_data.get('opcoes') == Aditivo.ACRESCIMO_VALOR:
                         aditivo.de_valor = True
+                        eh_valor = True
 
                         for idx, indice_informado in enumerate(request.POST.getlist('valor_soma'), 1):
                             if indice_informado and int(indice_informado) > 0:
@@ -8485,6 +8488,7 @@ def aditivar_contrato(request, contrato_id):
 
                     elif form.cleaned_data.get('opcoes') == Aditivo.SUPRESSAO_VALOR:
                         aditivo.de_valor = True
+                        eh_valor = True
 
                         for idx, indice_informado in enumerate(request.POST.getlist('valor_subtrai'), 1):
                             if indice_informado and int(indice_informado) > 0:
@@ -8520,7 +8524,10 @@ def aditivar_contrato(request, contrato_id):
                         elif adit.tipo == Aditivo.SUPRESSAO_QUANTITATIVO:
                             if adit.valor:
                                 quantidade_aditivo -= adit.valor
-                valor_final += (item.valor * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
+                if eh_quantidade or eh_reajuste:
+                    valor_final += (item.valor * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
+                elif eh_valor:
+                    valor_final += (item.get_valor_item_contrato(numero=True) * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
 
             aditivo.valor_atual = valor_final
             if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
