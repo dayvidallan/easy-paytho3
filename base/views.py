@@ -287,7 +287,7 @@ def cadastra_proposta_pregao(request, pregao_id):
 
     title=u'Cadastrar Proposta'
     pregao = get_object_or_404(Pregao, pk= pregao_id)
-    if not pregao.tem_resultado() and request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if True:
         itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
         edicao=False
         participante = None
@@ -322,9 +322,10 @@ def cadastra_proposta_pregao(request, pregao_id):
                 for row in range(9, sheet.nrows):
                     try:
                         with transaction.atomic():
+
                             item = unicode(sheet.cell_value(row, 0)).strip()
-                            marca = unicode(sheet.cell_value(row, 5)).strip() or None
-                            valor = unicode(sheet.cell_value(row, 6)).strip()
+                            marca = unicode(sheet.cell_value(row, 6)).strip() or None
+                            valor = unicode(sheet.cell_value(row, 7)).strip()
                             if row == 0:
                                 if item != u'Item' or valor != u'VALOR UNITÁRIO':
                                     raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
@@ -1319,16 +1320,19 @@ def planilha_propostas(request, solicitacao_id):
     w_sheet.write(2, 1, pregao.objeto)
     w_sheet.write(3, 1, pregao.get_local())
 
+    contador = 1
     for idx, item in enumerate(itens, 0):
         row_index = idx + 9
         style = xlwt.XFStyle()
         style.alignment.wrap = 1
 
-        w_sheet.write(row_index, 0, item.__unicode__()[5:])
-        w_sheet.write(row_index, 1, item.material.nome, style)
-        w_sheet.write(row_index, 2, item.unidade.nome)
-        w_sheet.write(row_index, 3, item.quantidade)
-        w_sheet.write(row_index, 4, item.valor_medio)
+        w_sheet.write(row_index, 0, u'%s' % contador)
+        w_sheet.write(row_index, 1, item.__unicode__()[6:])
+        w_sheet.write(row_index, 2, item.material.nome, style)
+        w_sheet.write(row_index, 3, item.unidade.nome)
+        w_sheet.write(row_index, 4, item.quantidade)
+        w_sheet.write(row_index, 5, item.valor_medio)
+        contador += 1
 
     salvou = nome + u'_%s' % pregao.id + '.xls'
     wb.save(salvou)
@@ -3266,7 +3270,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells[0].text = u'Email: %s' % fornecedor.email
                 p = document.add_paragraph()
 
-                table = document.add_table(rows=itens+2, cols=6)
+                table = document.add_table(rows=itens+3, cols=6)
                 hdr_cells = table.rows[0].cells
                 hdr_cells[0].text = u'Lote / Item'
                 hdr_cells[1].text = u'Objeto'
@@ -9201,41 +9205,43 @@ def anexo_38(request, pregao_id):
 
         resultado =  sorteddict(my_key, **tabela)
 
+
+
         for result in resultado.items():
 
             if result[1]:
                 for registro in result[1]:
 
+                    lote_atual = result[0]
 
-                    if contador < 6:
-                        row_index = contador_total + 1
-                        # style = xlwt.XFStyle()
-                        # style.alignment.wrap = 1
-                        # w_sheet.write(row_index, 0, item.item)
-                        # w_sheet.write(row_index, 1, item.material.nome[:100])
-                        # w_sheet.write(row_index, 2, contador)
-                        # w_sheet.write(row_index, 3, format_money(result.valor))
-                        # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
-                        # w_sheet.write(row_index, 5, u'CNPJ')
-                        # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+                    row_index = contador_total + 1
+                    # style = xlwt.XFStyle()
+                    # style.alignment.wrap = 1
+                    # w_sheet.write(row_index, 0, item.item)
+                    # w_sheet.write(row_index, 1, item.material.nome[:100])
+                    # w_sheet.write(row_index, 2, contador)
+                    # w_sheet.write(row_index, 3, format_money(result.valor))
+                    # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+                    # w_sheet.write(row_index, 5, u'CNPJ')
+                    # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
 
-                        row = [
-                            result[0],
-                            u'Lote %s' % result[0],
-                            registro.ordem,
-                            format_money(registro.valor),
-                            registro.participante.fornecedor.razao_social,
-                            u'CNPJ',
-                            str(registro.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
+                    row = [
+                        result[0],
+                        u'Lote %s' % result[0],
+                        registro.ordem,
+                        format_money(registro.valor),
+                        registro.participante.fornecedor.razao_social,
+                        u'CNPJ',
+                        str(registro.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
 
 
-                        ]
-                        for col_num in xrange(len(row)):
-                            c = ws.cell(row=row_index + 1, column=col_num + 1)
-                            c.value = row[col_num]
-                            #c.style.alignment.wrap_text = True
-                        contador += 1
-                        contador_total += 1
+                    ]
+                    for col_num in xrange(len(row)):
+                        c = ws.cell(row=row_index + 1, column=col_num + 1)
+                        c.value = row[col_num]
+                        #c.style.alignment.wrap_text = True
+                    contador += 1
+                    contador_total += 1
 
 
     wb.save(response)

@@ -92,29 +92,38 @@ ul{
         <h3><b>Dados do Fornecedor</b></h3>
         <table border="0" width="100%" cellpadding="5" cellspacing="5">
           <tr>
-            <td width="70%">Razão Social: <b>{{ pesquisa.razao_social }} </b></td>
-            <td width="30%">CNPJ: {{ pesquisa.cnpj }}</td>
-          </tr>
-          <tr>
-            <td width="70%">Inscrição Estadual: {{ pesquisa.ie }}</td>
-            <td width="30%">Endereço: {{ pesquisa.endereco }}</td>
+            <td colspan="2">Razão Social: <b>{{ pesquisa.razao_social }} </b></td>
 
           </tr>
+            <tr>
+                <td width="70%">CNPJ: {{ pesquisa.cnpj }}</td>
+                <td width="30%">Inscrição Estadual: {{ pesquisa.ie }}</td>
+            </tr>
           <tr>
-            <td width="70%">Email: {{ pesquisa.email }}</td>
+
+            <td width="60%">Email: {{ pesquisa.email }}</td>
             <td width="30%">Telefone: {{ pesquisa.telefone }}</td>
 
+          </tr>
+          <tr>
+            <td colspan="2">Endereço: {{ pesquisa.endereco }}</td>
+
+
 
           </tr>
           <tr>
-            <td width="70%">Nome do Representante: <b>{{ pesquisa.nome_representante }}</b></td>
-            <td width="30%">CPF do Representante: {{ pesquisa.cpf_representante }}</td>
+            <td colspan="2">Nome do Representante: <b>{{ pesquisa.nome_representante }}</b></td>
+
 
           </tr>
           <tr>
-            <td width="70%">Endereco do Representante: {{ pesquisa.endereco_representante }}</td>
+
+            <td width="70%">CPF do Representante: {{ pesquisa.cpf_representante }}</td>
             <td width="30%">RG do Representante: {{ pesquisa.rg_representante }}</td>
 
+          </tr>
+          <tr>
+            <td colspan="2">Endereco do Representante: {{ pesquisa.endereco_representante }}</td>
           </tr>
         </table>
     {% else %}

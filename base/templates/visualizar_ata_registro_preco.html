@@ -302,22 +302,22 @@
                                                 {% for opcao in lote.get_itens_do_lote %}
                                                     <tr>
                                                         {% if ata.adesao %}
-                                                            <td>{{ forloop.counter }}</td>
-                                                            <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                            <td width="5%">{{ forloop.counter }}</td>
+                                                            <td width="30%">{{ opcao.material|truncatechars:500 }}</td>
                                                         {% else %}
-                                                            <td>{{ opcao }}</td>
-                                                            <td>{{ opcao.material|truncatechars:500 }}</td>
+                                                            <td width="5%">{{ opcao }}</td>
+                                                            <td width="30%">{{ opcao.material|truncatechars:500 }}</td>
                                                         {% endif %}
-                                                        <td>{{ opcao.get_item_arp.marca|default_if_none:"-" }}</td>
-                                                        <td>{{ opcao.get_item_arp.unidade|default_if_none:"-" }}</td>
+                                                        <td width="10%">{{ opcao.get_item_arp.marca|default_if_none:"-" }}</td>
+                                                        <td width="8%">{{ opcao.get_item_arp.unidade|default_if_none:"-" }}</td>
                                                         {% if ata.adesao %}
-                                                            <td>{{ opcao.get_item_arp.fornecedor.razao_social }}</td>
+                                                            <td width="10%">{{ opcao.get_item_arp.fornecedor.razao_social }}</td>
                                                         {% else %}
-                                                            <td>{{ opcao.get_item_arp.participante.fornecedor.razao_social }}</td>
+                                                            <td width="10%">{{ opcao.get_item_arp.participante.fornecedor.razao_social }}</td>
                                                         {% endif %}
-                                                        <td>{{ opcao.get_item_arp.valor|format_money }}</td>
-                                                        <td>{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
-                                                        <td>{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }}</td>
+                                                        <td width="4%">{{ opcao.get_item_arp.valor|format_money }}</td>
+                                                        <td width="5%">{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
+                                                        <td width="5%">{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }}</td>
 
 
                                                     </tr>
