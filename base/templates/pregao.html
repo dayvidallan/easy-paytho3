@@ -673,7 +673,7 @@
                                                             <td>{{ item.valor_medio }}</td>
                                                             <td>{{ item.get_valor_unitario_proposto|format_money }}</td>
                                                             <td>{{ item.get_valor_total_proposto|format_money }}</td>
-                                                            <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final and recebida_setor %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
+                                                            <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final and recebida_setor and not pregao.data_adjudicacao %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
                                                             <td>{{ item.get_valor_item_lote|format_money|default_if_none:"não informado" }} </td>
 
                                                         </tr>
@@ -686,7 +686,7 @@
                                         </td>
                                         <td>
 
-                                            {% if recebida_setor %}
+                                            {% if recebida_setor and not pregao.data_adjudicacao %}
                                                 <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
                                             {% endif %}
 

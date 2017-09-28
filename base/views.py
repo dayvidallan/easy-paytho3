@@ -3298,7 +3298,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         contador += 1
                 row_cells = table.add_row().cells
                 row_cells[0].text = u'Total'
-                row_cells[5].text = format_money(total_geral)
+                row_cells[5].text = u'%s (%s)' % (format_money(total_geral), format_numero_extenso(total_geral))
+                row_cells[1].merge(row_cells[5])
                 p = document.add_paragraph()
 
 
@@ -8543,6 +8544,7 @@ def aditivar_contrato(request, contrato_id):
                 aditivo.indice_total_contrato = form.cleaned_data.get('indice_reajuste')
             else:
                 reducao = (valor_final - contrato.get_valor_aditivado()) / (contrato.get_valor_aditivado()/100)
+
                 if Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1).exists():
                     reducao = ((valor_final - Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1)[0].valor_atual) *100) / contrato.get_valor_aditivado()
                 aditivo.indice_total_contrato = reducao
