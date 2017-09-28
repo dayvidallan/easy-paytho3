@@ -8,7 +8,7 @@
     <a href="javascript:void(0);">{{ solicitacao }}</a>
 {% endblock %}
 {% block content %}
-    {% if solicitacao.tem_item_sem_pesquisa %}
+    {% if solicitacao.tem_item_sem_pesquisa and perms.base.pode_cadastrar_pesquisa_mercadologica and solicitacao.prazo_aberto %}
        <p class="alert alert-danger">Existe(m) item(ns) sem pesquisa mercadológica cadastrada.</p>
     {% endif%}
     <div class="pull-right">
