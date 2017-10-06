@@ -10121,3 +10121,16 @@ def editar_processo(request, processo_id):
         return HttpResponseRedirect(u'/base/ver_processo/{}/'.format(processo.id))
 
     return render(request, 'editar_processo.html', locals(), RequestContext(request))
+
+
+@login_required()
+def rejeitar_informar_quantidades(request, solicitacao_id, secretaria_id):
+    secretaria = get_object_or_404(Secretaria, pk=secretaria_id)
+    if secretaria == request.user.pessoafisica.setor.secretaria:
+        solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+        solicitacao.interessados.remove(secretaria)
+        messages.success(request, u'Pedido rejeitado com sucesso.')
+        return HttpResponseRedirect(u'/base/itens_solicitacao/{}/'.format(solicitacao.id))
+
+    else:
+        raise PermissionDenied
