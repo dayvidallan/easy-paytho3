@@ -31,7 +31,7 @@ class FornecedorAdmin(NewModelAdmin):
     list_display = ('get_opcoes', 'cnpj', 'razao_social','telefones', 'email')
 
     def get_opcoes(self, obj):
-        return u'<a href="/base/fornecedor/%s/">Visualizar </a>' % obj.id
+        return u'<a href="/admin/base/fornecedor/%s/">Visualizar </a>' % obj.id
     get_opcoes.short_description = u'Opções'
     get_opcoes.allow_tags = True
 

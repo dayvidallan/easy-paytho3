@@ -1174,7 +1174,7 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
                         novo_preco.save()
                         pesquisa.validade_proposta = validade
                         pesquisa.save()
-                        messages.success(request, u'Valores cadastrados com sucesso.')
+                        #messages.success(request, u'Valores cadastrados com sucesso.')
                 if not tem_algum_valor:
                     pesquisa.delete()
                     messages.error(request, u'Nenhum item possui valor informado.')
@@ -1959,7 +1959,8 @@ def baixar_arquivo(request, arquivo_id):
         o.arquivo = arquivo
         o.save()
         arquivo_nome = u'\'%s\' - %s' % (arquivo.nome, arquivo.pregao)
-        link = settings.SITE_URL + u'/media/%s' % arquivo.arquivo
+        config = get_config_geral()
+        link = config.url + u'/media/%s' % arquivo.arquivo
         texto = u'Olá, %s. Segue o link para download do arquivo: %s. Link: %s ' % (o.nome, arquivo_nome, link)
         send_mail('Easy Gestão Pública - Download do Arquivo', texto, settings.EMAIL_HOST_USER,
              [o.email], fail_silently=False)
