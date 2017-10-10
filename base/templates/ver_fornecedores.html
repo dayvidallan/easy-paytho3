@@ -77,11 +77,14 @@
                            <td>{{ fornecedor.email }}</td>
 
                            <td>
-                               <a class="btn btn-default btn-sm" href="/base/editar_fornecedor/{{fornecedor.id}}/">Editar</a>
-                               <a class="btn btn-info btn-sm" href="/base/imprimir_fornecedor/{{fornecedor.id}}/" target="_blank">Imprimir</a>
-                               {% if perms.base.pode_cadastrar_pregao %}
-                                    <a class="btn btn-success btn-sm" href="/base/ver_crc/{{fornecedor.id}}/" target="_blank">CRC</a>
-                               {% endif %}
+                               <ul class="action-bar">
+                                   <li><a class="btn btn-default btn-sm" href="/base/editar_fornecedor/{{fornecedor.id}}/">Editar</a></li>
+                                   <li><a class="btn btn-danger btn-sm" href="/admin/base/fornecedor/{{fornecedor.id}}/delete">Excluir</a></li>
+                                   <li><a class="btn btn-info btn-sm" href="/base/imprimir_fornecedor/{{fornecedor.id}}/" target="_blank">Imprimir</a></li>
+                                   {% if perms.base.pode_cadastrar_pregao %}
+                                        <li><a class="btn btn-success btn-sm" href="/base/ver_crc/{{fornecedor.id}}/" target="_blank">CRC</a></li>
+                                   {% endif %}
+                               </ul>
                            </td>
                        </tr>
                     {% endfor %}
