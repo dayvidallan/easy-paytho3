@@ -113,7 +113,7 @@
                            <td>{{ pregao.get_valor_total|format_money }}</td>
                        </tr>
                     {% endfor %}
-                    <tr><td colspan="6">Total</td><td>{{ total|format_money }}</td></tr>
+                    <tr><td>Total</td><td colspan="6">{{ total|format_money }}</td></tr>
                 </tbody>
             </table>
         {% elif relatorio == 'Relatório de Economia' %}
