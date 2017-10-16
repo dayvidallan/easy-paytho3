@@ -9702,7 +9702,7 @@ def imprimir_aditivo(request, aditivo_id):
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         p.add_run(u'CLÁUSULA PRIMEIRA: ').bold=True
         p = document.add_paragraph()
-        dias = (aditivo.data_fim - aditivo.contrato.data_fim).days
+        dias = (aditivo.data_fim - aditivo.data_inicio).days
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         num_processo = u' '
         if aditivo.contrato.solicitacao.processo:
@@ -9710,7 +9710,7 @@ def imprimir_aditivo(request, aditivo_id):
         texto = u'''
         O objeto do presente aditivo é PRORROGAR em %s dias a vigência e ACRESCER o valor do contrato %s em %s%% (%s por cento)
         do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
-        ''' % (dias, aditivo.contrato.numero, aditivo.indice_total_contrato, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        ''' % (dias, aditivo.contrato.numero, aditivo.indice_total_contrato, aditivo.indice_total_contrato, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
         p.add_run(texto)
 
 
@@ -9798,7 +9798,7 @@ def imprimir_aditivo(request, aditivo_id):
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         p.add_run(u'CLÁUSULA PRIMEIRA: ').bold=True
         p = document.add_paragraph()
-        dias = (aditivo.data_fim - aditivo.contrato.data_fim).days
+        dias = (aditivo.data_fim - aditivo.data_inicio).days
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         num_processo = u' '
         if aditivo.contrato.solicitacao.processo:
