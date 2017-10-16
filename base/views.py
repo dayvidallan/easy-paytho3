@@ -5233,6 +5233,8 @@ def gerar_ordem_compra(request, solicitacao_id):
     if form.is_valid():
         o = form.save(False)
         o.solicitacao = solicitacao
+        o.cadastrado_por = request.user
+        o.data_cadastro = datetime.datetime.now()
         o.save()
         messages.success(request, u'Ordem de Compra/Serviço gerada com sucesso.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao_id)

@@ -186,7 +186,7 @@
                     {% endif %}
                     <td>{{ solicitacao.objeto|truncatechars:250  }}</td>
                     <td>{{ solicitacao.tipo_aquisicao }}</td>
-                    <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</td>
+                    <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }} ({{ solicitacao.cadastrado_por }})</td>
                     <td>{{ solicitacao.get_situacao }}</td>
                     {% if perms.base.pode_ver_minuta %}
                         <td>

@@ -2359,6 +2359,8 @@ class OrdemCompra(models.Model):
     fonte_descricao = models.CharField(u'Descrição da Fonte', max_length=200, null=True, blank=True)
     elemento_despesa_num = models.CharField(u'Número do Elemento de Despesa', max_length=200, null=True, blank=True)
     elemento_despesa_descricao = models.CharField(u'Descrição do Elemento de Despesa', max_length=200, null=True, blank=True)
+    data_cadastro = models.DateTimeField(u'Cadastrada em', null=True)
+    cadastrado_por = models.ForeignKey(User, null=True, blank=True)
 
     class Meta:
         verbose_name = u'Ordem de Compra'
