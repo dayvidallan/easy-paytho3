@@ -9708,9 +9708,9 @@ def imprimir_aditivo(request, aditivo_id):
         if aditivo.contrato.solicitacao.processo:
             num_processo = aditivo.contrato.solicitacao.processo.numero
         texto = u'''
-        O objeto do presente aditivo é PRORROGAR em %s dias a vigência e ACRESCER o valor do contrato %s em %s%% (%s por cento)
+        O objeto do presente aditivo é PRORROGAR em %s dias a vigência e ACRESCER o valor do contrato %s em %s%%
         do valor contratado originariamente  nos autos do Processo Administrativo nº %s, referente a %s, cujo objeto trata de %s
-        ''' % (dias, aditivo.contrato.numero, aditivo.indice_total_contrato, aditivo.indice_total_contrato, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
+        ''' % (dias, aditivo.contrato.numero, aditivo.indice_total_contrato, num_processo, aditivo.contrato.pregao, aditivo.contrato.solicitacao.objeto)
         p.add_run(texto)
 
 
@@ -9721,7 +9721,7 @@ def imprimir_aditivo(request, aditivo_id):
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         valor_final = aditivo.contrato.valor + aditivo.valor
-        texto = u'''A alteração do valor passando de R$ %s para R$ %s ''' % (aditivo.contrato.valor, valor_final)
+        texto = u'''A alteração do valor passando de R$ %s (%s) para R$ %s (%s) ''' % (aditivo.contrato.valor, format_numero_extenso(aditivo.contrato.valor), valor_final, format_numero_extenso(valor_final))
         p.add_run(texto)
 
         p = document.add_paragraph()
