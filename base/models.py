@@ -318,6 +318,19 @@ class SolicitacaoLicitacao(models.Model):
         (CHAMADA_PUBLICA_OUTROS, CHAMADA_PUBLICA_OUTROS),
         (CHAMADA_PUBLICA_PRONATER, CHAMADA_PUBLICA_PRONATER),
     )
+
+    TIPO_AQUISICAO_E_COMPRAS_CHOICES = (
+        ('Compra', 'Compra'),
+        (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
+        (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
+        (CREDENCIAMENTO, CREDENCIAMENTO),
+        (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
+        (CHAMADA_PUBLICA_OUTROS, CHAMADA_PUBLICA_OUTROS),
+        (CHAMADA_PUBLICA_PRONATER, CHAMADA_PUBLICA_PRONATER),
+    )
     num_memorando = models.CharField(u'Número do Memorando', max_length=80)
     objeto = models.TextField(u'Descrição do Objeto')
     objetivo = models.TextField(u'Objetivo')
