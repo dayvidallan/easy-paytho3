@@ -705,7 +705,8 @@ class BuscarSolicitacaoForm(forms.Form):
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
-    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria de Origem', required=False)
+    tipo = forms.ChoiceField(label=u'Filtrar por Tipo', required=False, choices=SolicitacaoLicitacao.TIPO_CHOICES)
 
     def __init__(self, *args, **kwargs):
         super(BuscarSolicitacaoForm, self).__init__(*args, **kwargs)

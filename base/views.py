@@ -907,6 +907,9 @@ def solicitacoes_do_setor(request):
         if form.cleaned_data.get('secretaria'):
             solicitacoes = solicitacoes.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
+        if form.cleaned_data.get('tipo'):
+            solicitacoes = solicitacoes.filter(tipo=form.cleaned_data.get('tipo'))
+
     return render(request, 'lista_solicitacoes.html', locals(), RequestContext(request))
 
 
@@ -939,6 +942,9 @@ def outras_solicitacoes(request):
         if form.cleaned_data.get('secretaria'):
             solicitacoes = solicitacoes.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
+        if form.cleaned_data.get('tipo'):
+            solicitacoes = solicitacoes.filter(tipo=form.cleaned_data.get('tipo'))
+            
     return render(request, 'lista_solicitacoes.html', locals(), RequestContext(request))
 
 
