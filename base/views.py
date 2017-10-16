@@ -852,7 +852,7 @@ def baixar_contratos(request):
 
 @login_required()
 def ver_solicitacoes(request):
-    title=u'Lista de Solicitações'
+    title=u'Módulo de Solicitações'
     setor = request.user.pessoafisica.setor
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
     solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao__in=[SolicitacaoLicitacao.RECEBIDO, SolicitacaoLicitacao.EM_LICITACAO])).order_by('-data_cadastro')
@@ -878,6 +878,72 @@ def ver_solicitacoes(request):
             outras = outras.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
     return render(request, 'ver_solicitacoes.html', locals(), RequestContext(request))
+
+
+@login_required()
+def solicitacoes_do_setor(request):
+    title = u'Solicitações do Setor'
+    do_setor = True
+    outras = False
+    setor = request.user.pessoafisica.setor
+    movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
+    solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao__in=[SolicitacaoLicitacao.RECEBIDO, SolicitacaoLicitacao.EM_LICITACAO])).order_by('-data_cadastro')
+    # outras = SolicitacaoLicitacao.objects.filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
+    # aba1 = u''
+    # aba2 = u'in active'
+    # class_aba1 = u''
+    # class_aba2 = u'active'
+    form = BuscarSolicitacaoForm(request.GET or None)
+
+    if form.is_valid():
+        # aba1 = u'in active'
+        # aba2 = u''
+        # class_aba1 = u'active'
+        # class_aba2 = u''
+        #outras = SolicitacaoLicitacao.objects.all()
+        if form.cleaned_data.get('info'):
+            solicitacoes = solicitacoes.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
+        if form.cleaned_data.get('ano'):
+           solicitacoes = solicitacoes.filter(data_cadastro__year=form.cleaned_data.get('ano'))
+
+        if form.cleaned_data.get('secretaria'):
+            solicitacoes = solicitacoes.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
+    return render(request, 'lista_solicitacoes.html', locals(), RequestContext(request))
+
+
+@login_required()
+def outras_solicitacoes(request):
+    do_setor = False
+    outras = True
+    title = u'Todas as Solicitações'
+    setor = request.user.pessoafisica.setor
+    movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
+    #solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao__in=[SolicitacaoLicitacao.RECEBIDO, SolicitacaoLicitacao.EM_LICITACAO])).order_by('-data_cadastro')
+    solicitacoes = SolicitacaoLicitacao.objects.filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
+    # aba1 = u''
+    # aba2 = u'in active'
+    # class_aba1 = u''
+    # class_aba2 = u'active'
+    form = BuscarSolicitacaoForm(request.GET or None)
+
+    if form.is_valid():
+        # aba1 = u'in active'
+        # aba2 = u''
+        # class_aba1 = u'active'
+        # class_aba2 = u''
+        solicitacoes = SolicitacaoLicitacao.objects.all()
+        if form.cleaned_data.get('info'):
+            solicitacoes = solicitacoes.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
+        if form.cleaned_data.get('ano'):
+           solicitacoes = solicitacoes.filter(data_cadastro__year=form.cleaned_data.get('ano'))
+
+        if form.cleaned_data.get('secretaria'):
+            solicitacoes = solicitacoes.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
+    return render(request, 'lista_solicitacoes.html', locals(), RequestContext(request))
+
+
 
 @login_required()
 def rejeitar_solicitacao(request, solicitacao_id):

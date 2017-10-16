@@ -11,6 +11,9 @@ urlpatterns = [
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^busca_pessoa/$', views.busca_pessoa, name='busca_pessoa'),
     url(r'^gestao_pedidos_tipo/$', views.gestao_pedidos_tipo, name='gestao_pedidos_tipo'),
+    url(r'^solicitacoes_do_setor/$', views.solicitacoes_do_setor, name='solicitacoes_do_setor'),
+    url(r'^outras_solicitacoes/$', views.outras_solicitacoes, name='outras_solicitacoes'),
+
 
 
     url(r'^modelos_atas/(?P<pregao_id>\d+)/$', views.modelos_atas, name='modelos_atas'),

@@ -700,7 +700,7 @@ class GestaoContratoForm(forms.Form):
 
 class BuscarSolicitacaoForm(forms.Form):
     METHOD = u'GET'
-    info = forms.CharField(label=u'Digite o número da licitação/procedimento, processo ou do memorando', required=False)
+    info = forms.CharField(label=u'Filtrar por Número', required=False, help_text='Digite o número da licitação/procedimento, processo ou do memorando')
     ano = forms.ChoiceField([],
                 required = False,
                 label    = u'Filtrar por Ano:',
