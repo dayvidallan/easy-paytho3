@@ -1330,7 +1330,10 @@ def ver_pesquisa_mercadologica(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     title=u'Pesquisa Mercadológica'
     pesquisas = ItemPesquisaMercadologica.objects.filter(item=item)
-    return render(request, 'ver_pesquisa_mercadologica.html', locals(), RequestContext(request))
+    if request.GET.get('modal'):
+        return render(request, 'ver_pesquisa_mercadologica_modal.html', locals(), RequestContext(request))
+    else:
+        return render(request, 'ver_pesquisa_mercadologica.html', locals(), RequestContext(request))
 
 
 @login_required()
@@ -8961,6 +8964,9 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
     total = 0
     itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
+
+
+
     for item in itens:
         total += item.get_valor_total_consumido()
     configuracao = get_config(ata.solicitacao.setor_origem.secretaria)

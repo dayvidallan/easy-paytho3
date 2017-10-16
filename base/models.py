@@ -3108,10 +3108,15 @@ class ItemAtaRegistroPreco(models.Model):
         return self.get_quantidade_disponivel() * Decimal(self.valor)
 
     def get_quantidade_consumida(self):
-        if PedidoAtaRegistroPreco.objects.filter(item=self).exists():
-            return PedidoAtaRegistroPreco.objects.filter(item=self).aggregate(total=Sum('quantidade'))['total']
+        usuario = tl.get_user()
+        if usuario.groups.filter(name=u'Gerente').exists():
+            if PedidoAtaRegistroPreco.objects.filter(item=self).exists():
+                return PedidoAtaRegistroPreco.objects.filter(item=self).aggregate(total=Sum('quantidade'))['total']
         else:
-            return 0
+            if PedidoAtaRegistroPreco.objects.filter(item=self, solicitacao__setor_origem__secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                return PedidoAtaRegistroPreco.objects.filter(item=self, solicitacao__setor_origem__secretaria=usuario.pessoafisica.setor.secretaria).aggregate(total=Sum('quantidade'))['total']
+
+        return 0
 
     def get_valor_total_consumido(self):
         return self.get_quantidade_consumida() * Decimal(self.valor)

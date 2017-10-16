@@ -18,6 +18,10 @@ $(function() {
 </script>
 {% endblock %}
 {% block content %}
+    <div class="pull-right">
+        <a class="btn btn-info" href="/base/pregao/{{ pregao.id }}/#fornecedores">Voltar</a>
+    </div>
+    <br><br>
 
         <form action="." method="post" class="form-horizontal">
             {% csrf_token %}

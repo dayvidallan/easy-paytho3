@@ -116,7 +116,7 @@
                     {% endif %}
                     <td>
                         {% if item.eh_ativo and item.ativo %}
-                            <a href="/base/ver_pesquisa_mercadologica/{{ item.id }}/" class="btn btn-info btn-sm" target="_blank">Ver Cotação</a>
+                            <a href="/base/ver_pesquisa_mercadologica/{{ item.id }}/?modal=True" data-toggle="modal" data-target="#myModal" class="btn btn-info btn-sm" target="_blank">Ver Cotação</a>
                         {% if not fornecedores_lance %}
                             <a href="/base/encerrar_itempregao/{{ item.id }}/1/1/" class="btn btn-warning btn-sm">Deserto</a>
                         {% endif %}
@@ -379,5 +379,17 @@
     {% endif %}
 
 </div>
+
+    <div id="myModal" class="modal" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+
+
+
+        </div>
+    </div>
 
 {% endblock %}
