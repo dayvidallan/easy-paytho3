@@ -8626,7 +8626,7 @@ def aditivar_contrato(request, contrato_id):
             aditivo.valor_atual = valor_final
             if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
                 aditivo.indice_total_contrato = form.cleaned_data.get('indice_reajuste')
-            else:
+            elif not form.cleaned_data.get('data_final'):
                 reducao = (valor_final - contrato.get_valor_aditivado()) / (contrato.get_valor_aditivado()/100)
 
                 if Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1).exists():
