@@ -614,7 +614,7 @@
                             <center><h3><font color="red">Empate ficto entre os concorrentes.</font></h3></center>
                         {% endif %}
                         {% for lote in itens_pregao %}
-                            <h2>Lote {{lote.item}}</h2>
+                            <h2>Lote {{lote.item }}</h2>
                             <table class="table table-bordered table-condensed table-striped">
                                 <thead>
                                     <tr>
@@ -644,12 +644,8 @@
                                                 {{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
                                         </td>
-                                        {% if eh_maior_desconto %}
-                                            <td>{{ lote.get_total_lance_ganhador|format_money }}%</td>
 
-                                        {% else %}
-                                            <td>{{ lote.get_total_lance_ganhador|format_money }}</td>
-                                        {% endif %}
+                                        <td>{{ lote.get_total_lance_ganhador|format_money }}{% if eh_maior_desconto %}%{% endif %}</td>
 
                                         <td>
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">

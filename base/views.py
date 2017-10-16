@@ -231,7 +231,6 @@ def fornecedor(request, fornecedor_id):
 
 @login_required()
 def pregao(request, pregao_id):
-
     pregao = get_object_or_404(Pregao, pk= pregao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao'):
         recebida_setor = pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor)
@@ -276,7 +275,6 @@ def pregao(request, pregao_id):
             form = GanhadoresForm(request.POST or None, participantes = participantes, initial=dict(ganhador=participante))
         else:
             form = GanhadoresForm(request.POST or None, participantes = participantes)
-
 
         return render(request, 'pregao.html', locals(), RequestContext(request))
     else:
