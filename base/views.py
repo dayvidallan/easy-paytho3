@@ -8521,7 +8521,7 @@ def aditivar_contrato(request, contrato_id):
                         eh_quantidade = True
                         for idx, indice_informado in enumerate(request.POST.getlist('quantidade_soma'), 1):
 
-                            if indice_informado and int(indice_informado) > 0:
+                            if indice_informado and indice_informado > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 indice_ajuste = (Decimal(request.POST.getlist('quantidade_soma')[idx-1].replace('.','').replace(',','.')) * 100)  / item.quantidade
 
@@ -8544,7 +8544,7 @@ def aditivar_contrato(request, contrato_id):
                         aditivo.de_valor = True
                         eh_quantidade = True
                         for idx, indice_informado in enumerate(request.POST.getlist('quantidade_subtrai'), 1):
-                            if indice_informado and int(indice_informado) > 0:
+                            if indice_informado and indice_informado > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 indice_ajuste = (Decimal(request.POST.getlist('quantidade_subtrai')[idx-1].replace('.','').replace(',','.')) * 100) / item.quantidade
 
@@ -8569,7 +8569,7 @@ def aditivar_contrato(request, contrato_id):
                         eh_valor = True
 
                         for idx, indice_informado in enumerate(request.POST.getlist('valor_soma'), 1):
-                            if indice_informado and int(indice_informado) > 0:
+                            if indice_informado and indice_informado > 0:
 
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 #item.valor = ((Decimal(request.POST.getlist('valor_soma')[idx-1].replace('.','').replace(',','.'))/100) * item.valor) + item.valor
@@ -8593,7 +8593,7 @@ def aditivar_contrato(request, contrato_id):
                         eh_valor = True
 
                         for idx, indice_informado in enumerate(request.POST.getlist('valor_subtrai'), 1):
-                            if indice_informado and int(indice_informado) > 0:
+                            if indice_informado and indice_informado > 0:
                                 item = ItemContrato.objects.get(contrato=contrato, id=request.POST.getlist('id_item')[idx-1])
                                 #item.valor = item.valor - ((Decimal(request.POST.getlist('valor_subtrai')[idx-1].replace('.','').replace(',','.'))/100) * item.valor)
                                 #item.save()
