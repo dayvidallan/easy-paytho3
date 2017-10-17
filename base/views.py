@@ -5186,24 +5186,30 @@ def informar_valor_final_itens_lote(request, lote_id, pregao_id):
         vencedor = lote.get_empresa_vencedora()
         title=u'Informar Valor Unitário Final do %s' % (lote)
         form = ValorFinalItemLoteForm(request.POST or None)
+        erro_total = False
         if request.POST:
             contador = 0
             for id_do_item in request.POST.getlist('id_item'):
+                tem_erro = False
                 item = ItemSolicitacaoLicitacao.objects.get(pk=id_do_item)
                 valor_informado = Decimal(request.POST.getlist('itens')[contador])
                 if valor_informado > item.get_valor_total_proposto() or valor_informado > item.valor_medio:
-                    messages.error(request, u'O valor não pode ser maior do que o valor unitário proposto (%s) nem do que o valor máximo do item: %s.' % (item.get_valor_total_proposto(), item.valor_medio))
-                    return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
+                    messages.error(request, u'O valor do %s não pode ser maior do que o valor total proposto (%s) nem do que o valor máximo do item: %s.' % (item, format_money(item.get_valor_total_proposto()), format_money(item.valor_medio)))
+                    tem_erro = True
+                    erro_total = True
+            #        return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
 
                 valor_final = valor_informado * item.quantidade
                 valor = PropostaItemPregao.objects.filter(participante=vencedor, item__in=ids_itens_do_lote).exclude(item=item).aggregate(total=Sum('valor_item_lote'))['total'] or 0
                 if (valor + valor_final) > lote.get_total_lance_ganhador():
-                    messages.error(request, u'O valor informado faz o valor total dos itens do lote ultrapassar o valor do lance ganhador: %s.' % lote.get_total_lance_ganhador())
-                    return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
-
-
-                PropostaItemPregao.objects.filter(participante=vencedor, item=item).update(valor_item_lote=valor_final)
+                    tem_erro = True
+                    erro_total = True
+                    messages.error(request, u'O valor total informado (%s) faz o valor total dos itens do lote ultrapassar o valor do lance ganhador: %s.' % (format_money((valor + valor_final)), format_money(lote.get_total_lance_ganhador())))
+                if not tem_erro:
+                    PropostaItemPregao.objects.filter(participante=vencedor, item=item).update(valor_item_lote=valor_final)
                 contador += 1
+            if erro_total:
+                return HttpResponseRedirect(u'/base/informar_valor_final_itens_lote/%s/%s/' % (lote.id, pregao.id))
             messages.success(request, u'Valor cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
         return render(request, 'informar_valor_final_itens_lote.html', locals(), RequestContext(request))
