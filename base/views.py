@@ -8492,6 +8492,7 @@ def aditivar_contrato(request, contrato_id):
                 aditivo.de_prazo = True
                 aditivo.data_inicio = form.cleaned_data.get('data_inicial')
                 aditivo.data_fim = form.cleaned_data.get('data_final')
+                aditivo.indice = 0.00
 
             aditivo.tipo = form.cleaned_data.get('opcoes')
             if form.cleaned_data.get('opcoes'):
@@ -8623,14 +8624,23 @@ def aditivar_contrato(request, contrato_id):
                     valor_final += (item.valor * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
                 elif eh_valor:
                     valor_final += (item.get_valor_item_contrato(numero=True) * (item.quantidade + quantidade_aditivo)).quantize(Decimal(10) ** -2)
-            aditivo.valor_atual = valor_final
+            if valor_final:
+                aditivo.valor_atual = valor_final
+            elif aditivo.de_prazo:
+                if Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1).exists():
+                    aditivo.valor_atual = Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1)[0].valor_atual
+                else:
+                    aditivo.valor_atual = contrato.get_valor_aditivado()
+            if not aditivo.valor_atual:
+                aditivo.valor_atual = Decimal(0.00)
+
             if form.cleaned_data.get('opcoes') == Aditivo.REAJUSTE_FINANCEIRO:
                 aditivo.indice_total_contrato = form.cleaned_data.get('indice_reajuste')
             elif aditivo.de_valor:
                 reducao = (valor_final - contrato.get_valor_aditivado()) / (contrato.get_valor_aditivado()/100)
 
-                if Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1).exists():
-                    reducao = ((valor_final - Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1)[0].valor_atual) *100) / contrato.get_valor_aditivado()
+                if Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1, de_valor__isnull=False).exists():
+                    reducao = ((valor_final - Aditivo.objects.filter(contrato=contrato, ordem=aditivo.ordem-1, de_valor__isnull=False)[0].valor_atual) *100) / contrato.get_valor_aditivado()
                 aditivo.indice_total_contrato = reducao
             aditivo.save()
             messages.success(request, u'Aditivo cadastrado com sucesso.')

@@ -118,7 +118,7 @@ ul{
                         <td>{{ item.ordem }}</td>
                         <td>{{ item }}</td>
                         <td>{{ item.tipo }}</td>
-                        <td>{{ item.indice|default_if_none:"-"  }}</td>
+                        <td>{{ item.indice_total_contrato|default_if_none:"-"  }}</td>
                         <td>{{ item.data_fim|default_if_none:"-" }}</td>
                     </tr>
                 {% endfor %}
