@@ -3302,6 +3302,17 @@ class TipoObjetoModelo(models.Model):
         return self.nome
 
 
+class MotivoSuspensaoPregao(models.Model):
+    nome = models.CharField(u'Nome', max_length=500)
+    ativo = models.BooleanField(u'Ativo', default=True)
+
+    class Meta:
+        verbose_name = u'Motivo de Suspensão do Pregão'
+        verbose_name_plural = u'Motivos de Suspensão do Pregão'
+
+    def __unicode__(self):
+        return self.nome
+
 class ModeloDocumento(models.Model):
 
     TIPO_DOCUMENTO_CHOICES = (

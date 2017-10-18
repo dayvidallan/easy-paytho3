@@ -2248,7 +2248,8 @@ def suspender_pregao(request, pregao_id):
             registro.obs = form.cleaned_data.get('motivo')
             registro.pregao = pregao
             registro.save()
-            pregao.categoria_suspensao = form.cleaned_data.get('categoria_suspensao')
+            if form.cleaned_data.get('categoria_suspensao'):
+                pregao.categoria_suspensao = form.cleaned_data.get('categoria_suspensao').nome
             pregao.situacao = Pregao.SUSPENSO
             pregao.data_suspensao = datetime.datetime.now().date()
             if form.cleaned_data.get('sine_die'):

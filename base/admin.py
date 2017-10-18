@@ -376,3 +376,10 @@ class TipoObjetoModeloAdmin(NewModelAdmin):
     search_fields = ('nome',)
 
 admin.site.register(TipoObjetoModelo, TipoObjetoModeloAdmin)
+
+class MotivoSuspensaoPregaoAdmin(NewModelAdmin):
+    list_display = ('nome', 'ativo', )
+    ordering = ('nome',)
+    search_fields = ('nome',)
+
+admin.site.register(MotivoSuspensaoPregao, MotivoSuspensaoPregaoAdmin)

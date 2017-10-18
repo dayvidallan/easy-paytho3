@@ -250,5 +250,54 @@
         "fields": {
             "nome": "Serviços - Outros"
         }
+    },
+    {
+        "model": "base.motivosuspensaopregao",
+        "pk": 1,
+        "fields": {
+            "nome": "Análise de Amostras"
+        }
+    },
+    {
+        "model": "base.motivosuspensaopregao",
+        "pk": 2,
+        "fields": {
+            "nome": "Documentação Complementar"
+        }
+    },
+    {
+        "model": "base.motivosuspensaopregao",
+        "pk": 3,
+        "fields": {
+            "nome": "Impugnação"
+        }
+    },
+    {
+        "model": "base.motivosuspensaopregao",
+        "pk": 4,
+        "fields": {
+            "nome": "Parecer Técnico"
+        }
+    },
+    {
+        "model": "base.motivosuspensaopregao",
+        "pk": 5,
+        "fields": {
+            "nome": "Prazo de Recurso"
+        }
+    },
+    {
+        "model": "base.motivosuspensaopregao",
+        "pk": 6,
+        "fields": {
+            "nome": "Proposta Final"
+        }
+    },
+    {
+        "model": "base.motivosuspensaopregao",
+        "pk": 7,
+        "fields": {
+            "nome": "Revisão do Processo"
+        }
     }
 ]

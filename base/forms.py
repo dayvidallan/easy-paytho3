@@ -437,7 +437,7 @@ class RemoverParticipanteForm(forms.Form):
 
 class SuspenderPregaoForm(forms.Form):
     motivo = forms.CharField(label=u'Motivo', required=True, widget=forms.Textarea)
-    categoria_suspensao = forms.ChoiceField(label=u'Categoria da Suspensão', required=False, choices=Pregao.CATEGORIA_SUSPENSAO_CHOICES)
+    categoria_suspensao = forms.ModelChoiceField(MotivoSuspensaoPregao.objects, label=u'Categoria da Suspensão', required=False)
     sine_die = forms.BooleanField(label=u'Sine die', required=False)
     data_retorno = forms.DateField(label=u'Data de Retorno', required=False)
     hora_retorno = forms.CharField(label=u'Hora de Retorno', required=False)
@@ -449,6 +449,9 @@ class SuspenderPregaoForm(forms.Form):
     def clean(self):
         if not self.cleaned_data.get('sine_die') and not self.cleaned_data.get('data_retorno'):
             self.add_error('data_retorno', u'Informe a data de retorno')
+
+        if self.cleaned_data.get('data_retorno') and not self.cleaned_data.get('hora_retorno'):
+            self.add_error('hora_retorno', u'Informe a hora de retorno')
 
     class Media:
         js = ['/static/base/js/suspenderpregao.js']
