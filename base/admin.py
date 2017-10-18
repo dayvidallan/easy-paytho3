@@ -324,7 +324,7 @@ class LogDownloadArquivoAdmin(NewModelAdmin):
     list_display = ('nome', 'responsavel', 'email',  'cnpj', 'get_pregao')
     ordering = ('responsavel',)
     list_filter = ('arquivo__pregao', )
-    search_fields = ('responsavel', 'email', 'cnpj')
+    search_fields = ('responsavel', 'email', 'cnpj', 'nome')
 
     def get_pregao(self, obj):
         return obj.arquivo.pregao
