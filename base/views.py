@@ -1625,6 +1625,11 @@ def resultado_ajustar_preco(request, resultado_id):
         form = ResultadoAjustePrecoForm(request.POST or None, instance=resultado)
         if form.is_valid():
             form.save()
+            historico = HistoricoPregao()
+            historico.pregao = resultado.participante.pregao
+            historico.data = datetime.datetime.now()
+            historico.obs = u'Ajuste de Preço: %s, novo valor: %s. Observações: %s' %  (resultado.item, form.cleaned_data.get('valor'), form.cleaned_data.get('observacoes'))
+            historico.save()
             if resultado.item.get_licitacao().eh_pregao():
                 messages.success(request, u'Situação alterada com sucesso.')
                 return HttpResponseRedirect(u'/base/resultado_classificacao/%s/' % resultado.item.id)

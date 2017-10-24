@@ -448,7 +448,7 @@
             <div class="pull-right">
                 <!-- <a class="btn btn-primary" href="/admin/base/itempregao/add/">Adicionar Item ao Pregão</a> -->
                 {% if not eh_credenciamento %}
-                    {% if pregao.eh_ativo and not pregao.tem_resultado %}
+                    {% if pregao.eh_ativo %}
                         <a class="btn btn-primary" href="/base/cadastra_proposta_pregao/{{pregao.id}}/">Cadastrar Propostas</a>
                     {% endif %}
                     <a class="btn btn-success" href="/base/planilha_propostas/{{ pregao.solicitacao.id }}/">Baixar Planilha Modelo</a>
