@@ -1195,6 +1195,11 @@ class ItemSolicitacaoLicitacao(models.Model):
         itens = ItemLote.objects.filter(lote=self)
         return ItemSolicitacaoLicitacao.objects.filter(id__in=itens.values_list('item', flat=True))
 
+    def get_valor_total_lote(self):
+        total = 0
+        for item in self.get_itens_do_lote():
+            total += item.get_item_arp().valor * item.quantidade
+        return total
 
     def get_valor_total_item_lote(self):
         total = 0

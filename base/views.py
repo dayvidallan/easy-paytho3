@@ -3320,7 +3320,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 fornecedores.append(fornecedor)
                 p = document.add_paragraph()
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                p.add_run(u'%s' % fornecedor).bold = True
+                #p.add_run(u'%s' % fornecedor).bold = True
                 itens = len(item[1]['lance'])
 
 
@@ -3356,7 +3356,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 p = document.add_paragraph()
                 quantidade = 0
                 for lance in item[1]['lance']:
-                    quantidade = quantidade + len(lance.get_itens_do_lote())
+                    quantidade = quantidade + len(lance.get_itens_do_lote()) + 1
 
                 table = document.add_table(rows=quantidade+3, cols=6)
                 hdr_cells = table.rows[0].cells
@@ -3369,11 +3369,12 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 total_geral = 0
                 contador = 1
                 for lance in item[1]['lance']:
-
+                    valor_do_lote = 0
                     conteudo = u''
                     for componente in lance.get_itens_do_lote():
                         total = componente.get_item_arp().valor * componente.quantidade
                         total_geral += total
+                        valor_do_lote += total
                         marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
 
                         row_cells = table.rows[contador].cells
@@ -3384,6 +3385,12 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[4].text = u'%s' % format_money(componente.get_item_arp().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
+                    row_cells = table.rows[contador].cells
+                    row_cells[0].text = u'Total do Lote'
+                    row_cells[5].text = u'%s (%s)' % (format_money(valor_do_lote), format_numero_extenso(valor_do_lote))
+                    row_cells[1].merge(row_cells[5])
+                    contador += 1
+                    p = document.add_paragraph()
                 row_cells = table.add_row().cells
                 row_cells[0].text = u'Total'
                 row_cells[5].text = u'%s (%s)' % (format_money(total_geral), format_numero_extenso(total_geral))

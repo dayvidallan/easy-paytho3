@@ -322,6 +322,9 @@
 
                                                     </tr>
                                                 {% endfor %}
+                                                <tr>
+                                                    <td colspan="8" align="center"><b>Total do Lote: R$ {{ lote.get_valor_total_lote|format_money }} ({{ lote.get_valor_total_lote|format_numero_extenso }})</b></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     {% endfor %}
