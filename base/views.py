@@ -3365,7 +3365,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells[4].text = u'Preço Unitário (R$)'
                 hdr_cells[5].text = u'Preço Total (R$)'
                 total_geral = 0
-                contador = 1
+                contador = 0
                 for lance in item[1]['lance']:
 
                     conteudo = u''
