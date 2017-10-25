@@ -3310,7 +3310,6 @@ def relatorio_ata_registro_preco(request, pregao_id):
 
     p.add_run(texto)
 
-
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     fornecedores = list()
     if eh_lote:
@@ -3355,8 +3354,11 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells = table.rows[5].cells
                 hdr_cells[0].text = u'Email: %s' % fornecedor.email
                 p = document.add_paragraph()
+                quantidade = 0
+                for lance in item[1]['lance']:
+                    quantidade = quantidade + len(lance.get_itens_do_lote())
 
-                table = document.add_table(rows=itens+3, cols=6)
+                table = document.add_table(rows=quantidade+3, cols=6)
                 hdr_cells = table.rows[0].cells
                 hdr_cells[0].text = u'Lote / Item'
                 hdr_cells[1].text = u'Objeto'
@@ -3365,12 +3367,12 @@ def relatorio_ata_registro_preco(request, pregao_id):
                 hdr_cells[4].text = u'Preço Unitário (R$)'
                 hdr_cells[5].text = u'Preço Total (R$)'
                 total_geral = 0
-                contador = 0
+                contador = 1
                 for lance in item[1]['lance']:
 
                     conteudo = u''
                     for componente in lance.get_itens_do_lote():
-                        total = lance.get_vencedor().valor * componente.quantidade
+                        total = componente.get_item_arp().valor * componente.quantidade
                         total_geral += total
                         marca = PropostaItemPregao.objects.filter(item=componente, participante=lance.get_vencedor().participante)[0].marca
 
@@ -3379,7 +3381,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         row_cells[1].text = u'%s' % componente.material.nome
                         row_cells[2].text = u'%s' % (marca)
                         row_cells[3].text = u'%s / %s' % (componente.unidade, format_quantidade(componente.quantidade))
-                        row_cells[4].text = u'%s' % format_money(lance.get_vencedor().valor)
+                        row_cells[4].text = u'%s' % format_money(componente.get_item_arp().valor)
                         row_cells[5].text = u'%s' % format_money(total)
                         contador += 1
                 row_cells = table.add_row().cells
