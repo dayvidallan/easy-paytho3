@@ -61,6 +61,14 @@
         $("#id_fundamento_legal").prop("readonly", true);
     }
 
+    if ($('#id_tipo').val() == 2) {
+        $('#id_tipo_desconto').parent().parent().show()
+
+    }
+    else {
+        $('#id_tipo_desconto').parent().parent().hide()
+    }
+
 
 
  }

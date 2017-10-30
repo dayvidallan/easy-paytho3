@@ -130,6 +130,19 @@ class TipoPregao(models.Model):
         verbose_name = u'Tipo de Pregão'
         verbose_name_plural = u'Tipos de Pregão'
 
+class TipoPregaoDesconto(models.Model):
+
+    MENOR_PRECO = 1
+    DESCONTO = 2
+
+    nome = models.CharField(u'Nome', max_length=80)
+
+    def __unicode__(self):
+        return self.nome
+
+    class Meta:
+        verbose_name = u'Tipo de Pregão de Desconto'
+        verbose_name_plural = u'Tipos de Pregão de Desconto'
 
 class TipoUnidade(models.Model):
     nome = models.CharField(u'Unidade', max_length=80)
@@ -1308,6 +1321,7 @@ class Pregao(models.Model):
     objeto = models.TextField(u'Objeto', null=True)
     fundamento_legal = models.CharField(u'Fundamento Legal', max_length=5000, null=True, blank=True)
     tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento', null=True, blank=True)
+    tipo_desconto = models.ForeignKey(TipoPregaoDesconto, verbose_name=u'Tipo de Desconto', null=True, blank=True)
     criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação')
     aplicacao_lcn_123_06 = models.ForeignKey(OpcaoLCN, verbose_name=u'MPE – Aplicação Da LCN 123/06 (Lei 123/06)', null=True, blank=True)
     data_inicio = models.DateField(u'Data de Início da Retirada do Edital', null=True, blank=True)

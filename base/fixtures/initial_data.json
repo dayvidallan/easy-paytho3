@@ -161,6 +161,27 @@
         }
     },
     {
+        "model": "base.tipopregao",
+        "pk": 2,
+        "fields": {
+            "nome": "Maior Desconto"
+        }
+    },
+    {
+        "model": "base.tipopregaodesconto",
+        "pk": 1,
+        "fields": {
+            "nome": "Maior Desconto no Item"
+        }
+    },
+    {
+        "model": "base.tipopregaodesconto",
+        "pk": 2,
+        "fields": {
+            "nome": "Maior Desconto em Tabela de Referência"
+        }
+    },
+    {
         "model": "base.tipomodelo",
         "pk": 1,
         "fields": {
