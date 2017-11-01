@@ -651,8 +651,8 @@ def lances_item(request, item_id):
                     messages.error(request, u'Você não pode dar um lance menor do que sua proposta.')
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= valor_anterior_registrado:
-                    messages.error(request, u'Você não pode dar um lance maior do que o seu último lance registrado: <b>R$: %s</b>.' % format_money(valor_anterior_registrado))
+                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') <= valor_anterior_registrado:
+                    messages.error(request, u'Você não pode dar um lance menor do que o seu último lance registrado: <b>%s %%</b>.' % format_money(valor_anterior_registrado))
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
                 # if form.cleaned_data.get('lance') >= item.valor_medio:

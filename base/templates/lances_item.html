@@ -324,7 +324,9 @@
                             {% else %}
                                 <th width="20%">Valor</th>
                             {% endif %}
-                            <th>% de Redução</th>
+                            {% if  not eh_maior_desconto %}
+                                <th>% de Redução</th>
+                            {% endif %}
                             <th width="40%">Fornecedor</th>
                         </tr>
                     </thead>
@@ -347,7 +349,9 @@
                                             {% endif %}
                                        {% endif %}
                                    </td>
-                                   <td>{{ lance.get_reducao_empresa }}</td>
+                                   {% if  not eh_maior_desconto %}
+                                        <td>{{ lance.get_reducao_empresa }}</td>
+                                   {% endif %}
                                    <td>{{ lance.participante }}</td>
                                </tr>
                             {% endfor %}
