@@ -744,6 +744,15 @@ class ItemSolicitacaoLicitacao(models.Model):
                         return total
         return False
 
+
+    def get_valor_final_desconto(self):
+        return ((((100 - Decimal(self.get_vencedor().get_valor().replace(' %', '')))) * self.valor_medio)/100).quantize(TWOPLACES)
+
+    def get_valor_final_total_desconto(self):
+
+        return self.get_valor_final_desconto()*self.quantidade
+
+
     def get_valor_medio_total(self):
         return self.valor_medio*self.quantidade
 
@@ -1386,6 +1395,10 @@ class Pregao(models.Model):
         if self.tipo.id == TipoPregao.DESCONTO:
             return True
         return False
+
+    def eh_desconto_por_item(self):
+        return self.eh_maior_desconto() and self.tipo_desconto.id == TipoPregaoDesconto.MENOR_PRECO
+
     def get_local(self):
         return u'Dia %s às %s, no(a) %s' % (self.data_abertura.strftime('%d/%m/%y'), self.hora_abertura, self.local)
 

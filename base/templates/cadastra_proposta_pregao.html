@@ -65,7 +65,11 @@
                                     <th>Material/Serviço</th>
                                     <th>Valor Máximo</th>
                                     <th>Marca</th>
-                                    <th>Valor</th>
+                                    {% if eh_maior_desconto %}
+                                        <th>Desconto</th>
+                                    {% else %}
+                                        <th>Valor</th>
+                                    {% endif %}
                                 </thead>
                                 <tbody>
                                 {% for item in itens %}

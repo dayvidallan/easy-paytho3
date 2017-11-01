@@ -41,20 +41,22 @@
                 </td>
             </tr>
         </table>
-        <table width="60%" align="left" class="table table-bordered table-condensed table-striped">
-            <thead>
-                <tr>
-                    <th>Redução Empresa</th>
-                    <th>Redução Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><b>{{ item.get_reducao_empresa|default_if_none:"-" }}</b></td>
-                    <td><b>{{ item.get_reducao_total|default_if_none:"-" }}</b></td>
-                </tr>
-            </tbody>
-        </table>
+        {% if  not eh_maior_desconto %}
+            <table width="60%" align="left" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Redução Empresa</th>
+                        <th>Redução Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>{{ item.get_reducao_empresa|default_if_none:"-" }}</b></td>
+                        <td><b>{{ item.get_reducao_total|default_if_none:"-" }}</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 
     <div style="width:45%; float:right">
