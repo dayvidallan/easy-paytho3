@@ -772,7 +772,10 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_final_total(self):
         valor = self.get_vencedor()
         if valor:
-            valor = valor.valor
+            if self.get_licitacao().eh_maior_desconto():
+                valor = valor.item.get_valor_final_desconto()
+            else:
+                valor = valor.valor
             return valor * self.quantidade
         return 0
 
@@ -945,7 +948,10 @@ class ItemSolicitacaoLicitacao(models.Model):
             return None
 
     def get_economizado(self):
-        return (self.valor_medio - self.get_vencedor().valor) * self.quantidade
+        if self.get_licitacao().eh_maior_desconto():
+            return (self.valor_medio - self.get_valor_final_desconto()) * self.quantidade
+        else:
+            return (self.valor_medio - self.get_vencedor().valor) * self.quantidade
 
     def get_rodada_atual(self):
         return RodadaPregao.objects.filter(item=self, pregao=self.get_licitacao(), atual=True)[0]

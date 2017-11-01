@@ -1892,7 +1892,10 @@ def cadastrar_contrato(request, solicitacao_id):
                                     novo_item.marca = resultado.marca
                                 novo_item.participante = resultado.participante
                                 novo_item.fornecedor = resultado.participante.fornecedor
-                                novo_item.valor = resultado.valor
+                                if pregao.eh_maior_desconto():
+                                    novo_item.valor = resultado.item.get_valor_final_desconto()
+                                else:
+                                    novo_item.valor = resultado.valor
                                 novo_item.quantidade = resultado.item.quantidade
                                 novo_item.unidade = resultado.item.unidade
                                 novo_item.save()
@@ -2779,18 +2782,24 @@ def relatorio_economia(request, pregao_id):
     total_desconto_geral = 0
     total_economizado_geral = 0
 
+    ids_vencedores = list()
     for item in itens_pregao.order_by('item'):
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
+            ids_vencedores.append(item.get_vencedor().participante.fornecedor.id)
             tabela[chave]['lance'].append(item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
 
 
             valor = tabela[chave]['total_previsto']
             valor = valor + (item.valor_medio*item.quantidade)
+
             tabela[chave]['total_previsto'] = valor
 
 
@@ -2801,11 +2810,12 @@ def relatorio_economia(request, pregao_id):
 
 
     for num in chaves:
-        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
-        chave = u'%s' % fornecedor
-        reducao = tabela[chave]['total'] / tabela[chave]['total_previsto']
-        ajuste= 1-reducao
-        tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+        if num['participante__fornecedor'] in ids_vencedores:
+            fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+            chave = u'%s' % fornecedor
+            reducao = tabela[chave]['total'] / tabela[chave]['total_previsto']
+            ajuste= 1-reducao
+            tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
 
 
 
@@ -2821,7 +2831,7 @@ def relatorio_economia(request, pregao_id):
             total_final_geral = total_final_geral + result[1]['total']
             total_economizado_geral = total_economizado_geral + result[1]['total_final']
 
-
+    import ipdb; ipdb.set_trace()
     reducao = total_final_geral / total_previsto_geral
     ajuste= 1-reducao
     total_desconto_geral = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
@@ -4270,7 +4280,10 @@ def termo_adjudicacao(request, pregao_id):
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['itens'].append(item.item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
 
@@ -5644,7 +5657,10 @@ def termo_homologacao(request, pregao_id):
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['itens'].append(item.item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
 
@@ -6542,7 +6558,10 @@ def ata_sessao(request, pregao_id):
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['lance'].append(item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
     total_geral = Decimal()
@@ -6564,6 +6583,7 @@ def ata_sessao(request, pregao_id):
 
 
             resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+
             total_geral = total_geral + result[1]['total']
 
 
