@@ -750,11 +750,11 @@
                                                 {% endif %}
                                             {% endif %}
                                         </td>
-                                        {% if  eh_maior_desconto and pregao.eh_desconto_por_item %}
+                                        {% if  eh_maior_desconto %}
                                             <td>{{ item.get_valor_final_desconto|format_money }}</td>
                                         {% endif %}
 
-                                        {% if  eh_maior_desconto and pregao.eh_desconto_por_item %}
+                                        {% if  eh_maior_desconto  %}
                                             <td>{{ item.get_valor_final_total_desconto|format_money }}</td>
                                         {% else %}
                                             <td>{{ item.get_total_lance_ganhador|format_money }}</td>
