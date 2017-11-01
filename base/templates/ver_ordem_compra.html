@@ -146,7 +146,7 @@ ul{
                                         <td>{{ pedido.item.item }}</td>
                                         <td  style="text-align: left;">{{ pedido.item.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% else %}
-                                        <td>{{ pedido.item.material }}</td>
+                                        <td>{{ forloop.counter }}</td>
                                         <td  style="text-align: left;">{{ pedido.item.material|truncatechars:500 }} - MARCA: {{ pedido.item.marca|default_if_none:"-" }}</td>
                                     {% endif %}
                                     {% if not eh_lote %}
