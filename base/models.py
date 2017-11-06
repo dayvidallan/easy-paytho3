@@ -2174,6 +2174,10 @@ class ResultadoItemPregao(models.Model):
             return ResultadoItemPregao.objects.filter(item=self.item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0].participante
         return None
 
+    def get_valor_participante_desconto(self):
+        return ((((100 - Decimal(self.valor))) * self.item.valor_medio)/100).quantize(TWOPLACES)
+
+
 
 class AnexoPregao(models.Model):
     pregao = models.ForeignKey('base.Pregao')

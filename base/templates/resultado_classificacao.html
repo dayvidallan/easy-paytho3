@@ -44,7 +44,11 @@
                     <th>Classificação</th>
                     <th>Fornecedor</th>
                     <th>Marca</th>
-                    <th>Valor</th>
+                    {% if eh_desconto %}
+                        <th>Desconto</th>
+                    {% else %}
+                        <th>Valor</th>
+                    {% endif %}
                     <th>Observações</th>
                     <th>Situação</th>
                     <th>Opções</th>
@@ -55,7 +59,7 @@
                             <td>{{ lance.ordem }}</td>
                             <td>{{ lance.participante }}</td>
                             <td>{{ lance.marca|default_if_none:'-' }}</td>
-                            <td>{{ lance.valor|format_money }}</td>
+                            <td>{{ lance.valor|format_money }}{% if eh_desconto %} %{% endif %}</td>
                             <td>{{ lance.observacoes|default_if_none:'-' }}</td>
                             <td>{{ lance.situacao }}</td>
                             <td>

@@ -1356,6 +1356,7 @@ def resultado_classificacao(request, item_id):
         title = u'Classificação - %s' % item
         lances = ResultadoItemPregao.objects.filter(item=item).order_by('ordem')
         pregao = item.get_licitacao()
+        eh_desconto = pregao.eh_maior_desconto()
         return render(request, 'resultado_classificacao.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
@@ -9252,7 +9253,7 @@ def apagar_item_arp(request, item_id):
 def anexo_38(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-
+    eh_desconto = pregao.eh_maior_desconto()
     import openpyxl
     from openpyxl.utils import get_column_letter
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -9300,12 +9301,15 @@ def anexo_38(request, pregao_id):
                     # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
                     # w_sheet.write(row_index, 5, u'CNPJ')
                     # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
-
+                    if eh_desconto:
+                        valor_do_participante = format_money(result.get_valor_participante_desconto())
+                    else:
+                        valor_do_participante = format_money(result.valor)
                     row = [
                         item.item,
                         item.material.nome[:100],
                         contador,
-                        format_money(result.valor),
+                        valor_do_participante,
                         result.participante.fornecedor.razao_social,
                         u'CNPJ',
                         str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
