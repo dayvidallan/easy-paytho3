@@ -2800,10 +2800,12 @@ def relatorio_economia(request, pregao_id):
     for num in chaves:
         fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
         chave = u'%s' % fornecedor
-        reducao = tabela[chave]['total'] / tabela[chave]['total_previsto']
-        ajuste= 1-reducao
-        tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
-
+        if tabela[chave]['total_previsto']:
+            reducao = tabela[chave]['total'] / tabela[chave]['total_previsto']
+            ajuste= 1-reducao
+            tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
+        else:
+            tabela[chave]['total_desconto_porcento'] = u'0%'
 
 
 
