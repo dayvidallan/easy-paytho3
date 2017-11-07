@@ -2832,7 +2832,7 @@ def relatorio_economia(request, pregao_id):
             total_final_geral = total_final_geral + result[1]['total']
             total_economizado_geral = total_economizado_geral + result[1]['total_final']
 
-    import ipdb; ipdb.set_trace()
+    
     reducao = total_final_geral / total_previsto_geral
     ajuste= 1-reducao
     total_desconto_geral = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
