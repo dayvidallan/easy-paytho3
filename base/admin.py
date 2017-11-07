@@ -341,9 +341,12 @@ class AnexoPregaoAdmin(NewModelAdmin):
 admin.site.register(AnexoPregao, AnexoPregaoAdmin)
 
 class HistoricoPregaoAdmin(NewModelAdmin):
-    list_display = ('obs', 'data', )
+    list_display = ('pregao', 'obs', 'data', )
     ordering = ('data',)
-    search_fields = ('data',)
+    list_filter = ('pregao', )
+    search_fields = ('data',  )
+
+
 
 admin.site.register(HistoricoPregao, HistoricoPregaoAdmin)
 
