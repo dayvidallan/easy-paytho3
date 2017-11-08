@@ -9284,7 +9284,7 @@ def anexo_38(request, pregao_id):
                         item.item,
                         item.material.nome[:100],
                         contador,
-                        format_money(result.valor),
+                        format_money(result.valor*item.quantidade),
                         result.participante.fornecedor.razao_social,
                         u'CNPJ',
                         str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),

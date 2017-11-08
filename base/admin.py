@@ -341,6 +341,7 @@ class AnexoPregaoAdmin(NewModelAdmin):
 admin.site.register(AnexoPregao, AnexoPregaoAdmin)
 
 class HistoricoPregaoAdmin(NewModelAdmin):
+    form = HistoricoPregaoForm
     list_display = ('pregao', 'obs', 'data', )
     ordering = ('data',)
     list_filter = ('pregao', )
