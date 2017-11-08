@@ -1,6 +1,8 @@
  function exibir_esconder_campo() {
 
 
+
+
     if ($('#id_modalidade').val() == 1) {
         $('#id_fundamento_legal').val('Fundamento Legal – Lei 8.666/93, art. 22, III');
         $("#id_fundamento_legal").prop("readonly", true);
@@ -73,15 +75,35 @@
 
 
 
+
+
  }
 
 
   $(document).ready(function() {
 
+    function update_select(select, modalidade) {
+		$.ajax({
+			method: "GET",
+			url: "/busca_tipo_pregao/",
+			data: { "modalidade": modalidade },
+			success: function(result, textStatus, jqXHR) {
+				select.find('option').remove();
+				select.append($('<option value="">-------</option>'));
+				for (var i in result) {
+					select.append($('<option value="'+result[i].pk+'">'+result[i].fields.nome+'</option>'));
+				}
+			},
+			error: function() {
+			}
+		});
+	}
+
     exibir_esconder_campo();
 
     $('#id_modalidade').on('change', function(){
         exibir_esconder_campo();
+        update_select($('select[name=tipo]'), $('#id_modalidade').val());
     });
     $('#id_tipo').on('change', function(){
         exibir_esconder_campo();

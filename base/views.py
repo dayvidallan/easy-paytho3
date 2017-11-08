@@ -543,6 +543,7 @@ def lances_item(request, item_id):
     pregao = item.solicitacao.get_pregao()
     eh_maior_desconto = pregao.eh_maior_desconto()
 
+
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         desempatar = False
         botao_incluir = False
@@ -1833,6 +1834,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
 def cadastrar_contrato(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
+    eh_desconto = pregao.eh_maior_desconto()
 
     if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.contrato_set.exists() and not solicitacao.ataregistropreco_set.exists():
 
@@ -1893,7 +1895,7 @@ def cadastrar_contrato(request, solicitacao_id):
                                     novo_item.marca = resultado.marca
                                 novo_item.participante = resultado.participante
                                 novo_item.fornecedor = resultado.participante.fornecedor
-                                if pregao.eh_maior_desconto():
+                                if eh_desconto:
                                     novo_item.valor = resultado.item.get_valor_final_desconto()
                                 else:
                                     novo_item.valor = resultado.valor
@@ -2817,8 +2819,6 @@ def relatorio_economia(request, pregao_id):
             reducao = tabela[chave]['total'] / tabela[chave]['total_previsto']
             ajuste= 1-reducao
             tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
-
-
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
@@ -5703,6 +5703,9 @@ def visualizar_contrato(request, solicitacao_id):
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
     itens = ItemContrato.objects.filter(contrato=contrato).order_by('item__item')
+    pode_liberar_para_pedido = True
+    if contrato.solicitacao.get_pregao() and contrato.solicitacao.get_pregao().tipo_desconto and contrato.solicitacao.get_pregao().tipo_desconto.id == TipoPregaoDesconto.TABELA:
+        pode_liberar_para_pedido = False
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
@@ -9302,9 +9305,9 @@ def anexo_38(request, pregao_id):
                     # w_sheet.write(row_index, 5, u'CNPJ')
                     # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
                     if eh_desconto:
-                        valor_do_participante = format_money(result.get_valor_participante_desconto())
+                        valor_do_participante = format_money(result.get_valor_participante_desconto()*item.quantidade)
                     else:
-                        valor_do_participante = format_money(result.valor)
+                        valor_do_participante = format_money(result.valor*item.quantidade)
                     row = [
                         item.item,
                         item.material.nome[:100],
@@ -10279,3 +10282,24 @@ def rejeitar_informar_quantidades(request, solicitacao_id, secretaria_id):
 
     else:
         raise PermissionDenied
+
+@login_required()
+def busca_tipo_pregao(request):
+    from django.core import serializers
+    if request.method == 'GET':
+        modalidade = request.GET.get('modalidade')
+
+
+        if modalidade:
+            if int(modalidade) in [1,2, 5,11]:
+                registro = TipoPregao.objects.filter(id__in=[1,3,4,5])
+            else:
+                registro = TipoPregao.objects.filter(id__in=[1,2])
+            if registro:
+                data = serializers.serialize('json', list(registro), fields=('nome','id',))
+            else:
+                data = []
+        else:
+            data = []
+
+        return HttpResponse(data, content_type='application/json')

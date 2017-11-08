@@ -172,12 +172,14 @@
             {% if not contrato.data_fim %}
                 <a class="btn btn-success" href="/base/definir_vigencia_contrato/{{ contrato.pk }}/">Definir Vigência</a>
             {% endif %}
-            {% if not contrato.liberada_compra %}
-                <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
-            {% else %}
+            {% if pode_liberar_para_pedido %}
+                {% if not contrato.liberada_compra %}
+                    <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/1/" class="btn btn-success">Liberar Solicitação</a>
+                {% else %}
 
-                <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger">Suspender Solicitação</a>
+                    <a href="/base/liberar_solicitacao_contrato/{{contrato.id}}/2/" class="btn btn-danger">Suspender Solicitação</a>
 
+                {% endif %}
             {% endif %}
 
         {% endif %}

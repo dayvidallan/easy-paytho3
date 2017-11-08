@@ -132,8 +132,8 @@ class TipoPregao(models.Model):
 
 class TipoPregaoDesconto(models.Model):
 
-    MENOR_PRECO = 1
-    DESCONTO = 2
+    ITEM = 1
+    TABELA = 2
 
     nome = models.CharField(u'Nome', max_length=80)
 
@@ -1115,6 +1115,13 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_unitario_final(self):
         if self.get_valor_item_lote():
             return self.get_valor_item_lote() / self.quantidade
+        return 0
+
+    def get_valor_unitario_final_desconto(self):
+        lote = ItemLote.objects.filter(item=self)
+        if lote.exists():
+            indice = lote[0].lote.get_total_lance_ganhador()
+            return (self.valor_medio*indice)/100
         return 0
 
     def get_proposta_item_lote(self):

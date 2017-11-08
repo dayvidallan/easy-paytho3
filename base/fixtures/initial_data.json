@@ -168,6 +168,27 @@
         }
     },
     {
+        "model": "base.tipopregao",
+        "pk": 3,
+        "fields": {
+            "nome": "Melhor Técnica"
+        }
+    },
+    {
+        "model": "base.tipopregao",
+        "pk": 4,
+        "fields": {
+            "nome": "Melhor Técnica e Preço"
+        }
+    },
+    {
+        "model": "base.tipopregao",
+        "pk": 5,
+        "fields": {
+            "nome": "Empreitada Global"
+        }
+    },
+    {
         "model": "base.tipopregaodesconto",
         "pk": 1,
         "fields": {

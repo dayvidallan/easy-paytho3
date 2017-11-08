@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^gestao_pedidos_tipo/$', views.gestao_pedidos_tipo, name='gestao_pedidos_tipo'),
     url(r'^solicitacoes_do_setor/$', views.solicitacoes_do_setor, name='solicitacoes_do_setor'),
     url(r'^outras_solicitacoes/$', views.outras_solicitacoes, name='outras_solicitacoes'),
+    url(r'^busca_tipo_pregao/$', views.busca_tipo_pregao, name='busca_tipo_pregao'),
 
 
 

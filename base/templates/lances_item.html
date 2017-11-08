@@ -111,7 +111,7 @@
 
 
                     <td><font color="red"><b>{{ item.valor_medio|format_money }}</b></font></td>
-                    {% if eh_modalidade_desconto %}
+                    {% if eh_maior_desconto %}
                         <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor }}%</b><br>{{ item.get_lance_minimo_participante|default_if_none:"" }}</font></td>
                     {% else %}
                         <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor|format_money }}</b><br>{{ item.get_lance_minimo_participante|default_if_none:"" }}</font></td>
@@ -166,7 +166,7 @@
                             <th>Ordem</th>
                         {% endif %}
                         <th>Fornecedor</th>
-                        {% if eh_modalidade_desconto %}
+                        {% if eh_maior_desconto %}
                             <th>Desconto</th>
                         {% else %}
                             <th>Valor</th>
@@ -195,7 +195,7 @@
                                     {{ preco.participante }}
                                 {% endif %}
                             </td>
-                            {% if eh_modalidade_desconto %}
+                            {% if eh_maior_desconto %}
                                 <td width="15%">{{ preco.valor }}%</td>
                             {% else %}
                                 <td width="15%">{{ preco.valor|format_money }}</td>
