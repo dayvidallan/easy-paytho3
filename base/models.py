@@ -1121,7 +1121,8 @@ class ItemSolicitacaoLicitacao(models.Model):
         lote = ItemLote.objects.filter(item=self)
         if lote.exists():
             indice = lote[0].lote.get_total_lance_ganhador()
-            return (self.valor_medio*indice)/100
+            if indice and self.valor_medio:
+                return (self.valor_medio*indice)/100
         return 0
 
     def get_proposta_item_lote(self):
