@@ -2564,7 +2564,7 @@ def importar_itens(request, solicitacao_id):
         messages.error(request, u'Esta funcionalidade só pode ser usada quando a solicitação não tem nenhum item cadastrado.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
-    if request.user.has_perm('base.pode_cadastrar_solicitacao') and  solicitacao.situacao == solicitacao.CADASTRADO and solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.tem_pregao_cadastrado() and not solicitacao.prazo_aberto:
+    if request.user.has_perm('base.pode_cadastrar_solicitacao') and  solicitacao.situacao == solicitacao.CADASTRADO and solicitacao.setor_origem == request.user.pessoafisica.setor  and not solicitacao.prazo_aberto:
 
         title=u'Importar Itens da %s' % solicitacao
         form = ImportarItensForm(request.POST or None, request.FILES or None)
