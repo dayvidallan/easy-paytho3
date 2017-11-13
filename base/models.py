@@ -749,7 +749,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
 
     def get_valor_final_desconto(self):
-        if self.get_licitacao().tipo_desconto.id == TipoPregaoDesconto.MENOR_PRECO and self.get_vencedor():
+        if self.get_licitacao().tipo.id == TipoPregao.MENOR_PRECO and self.get_vencedor():
             return ((((100 - Decimal(self.get_vencedor().get_valor().replace(' %', '')))) * self.valor_medio)/100).quantize(TWOPLACES)
         else:
             return self.valor_medio
