@@ -754,7 +754,7 @@ def itens_solicitacao(request, solicitacao_id):
         url = config.url
 
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    title=u'%s' % (solicitacao)
+    title=u'%s - Cadastrado por: %s' % (solicitacao, solicitacao.cadastrado_por)
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
     eh_lote = False
     contrato = False

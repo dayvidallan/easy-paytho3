@@ -44,6 +44,9 @@
                       document.body.removeChild(aux);
                     }
     </script>
+    {% if solicitacao.tem_ordem_compra and solicitacao.get_ordem_compra.cadastrado_por %}
+        Ordem cadastrada por: <b>{{ solicitacao.get_ordem_compra.cadastrado_por }}</b>
+    {% endif %}
     <br><br>
 
      {% if solicitacao.tipo == solicitacao.LICITACAO %}
