@@ -41,20 +41,22 @@
                 </td>
             </tr>
         </table>
-        <table width="60%" align="left" class="table table-bordered table-condensed table-striped">
-            <thead>
-                <tr>
-                    <th>Redução Empresa</th>
-                    <th>Redução Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><b>{{ item.get_reducao_empresa|default_if_none:"-" }}</b></td>
-                    <td><b>{{ item.get_reducao_total|default_if_none:"-" }}</b></td>
-                </tr>
-            </tbody>
-        </table>
+        {% if  not eh_maior_desconto %}
+            <table width="60%" align="left" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Redução Empresa</th>
+                        <th>Redução Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>{{ item.get_reducao_empresa|default_if_none:"-" }}</b></td>
+                        <td><b>{{ item.get_reducao_total|default_if_none:"-" }}</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 
     <div style="width:45%; float:right">
@@ -109,7 +111,7 @@
 
 
                     <td><font color="red"><b>{{ item.valor_medio|format_money }}</b></font></td>
-                    {% if eh_modalidade_desconto %}
+                    {% if eh_maior_desconto %}
                         <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor }}%</b><br>{{ item.get_lance_minimo_participante|default_if_none:"" }}</font></td>
                     {% else %}
                         <td  width="25%"><font color="blue"><b>{{ item.get_lance_minimo_valor|format_money }}</b><br>{{ item.get_lance_minimo_participante|default_if_none:"" }}</font></td>
@@ -164,7 +166,7 @@
                             <th>Ordem</th>
                         {% endif %}
                         <th>Fornecedor</th>
-                        {% if eh_modalidade_desconto %}
+                        {% if eh_maior_desconto %}
                             <th>Desconto</th>
                         {% else %}
                             <th>Valor</th>
@@ -193,7 +195,7 @@
                                     {{ preco.participante }}
                                 {% endif %}
                             </td>
-                            {% if eh_modalidade_desconto %}
+                            {% if eh_maior_desconto %}
                                 <td width="15%">{{ preco.valor }}%</td>
                             {% else %}
                                 <td width="15%">{{ preco.valor|format_money }}</td>
@@ -322,7 +324,9 @@
                             {% else %}
                                 <th width="20%">Valor</th>
                             {% endif %}
-                            <th>% de Redução</th>
+                            {% if  not eh_maior_desconto %}
+                                <th>% de Redução</th>
+                            {% endif %}
                             <th width="40%">Fornecedor</th>
                         </tr>
                     </thead>
@@ -345,7 +349,9 @@
                                             {% endif %}
                                        {% endif %}
                                    </td>
-                                   <td>{{ lance.get_reducao_empresa }}</td>
+                                   {% if  not eh_maior_desconto %}
+                                        <td>{{ lance.get_reducao_empresa }}</td>
+                                   {% endif %}
                                    <td>{{ lance.participante }}</td>
                                </tr>
                             {% endfor %}

@@ -130,6 +130,19 @@ class TipoPregao(models.Model):
         verbose_name = u'Tipo de Pregão'
         verbose_name_plural = u'Tipos de Pregão'
 
+class TipoPregaoDesconto(models.Model):
+
+    ITEM = 1
+    TABELA = 2
+
+    nome = models.CharField(u'Nome', max_length=80)
+
+    def __unicode__(self):
+        return self.nome
+
+    class Meta:
+        verbose_name = u'Tipo de Pregão de Desconto'
+        verbose_name_plural = u'Tipos de Pregão de Desconto'
 
 class TipoUnidade(models.Model):
     nome = models.CharField(u'Unidade', max_length=80)
@@ -734,6 +747,18 @@ class ItemSolicitacaoLicitacao(models.Model):
                         return total
         return False
 
+
+    def get_valor_final_desconto(self):
+        if self.get_licitacao().tipo_desconto.id == TipoPregaoDesconto.MENOR_PRECO and self.get_vencedor():
+            return ((((100 - Decimal(self.get_vencedor().get_valor().replace(' %', '')))) * self.valor_medio)/100).quantize(TWOPLACES)
+        else:
+            return self.valor_medio
+
+    def get_valor_final_total_desconto(self):
+
+        return self.get_valor_final_desconto()*self.quantidade
+
+
     def get_valor_medio_total(self):
         return self.valor_medio*self.quantidade
 
@@ -750,7 +775,10 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_final_total(self):
         valor = self.get_vencedor()
         if valor:
-            valor = valor.valor
+            if self.get_licitacao().eh_maior_desconto():
+                valor = valor.item.get_valor_final_desconto()
+            else:
+                valor = valor.valor
             return valor * self.quantidade
         return 0
 
@@ -923,7 +951,10 @@ class ItemSolicitacaoLicitacao(models.Model):
             return None
 
     def get_economizado(self):
-        return (self.valor_medio - self.get_vencedor().valor) * self.quantidade
+        if self.get_licitacao().eh_maior_desconto():
+            return (self.valor_medio - self.get_valor_final_desconto()) * self.quantidade
+        else:
+            return (self.valor_medio - self.get_vencedor().valor) * self.quantidade
 
     def get_rodada_atual(self):
         return RodadaPregao.objects.filter(item=self, pregao=self.get_licitacao(), atual=True)[0]
@@ -1087,6 +1118,14 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_unitario_final(self):
         if self.get_valor_item_lote():
             return self.get_valor_item_lote() / self.quantidade
+        return 0
+
+    def get_valor_unitario_final_desconto(self):
+        lote = ItemLote.objects.filter(item=self)
+        if lote.exists():
+            indice = lote[0].lote.get_total_lance_ganhador()
+            if indice and self.valor_medio:
+                return (self.valor_medio*indice)/100
         return 0
 
     def get_proposta_item_lote(self):
@@ -1311,6 +1350,7 @@ class Pregao(models.Model):
     objeto = models.TextField(u'Objeto', null=True)
     fundamento_legal = models.CharField(u'Fundamento Legal', max_length=5000, null=True, blank=True)
     tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento', null=True, blank=True)
+    tipo_desconto = models.ForeignKey(TipoPregaoDesconto, verbose_name=u'Tipo de Desconto', null=True, blank=True)
     criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação')
     aplicacao_lcn_123_06 = models.ForeignKey(OpcaoLCN, verbose_name=u'MPE – Aplicação Da LCN 123/06 (Lei 123/06)', null=True, blank=True)
     data_inicio = models.DateField(u'Data de Início da Retirada do Edital', null=True, blank=True)
@@ -1375,6 +1415,10 @@ class Pregao(models.Model):
         if self.tipo.id == TipoPregao.DESCONTO:
             return True
         return False
+
+    def eh_desconto_por_item(self):
+        return self.eh_maior_desconto() and self.tipo_desconto.id == TipoPregaoDesconto.MENOR_PRECO
+
     def get_local(self):
         return u'Dia %s às %s, no(a) %s' % (self.data_abertura.strftime('%d/%m/%y'), self.hora_abertura, self.local)
 
@@ -2140,6 +2184,10 @@ class ResultadoItemPregao(models.Model):
         if ResultadoItemPregao.objects.filter(item=self.item, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
             return ResultadoItemPregao.objects.filter(item=self.item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0].participante
         return None
+
+    def get_valor_participante_desconto(self):
+        return ((((100 - Decimal(self.valor))) * self.item.valor_medio)/100).quantize(TWOPLACES)
+
 
 
 class AnexoPregao(models.Model):

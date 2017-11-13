@@ -161,6 +161,48 @@
         }
     },
     {
+        "model": "base.tipopregao",
+        "pk": 2,
+        "fields": {
+            "nome": "Maior Desconto"
+        }
+    },
+    {
+        "model": "base.tipopregao",
+        "pk": 3,
+        "fields": {
+            "nome": "Melhor Técnica"
+        }
+    },
+    {
+        "model": "base.tipopregao",
+        "pk": 4,
+        "fields": {
+            "nome": "Melhor Técnica e Preço"
+        }
+    },
+    {
+        "model": "base.tipopregao",
+        "pk": 5,
+        "fields": {
+            "nome": "Empreitada Global"
+        }
+    },
+    {
+        "model": "base.tipopregaodesconto",
+        "pk": 1,
+        "fields": {
+            "nome": "Maior Desconto no Item"
+        }
+    },
+    {
+        "model": "base.tipopregaodesconto",
+        "pk": 2,
+        "fields": {
+            "nome": "Maior Desconto em Tabela de Referência"
+        }
+    },
+    {
         "model": "base.tipomodelo",
         "pk": 1,
         "fields": {

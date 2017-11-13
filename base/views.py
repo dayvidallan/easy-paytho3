@@ -285,6 +285,7 @@ def cadastra_proposta_pregao(request, pregao_id):
 
     title=u'Cadastrar Proposta'
     pregao = get_object_or_404(Pregao, pk= pregao_id)
+    eh_maior_desconto = pregao.eh_maior_desconto()
     if True:
         itens = pregao.solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False).order_by('item')
         edicao=False
@@ -540,10 +541,13 @@ def lances_item(request, item_id):
 
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
     pregao = item.solicitacao.get_pregao()
+    eh_maior_desconto = pregao.eh_maior_desconto()
+
+
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         desempatar = False
         botao_incluir = False
-        eh_modalidade_desconto = item.solicitacao.eh_maior_desconto()
+
 
         fornecedores_lance = PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
         if request.GET.get('empate'):
@@ -605,65 +609,65 @@ def lances_item(request, item_id):
                 valor_anterior_registrado = LanceItemRodadaPregao.objects.filter(item=item, participante=participante, valor__isnull=False).order_by('-rodada__rodada')[0].valor
 
 
-            #if not eh_modalidade_desconto:
-            if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.filter(item=item, participante=participante)[0].valor:
-                messages.error(request, u'Você não pode dar um lance maior do que sua proposta.')
+            if not eh_maior_desconto:
+                if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.filter(item=item, participante=participante)[0].valor:
+                    messages.error(request, u'Você não pode dar um lance maior do que sua proposta.')
 
-                if tem_empate_beneficio:
-                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
-                else:
+                    if tem_empate_beneficio:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+                    else:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+
+
+                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= valor_anterior_registrado:
+                    messages.error(request, u'Você não pode dar um lance maior do que o seu último lance registrado: <b>R$: %s</b>.' % format_money(valor_anterior_registrado))
+
+                    if tem_empate_beneficio:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+                    else:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if form.cleaned_data.get('lance') > item.valor_medio:
+                    messages.error(request, u'Você não pode dar um lance maior do que o valor máximo do item.')
+                    if tem_empate_beneficio:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+                    else:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
+                    messages.error(request, u'Este lance já foi dado.')
+                    if tem_empate_beneficio:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+                    else:
+                        return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if desempatar and tem_empate_beneficio:
+                    if LanceItemRodadaPregao.objects.filter(item=item, valor__lt=form.cleaned_data.get('lance')).exists():
+                        messages.error(request, u'Você não pode dar um lance maior que o menor lance atual.')
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+
+            else:
+                if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') <= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
+                    messages.error(request, u'Você não pode dar um lance menor do que sua proposta.')
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-
-
-            if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= valor_anterior_registrado:
-                messages.error(request, u'Você não pode dar um lance maior do que o seu último lance registrado: <b>R$: %s</b>.' % format_money(valor_anterior_registrado))
-
-                if tem_empate_beneficio:
-                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
-                else:
+                if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') <= valor_anterior_registrado:
+                    messages.error(request, u'Você não pode dar um lance menor do que o seu último lance registrado: <b>%s %%</b>.' % format_money(valor_anterior_registrado))
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-            if form.cleaned_data.get('lance') > item.valor_medio:
-                messages.error(request, u'Você não pode dar um lance maior do que o valor máximo do item.')
-                if tem_empate_beneficio:
-                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
-                else:
+                # if form.cleaned_data.get('lance') >= item.valor_medio:
+                #     messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
+                #     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+                if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
+                    messages.error(request, u'Este lance já foi dado.')
                     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
-            if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
-                messages.error(request, u'Este lance já foi dado.')
-                if tem_empate_beneficio:
-                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
-                else:
-                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-
-            if desempatar and tem_empate_beneficio:
-                if LanceItemRodadaPregao.objects.filter(item=item, valor__lt=form.cleaned_data.get('lance')).exists():
-                    messages.error(request, u'Você não pode dar um lance maior que o menor lance atual.')
-                    return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
-
-            # else:
-            #     if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') <= PropostaItemPregao.objects.get(item=item, participante=participante).valor:
-            #         messages.error(request, u'Você não pode dar um lance menor do que sua proposta.')
-            #         return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-            #
-            #     if int(rodada_atual.rodada) > 1 and form.cleaned_data.get('lance') >= valor_anterior_registrado:
-            #         messages.error(request, u'Você não pode dar um lance maior do que o seu último lance registrado: <b>R$: %s</b>.' % format_money(valor_anterior_registrado))
-            #         return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-            #
-            #     # if form.cleaned_data.get('lance') >= item.valor_medio:
-            #     #     messages.error(request, u'Você não pode dar uma lance maior do que o valor máximo do item.')
-            #     #     return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-            #
-            #     if LanceItemRodadaPregao.objects.filter(item=item, valor=form.cleaned_data.get('lance')):
-            #         messages.error(request, u'Este lance já foi dado.')
-            #         return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
-            #
-            #     if desempatar and item.tem_empate_beneficio():
-            #         if LanceItemRodadaPregao.objects.filter(item=item, valor__gt=form.cleaned_data.get('lance')).exists():
-            #             messages.error(request, u'Você não pode dar um lance menor que o maior lance atual.')
-            #             return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
+                if desempatar and tem_empate_beneficio:
+                    if LanceItemRodadaPregao.objects.filter(item=item, valor__gt=form.cleaned_data.get('lance')).exists():
+                        messages.error(request, u'Você não pode dar um lance menor que o maior lance atual.')
+                        return HttpResponseRedirect(u'/base/lances_item/%s/?empate=True' % item.id)
 
 
 
@@ -1353,6 +1357,7 @@ def resultado_classificacao(request, item_id):
         title = u'Classificação - %s' % item
         lances = ResultadoItemPregao.objects.filter(item=item).order_by('ordem')
         pregao = item.get_licitacao()
+        eh_desconto = pregao.eh_maior_desconto()
         return render(request, 'resultado_classificacao.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
@@ -1829,6 +1834,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
 def cadastrar_contrato(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
+    eh_desconto = pregao.eh_maior_desconto()
 
     if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.contrato_set.exists() and not solicitacao.ataregistropreco_set.exists():
 
@@ -1889,7 +1895,10 @@ def cadastrar_contrato(request, solicitacao_id):
                                     novo_item.marca = resultado.marca
                                 novo_item.participante = resultado.participante
                                 novo_item.fornecedor = resultado.participante.fornecedor
-                                novo_item.valor = resultado.valor
+                                if eh_desconto:
+                                    novo_item.valor = resultado.item.get_valor_final_desconto()
+                                else:
+                                    novo_item.valor = resultado.valor
                                 novo_item.quantidade = resultado.item.quantidade
                                 novo_item.unidade = resultado.item.unidade
                                 novo_item.save()
@@ -2776,18 +2785,24 @@ def relatorio_economia(request, pregao_id):
     total_desconto_geral = 0
     total_economizado_geral = 0
 
+    ids_vencedores = list()
     for item in itens_pregao.order_by('item'):
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
+            ids_vencedores.append(item.get_vencedor().participante.fornecedor.id)
             tabela[chave]['lance'].append(item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
 
 
             valor = tabela[chave]['total_previsto']
             valor = valor + (item.valor_medio*item.quantidade)
+
             tabela[chave]['total_previsto'] = valor
 
 
@@ -2798,15 +2813,12 @@ def relatorio_economia(request, pregao_id):
 
 
     for num in chaves:
-        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
-        chave = u'%s' % fornecedor
-        if tabela[chave]['total_previsto']:
+        if num['participante__fornecedor'] in ids_vencedores:
+            fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+            chave = u'%s' % fornecedor
             reducao = tabela[chave]['total'] / tabela[chave]['total_previsto']
             ajuste= 1-reducao
             tabela[chave]['total_desconto_porcento'] = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
-        else:
-            tabela[chave]['total_desconto_porcento'] = u'0%'
-
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
@@ -2820,7 +2832,7 @@ def relatorio_economia(request, pregao_id):
             total_final_geral = total_final_geral + result[1]['total']
             total_economizado_geral = total_economizado_geral + result[1]['total_final']
 
-
+    
     reducao = total_final_geral / total_previsto_geral
     ajuste= 1-reducao
     total_desconto_geral = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
@@ -4269,7 +4281,10 @@ def termo_adjudicacao(request, pregao_id):
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['itens'].append(item.item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
 
@@ -5643,7 +5658,10 @@ def termo_homologacao(request, pregao_id):
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['itens'].append(item.item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
 
@@ -5685,6 +5703,9 @@ def visualizar_contrato(request, solicitacao_id):
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar
     itens = ItemContrato.objects.filter(contrato=contrato).order_by('item__item')
+    pode_liberar_para_pedido = True
+    if contrato.solicitacao.get_pregao() and contrato.solicitacao.get_pregao().tipo_desconto and contrato.solicitacao.get_pregao().tipo_desconto.id == TipoPregaoDesconto.TABELA:
+        pode_liberar_para_pedido = False
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 
@@ -6541,7 +6562,10 @@ def ata_sessao(request, pregao_id):
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['lance'].append(item)
             valor = tabela[chave]['total']
-            valor = valor + item.get_total_lance_ganhador()
+            if pregao.eh_maior_desconto():
+                valor = valor + item.get_valor_final_total_desconto()
+            else:
+                valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
 
     total_geral = Decimal()
@@ -6563,6 +6587,7 @@ def ata_sessao(request, pregao_id):
 
 
             resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+
             total_geral = total_geral + result[1]['total']
 
 
@@ -9231,7 +9256,7 @@ def apagar_item_arp(request, item_id):
 def anexo_38(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
-
+    eh_desconto = pregao.eh_maior_desconto()
     import openpyxl
     from openpyxl.utils import get_column_letter
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -9279,12 +9304,15 @@ def anexo_38(request, pregao_id):
                     # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
                     # w_sheet.write(row_index, 5, u'CNPJ')
                     # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
-
+                    if eh_desconto:
+                        valor_do_participante = format_money(result.get_valor_participante_desconto()*item.quantidade)
+                    else:
+                        valor_do_participante = format_money(result.valor*item.quantidade)
                     row = [
                         item.item,
                         item.material.nome[:100],
                         contador,
-                        format_money(result.valor*item.quantidade),
+                        valor_do_participante,
                         result.participante.fornecedor.razao_social,
                         u'CNPJ',
                         str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
@@ -10254,3 +10282,24 @@ def rejeitar_informar_quantidades(request, solicitacao_id, secretaria_id):
 
     else:
         raise PermissionDenied
+
+@login_required()
+def busca_tipo_pregao(request):
+    from django.core import serializers
+    if request.method == 'GET':
+        modalidade = request.GET.get('modalidade')
+
+
+        if modalidade:
+            if int(modalidade) in [1,2, 5,11]:
+                registro = TipoPregao.objects.filter(id__in=[1,3,4,5])
+            else:
+                registro = TipoPregao.objects.filter(id__in=[1,2])
+            if registro:
+                data = serializers.serialize('json', list(registro), fields=('nome','id',))
+            else:
+                data = []
+        else:
+            data = []
+
+        return HttpResponse(data, content_type='application/json')

@@ -621,9 +621,8 @@
                                         <th>Empresa Vencedora</th>
                                         {% if eh_maior_desconto %}
                                             <th>Desconto</th>
-                                        {% else %}
-                                            <th>Valor</th>
                                         {% endif %}
+                                        <th>Valor</th>
                                         <th>Itens do Lote</th>
                                         <th>Opções</th>
                                     </tr>
@@ -644,8 +643,8 @@
                                                 {{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
                                         </td>
-
-                                        <td>{{ lote.get_total_lance_ganhador|format_money }}{% if eh_maior_desconto %}%{% endif %}</td>
+                                        <td>Não informado</td>
+                                        <td>{{ lote.get_total_lance_ganhador|format_money }}</td>
 
                                         <td>
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
@@ -667,9 +666,27 @@
                                                             <td>{{ item }}</td>
                                                             <td>{{ item.quantidade|format_quantidade  }}</td>
                                                             <td>{{ item.valor_medio }}</td>
-                                                            <td>{{ item.get_valor_unitario_proposto|format_money }}</td>
-                                                            <td>{{ item.get_valor_total_proposto|format_money }}</td>
-                                                            <td>{{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final and recebida_setor and not pregao.data_adjudicacao %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}</td>
+                                                            <td>
+                                                                {% if eh_maior_desconto %}
+                                                                    {{ lote.get_total_lance_ganhador|format_money }}%
+                                                                {% else %}
+                                                                    {{ item.get_valor_unitario_proposto|format_money }}
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                {% if eh_maior_desconto %}
+                                                                    -
+                                                                {% else %}
+                                                                    {{ item.get_valor_total_proposto|format_money }}
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                {% if eh_maior_desconto %}
+                                                                    {{ item.get_valor_unitario_final_desconto|format_money|default_if_none:"não informado" }}
+                                                                {% else %}
+                                                                    {{ item.get_valor_unitario_final|format_money|default_if_none:"não informado" }} {% if item.get_valor_unitario_final and recebida_setor and not pregao.data_adjudicacao %}<a href="/base/editar_valor_final/{{ item.id}}/{{ pregao.id }}/?participante={{ participante.id }}">(Editar)</a>{% endif %}
+                                                                {% endif %}
+                                                            </td>
                                                             <td>{{ item.get_valor_item_lote|format_money|default_if_none:"não informado" }} </td>
 
                                                         </tr>
@@ -682,7 +699,7 @@
                                         </td>
                                         <td>
 
-                                            {% if recebida_setor and not pregao.data_adjudicacao %}
+                                            {% if recebida_setor and not pregao.data_adjudicacao and not eh_maior_desconto %}
                                                 <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
                                             {% endif %}
 
@@ -711,12 +728,14 @@
                                     <th>Marca</th>
                                     <th>Unidade</th>
                                     <th>Quantidade</th>
+
+                                    <th>Valor</th>
                                     {% if eh_maior_desconto %}
                                         <th>Desconto</th>
-                                    {% else %}
-                                        <th>Valor</th>
-                                        <th>Total</th>
+                                        <th>Valor Unitário Final</th>
                                     {% endif %}
+                                    <th>Total</th>
+
                                     {% if not eh_credenciamento %}
                                         <th>Empresa Vencedora</th>
                                     {% endif %}
@@ -735,6 +754,9 @@
                                         <td>{{ item.get_vencedor.marca|default_if_none:"-" }}</td>
                                         <td>{{ item.unidade }}</td>
                                         <td>{{ item.quantidade|format_quantidade  }}</td>
+                                        {% if  eh_maior_desconto %}
+                                            <td>{{ item.valor_medio|format_money }}</td>
+                                        {% endif %}
                                         <td>
                                             {% if eh_credenciamento %}
                                                 {{ item.valor_medio }}
@@ -745,10 +767,17 @@
                                                     -
                                                 {% endif %}
                                             {% endif %}
-                                            </td>
-                                        {% if not eh_maior_desconto %}
+                                        </td>
+                                        {% if  eh_maior_desconto %}
+                                            <td>{{ item.get_valor_final_desconto|format_money }}</td>
+                                        {% endif %}
+
+                                        {% if  eh_maior_desconto  %}
+                                            <td>{{ item.get_valor_final_total_desconto|format_money }}</td>
+                                        {% else %}
                                             <td>{{ item.get_total_lance_ganhador|format_money }}</td>
                                         {% endif %}
+
                                         {% if not eh_credenciamento %}
                                             <td>
                                                 {% if item.tem_empate or item.ganhou_com_valor_acima %}

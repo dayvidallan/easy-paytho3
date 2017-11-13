@@ -185,7 +185,7 @@ class PregaoForm(forms.ModelForm):
     )
     class Meta:
         model = Pregao
-        fields = ['solicitacao', 'num_processo', 'num_pregao', 'objeto', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel', 'situacao']
+        fields = ['solicitacao', 'num_processo', 'num_pregao', 'objeto', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'tipo_desconto', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel', 'situacao']
 
 
     class Media:

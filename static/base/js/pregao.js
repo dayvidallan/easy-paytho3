@@ -61,6 +61,16 @@
         $("#id_fundamento_legal").prop("readonly", true);
     }
 
+    if ($('#id_tipo').val() == 2) {
+        $('#id_tipo_desconto').parent().parent().show();
+
+    }
+    else {
+        $('#id_tipo_desconto').parent().parent().hide();
+        $('#id_tipo_desconto').val('');
+
+    }
+
 
 
  }
@@ -71,6 +81,9 @@
     exibir_esconder_campo();
 
     $('#id_modalidade').on('change', function(){
+        exibir_esconder_campo();
+    });
+    $('#id_tipo').on('change', function(){
         exibir_esconder_campo();
     });
   });
