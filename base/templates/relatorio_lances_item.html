@@ -89,7 +89,11 @@ ul{
                             <thead>
                                 <tr>
                                     <th width="15%">Lance</th>
-                                    <th>Valor</th>
+                                    {% if eh_maior_desconto %}
+                                        <th>Desconto</th>
+                                    {% else %}
+                                        <th>Valor</th>
+                                    {% endif %}
                                     <th>Fornecedor</th>
 
                                 </tr>
@@ -102,7 +106,7 @@ ul{
                                             {% if lance.declinio %}
                                                 <font color="red">Declinado</font>
                                             {% else %}
-                                                {{ lance.valor|format_money }}
+                                                {{ lance.valor|format_money }}{% if eh_maior_desconto %}%{% endif %}
                                             {% endif %}
                                         </td>
                                         <td>{{ lance.participante }}{% if lance.ganhou_desempate %} <font color="red"><br>*Beneficiado pela lei da microempresa{% endif%}</td>

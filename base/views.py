@@ -3196,9 +3196,9 @@ def relatorio_lances_item(request, pregao_id):
 
     itens = collections.OrderedDict(sorted(itens.items()))
 
+    eh_maior_desconto = pregao.eh_maior_desconto()
 
-
-    data = {'eh_lote':eh_lote, 'itens':itens, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado, 'configuracao': configuracao, 'logo': logo}
+    data = {'eh_lote':eh_lote, 'itens':itens, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado, 'configuracao': configuracao, 'logo': logo, 'eh_maior_desconto': eh_maior_desconto}
 
 
     template = get_template('relatorio_lances_item.html')
