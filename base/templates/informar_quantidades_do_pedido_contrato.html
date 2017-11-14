@@ -42,7 +42,7 @@
         </form>
 
 
-            {% if eh_lote %}
+            {% if False %}
                 {% for lote in resultados %}
                     <form action="." method="POST" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');" >
                         {% csrf_token %}

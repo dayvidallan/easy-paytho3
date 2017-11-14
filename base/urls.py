@@ -234,12 +234,14 @@ urlpatterns = [
 
 
     url(r'^novo_pedido_compra_contrato/(?P<contrato_id>\d+)/$', views.novo_pedido_compra_contrato, name='novo_pedido_compra_contrato'),
+    url(r'^novo_pedido_compra_contrato/(?P<contrato_id>\d+)/(?P<lote_id>\d+)/$', views.novo_pedido_compra_contrato, name='novo_pedido_compra_contrato'),
     url(r'^novo_pedido_compra_arp/(?P<ata_id>\d+)/$', views.novo_pedido_compra_arp, name='novo_pedido_compra_arp'),
     url(r'^novo_pedido_compra_credenciamento/(?P<credenciamento_id>\d+)/$', views.novo_pedido_compra_credenciamento, name='novo_pedido_compra_credenciamento'),
 
 
 
     url(r'^informar_quantidades_do_pedido_contrato/(?P<contrato_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_contrato, name='informar_quantidades_do_pedido_contrato'),
+    url(r'^informar_quantidades_do_pedido_contrato/(?P<contrato_id>\d+)/(?P<solicitacao_id>\d+)/(?P<lote_id>\d+)/$', views.informar_quantidades_do_pedido_contrato, name='informar_quantidades_do_pedido_contrato'),
 
 
     url(r'^informar_quantidades_do_pedido_arp/(?P<ata_id>\d+)/(?P<solicitacao_id>\d+)/$', views.informar_quantidades_do_pedido_arp, name='informar_quantidades_do_pedido_arp'),

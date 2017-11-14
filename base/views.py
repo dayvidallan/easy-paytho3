@@ -4495,10 +4495,12 @@ def aprovar_todos_pedidos_secretaria(request, solicitacao_id, secretaria_id):
 
 
 @login_required()
-def novo_pedido_compra_contrato(request, contrato_id):
+def novo_pedido_compra_contrato(request, contrato_id, lote_id=None):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
     title=u'Novo Pedido de Compra - %s' % contrato
     form = NovoPedidoCompraForm(request.POST or None)
+
+
     if form.is_valid():
         o = form.save(False)
         o.tipo = SolicitacaoLicitacao.COMPRA
@@ -4510,7 +4512,10 @@ def novo_pedido_compra_contrato(request, contrato_id):
         o.contrato_origem = contrato
         o.save()
 
-        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, o.id))
+        if lote_id:
+            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/%s/' % (contrato_id, o.id, lote_id))
+        else:
+            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, o.id))
     return render(request, 'novo_pedido_compra.html', locals(), RequestContext(request))
 
 @login_required()
@@ -4836,7 +4841,7 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
 
 
 @login_required()
-def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id):
+def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id, lote_id=None):
     setor = request.user.pessoafisica.setor
     solicitacao_atual = get_object_or_404(SolicitacaoLicitacaoTmp, pk=solicitacao_id)
     contrato = get_object_or_404(Contrato, pk=contrato_id)
@@ -4851,24 +4856,22 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
         participantes = Fornecedor.objects.filter(id__in=itens_contrato.values_list('fornecedor', flat=True))
         form = FiltraFornecedorPedidoForm(request.POST or None, participantes=participantes)
 
-    eh_lote = False
-    resultados = itens_contrato
+    eh_lote = lote_id
+    if eh_lote:
+        resultados = itens_contrato.filter(item__in=ItemLote.objects.filter(lote__id=eh_lote).values_list('item', flat=True))
+    else:
+        resultados = itens_contrato
     buscou = False
 
     if form.is_valid():
         buscou = True
-        if eh_lote:
-            ids = list()
-            for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
-                registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
-                if registro.participante == form.cleaned_data.get('vencedor'):
-                    ids.append(registro.item.id)
-            resultados = resultados.filter(id__in=ids)
+
+        if origem_pregao:
+            resultados = itens_contrato.filter(participante=form.cleaned_data.get('vencedor'))
         else:
-            if origem_pregao:
-                resultados = itens_contrato.filter(participante=form.cleaned_data.get('vencedor'))
-            else:
-                resultados = itens_contrato.filter(fornecedor=form.cleaned_data.get('vencedor'))
+            resultados = itens_contrato.filter(fornecedor=form.cleaned_data.get('vencedor'))
+        if eh_lote:
+            resultados = resultados.filter(item__in=ItemLote.objects.filter(lote__id=eh_lote).values_list('item', flat=True))
 
 
         fornecedor = form.cleaned_data.get('vencedor')
@@ -4885,49 +4888,55 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
 
             if eh_lote and '0' in request.POST.getlist('quantidades'):
                 messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
-                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/%s/' % (contrato_id, solicitacao_atual.id, eh_lote))
 
 
-            if eh_lote:
-                ids = list()
-                resultados = solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False)
-                for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
-                    registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
-                    if registro.participante == participante:
-                        for id_do_item in registro.item.get_itens_do_lote():
-                            ids.append(id_do_item.id)
-                resultados = resultados.filter(id__in=ids)
-
-
-                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-                    try:
-                        with transaction.atomic():
-                            int(valor)
-                    except:
-                        messages.error(request, u'o valor %s é inválido.' % (valor))
-                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
-                    valor_pedido = int(valor)
-                    if valor_pedido > 0:
-                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_contrato().get_quantidade_disponivel():
-                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
-                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+            # if eh_lote:
+            #     ids = list()
+            #     resultados = solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False)
+            #     for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
+            #         registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+            #         if registro.participante == participante:
+            #             for id_do_item in registro.item.get_itens_do_lote():
+            #                 ids.append(id_do_item.id)
+            #     resultados = resultados.filter(id__in=ids)
+            #
+            #
+            #     for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+            #         try:
+            #             with transaction.atomic():
+            #                 int(valor)
+            #         except:
+            #             messages.error(request, u'o valor %s é inválido.' % (valor))
+            #             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+            #         valor_pedido = int(valor)
+            #         if valor_pedido > 0:
+            #             if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_item_contrato().get_quantidade_disponivel():
+            #                 messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx])
+            #                 return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+            # else:
+            if origem_pregao:
+                resultados = itens_contrato.filter(participante=participante)
             else:
-                if origem_pregao:
-                    resultados = itens_contrato.filter(participante=participante)
-                else:
-                    resultados = itens_contrato.filter(fornecedor=participante)
-                for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
-                    try:
-                        with transaction.atomic():
-                            int(valor)
-                    except:
-                        messages.error(request, u'o valor %s é inválido.' % (valor))
+                resultados = itens_contrato.filter(fornecedor=participante)
+            for idx, valor in enumerate(request.POST.getlist('quantidades'), 0):
+                try:
+                    with transaction.atomic():
+                        int(valor)
+                except:
+                    messages.error(request, u'o valor %s é inválido.' % (valor))
+                    if eh_lote:
+                        return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/%s/' % (contrato_id, solicitacao_atual.id, eh_lote))
+                    else:
                         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
-                    valor_pedido = int(valor)
+                valor_pedido = int(valor)
 
-                    if valor_pedido > 0:
-                        if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
-                            messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                if valor_pedido > 0:
+                    if valor_pedido > resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel():
+                        messages.error(request, u'A quantidade disponível do item "%s" é menor do que a quantidade solicitada.' % resultados[idx].item)
+                        if eh_lote:
+                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/%s/' % (contrato_id, solicitacao_atual.id, eh_lote))
+                        else:
                             return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
 
             nova_solicitacao = SolicitacaoLicitacao()
@@ -4952,13 +4961,13 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                     novo_pedido = PedidoContrato()
                     novo_pedido.contrato = contrato
                     novo_pedido.solicitacao = nova_solicitacao
-                    if eh_lote:
-
-                        novo_pedido.item = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
-                        novo_pedido.valor = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).get_valor_item_contrato()
-                    else:
-                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
-                        novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).get_valor_item_contrato()
+                    # if eh_lote:
+                    #
+                    #     novo_pedido.item = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
+                    #     novo_pedido.valor = ItemContrato.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).get_valor_item_contrato()
+                    # else:
+                    novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                    novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).get_valor_item_contrato()
 
 
                     novo_pedido.quantidade = valor_pedido
