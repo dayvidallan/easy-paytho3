@@ -703,13 +703,13 @@ class GestaoContratoForm(forms.Form):
 
 class BuscarSolicitacaoForm(forms.Form):
     METHOD = u'GET'
-    info = forms.CharField(label=u'Filtrar por Número', required=False, help_text='Digite o número da licitação/procedimento, processo ou do memorando')
+    info = forms.CharField(label=u'Número', required=False, help_text='Digite o número da licitação/procedimento, processo ou do memorando')
     ano = forms.ChoiceField([],
                 required = False,
-                label    = u'Filtrar por Ano:',
+                label    = u'Ano:',
             )
-    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria de Origem', required=False)
-    tipo = forms.ChoiceField(label=u'Filtrar por Tipo', required=False, choices=SolicitacaoLicitacao.TIPO_AQUISICAO_E_COMPRAS_CHOICES)
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Secretaria de Origem', required=False)
+    tipo = forms.ChoiceField(label=u'Tipo', required=False, choices=SolicitacaoLicitacao.TIPO_AQUISICAO_E_COMPRAS_CHOICES)
 
     def __init__(self, *args, **kwargs):
         super(BuscarSolicitacaoForm, self).__init__(*args, **kwargs)
