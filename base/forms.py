@@ -706,7 +706,7 @@ class BuscarSolicitacaoForm(forms.Form):
     info = forms.CharField(label=u'Número', required=False, help_text='Digite o número da licitação/procedimento, processo ou do memorando')
     ano = forms.ChoiceField([],
                 required = False,
-                label    = u'Ano:',
+                label    = u'Ano',
             )
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Secretaria de Origem', required=False)
     tipo = forms.ChoiceField(label=u'Tipo', required=False, choices=SolicitacaoLicitacao.TIPO_AQUISICAO_E_COMPRAS_CHOICES)
