@@ -9319,7 +9319,10 @@ def anexo_38(request, pregao_id):
                     # w_sheet.write(row_index, 5, u'CNPJ')
                     # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
                     if eh_desconto:
-                        valor_do_participante = format_money(result.get_valor_participante_desconto()*item.quantidade)
+                        if pregao.tipo_desconto.id == TipoPregaoDesconto.ITEM:
+                            valor_do_participante = format_money(result.get_valor_participante_desconto()*item.quantidade)
+                        else:
+                            valor_do_participante = format_money(result.item.valor_medio*item.quantidade)
                     else:
                         valor_do_participante = format_money(result.valor*item.quantidade)
                     row = [
