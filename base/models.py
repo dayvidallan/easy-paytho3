@@ -1138,7 +1138,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return 0
 
     def get_valor_unitario_final_desconto_item(self):
-        if self.get_vencedor() and self.get_licitacao().tipo_pregao.id == TipoPregaoDesconto.ITEM:
+        if self.get_vencedor() and self.get_licitacao().tipo_desconto.id == TipoPregaoDesconto.ITEM:
             return self.valor_medio - (self.get_vencedor().get_valor_decimal()*self.valor_medio)/100
         else:
             return self.valor_medio
