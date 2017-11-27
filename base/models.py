@@ -1138,9 +1138,10 @@ class ItemSolicitacaoLicitacao(models.Model):
         return 0
 
     def get_valor_unitario_final_desconto_item(self):
-        if self.get_vencedor():
+        if self.get_vencedor() and self.tipo_pregao.id == TipoPregaoDesconto.ITEM:
             return self.valor_medio - (self.get_vencedor().get_valor_decimal()*self.valor_medio)/100
-        return 0
+        else:
+            return self.valor_medio
 
     def get_proposta_item_lote(self):
         if ItemLote.objects.filter(item=self).exists():
