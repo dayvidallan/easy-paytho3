@@ -1391,7 +1391,7 @@ def planilha_propostas(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = get_object_or_404(Pregao, solicitacao=solicitacao)
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False).order_by('item')
-
+    eh_desconto = pregao.eh_maior_desconto()
     nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor')
     file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/modelo_proposta_fornecedor.xls')
     rb = open_workbook(file_path,formatting_info=True)
@@ -1403,6 +1403,13 @@ def planilha_propostas(request, solicitacao_id):
     w_sheet.write(1, 1, pregao.get_titulo())
     w_sheet.write(2, 1, pregao.objeto)
     w_sheet.write(3, 1, pregao.get_local())
+
+    if eh_desconto:
+        font = xlwt.Font()
+        font.bold = True
+        style = xlwt.XFStyle() # Create the Style
+        style.font = font #
+        w_sheet.write(8, 7, u'PERCENTUAL DE DESCONTO', style)
 
     contador = 1
     for idx, item in enumerate(itens, 0):
