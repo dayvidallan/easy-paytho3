@@ -758,14 +758,14 @@ class ItemSolicitacaoLicitacao(models.Model):
 
 
     def get_valor_final_desconto(self):
-        if self.get_vencedor():
+        if self.get_licitacao().tipo.id == TipoPregao.MENOR_PRECO and self.get_vencedor():
             return ((((100 - Decimal(self.get_vencedor().get_valor().replace(' %', '')))) * self.valor_medio)/100).quantize(TWOPLACES)
         else:
             return self.valor_medio
 
     def get_valor_final_total_desconto(self):
 
-        return self.get_valor_final_desconto()*self.quantidade
+        return self.get_valor_unitario_final_desconto_item()*self.quantidade
 
 
     def get_valor_medio_total(self):
@@ -1135,6 +1135,11 @@ class ItemSolicitacaoLicitacao(models.Model):
             indice = lote[0].lote.get_total_lance_ganhador()
             if indice and self.valor_medio:
                 return (self.valor_medio*indice)/100
+        return 0
+
+    def get_valor_unitario_final_desconto_item(self):
+        if self.get_vencedor():
+            return self.valor_medio - (self.get_vencedor().get_valor_decimal()*self.valor_medio)/100
         return 0
 
     def get_proposta_item_lote(self):
@@ -1885,6 +1890,8 @@ class LanceItemRodadaPregao(models.Model):
         else:
             return 'R$ %s' % format_money(self.valor)
 
+
+
     def get_reducao_empresa(self):
         if not self.declinio:
             lance = self.valor
@@ -2188,6 +2195,10 @@ class ResultadoItemPregao(models.Model):
             return u'%s%%' % self.valor
         else:
             return 'R$ %s' % format_money(self.valor)
+
+    def get_valor_decimal(self):
+        return  self.valor
+
 
     def ganhador_atual(self):
         if ResultadoItemPregao.objects.filter(item=self.item, situacao=ResultadoItemPregao.CLASSIFICADO).exists():

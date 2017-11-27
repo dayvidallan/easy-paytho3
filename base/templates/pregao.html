@@ -769,7 +769,7 @@
                                             {% endif %}
                                         </td>
                                         {% if  eh_maior_desconto %}
-                                            <td>{{ item.get_valor_final_desconto }}</td>
+                                            <td>{{ item.get_valor_unitario_final_desconto_item|format_money }}</td>
                                         {% endif %}
 
                                         {% if  eh_maior_desconto  %}
