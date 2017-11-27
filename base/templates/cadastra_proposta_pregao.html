@@ -61,7 +61,7 @@
                         <div>
                             <table class="table table-bordered table-condensed table-striped">
                                 <thead>
-                                    <th>Item</th>
+                                    <th>Item/Lote</th>
                                     <th>Material/Serviço</th>
                                     <th>Valor Máximo</th>
                                     <th>Marca</th>
@@ -74,7 +74,7 @@
                                 <tbody>
                                 {% for item in itens %}
                                     <tr>
-                                        <td>{{ item.item }}</td>
+                                        <td>{{ item.item.get_descricao }}</td>
                                         <td>{{ item.material }}</td>
                                         <td>{{ item.valor_medio|format_money }}</td>
                                         <td><input name="marcas">{{ item.marca|default_if_none:"-" }}</td>
@@ -99,7 +99,7 @@
                         <div>
                             <table class="table table-bordered table-condensed table-striped">
                                 <thead>
-                                    <th>Item</th>
+                                    <th>Item/Lote</th>
                                     <th>Material/Serviço</th>
                                     <th>Valor Máximo</th>
                                     <th>Marca</th>
@@ -109,7 +109,7 @@
                                 <tbody>
                                 {% for item in itens %}
                                     <tr>
-                                        <td>{{ item.item.item }}</td>
+                                        <td>{{ item.item.get_descricao }}</td>
                                         <td>{{ item.item.material }}</td>
                                          <td>{{ item.item.valor_medio }}</td>
                                         <td>{{ item.marca|default_if_none:"-" }}</td>

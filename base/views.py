@@ -4265,7 +4265,7 @@ def termo_adjudicacao(request, pregao_id):
     config_geral = get_config_geral()
 
     tabela = {}
-
+    eh_desconto = pregao.eh_maior_desconto()
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
 
     if eh_lote:
@@ -4279,8 +4279,9 @@ def termo_adjudicacao(request, pregao_id):
         chave = u'%s' % fornecedor
         tabela[chave] = dict(itens = list(), total = 0)
     total_geral = 0
+    texto = u''
     for item in itens_pregao.order_by('item'):
-
+        texto += str(item.item)
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['itens'].append(item.item)
@@ -4290,6 +4291,9 @@ def termo_adjudicacao(request, pregao_id):
             else:
                 valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
+            if eh_desconto:
+                texto += u' (Desconto de %s)' % item.get_vencedor().get_valor()
+            texto += ', '
 
 
     for item in tabela:
@@ -4302,7 +4306,7 @@ def termo_adjudicacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'texto': texto[:-2],  'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
 
     template = get_template('termo_adjudicacao.html')
 
@@ -5639,6 +5643,7 @@ def registrar_homologacao(request, pregao_id):
 @login_required()
 def termo_homologacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+    eh_desconto = pregao.eh_maior_desconto()
     if pregao.comissao:
         configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
     else:
@@ -5670,8 +5675,9 @@ def termo_homologacao(request, pregao_id):
         chave = u'%s' % fornecedor
         tabela[chave] = dict(itens = list(), total = 0)
     total_geral = 0
+    texto = u''
     for item in itens_pregao.order_by('item'):
-
+        texto += str(item.item)
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             tabela[chave]['itens'].append(item.item)
@@ -5681,6 +5687,9 @@ def termo_homologacao(request, pregao_id):
             else:
                 valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
+            if eh_desconto:
+                texto += u' (Desconto de %s)' % item.get_vencedor().get_valor()
+            texto += ', '
 
 
     for item in tabela:
@@ -5693,7 +5702,7 @@ def termo_homologacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'texto': texto[:-2], 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
     if pregao.eh_pregao():
         template = get_template('termo_homologacao.html')
     else:
@@ -6507,6 +6516,7 @@ def registrar_ocorrencia_pregao(request, pregao_id):
 @login_required()
 def ata_sessao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
+    eh_desconto = pregao.eh_maior_desconto()
 
     if pregao.comissao:
         configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
@@ -6597,16 +6607,21 @@ def ata_sessao(request, pregao_id):
     else:
         nome_tipo = u'Lotes'
 
+    texto = u''
     for result in resultado.items():
         if result[1]['total'] != 0:
             result[0]
             lista = []
             for item in result[1]['lance']:
-                lista.append(item.item)
+                texto += str(item.item)
+                if eh_desconto and item.get_vencedor():
+                    texto += u' (Desconto de %s)' % item.get_vencedor().get_valor()
+                texto += ', '
+                #lista.append(texto)
 
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, texto[:-2], format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
 
             total_geral = total_geral + result[1]['total']
 

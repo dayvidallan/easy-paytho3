@@ -705,6 +705,15 @@ class ItemSolicitacaoLicitacao(models.Model):
         else:
             return u'Lote: %s' % self.item
 
+    def get_descricao(self):
+        if ItemLote.objects.filter(item=self).exists() and not self.eh_lote:
+            id_lote = ItemLote.objects.filter(item=self)[0].lote.item
+            num_item = ItemLote.objects.filter(item=self)[0].numero_item
+            return u'%s.%s' % (id_lote, num_item)
+        elif not self.eh_lote:
+            return u'%s' % self.item
+        else:
+            return u'%s' % self.item
 
     class Meta:
         ordering = ['item']
@@ -2176,7 +2185,7 @@ class ResultadoItemPregao(models.Model):
 
     def get_valor(self):
         if self.item.solicitacao.get_pregao().eh_maior_desconto():
-            return u'%s %%' % self.valor
+            return u'%s%%' % self.valor
         else:
             return 'R$ %s' % format_money(self.valor)
 

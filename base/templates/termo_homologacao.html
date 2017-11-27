@@ -84,9 +84,9 @@ ul{
             <b>{{ empresa }}</b>,
             quanto aos
             {% if eh_lote %}
-                LOTES <b>{{itens.itens}}</b>,
+                LOTES <b>{{texto}}</b>,
             {% else %}
-                ITENS <b>{{itens.itens}}</b>,
+                ITENS <b>{{texto}}</b>,
             {% endif %}
             no valor total
             de <b>R$ {{itens.total|format_money}}</b>,
