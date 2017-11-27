@@ -1780,6 +1780,7 @@ def cadastrar_anexo_credenciamento(request, credenciamento_id):
 def cadastrar_ata_registro_preco(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
+    eh_desconto = pregao.eh_maior_desconto()
     if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and pregao and pregao.data_homologacao and pregao.eh_ata_registro_preco and not solicitacao.get_ata():
 
         title=u'Cadastrar Ata de Registro de Preço'
@@ -1815,7 +1816,10 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                     novo_item.item = resultado.item
                     novo_item.marca = resultado.marca
                     novo_item.participante = resultado.participante
-                    novo_item.valor = resultado.valor
+                    if eh_desconto:
+                        novo_item.valor = resultado.item.get_valor_final_desconto()
+                    else:
+                        novo_item.valor = resultado.valor
                     novo_item.ordem = o.get_ordem()
                     novo_item.quantidade = resultado.item.quantidade
                     novo_item.unidade = resultado.item.unidade
