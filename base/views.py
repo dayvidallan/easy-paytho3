@@ -1907,7 +1907,7 @@ def cadastrar_contrato(request, solicitacao_id):
                                 novo_item.participante = resultado.participante
                                 novo_item.fornecedor = resultado.participante.fornecedor
                                 if eh_desconto:
-                                    novo_item.valor = resultado.item.get_valor_final_desconto()
+                                    novo_item.valor = resultado.item.get_valor_unitario_final_desconto_item()
                                 else:
                                     novo_item.valor = resultado.valor
                                 novo_item.quantidade = resultado.item.quantidade
