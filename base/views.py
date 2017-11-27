@@ -1824,7 +1824,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
                     novo_item.marca = resultado.marca
                     novo_item.participante = resultado.participante
                     if eh_desconto:
-                        novo_item.valor = resultado.item.get_valor_final_desconto()
+                        novo_item.valor = resultado.item.get_valor_unitario_final_desconto_item()
                     else:
                         novo_item.valor = resultado.valor
                     novo_item.ordem = o.get_ordem()
