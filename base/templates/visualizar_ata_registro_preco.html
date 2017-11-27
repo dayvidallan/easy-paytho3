@@ -292,6 +292,7 @@
                                                     <th>Unidade</th>
                                                     <th>Empresa</th>
                                                     <th>Valor</th>
+
                                                     <th>Quantidade Inicial</th>
                                                     <th>Quantidade Disponível</th>
 
@@ -352,6 +353,9 @@
                                                 <th>Unidade</th>
                                                 <th>Empresa</th>
                                                 <th>Valor</th>
+                                                {% if eh_desconto %}
+                                                    <th>Desconto</th>
+                                                {% endif %}
                                                 <th>Quantidade Inicial</th>
                                                 <th>Quantidade Disponível</th>
 
@@ -379,6 +383,9 @@
                                                         <td>{{ opcao.participante.fornecedor.razao_social }}</td>
                                                     {% endif %}
                                                     <td>{{ opcao.valor|format_money }}</td>
+                                                    {% if eh_desconto %}
+                                                        <td>{{ opcao.item.get_vencedor.get_valor }}</td>
+                                                    {% endif %}
                                                     <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                     <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
                                                     <td>

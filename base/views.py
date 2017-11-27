@@ -5716,6 +5716,7 @@ def termo_homologacao(request, pregao_id):
 @login_required()
 def visualizar_contrato(request, solicitacao_id):
     contrato = get_object_or_404(Contrato, pk=solicitacao_id)
+    eh_desconto = contrato.pregao.eh_maior_desconto()
     title = u'Contrato: %s - Fornecedor: %s' % (contrato.numero, contrato.get_fornecedor())
     pedidos = PedidoContrato.objects.filter(contrato=contrato).order_by('item__material', 'setor')
     pode_gerenciar = contrato.solicitacao.recebida_setor(request.user.pessoafisica.setor)
@@ -5731,6 +5732,7 @@ def visualizar_contrato(request, solicitacao_id):
 def visualizar_ata_registro_preco(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
     title = u'Ata de Registro de Preço N° %s' % ata.numero
+    eh_desconto = ata.pregao and ata.pregao.eh_maior_desconto()
 
     pode_gerenciar = ata.solicitacao.recebida_setor(request.user.pessoafisica.setor)
     eh_gerente = request.user.groups.filter(name='Gerente') and pode_gerenciar

@@ -288,6 +288,9 @@
                                             <th>Marca</th>
                                             <th>Unidade</th>
                                             <th>Valor Unitário</th>
+                                            {% if eh_desconto %}
+                                                <th>Desconto</th>
+                                            {% endif %}
                                             <th>Quantidade Inicial</th>
                                             <th>Quantidade Disponível</th>
 
@@ -308,6 +311,9 @@
                                                 <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                 <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                                                 <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
+                                                {% if eh_desconto %}
+                                                    <td>{{ opcao.item.get_vencedor.get_valor }}</td>
+                                                {% endif %}
                                                 <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                 <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
 
