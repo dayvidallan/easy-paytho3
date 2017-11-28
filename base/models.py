@@ -740,6 +740,22 @@ class ItemSolicitacaoLicitacao(models.Model):
                         return PropostaItemPregao.objects.filter(item=self, participante=vencedor)[0].valor
         return False
 
+
+    def get_valor_unitario_final_item_lote(self):
+        valor_lote = ItemLote.objects.filter(item=self)[0].lote.get_total_lance_ganhador()
+        return self.valor_medio - ((self.valor_medio * valor_lote)/100)
+
+    def get_valor_unitario_proposto_item_lote(self):
+        proposta = ItemLote.objects.filter(item=self)[0].lote.get_vencedor()
+        if proposta:
+            if PropostaItemPregao.objects.filter(participante=proposta.participante, item=self).exists():
+                valor_proposto = PropostaItemPregao.objects.filter(participante=proposta.participante, item=self)[0].valor
+                return self.valor_medio - ((self.valor_medio * valor_proposto)/100)
+        return 0
+
+    def get_valor_total_final_item_lote(self):
+        return self.get_valor_unitario_final_item_lote() * self.quantidade
+
     def get_melhor_proposta(self):
         tem = ItemPesquisaMercadologica.objects.filter(item=self).order_by('valor_maximo')
         if tem.exists():
@@ -912,6 +928,18 @@ class ItemSolicitacaoLicitacao(models.Model):
             return self.get_vencedor().valor*self.quantidade
         else:
             return None
+
+    def get_total_lance_ganhador_lote(self):
+        total_lote = 0
+        for item in self.get_itens_do_lote():
+            total_lote = total_lote + (item.valor_medio * item.quantidade)
+
+        desconto_ganhador = self.get_total_lance_ganhador()
+        if desconto_ganhador:
+            return (total_lote*desconto_ganhador)/100
+        else:
+            return total_lote
+
 
     def get_empresa_vencedora(self):
         if self.get_lance_minimo():
@@ -1266,8 +1294,12 @@ class ItemSolicitacaoLicitacao(models.Model):
         for item in itens:
             if item.get_valor_item_lote():
                 total += item.get_valor_item_lote()
+            elif item.get_valor_total_final_item_lote():
+                total += item.get_valor_total_final_item_lote()
         return total
 
+    def get_valor_total_proposto_item_lote(self):
+        return self.get_valor_unitario_proposto_item_lote() * self.quantidade
 
     def tem_pesquisa_registrada(self):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()

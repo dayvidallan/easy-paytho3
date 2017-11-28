@@ -379,11 +379,20 @@ def cadastra_proposta_pregao(request, pregao_id):
                 for lote in lotes:
                     itens = ItemLote.objects.filter(lote=lote)
                     if itens.exists():
+                        soma_total_itens_desconto = 0
                         propostas = PropostaItemPregao.objects.filter(item__in=itens.values_list('item', flat=True), participante=fornecedor, pregao=pregao)
                         if propostas.exists():
                             total_propostas = 0
                             for proposta in propostas:
-                                total_propostas = total_propostas + proposta.valor * proposta.item.quantidade
+                                if eh_maior_desconto:
+                                    total_propostas = total_propostas + ((proposta.item.valor_medio - ((proposta.valor * proposta.item.valor_medio)/100)) * proposta.item.quantidade)
+                                    soma_total_itens_desconto = soma_total_itens_desconto + (proposta.item.valor_medio*proposta.item.quantidade)
+                                else:
+                                    total_propostas = total_propostas + proposta.valor * proposta.item.quantidade
+
+                            if eh_maior_desconto:
+
+                                total_propostas = 100 - ((total_propostas*100)/soma_total_itens_desconto)
                             if PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).exists():
                                 PropostaItemPregao.objects.filter(item=lote, pregao=pregao, participante=fornecedor).update(valor=total_propostas)
                             else:
