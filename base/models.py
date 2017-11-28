@@ -745,7 +745,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         valor_lote = ItemLote.objects.filter(item=self)[0].lote.get_total_lance_ganhador()
         if valor_lote:
             return self.valor_medio - ((self.valor_medio * valor_lote)/100)
-        return u'-'
+        return None
 
     def get_valor_unitario_proposto_item_lote(self):
         proposta = ItemLote.objects.filter(item=self)[0].lote.get_vencedor()
