@@ -560,7 +560,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def eh_maior_desconto(self):
-        return self.get_pregao().eh_maior_desconto()
+        return self.get_pregao() and self.get_pregao().eh_maior_desconto()
 
     def eh_lote(self):
         if self.get_pregao():

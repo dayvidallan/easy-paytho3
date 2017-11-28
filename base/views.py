@@ -1845,7 +1845,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
 def cadastrar_contrato(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
-    eh_desconto = pregao.eh_maior_desconto()
+    eh_desconto = solicitacao.eh_maior_desconto()
 
     if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and not solicitacao.contrato_set.exists() and not solicitacao.ataregistropreco_set.exists():
 
