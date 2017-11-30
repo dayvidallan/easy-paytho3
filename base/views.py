@@ -4295,21 +4295,23 @@ def termo_adjudicacao(request, pregao_id):
         chave = u'%s' % fornecedor
         tabela[chave] = dict(itens = list(), total = 0)
     total_geral = 0
-    texto = u''
+
     for item in itens_pregao.order_by('item'):
-        texto += str(item.item)
+        texto = u''
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
-            tabela[chave]['itens'].append(item.item)
+            if eh_desconto:
+                texto += u'%s (Desconto de %s)' % (item.item, item.get_vencedor().get_valor())
+            else:
+                texto = item.item
+            tabela[chave]['itens'].append(texto)
             valor = tabela[chave]['total']
             if pregao.eh_maior_desconto():
                 valor = valor + item.get_valor_final_total_desconto()
             else:
                 valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
-            if eh_desconto:
-                texto += u' (Desconto de %s)' % item.get_vencedor().get_valor()
-            texto += ', '
+
 
 
     for item in tabela:
@@ -4322,7 +4324,7 @@ def termo_adjudicacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'texto': texto[:-2],  'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo,  'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
 
     template = get_template('termo_adjudicacao.html')
 
@@ -5693,19 +5695,22 @@ def termo_homologacao(request, pregao_id):
     total_geral = 0
     texto = u''
     for item in itens_pregao.order_by('item'):
-        texto += str(item.item)
+        texto = u''
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
-            tabela[chave]['itens'].append(item.item)
+
             valor = tabela[chave]['total']
             if pregao.eh_maior_desconto():
                 valor = valor + item.get_valor_final_total_desconto()
+                texto += u' %s (Desconto de %s)' % (item.item, item.get_vencedor().get_valor())
             else:
                 valor = valor + item.get_total_lance_ganhador()
+                texto = item.item
+            tabela[chave]['itens'].append(texto)
             tabela[chave]['total'] = valor
-            if eh_desconto:
-                texto += u' (Desconto de %s)' % item.get_vencedor().get_valor()
-            texto += ', '
+
+
+
 
 
     for item in tabela:
@@ -5718,7 +5723,7 @@ def termo_homologacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'texto': texto[:-2], 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
     if pregao.eh_pregao():
         template = get_template('termo_homologacao.html')
     else:
@@ -6624,20 +6629,18 @@ def ata_sessao(request, pregao_id):
         nome_tipo = u'Lotes'
 
     texto = u''
+
     for result in resultado.items():
         if result[1]['total'] != 0:
-            result[0]
-            lista = []
+            texto = ''
+
             for item in result[1]['lance']:
                 texto += str(item.item)
                 if eh_desconto and item.get_vencedor():
                     texto += u' (Desconto de %s)' % item.get_vencedor().get_valor()
                 texto += ', '
-                #lista.append(texto)
 
-
-
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, texto[:-2], format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s [%s], no valor total de R$ %s (%s), ' % (result[0], nome_tipo, texto[:-2], format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
 
             total_geral = total_geral + result[1]['total']
 
