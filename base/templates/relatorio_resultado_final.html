@@ -102,12 +102,14 @@ ul{
                         <td>{{ item.item }}</td>
                         <td>
                             {% for item in item.get_itens_do_lote %}
-                                {{ item }}<br>
+                                {{ item }}: {{ item.material }}<br>
                             {% endfor %}
                         </td>
                         <td>{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</td>
                         {% if not eh_maior_desconto %}
                             <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
+                        {% else %}
+                            <td>R$ {{ item.get_valor_total_item_lote|format_money  }}</td>
                         {% endif %}
                     </tr>
 
