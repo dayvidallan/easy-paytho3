@@ -840,7 +840,7 @@
                 <br><br>
                 {% if pregao.tem_resultado %}
                     {% if pregao.eh_pregao %}
-                        {% if pregao.solicitacao.eh_lote and pregao.tem_lote_sem_valor_unitario %}
+                        {% if pregao.solicitacao.eh_lote and not pregao.eh_maior_desconto and pregao.eh_por_item %}
                             <p class="alert alert-danger">Informe os valores unitários dos itens dos lotes.</p>
                         {% else %}
                             <fieldset>

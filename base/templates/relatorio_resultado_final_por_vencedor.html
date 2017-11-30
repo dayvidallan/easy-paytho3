@@ -73,9 +73,13 @@ ul{
                                 <th width="15%">Item/Lote</th>
                                 <th>Especificação</th>
                                 <th width="20%">Unidade</th>
-
                                 <th width="10%">Qtd.</th>
-                                <th>Total</th>
+                                <th width="20%">Valor Unit.</th>
+                                {% if eh_maior_desconto %}
+                                    <th width="20%">Desconto</th>
+                                {% endif %}
+                                <th width="20%">Total</th>
+
 
                             </tr>
                         </thead>
@@ -87,15 +91,25 @@ ul{
                                         <td>{{ registro.material }}</td>
                                         <td>{{ registro.unidade }}</td>
                                         <td>{{ registro.quantidade }}</td>
-                                        <td>{{ registro.get_valor_unitario_final|format_money }}</td>
 
-                                        <td>R$ {{ registro.get_valor_item_lote|format_money  }}</td>
+                                        {% if eh_maior_desconto %}
+                                            <td>{{ registro.get_valor_unitario_final_item_lote|format_money }}</td>
+                                            <td>{{ registro.get_desconto_final_item_lote|format_money }}%</td>
+                                            <td>R$ {{ registro.get_valor_total_final_item_lote|format_money  }}</td>
+                                        {% else %}
+                                            <td>{{ registro.get_valor_unitario_final|format_money }}</td>
+                                            <td>R$ {{ registro.get_valor_item_lote|format_money  }}</td>
+                                        {% endif %}
 
 
                                     </tr>
                                  {% endfor %}
                             {% endfor %}
-                            <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                            {% if eh_maior_desconto %}
+                                <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                            {% else %}
+                                <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                            {% endif %}
 
                         </tbody>
                     </table>

@@ -9428,12 +9428,14 @@ def anexo_38(request, pregao_id):
                     # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
                     # w_sheet.write(row_index, 5, u'CNPJ')
                     # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
-
+                    valor_do_item = registro.valor
+                    if pregao.eh_maior_desconto():
+                        valor_do_item = registro.item.get_valor_total_lote_por_participante(registro.participante)
                     row = [
                         result[0],
                         u'Lote %s' % result[0],
                         registro.ordem,
-                        format_money(registro.valor),
+                        format_money(valor_do_item),
                         registro.participante.fornecedor.razao_social,
                         u'CNPJ',
                         str(registro.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),

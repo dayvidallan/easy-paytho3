@@ -761,6 +761,13 @@ class ItemSolicitacaoLicitacao(models.Model):
             return self.get_valor_unitario_final_item_lote() * self.quantidade
         return 0
 
+    def get_desconto_final_item_lote(self):
+        valor_final = self.get_valor_total_final_item_lote()
+        valor_proposto = self.get_valor_total_proposto_item_lote()
+        if valor_final and valor_proposto:
+            return 100 - ((valor_final * 100)/valor_proposto)
+        return None
+
     def get_melhor_proposta(self):
         tem = ItemPesquisaMercadologica.objects.filter(item=self).order_by('valor_maximo')
         if tem.exists():
@@ -1303,6 +1310,19 @@ class ItemSolicitacaoLicitacao(models.Model):
                 total += item.get_valor_total_final_item_lote()
         return total
 
+    def get_valor_total_lote_por_participante(self, participante):
+        total = 0
+        itens = self.get_itens_do_lote()
+        for item in itens:
+            lote = ItemLote.objects.filter(item=item)[0].lote
+            if ResultadoItemPregao.objects.filter(item=lote, situacao=ResultadoItemPregao.CLASSIFICADO, participante=participante).exists():
+                valor_lote = ResultadoItemPregao.objects.filter(item=lote, situacao=ResultadoItemPregao.CLASSIFICADO, participante=participante).order_by('ordem')[0]
+            if valor_lote:
+                total +=  (item.valor_medio - ((item.valor_medio * valor_lote.valor)/100)) * item.quantidade
+
+        return total
+
+
     def get_valor_total_proposto_item_lote(self):
         return self.get_valor_unitario_proposto_item_lote() * self.quantidade
 
@@ -1467,6 +1487,13 @@ class Pregao(models.Model):
         if not self.tipo:
             return False
         if self.tipo.id == TipoPregao.DESCONTO:
+            return True
+        return False
+
+    def eh_por_item(self):
+        if not self.tipo:
+            return False
+        if self.criterio.id == CriterioPregao.ITEM:
             return True
         return False
 
