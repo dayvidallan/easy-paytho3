@@ -2735,7 +2735,7 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
 @login_required()
 def relatorio_resultado_final(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-
+    solicitacao = pregao.solicitacao
     if pregao.comissao:
         configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
     else:
@@ -2756,13 +2756,17 @@ def relatorio_resultado_final(request, pregao_id):
     else:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
     total = 0
+    eh_global = pregao.solicitacao.contratacao_global
+    total_global = 0
     for item in itens_pregao:
         if item.get_total_lance_ganhador():
             total = total + item.get_total_lance_ganhador()
+            if eh_global:
+                total_global += item.get_total_lance_ganhador() * solicitacao.numero_meses_contratacao_global
     observacao = False
     if not pregao.eh_pregao() and ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id', flat=True), observacoes__isnull=False, ordem=1).exists():
         observacao = ResultadoItemPregao.objects.filter(item__in=itens_pregao.values_list('id', flat=True), observacoes__isnull=False, ordem=1)[0].observacoes
-    data = {'eh_lote':eh_lote, 'observacao': observacao,  'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
+    data = {'eh_lote':eh_lote, 'observacao': observacao, 'solicitacao': solicitacao, 'eh_global': eh_global,  'total_global': total_global, 'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
 
     template = get_template('relatorio_resultado_final.html')
 
@@ -6289,13 +6293,18 @@ def lista_materiais(request, solicitacao_id):
     pode_ver_preco = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, valor_medio__isnull=False).exists()
     itens = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=False)
     total = 0
+    total_global = 0
+    eh_global = solicitacao.contratacao_global and solicitacao.numero_meses_contratacao_global
     if pode_ver_preco:
         for item in itens:
             if item.valor_medio:
                 total += item.quantidade * item.valor_medio
+                if eh_global:
+                    total_global += item.get_total_contratacao_global()
 
 
-    data = {'solicitacao': solicitacao,'itens': itens, 'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
+
+    data = {'solicitacao': solicitacao,'itens': itens, 'eh_global': eh_global, 'total_global': total_global, 'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
 
     template = get_template('lista_materiais.html')
 
@@ -6329,12 +6338,16 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
     pode_ver_preco = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, valor_medio__isnull=False).exists()
     itens = ItemQuantidadeSecretaria.objects.filter(item__solicitacao=solicitacao, secretaria=secretaria).order_by('item')
     total = 0
+    total_global = 0
+    eh_global = solicitacao.contratacao_global and solicitacao.numero_meses_contratacao_global
     if pode_ver_preco:
         for item in itens:
             if item.item.valor_medio:
                 total += item.quantidade * item.item.valor_medio
+                if eh_global:
+                    total_global += item.get_total_contratacao_global()
 
-    data = {'secretaria': secretaria, 'itens': itens, 'solicitacao': solicitacao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
+    data = {'secretaria': secretaria, 'itens': itens, 'eh_global': eh_global, 'total_global': total_global, 'solicitacao': solicitacao,'configuracao': configuracao, 'logo': logo, 'data_emissao':data_emissao, 'pode_ver_preco': pode_ver_preco, 'total': total}
 
     template = get_template('lista_materiais_por_secretaria.html')
 
@@ -6652,8 +6665,12 @@ def ata_sessao(request, pregao_id):
                 texto += ', '
 
             resultado_pregao = resultado_pregao + u'%s, quanto aos %s [%s], no valor total de R$ %s (%s), ' % (result[0], nome_tipo, texto[:-2], format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            if pregao.solicitacao.contratacao_global:
+                resultado_pregao = resultado_pregao + u'(contratação global de %s meses: R$: %s (%s)), ' % (pregao.solicitacao.numero_meses_contratacao_global, format_money(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global), format_numero_extenso(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global))
+                total_geral = total_geral + (result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global)
+            else:
+                total_geral = total_geral + result[1]['total']
 
-            total_geral = total_geral + result[1]['total']
 
 
     document = Document()
@@ -9371,16 +9388,18 @@ def anexo_38(request, pregao_id):
                     # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
                     if eh_desconto:
                         if pregao.tipo_desconto.id == TipoPregaoDesconto.ITEM:
-                            valor_do_participante = format_money(result.get_valor_participante_desconto()*item.quantidade)
+                            valor_do_participante = result.get_valor_participante_desconto()*item.quantidade
                         else:
-                            valor_do_participante = format_money(result.item.valor_medio*item.quantidade)
+                            valor_do_participante = result.item.valor_medio*item.quantidade
                     else:
-                        valor_do_participante = format_money(result.valor*item.quantidade)
+                        valor_do_participante = result.valor*item.quantidade
+                    if pregao.solicitacao.contratacao_global:
+                        valor_do_participante = valor_do_participante * pregao.solicitacao.numero_meses_contratacao_global
                     row = [
                         item.item,
                         item.material.nome[:100],
                         contador,
-                        valor_do_participante,
+                        format_money(valor_do_participante),
                         result.participante.fornecedor.razao_social,
                         u'CNPJ',
                         str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
@@ -9445,6 +9464,8 @@ def anexo_38(request, pregao_id):
                     valor_do_item = registro.valor
                     if pregao.eh_maior_desconto():
                         valor_do_item = registro.item.get_valor_total_lote_por_participante(registro.participante)
+                    if pregao.solicitacao.contratacao_global:
+                        valor_do_item = valor_do_item * pregao.solicitacao.numero_meses_contratacao_global
                     row = [
                         result[0],
                         u'Lote %s' % result[0],

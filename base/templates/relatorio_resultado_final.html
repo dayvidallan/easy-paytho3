@@ -69,6 +69,9 @@ ul{
                         <th>Empresa Vencedora</th>
                     {% endif %}
                     <th width="20%">Total</th>
+                    {% if eh_global %}
+                        <th>Total Geral (R$)<br><small>contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses</small></th>
+                    {% endif %}
 
                 </tr>
 
@@ -89,6 +92,10 @@ ul{
                         <th width="20%">Valor Unit.</th>
                         <th width="20%">Total</th>
                     {% endif %}
+                    {% if eh_global %}
+                        <th>Total Geral (R$)<br><small>contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses</small></th>
+                    {% endif %}
+
 
                 </tr>
             {% endif %}
@@ -112,6 +119,9 @@ ul{
                             <td>R$ {{ item.get_valor_total_item_lote|format_money  }}</td>
                         {% endif %}
                     </tr>
+                    {% if eh_global %}
+                        <td align="right" width="15%">{{ item.get_total_contratacao_global_lote|format_money }}</td>
+                    {% endif %}
 
                 {% else %}
 
@@ -126,6 +136,9 @@ ul{
                         {% if eh_maior_desconto %}
                             <td>R$ {{ item.valor_medio|format_money }}</td>
                             <td>{{ item.get_vencedor.get_valor }}</td>
+                            {% if eh_global %}
+                                <td align="right" width="15%">{{ item.get_total_contratacao_global_desconto|format_money }}</td>
+                            {% endif %}
                         {% else %}
                             {% if not pregao.eh_credenciamento %}
                                 <td>{{ item.get_vencedor.get_valor }}</td>
@@ -134,26 +147,37 @@ ul{
                                 <td>R$ {{ item.valor_medio|format_money }}</td>
                                 <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
                             {% endif %}
+                            {% if eh_global %}
+                                <td align="right" width="15%">{{ item.get_total_contratacao_global_lance|format_money }}</td>
+                            {% endif %}
                        {% endif %}
+
 
 
                     </tr>
                 {% endif %}
             {% endfor %}
             {% if not eh_maior_desconto %}
-                {% if eh_lote %}
-                    {% if not pregao.eh_credenciamento %}
-                        <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="2"><b>R$ {{ total|format_money }} ({{ total|format_numero_extenso }})</b></td></tr>
+                <tr>
+                    {% if eh_lote %}
+                        {% if not pregao.eh_credenciamento %}
+
+                                <td colspan="2" align="right"><b>Total</b></td><td colspan="2"><b>R$ {{ total|format_money }} ({{ total|format_numero_extenso }})</b></td>
+                        {% else %}
+                                <td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money }} ({{ total|format_numero_extenso }})</b></td>
+                        {% endif %}
                     {% else %}
-                        <tr><td colspan="2" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money }} ({{ total|format_numero_extenso }})</b></td></tr>
+                        {% if not pregao.eh_credenciamento %}
+                                <td colspan="2" align="right"><b>Total</b></td><td colspan="5"><b>R$ {{ total|format_money  }} ({{ total|format_numero_extenso }})</b></td>
+                        {% else %}
+                                <td colspan="2" align="right"><b>Total</b></td><td colspan="4"><b>R$ {{ total|format_money  }} ({{ total|format_numero_extenso }})</b></td>
+
+                        {% endif %}
                     {% endif %}
-                {% else %}
-                    {% if not pregao.eh_credenciamento %}
-                        <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="5"><b>R$ {{ total|format_money  }} ({{ total|format_numero_extenso }})</b></td></tr>
-                    {% else %}
-                        <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="4"><b>R$ {{ total|format_money  }} ({{ total|format_numero_extenso }})</b></td></tr>
-                    {% endif %}
+                {% if eh_global %}
+                    <td align="right" width="15%"><b>R$ {{ total_global|format_money  }} ({{ total_global|format_numero_extenso }})</b></td>
                 {% endif %}
+                </tr>
             {% endif %}
 
         </tbody>

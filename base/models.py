@@ -1311,6 +1311,15 @@ class ItemSolicitacaoLicitacao(models.Model):
                 total += item.get_valor_total_final_item_lote()
         return total
 
+    def get_total_contratacao_global_lote(self):
+        return self.get_valor_total_item_lote() * self.solicitacao.numero_meses_contratacao_global
+
+    def get_total_contratacao_global_desconto(self):
+        return self.get_vencedor().get_valor() * self.solicitacao.numero_meses_contratacao_global
+
+    def get_total_contratacao_global_lance(self):
+        return self.get_total_lance_ganhador() * self.solicitacao.numero_meses_contratacao_global
+
     def get_valor_total_lote_por_participante(self, participante):
         total = 0
         itens = self.get_itens_do_lote()
@@ -1344,6 +1353,11 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_total(self):
         if self.valor_medio:
             return self.quantidade * self.valor_medio
+        return 0
+
+    def get_total_contratacao_global(self):
+        if self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
         return 0
 
 class ItemLote(models.Model):
@@ -2429,6 +2443,11 @@ class ItemQuantidadeSecretaria(models.Model):
         valor = self.item.valor_medio or 0
         return self.quantidade * valor
 
+    def get_total_contratacao_global(self):
+        if self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        return 0
+
     class Meta:
         verbose_name = u'Pedido de Itens da Secretaria'
         verbose_name_plural = u'Pedidos de Itens da Secretaria'
@@ -2859,7 +2878,10 @@ class Contrato(models.Model):
 
     def get_valor_total_com_aditivos(self):
         if Aditivo.objects.filter(contrato=self).exists():
-            return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual
+            if self.pregao and self.pregao.solicitacao.contratacao_global:
+                return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual * self.pregao.solicitacao.numero_meses_contratacao_global
+            else:
+                return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual
 
         return self.get_valor_aditivado()
 
