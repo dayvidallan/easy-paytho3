@@ -1,4 +1,5 @@
  function exibir_esconder_campo() {
+
     if ($('#id_outros_interessados').is(':checked')) {
 
 
@@ -23,6 +24,15 @@
         }
     }
 
+
+    if ($('#id_contratacao_global').is(':checked')) {
+        $("#id_numero_meses_contratacao_global").parent().parent().show();
+
+    }
+    else {
+        $("#id_numero_meses_contratacao_global").parent().parent().hide();
+    }
+
  }
 
 
@@ -34,6 +44,10 @@
         exibir_esconder_campo();
     });
     $('#id_todos_interessados').on('change', function(){
+        exibir_esconder_campo();
+    });
+
+    $('#id_contratacao_global').on('change', function(){
         exibir_esconder_campo();
     });
 });

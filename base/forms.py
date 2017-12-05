@@ -274,12 +274,13 @@ class SolicitacaoForm(forms.ModelForm):
     objetivo = forms.CharField(label=u'Objetivo', widget=forms.Textarea(), required=True)
     justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea(), required=True)
     outros_interessados = forms.BooleanField(label=u'Adicionar Outros Interessados', required=False)
+
     interessados = forms.ModelMultipleChoiceField(Secretaria.objects, label=u'Interessados', required=False, widget=autocomplete.ModelSelect2Multiple(url='secretaria-autocomplete'))
     todos_interessados = forms.BooleanField(label=u'Selecionar Todos como Interessados', initial=False, required=False)
     prazo_resposta_interessados = forms.DateField(label=u'Prazo para retorno dos interessados', widget=AdminDateWidget(), required=False)
     class Meta:
         model = SolicitacaoLicitacao
-        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'tipo_aquisicao', 'tipo', 'outros_interessados', 'interessados', 'todos_interessados',  'prazo_resposta_interessados']
+        fields = ['num_memorando', 'objeto','objetivo','justificativa', 'contratacao_global', 'numero_meses_contratacao_global', 'tipo_aquisicao', 'tipo', 'outros_interessados', 'interessados', 'todos_interessados',  'prazo_resposta_interessados']
 
     class Media:
             js = ['/static/base/js/solicitacao.js']
@@ -304,6 +305,9 @@ class SolicitacaoForm(forms.ModelForm):
     def clean(self):
         if not self.instance.pk and self.cleaned_data.get('num_memorando') and SolicitacaoLicitacao.objects.filter(num_memorando=self.cleaned_data.get('num_memorando'), setor_origem__secretaria=self.request.user.pessoafisica.setor.secretaria).exists():
             self.add_error('num_memorando', u'Já existe uma solicitação para este memorando.')
+
+        if self.cleaned_data.get('contratacao_global') and not self.cleaned_data.get('numero_meses_contratacao_global'):
+            self.add_error('numero_meses_contratacao_global', u'Informe o número de meses.')
 
 
 class EditarItemSolicitacaoLicitacaoForm(forms.ModelForm):

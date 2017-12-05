@@ -373,7 +373,8 @@ class SolicitacaoLicitacao(models.Model):
     contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
     credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao')
     termo_inexigibilidade = models.FileField(u'Termo de Inexigibilidade', null=True, blank=True, upload_to=u'upload/minutas/')
-
+    contratacao_global = models.BooleanField(u'Contratação Global (Com pagamentos mensais fixos)', default=False)
+    numero_meses_contratacao_global = models.IntegerField(u'Informe o Número de Meses do Contrato', null=True)
 
 
     def __unicode__(self):
@@ -1454,7 +1455,7 @@ class Pregao(models.Model):
     recurso_federal = models.CharField(u'Recurso Transferido (Federal)', max_length=20, null=True, blank=True)
     recurso_estadual = models.CharField(u'Recurso Transferido (Estadual)', max_length=20, null=True, blank=True)
     recurso_municipal = models.CharField(u'Recurso Transferido (Municipal)', max_length=20, null=True, blank=True)
-    
+
 
 
     class Meta:

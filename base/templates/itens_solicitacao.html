@@ -188,7 +188,7 @@
                         <td>{{ solicitacao.processo }}</td>
                     {% endif %}
                     <td>{{ solicitacao.objeto|truncatechars:250  }}</td>
-                    <td>{{ solicitacao.tipo_aquisicao }}</td>
+                    <td>{{ solicitacao.tipo_aquisicao }} {% if solicitacao.contratacao_global %}(Contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses){% endif %}</td>
                     <td>{{ solicitacao.data_cadastro|date:'d/m/Y H:i' }} ({{ solicitacao.cadastrado_por }})</td>
                     <td>{{ solicitacao.get_situacao }}</td>
                     {% if perms.base.pode_ver_minuta %}
