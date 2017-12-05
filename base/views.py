@@ -2867,13 +2867,18 @@ def relatorio_economia(request, pregao_id):
             total_final_geral = total_final_geral + result[1]['total']
             total_economizado_geral = total_economizado_geral + result[1]['total_final']
 
-    
+    eh_global = pregao.solicitacao.contratacao_global
+    if eh_global:
+        total_previsto_geral = total_previsto_geral * pregao.solicitacao.numero_meses_contratacao_global
+        total_final_geral = total_final_geral * pregao.solicitacao.numero_meses_contratacao_global
+        total_economizado_geral = total_economizado_geral * pregao.solicitacao.numero_meses_contratacao_global
+
     reducao = total_final_geral / total_previsto_geral
     ajuste= 1-reducao
     total_desconto_geral = u'%s%%' % (ajuste.quantize(TWOPLACES) * 100)
 
     mostrou=False
-    data = {'mostrou': mostrou, 'total_previsto_geral':total_previsto_geral, 'total_final_geral': total_final_geral, 'total_desconto_geral':total_desconto_geral, 'total_economizado_geral':total_economizado_geral, 'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'mostrou': mostrou, 'total_previsto_geral':total_previsto_geral, 'eh_global': eh_global, 'total_final_geral': total_final_geral, 'total_desconto_geral':total_desconto_geral, 'total_economizado_geral':total_economizado_geral, 'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_economia.html')
 
@@ -2908,7 +2913,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
     eh_maior_desconto = pregao.eh_maior_desconto()
     tabela = {}
     total = {}
-
+    eh_global = pregao.solicitacao.contratacao_global
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     else:
@@ -2918,7 +2923,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
     for num in chaves:
         fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
         chave = u'%s' % fornecedor
-        tabela[chave] = dict(lance = list(), total = 0)
+        tabela[chave] = dict(lance = list(), total = 0, total_global=0)
 
     for item in itens_pregao.order_by('item'):
         if item.get_vencedor():
@@ -2930,12 +2935,14 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
             else:
                 valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
+            if eh_global:
+                tabela[chave]['total_global'] = tabela[chave]['total_global'] + (valor*pregao.solicitacao.numero_meses_contratacao_global)
 
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    data = {'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'eh_global': eh_global, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_resultado_final_por_vencedor.html')
 
@@ -4299,6 +4306,7 @@ def termo_adjudicacao(request, pregao_id):
     eh_desconto = pregao.eh_maior_desconto()
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
 
+
     if eh_lote:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     else:
@@ -4319,6 +4327,7 @@ def termo_adjudicacao(request, pregao_id):
                 texto += u'%s (Desconto de %s)' % (item.item, item.get_vencedor().get_valor())
             else:
                 texto = item.item
+
             tabela[chave]['itens'].append(texto)
             valor = tabela[chave]['total']
             if pregao.eh_maior_desconto():
@@ -4332,6 +4341,11 @@ def termo_adjudicacao(request, pregao_id):
     for item in tabela:
         total_geral = total_geral + tabela[item]['total']
 
+    eh_global = pregao.solicitacao.contratacao_global
+    if eh_global:
+        total_geral = total_geral * pregao.solicitacao.numero_meses_contratacao_global
+
+
     fracassados = list()
     for item in itens_pregao.filter(situacao=ItemSolicitacaoLicitacao.FRACASSADO):
         fracassados.append(item.item)
@@ -4339,7 +4353,7 @@ def termo_adjudicacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo,  'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'eh_global': eh_global, 'logo': logo,  'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
 
     template = get_template('termo_adjudicacao.html')
 
@@ -5731,6 +5745,10 @@ def termo_homologacao(request, pregao_id):
     for item in tabela:
         total_geral = total_geral + tabela[item]['total']
 
+    eh_global = pregao.solicitacao.contratacao_global
+    if eh_global:
+        total_geral = total_geral * pregao.solicitacao.numero_meses_contratacao_global
+
     fracassados = list()
     for item in itens_pregao.filter(situacao=ItemSolicitacaoLicitacao.FRACASSADO):
         fracassados.append(item.item)
@@ -5738,7 +5756,7 @@ def termo_homologacao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
-    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
+    data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo,  'eh_global': eh_global, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
     if pregao.eh_pregao():
         template = get_template('termo_homologacao.html')
     else:
@@ -5770,6 +5788,7 @@ def visualizar_contrato(request, solicitacao_id):
     pode_liberar_para_pedido = True
     if contrato.solicitacao.get_pregao() and contrato.solicitacao.get_pregao().tipo_desconto and contrato.solicitacao.get_pregao().tipo_desconto.id == TipoPregaoDesconto.TABELA:
         pode_liberar_para_pedido = False
+    eh_global = contrato.solicitacao.contratacao_global
 
     return render(request, 'visualizar_contrato.html', locals(), RequestContext(request))
 

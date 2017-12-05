@@ -70,7 +70,12 @@ ul{
 
                     <table border="1" align="center" width="95%" cellpadding="5" cellspacing="5">
                         <tr>
-                            <th colspan="4"><font size="6">Demonstrativo Final</font></th>
+                            <th colspan="4">
+                                <font size="6">Demonstrativo Final</font>
+                                {% if eh_global %}
+                                    <h3>Contratação Global: {{ pregao.solicitacao.numero_meses_contratacao_global }} meses </h3>
+                                {% endif %}
+                            </th>
                         </tr>
                         <tr>
                             <td>Total Previsto: <b>R$ {{ total_previsto_geral|format_money }}</b></td>

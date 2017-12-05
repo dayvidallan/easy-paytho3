@@ -92,7 +92,11 @@ ul{
             de <b>R$ {{itens.total|format_money}}</b>,
         {% endfor %}
 
-        totalizando o valor global, para fins de contratação,
+        totalizando o valor global,
+        {% if eh_global %}
+            no período de {{ pregao.solicitacao.numero_meses_contratacao_global }} meses,
+        {% endif %}
+        para fins de contratação,
         de <b>R$ {{ total_geral|format_money }}</b>,
 
 

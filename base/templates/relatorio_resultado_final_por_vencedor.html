@@ -79,6 +79,9 @@ ul{
                                     <th width="20%">Desconto</th>
                                 {% endif %}
                                 <th width="20%">Total</th>
+                                {% if eh_global %}
+                                    <th>Total Geral (R$)<br><small>contratação global: {{ pregao.solicitacao.numero_meses_contratacao_global }} meses</small></th>
+                                {% endif %}
 
 
                             </tr>
@@ -99,6 +102,9 @@ ul{
                                         {% else %}
                                             <td>{{ registro.get_valor_unitario_final|format_money }}</td>
                                             <td>R$ {{ registro.get_valor_item_lote|format_money  }}</td>
+                                        {% endif %}
+                                        {% if eh_global %}
+                                            <td align="right" width="15%">{{ registro.get_total_contratacao_global_lote|format_money }}</td>
                                         {% endif %}
 
 
@@ -130,6 +136,9 @@ ul{
                                     <th width="20%">Valor Unit.</th>
                                     <th width="20%">Total</th>
                                 {% endif %}
+                                {% if eh_global %}
+                                    <th>Total Geral (R$)<br><small>contratação global: {{ pregao.solicitacao.numero_meses_contratacao_global }} meses</small></th>
+                                {% endif %}
 
                             </tr>
                         </thead>
@@ -147,13 +156,21 @@ ul{
                                     {% else %}
                                         <td>{{ item.get_vencedor.get_valor }}</td>
                                         <td>R$ {{ item.get_total_lance_ganhador|format_money  }}</td>
-                                   {% endif %}
+                                    {% endif %}
+                                    {% if eh_global %}
+                                        <td align="right" width="15%">R$ {{ item.get_total_contratacao_global_lance|format_money }}</td>
+                                    {% endif %}
 
 
                                 </tr>
                             {% endfor %}
                             {% if not eh_maior_desconto %}
-                                <tr><td colspan="2" align="right"><b>Total</b></td><td colspan="4"><b>R$ {{ lances.total|format_money }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                                <tr>
+                                    <td colspan="2" align="right"><b>Total</b></td><td colspan="4"><b>R$ {{ lances.total|format_money }} ({{ lances.total|format_numero_extenso }})</b></td>
+                                    {% if eh_global %}
+                                        <td align="right" width="15%"><b>R$ {{ lances.total_global|format_money  }} ({{ lances.total_global|format_numero_extenso }})</b></td>
+                                    {% endif %}
+                                </tr>
                             {% endif %}
                         </tbody>
                     </table>

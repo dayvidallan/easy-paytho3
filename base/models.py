@@ -2880,6 +2880,8 @@ class Contrato(models.Model):
         if Aditivo.objects.filter(contrato=self).exists():
             if self.pregao and self.pregao.solicitacao.contratacao_global:
                 return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual * self.pregao.solicitacao.numero_meses_contratacao_global
+            elif  self.solicitacao and self.solicitacao.contratacao_global:
+                return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual * self.solicitacao.numero_meses_contratacao_global
             else:
                 return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual
 
