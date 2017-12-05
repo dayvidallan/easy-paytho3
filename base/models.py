@@ -2882,8 +2882,8 @@ class Contrato(models.Model):
         valor_a_retornar = self.get_valor_aditivado()
         if Aditivo.objects.filter(contrato=self).exists():
             valor_a_retornar = Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual
-        if self.solicitacao.contratacao_global:
-            valor_a_retornar = valor_a_retornar * self.solicitacao.numero_meses_contratacao_global
+            if self.solicitacao.contratacao_global:
+                valor_a_retornar = valor_a_retornar * self.solicitacao.numero_meses_contratacao_global
         return valor_a_retornar
 
     def get_aditivo_permitido_valor(self):
