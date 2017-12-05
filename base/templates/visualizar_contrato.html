@@ -221,7 +221,7 @@
                 <td>{{ contrato.data_inicio }}</td>
                 <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
                 <td>{{ contrato.get_valor_aditivado|format_money }}</td>
-                <td>{{ contrato.get_valor_total_com_aditivos|format_money }} {% if eh_global %}Contratação global: {{ contrato.solicitacao.numero_meses_contratacao_global }} meses{% endif %}</td>
+                <td>{{ contrato.get_valor_total_com_aditivos|format_money }} {% if eh_global %}(Contratação global: {{ contrato.solicitacao.numero_meses_contratacao_global }} meses){% endif %}</td>
                 <td>{{ contrato.get_total_indices_aditivos }}%</td>
                 <td>{{ contrato.get_situacao }}</td>
             </tr>
