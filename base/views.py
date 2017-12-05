@@ -1745,6 +1745,17 @@ def cadastrar_anexo_pregao(request, pregao_id):
                     texto = u'Olá, %s. O arquivo %s foi adicionado no portal da transparência da %s. Endereço para visualização: %s ' % (registro.responsavel, arquivo_nome, config.nome, link)
                     send_mail('Easy Gestão Pública - Novo Arquivo Cadastrado', texto, settings.EMAIL_HOST_USER, [registro.email], fail_silently=True)
 
+
+            if form.cleaned_data.get('enviar_email_participantes'):
+                registros = ParticipantePregao.objects.filter(pregao=pregao)
+                config = get_config_geral()
+                arquivo_nome = u'\'%s\' - %s' % (o.nome, pregao)
+                link = config.url + u'/base/baixar_editais/'
+
+                for registro in registros:
+                    texto = u'Olá, %s. O arquivo %s foi adicionado no portal da transparência da %s. Endereço para visualização: %s ' % (registro.fornecedor.razao_social, arquivo_nome, config.nome, link)
+                    send_mail('Easy Gestão Pública - Novo Arquivo Cadastrado', texto, settings.EMAIL_HOST_USER, [registro.fornecedor.email], fail_silently=True)
+
             messages.success(request, u'Anexo cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/pregao/%s/#anexos' % pregao.id)
 

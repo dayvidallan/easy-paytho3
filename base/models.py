@@ -1454,6 +1454,7 @@ class Pregao(models.Model):
     recurso_federal = models.CharField(u'Recurso Transferido (Federal)', max_length=20, null=True, blank=True)
     recurso_estadual = models.CharField(u'Recurso Transferido (Estadual)', max_length=20, null=True, blank=True)
     recurso_municipal = models.CharField(u'Recurso Transferido (Municipal)', max_length=20, null=True, blank=True)
+    
 
 
     class Meta:
