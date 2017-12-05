@@ -2874,18 +2874,17 @@ class Contrato(models.Model):
         for aditivo in self.aditivos_set.filter(tipo=Aditivo.REAJUSTE_FINANCEIRO):
             if aditivo.de_valor and aditivo.valor: # evita NoneType em aditivo.valor
                 total += aditivo.valor
+        if self.solicitacao.contratacao_global:
+            total = total * self.solicitacao.numero_meses_contratacao_global
         return total
 
     def get_valor_total_com_aditivos(self):
+        valor_a_retornar = self.get_valor_aditivado()
         if Aditivo.objects.filter(contrato=self).exists():
-            if self.pregao and self.pregao.solicitacao.contratacao_global:
-                return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual * self.pregao.solicitacao.numero_meses_contratacao_global
-            elif  self.solicitacao and self.solicitacao.contratacao_global:
-                return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual * self.solicitacao.numero_meses_contratacao_global
-            else:
-                return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual
-
-        return self.get_valor_aditivado()
+            valor_a_retornar = Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].valor_atual
+        if self.solicitacao.contratacao_global:
+            valor_a_retornar = valor_a_retornar * self.solicitacao.numero_meses_contratacao_global
+        return valor_a_retornar
 
     def get_aditivo_permitido_valor(self):
         total_valor = 0

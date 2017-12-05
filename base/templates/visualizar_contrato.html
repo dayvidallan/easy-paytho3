@@ -285,6 +285,9 @@
                                         <tr>
                                             <th>Item</th>
                                             <th>Material/Serviço</th>
+                                            {% if eh_global %}
+                                                <th>Meses</th>
+                                            {% endif %}
                                             <th>Marca</th>
                                             <th>Unidade</th>
                                             <th>Valor Unitário</th>
@@ -307,6 +310,9 @@
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>{{ opcao.material|truncatechars:500 }}</td>
 
+                                                {% endif %}
+                                                {% if eh_global %}
+                                                    <td>{{ contrato.solicitacao.numero_meses_contratacao_global }}</td>
                                                 {% endif %}
                                                 <td>{{ opcao.marca|default_if_none:"-" }}</td>
                                                 <td>{{ opcao.unidade|default_if_none:"-" }}</td>
