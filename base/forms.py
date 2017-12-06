@@ -479,7 +479,7 @@ class DefinirColocacaoForm(forms.ModelForm):
 
 class AnexoPregaoForm(forms.ModelForm):
     enviar_email = forms.BooleanField(label=u'Enviar email para fornecedores informando que um novo arquivo foi anexado?', help_text=u'O email só será enviado se o documento também for marcado como público', required=False)
-    enviar_email_participantes = forms.BooleanField(label=u'Enviar email apenas para os participantes do pregão?', required=False)
+    enviar_email_participantes = forms.BooleanField(label=u'Enviar email apenas para os participantes da licitação?', required=False)
     class Meta:
         model = AnexoPregao
         fields = ['nome', 'data', 'arquivo', 'publico']
