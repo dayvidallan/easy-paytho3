@@ -15,33 +15,9 @@ $(function() {
     $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
 });
 </script>
-<script type="text/javascript">// <![CDATA[
-        function loading(){
-            $("#loading").show();
-            $("#texto").show();
-        }
-// ]]>
-</script>
-{% endblock %}
-{% block extrastyle %}
-    <style>
-    div#loading {
-    width: 35px;
-    height: 35px;
-    display: none;
-    background: url(/static/base/css/images/ajax-loader.gif) no-repeat;
-    cursor: wait;
-    }
-    div#texto {
-    width: 200px;
-    height: 80px;
-    display: none;
-    }
-    </style>
 {% endblock %}
 {% block content %}
-        <div id="texto"><h2>Enviando emails...</h2></div><div id="loading"></div>
-        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data" >
+        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">
 				<div class="row-fluid">
@@ -50,7 +26,7 @@ $(function() {
                     </div>
 		        </div>
                 <div class="controls">
-                    <button type="submit" class="btn btn-primary" onclick="loading();">Cadastrar</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </div>
 
              </div>

@@ -1075,7 +1075,7 @@ def cadastrar_material(request, solicitacao_id):
         messages.success(request, u'Material %s cadastrado com sucesso.' % form.instance)
         return HttpResponseRedirect(u'/base/cadastrar_item_solicitacao/%s/' % solicitacao_id)
 
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'base_template_form.html', locals(), RequestContext(request))
 
 @login_required()
 def cadastrar_documento(request, solicitacao_id):
@@ -5662,7 +5662,7 @@ def registrar_adjudicacao(request, pregao_id):
             o.save()
             messages.success(request, u'Data de adjudicação registrada com sucesso.')
             return HttpResponseRedirect(u'/base/pregao/%s/#homologacao' % pregao.id)
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -5682,7 +5682,7 @@ def registrar_homologacao(request, pregao_id):
             o.save()
             messages.success(request, u'Data de homologação registrada com sucesso. Prossiga com o envio do termo assinado')
             return HttpResponseRedirect(u'/base/upload_termo_homologacao/%s/' % pregao.id)
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -6571,7 +6571,7 @@ def registrar_ocorrencia_pregao(request, pregao_id):
             o.save()
             messages.success(request, u'Ocorrência registrada com sucesso.')
             return HttpResponseRedirect(u'/pregao/%s/' % pregao.id)
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -7508,7 +7508,7 @@ def editar_valor_final(request, item_id, pregao_id):
                 return HttpResponseRedirect(u'/base/pregao/%s/?participante=%s#classificacao' % (pregao.id, form.cleaned_data.get('participante_id')))
             else:
                 return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -7672,7 +7672,7 @@ def cadastrar_material_arp(request, ata_id):
             form.save()
             messages.success(request, u'Item da ata cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/adicionar_item_adesao_arp/%s/' % ata_id)
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -7739,7 +7739,7 @@ def revogar_pregao(request, pregao_id):
 
             messages.success(request, u'Pregão revogado com sucesso.')
             return HttpResponseRedirect(u'/base/pregao/%s/' % pregao.id)
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -7813,7 +7813,7 @@ def cadastrar_variaveis_configuracao(request):
             form.save()
             messages.success(request, u'Variáveis de configuração com sucesso.')
             return HttpResponseRedirect(u'/base/ver_variaveis_configuracao/')
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -7852,7 +7852,7 @@ def editar_item_pedido(request, pedido_id, tipo):
                 return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' %  pedido.solicitacao.id)
         else:
             raise PermissionDenied
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'base_template_form.html', locals(), RequestContext(request))
 
 
 
@@ -8491,7 +8491,7 @@ def cadastrar_cnaes_secundario(request, crc_id):
             messages.success(request, u'CNAES Secundário cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
 
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -8507,7 +8507,7 @@ def editar_cnaes_secundario(request, item_id):
             messages.success(request, u'CNAES Secundário editado com sucesso.')
             return HttpResponseRedirect(u'/base/ver_crc/%s/' % item.crc.fornecedor.id)
 
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -8536,7 +8536,7 @@ def editar_socio(request, item_id):
             messages.success(request, u'Sócio editado com sucesso.')
             return HttpResponseRedirect(u'/base/ver_crc/%s/' % item.crc.fornecedor.id)
 
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
@@ -8568,7 +8568,7 @@ def cadastrar_socio(request, crc_id):
             messages.success(request, u'Sócio com sucesso.')
             return HttpResponseRedirect(u'/base/ver_crc/%s/' % crc.fornecedor.id)
 
-        return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+        return render(request, 'base_template_form.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 
