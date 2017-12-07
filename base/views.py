@@ -1729,6 +1729,7 @@ def cadastrar_anexo_pregao(request, pregao_id):
         title=u'Cadastrar Anexo - %s' % pregao
         form = AnexoPregaoForm(request.POST or None, request.FILES or None)
         if form.is_valid():
+
             o = form.save(False)
             o.pregao = pregao
             o.cadastrado_por = request.user

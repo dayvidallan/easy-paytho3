@@ -17,8 +17,10 @@ $(function() {
 </script>
 <script type="text/javascript">// <![CDATA[
         function loading(){
-            $("#loading").show();
-            $("#texto").show();
+            if ($('#id_enviar_email').is(':checked') || $('#id_enviar_email_participantes').is(':checked')) {
+                $("#loading").show();
+                $("#texto").show();
+            }
         }
 // ]]>
 </script>
@@ -40,7 +42,9 @@ $(function() {
     </style>
 {% endblock %}
 {% block content %}
+
         <div id="texto"><h2>Enviando emails...</h2></div><div id="loading"></div>
+
         <form action="." method="post" class="form-horizontal" enctype="multipart/form-data" >
             {% csrf_token %}
              <div class="miolo">
