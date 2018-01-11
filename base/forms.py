@@ -278,6 +278,7 @@ class SolicitacaoForm(forms.ModelForm):
     interessados = forms.ModelMultipleChoiceField(Secretaria.objects, label=u'Interessados', required=False, widget=autocomplete.ModelSelect2Multiple(url='secretaria-autocomplete'))
     todos_interessados = forms.BooleanField(label=u'Selecionar Todos como Interessados', initial=False, required=False)
     prazo_resposta_interessados = forms.DateField(label=u'Prazo para retorno dos interessados', widget=AdminDateWidget(), required=False)
+    numero_meses_contratacao_global = forms.IntegerField(label=u'Informe o Número de Meses do Contrato', required=False)
     class Meta:
         model = SolicitacaoLicitacao
         fields = ['num_memorando', 'objeto','objetivo','justificativa', 'contratacao_global', 'numero_meses_contratacao_global', 'tipo_aquisicao', 'tipo', 'outros_interessados', 'interessados', 'todos_interessados',  'prazo_resposta_interessados']
