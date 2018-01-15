@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^solicitacoes_do_setor/$', views.solicitacoes_do_setor, name='solicitacoes_do_setor'),
     url(r'^outras_solicitacoes/$', views.outras_solicitacoes, name='outras_solicitacoes'),
     url(r'^busca_tipo_pregao/$', views.busca_tipo_pregao, name='busca_tipo_pregao'),
-
+    url(r'^lista_fornecedores/$', views.lista_fornecedores, name='lista_fornecedores'),
 
 
     url(r'^modelos_atas/(?P<pregao_id>\d+)/$', views.modelos_atas, name='modelos_atas'),

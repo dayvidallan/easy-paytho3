@@ -10414,3 +10414,34 @@ def busca_tipo_pregao(request):
             data = []
 
         return HttpResponse(data, content_type='application/json')
+
+@login_required()
+def lista_fornecedores(request):
+    fornecedores = Fornecedor.objects.all().order_by('razao_social')
+    configuracao = get_config_geral()
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/fornecedores.pdf'
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+
+    data = {'fornecedores':fornecedores,  'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+    template = get_template('lista_fornecedores.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+

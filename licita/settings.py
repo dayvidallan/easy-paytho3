@@ -158,6 +158,7 @@ SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestao
 
 DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = ['base.MaterialConsumo', ]
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 try:
     from settings_base import *
