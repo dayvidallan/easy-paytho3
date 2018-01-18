@@ -1568,11 +1568,16 @@ class Pregao(models.Model):
         if pregao.eh_pregao():
             return False
 
+        participantes_excluidos = None
+        if ResultadoItemPregao.objects.filter(participante__pregao=pregao, situacao__in=[ResultadoItemPregao.INABILITADO, ResultadoItemPregao.DESCLASSIFICADO]).exists():
+            participantes_excluidos = ResultadoItemPregao.objects.filter(participante__pregao=pregao, situacao__in=[ResultadoItemPregao.INABILITADO, ResultadoItemPregao.DESCLASSIFICADO]).values_list('participante', flat=True)
+
+
         tabela = {}
-        for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+        for proposta in PropostaItemPregao.objects.filter(pregao=pregao).exclude(participante__in=participantes_excluidos):
             chave= '%s' %  proposta.participante.id
             tabela[chave] = dict(total = 0)
-        for proposta in PropostaItemPregao.objects.filter(pregao=pregao):
+        for proposta in PropostaItemPregao.objects.filter(pregao=pregao).exclude(participante__in=participantes_excluidos):
             chave= '%s' %  proposta.participante.id
 
             tabela[chave]['total'] += proposta.valor
@@ -1583,11 +1588,11 @@ class Pregao(models.Model):
         tem_empate_ficto = False
         total_global_vencedor = 0.00
         ganhador_eh_beneficiario = False
-
+        
         while indice < total:
             fornecedor = ParticipantePregao.objects.get(id=resultado[indice][0])
             if indice == 0:
-                total_global_vencedor = int(resultado[indice][0])
+                total_global_vencedor = int(resultado[indice][1]['total'])
                 ganhador_eh_beneficiario = fornecedor.me_epp
 
             elif not tem_empate_ficto and not ganhador_eh_beneficiario:
