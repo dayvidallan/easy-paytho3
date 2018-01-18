@@ -1574,10 +1574,13 @@ class Pregao(models.Model):
 
 
         tabela = {}
-        for proposta in PropostaItemPregao.objects.filter(pregao=pregao).exclude(participante__in=participantes_excluidos):
+        propostas = PropostaItemPregao.objects.filter(pregao=pregao)
+        if participantes_excluidos:
+            propostas = propostas.exclude(participante__in=participantes_excluidos)
+        for proposta in propostas:
             chave= '%s' %  proposta.participante.id
             tabela[chave] = dict(total = 0)
-        for proposta in PropostaItemPregao.objects.filter(pregao=pregao).exclude(participante__in=participantes_excluidos):
+        for proposta in propostas:
             chave= '%s' %  proposta.participante.id
 
             tabela[chave]['total'] += proposta.valor
@@ -1588,7 +1591,7 @@ class Pregao(models.Model):
         tem_empate_ficto = False
         total_global_vencedor = 0.00
         ganhador_eh_beneficiario = False
-        
+
         while indice < total:
             fornecedor = ParticipantePregao.objects.get(id=resultado[indice][0])
             if indice == 0:
