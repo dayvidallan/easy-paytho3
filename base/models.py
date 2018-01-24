@@ -787,6 +787,12 @@ class ItemSolicitacaoLicitacao(models.Model):
                         return total
         return False
 
+    def tem_empate_propostas(self):
+        if PropostaItemPregao.objects.filter(item=self).exists():
+            for proposta in PropostaItemPregao.objects.filter(item=self):
+                if PropostaItemPregao.objects.filter(item=self, valor=proposta.valor).exclude(id=proposta.id).exists():
+                    return True
+        return False
 
     def get_valor_final_desconto(self):
         if self.get_licitacao().tipo.id == TipoPregao.MENOR_PRECO and self.get_vencedor():

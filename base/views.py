@@ -10456,7 +10456,7 @@ def sortear_inicio_lances(request, item_id):
     eh_maior_desconto = pregao.eh_maior_desconto()
 
 
-    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor) and not item.tem_rodada_aberta():
         fornecedores_lance = PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
         if request.POST:
             ordenar = request.POST.getlist('ordens')
