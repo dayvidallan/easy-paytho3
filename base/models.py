@@ -991,9 +991,9 @@ class ItemSolicitacaoLicitacao(models.Model):
 
         else:
             if eh_maior_desconto:
-                participantes_por_ordem = PropostaItemPregao.objects.filter(item=self, concorre=True).order_by('valor')
+                participantes_por_ordem = PropostaItemPregao.objects.filter(item=self, concorre=True).order_by('valor', 'ordem_inicio')
             else:
-                participantes_por_ordem = PropostaItemPregao.objects.filter(item=self, concorre=True).order_by('-valor')
+                participantes_por_ordem = PropostaItemPregao.objects.filter(item=self, concorre=True).order_by('-valor', 'ordem_inicio')
         deu_preco = PropostaItemPregao.objects.filter(item=self).values_list('participante',flat=True)
         declinados = LanceItemRodadaPregao.objects.filter(item=self, declinio=True).values_list('participante',flat=True)
         participantes_por_ordem = participantes_por_ordem.exclude(participante__in=declinados)
@@ -1010,6 +1010,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_rodada_atual(self):
         return RodadaPregao.objects.filter(item=self, pregao=self.get_licitacao(), atual=True)[0]
+
 
     def get_valor_medio_pesquisa(self):
         registros = ItemPesquisaMercadologica.objects.filter(item=self, rejeitado_por__isnull=True)
@@ -1874,6 +1875,7 @@ class PropostaItemPregao(models.Model):
     motivo_desistencia= models.CharField(u'Motivo da Desistência', max_length=2000, null=True, blank=True)
     concorre = models.BooleanField(u'Concorre', default=True)
     valor_item_lote = models.DecimalField(u'Valor do Item do Lote', max_digits=20, decimal_places=2, null=True, blank=True)
+    ordem_inicio = models.PositiveIntegerField(u'Ordem do Lance', default=0)
 
 
     class Meta:

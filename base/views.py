@@ -8877,6 +8877,7 @@ def salvar_sorteio_item_pregao(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
     pregao = item.solicitacao.get_pregao()
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+
         ordenar = request.POST.getlist('ordens')
         if ordenar:
             if len(ordenar) != len(set(ordenar)):
@@ -10446,3 +10447,32 @@ def lista_fornecedores(request):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
+@login_required()
+def sortear_inicio_lances(request, item_id):
+
+    item = get_object_or_404(ItemSolicitacaoLicitacao, pk= item_id)
+    title = u'Definir Ordem dos Lances - %s' % item
+    pregao = item.solicitacao.get_pregao()
+    eh_maior_desconto = pregao.eh_maior_desconto()
+
+
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        fornecedores_lance = PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor')
+        if request.POST:
+            ordenar = request.POST.getlist('ordens')
+            if ordenar:
+                if len(ordenar) != len(set(ordenar)):
+                    messages.error(request, u'Não é permitido ter duas ou mais empresas com a mesma colocação.')
+                    return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+                lista = list()
+                for proposta in PropostaItemPregao.objects.filter(item=item, concorre=True).order_by('-concorre', 'desclassificado','desistencia', 'valor'):
+                    lista.append(proposta)
+                for idx, ordem_informada in enumerate(ordenar, 0):
+                    if ordem_informada:
+                        ordem_da_proposta = PropostaItemPregao.objects.get(participante=lista[idx].participante, item=lista[idx].item)
+                        ordem_da_proposta.ordem_inicio = int(ordem_informada)
+                        ordem_da_proposta.save()
+                messages.success(request, u'Ordem do sorteio dos lances salva com sucesso.')
+                return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
+
+    return render(request, 'sortear_inicio_lances.html', locals(), RequestContext(request))

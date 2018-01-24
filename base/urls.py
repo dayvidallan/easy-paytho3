@@ -303,6 +303,8 @@ urlpatterns = [
     url(r'^apagar_item_arp/(?P<item_id>\d+)/$', views.apagar_item_arp, name='apagar_item_arp'),
     url(r'^cadastrar_certidao_crc/(?P<crc_id>\d+)/$', views.cadastrar_certidao_crc, name='cadastrar_certidao_crc'),
 
+    url(r'^sortear_inicio_lances/(?P<item_id>\d+)/$', views.sortear_inicio_lances, name='sortear_inicio_lances'),
+
 
 
     url(r'^localizar_processo/$', views.localizar_processo, name='localizar_processo'),

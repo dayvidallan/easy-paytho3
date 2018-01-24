@@ -11,6 +11,9 @@
                     {% if not item.eh_ativo %}
                         <a href="/base/ativar_item_pregao/{{ item.id }}/" class="btn btn-success" align="right">Ativar Item</a>
                     {% endif %}
+                    {% if not item.tem_rodada_aberta %}
+                        <a href="/base/sortear_inicio_lances/{{ item.id }}/" class="btn btn-success" align="right">Sorteio (Lances)</a>
+                    {% endif %}
                     {% if item.tem_rodada_aberta and item.eh_ativo and item.ativo %}
                         <a href="/base/cancelar_rodada/{{ item.id }}/" class="btn btn-danger" align="right">Cancelar Rodada</a>
                     {% endif %}
@@ -149,8 +152,9 @@
                                                     <a href="/base/lances_item/{{item.id}}/?filtrar=1&incluir=1" class="btn btn-default btn-sm">Incluir Fornecedor</a>
                                                 </td>
                                             {% endif %}
+
                                             <td>
-                                                <a href="/base/lances_item/{{item.id}}/?sorteio=1" class="btn btn-default btn-sm">Sorteio</a>
+                                                <a href="/base/lances_item/{{item.id}}/?sorteio=1" class="btn btn-default btn-sm">Sorteio (Resultado)</a>
                                             </td>
                                         {% endif %}
 
@@ -182,7 +186,7 @@
                     {% for preco in fornecedores_lance %}
                         <tr>
                             {% if sorteio %}
-                            <td><INPUT type="number" NAME="ordens" value="{{ preco.get_resultado_participante_item }}"> </td>
+                                <td><INPUT type="number" NAME="ordens" value="{{ preco.get_resultado_participante_item }}"> </td>
                             {% endif %}
                             <td>
                                 {% if not preco.concorre %}

@@ -1,0 +1,65 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block content %}
+
+    <form method="POST" id="bolsas_form" action=".">
+        {% csrf_token %}
+        <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Ordem</th>
+
+                    <th>Fornecedor</th>
+                    {% if eh_maior_desconto %}
+                        <th>Desconto</th>
+                    {% else %}
+                        <th>Valor</th>
+                    {% endif %}
+                    <th>ME/EPP</th>
+
+                </tr>
+
+            </thead>
+            <tbody>
+                {% for preco in fornecedores_lance %}
+                    <tr>
+
+                        <td><INPUT type="number" NAME="ordens" value="{{ preco.get_resultado_participante_item }}"> </td>
+                        <td>
+                            {% if not preco.concorre %}
+                                {% if preco.desclassificado or preco.desistencia %}
+                                    <font color="red">{{ preco.participante }}</font>
+                                {% else %}
+                                    <font color="orange">{{ preco.participante }}</font>
+                                {% endif %}
+                            {% else %}
+                                {{ preco.participante }}
+                            {% endif %}
+                        </td>
+                        {% if eh_maior_desconto %}
+                            <td width="15%">{{ preco.valor }}%</td>
+                        {% else %}
+                            <td width="15%">{{ preco.valor|format_money }}</td>
+                        {% endif %}
+                        <td>{% if preco.participante.me_epp %}
+                                <font color="green">Sim</font>
+                            {% else %}
+                                <font color="red">Não</font>
+                            {% endif %}
+                        </td>
+
+
+                    </tr>
+
+                {% endfor %}
+                <tr>
+                    <td colspan="4"><input type="submit" class="btn btn-success"></td>
+                </tr>
+
+
+            </tbody>
+        </table>
+    </form>
+{% endblock %}
