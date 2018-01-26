@@ -78,7 +78,7 @@ ul{
         originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.objeto}}</b>,
 
         , e em consequência, adjudicar o objeto do referido certame em favor da empresa
-        {{ pregao.get_vencedora_global }} como VENCEDORA do certame, no valor total de <b>R$ {{ total_geral|format_money }}</b>, respeitado os valores máximos indicados, tendo em vista o tipo da licitação.
+        {{ pregao.get_vencedora_global }} como VENCEDORA do certame, no valor total de <b>R$ {{ total_geral|format_money }} ({{ total_geral|format_numero_extenso }})</b>, respeitado os valores máximos indicados, tendo em vista o tipo da licitação.
 
 
     <center>

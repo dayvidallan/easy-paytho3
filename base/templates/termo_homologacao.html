@@ -89,7 +89,7 @@ ul{
                 ITENS <b>{{itens.itens }}</b>,
             {% endif %}
             no valor total
-            de <b>R$ {{itens.total|format_money}}</b>,
+            de <b>R$ {{itens.total|format_money }} ({{ itens.total|format_numero_extenso }})</b>,
         {% endfor %}
 
         totalizando o valor global,
@@ -97,7 +97,7 @@ ul{
             no período de {{ pregao.solicitacao.numero_meses_contratacao_global }} meses,
         {% endif %}
         para fins de contratação,
-        de <b>R$ {{ total_geral|format_money }}</b>,
+        de <b>R$ {{ total_geral|format_money }} ({{ total_geral|format_numero_extenso }})</b>,
 
 
         respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de <b>{{pregao.tipo}} {{pregao.criterio}}</b>,
@@ -107,7 +107,7 @@ ul{
 
     <center>
         <br><br>
-        {{config_geral.municipio}}, {{ pregao.data_homologacao }}
+        {{ config_geral.municipio }}, {{ pregao.data_homologacao }}
 
 
         <br><br>
