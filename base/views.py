@@ -619,7 +619,7 @@ def lances_item(request, item_id):
 
 
             if not eh_maior_desconto:
-                if int(rodada_atual.rodada) == 1 and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.filter(item=item, participante=participante)[0].valor:
+                if int(rodada_atual.rodada) == 1 and PropostaItemPregao.objects.filter(item=item, participante=participante).exists() and form.cleaned_data.get('lance') >= PropostaItemPregao.objects.filter(item=item, participante=participante)[0].valor:
                     messages.error(request, u'Você não pode dar um lance maior do que sua proposta.')
 
                     if tem_empate_beneficio:
@@ -1606,6 +1606,8 @@ def resultado_alterar_todos(request, pregao_id, participante_id, situacao):
 
             elif situacao == u'3':
                 ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, participante=participante).update(situacao=ResultadoItemPregao.CLASSIFICADO, observacoes=form.cleaned_data.get('motivo'))
+                participante.excluido_dos_itens = False
+                participante.save()
 
             historico = HistoricoPregao()
             historico.pregao = pregao
