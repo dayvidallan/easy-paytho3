@@ -6077,9 +6077,9 @@ def termo_referencia(request, solicitacao_id):
     tempXmlStr = tmp_xml_file.read()
     tmp_xml_file.close()
     os.unlink(tmp_xml_file.name)
-
+    from django.utils.html import strip_tags
     for key in dicionario.keys():
-        value = unicode(dicionario.get(key)).encode("utf8")
+        value = unicode(strip_tags(dicionario.get(key))).encode("utf-8", "replace")
         tempXmlStr = tempXmlStr.replace(key, value)
 
     tmp_xml_file =  open(tempfile.mktemp(), "w+")
