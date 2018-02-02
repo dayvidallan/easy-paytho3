@@ -201,6 +201,7 @@ class PregaoForm(forms.ModelForm):
         self.initial['valor_total'] = format_money(self.solicitacao.get_valor_da_solicitacao())
         self.fields['valor_total'].widget.attrs = {'readonly': 'True'}
         self.fields['objeto'].initial = self.solicitacao.objeto
+        self.fields['num_pregao'].label = u'Número da Licitação/Procedimento'
 
         if not self.request.user.is_superuser:
             del self.fields['situacao']
