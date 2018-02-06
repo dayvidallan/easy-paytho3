@@ -5721,10 +5721,14 @@ def termo_homologacao(request, pregao_id):
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
     else:
         itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO])
-    resultado = ResultadoItemPregao.objects.filter(ordem=1, item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO)
-    chaves =  resultado.values('participante__fornecedor').order_by('participante__fornecedor').distinct('participante__fornecedor')
+    chaves = list()
+    for item in itens_pregao:
+        resultado = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')
+        if resultado.exists():
+            chaves.append(resultado[0].participante.fornecedor.id)
+
     for num in chaves:
-        fornecedor = get_object_or_404(Fornecedor, pk=num['participante__fornecedor'])
+        fornecedor = get_object_or_404(Fornecedor, pk=num)
         chave = u'%s' % fornecedor
         tabela[chave] = dict(itens = list(), total = 0)
     total_geral = 0
