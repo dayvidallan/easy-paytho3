@@ -666,8 +666,6 @@ class SolicitacaoLicitacao(models.Model):
         propostas = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self)
         for proposta in propostas:
             total += proposta.valor_medio * proposta.quantidade
-        if self.numero_meses_contratacao_global:
-            return total*Decimal(self.numero_meses_contratacao_global)
         return total
 
 
