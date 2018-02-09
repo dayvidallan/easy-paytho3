@@ -275,9 +275,10 @@ ul{
 
 
                <br><br>
-
-            _______________________________________________________________<br><br>
-            Sr(a). {{ configuracao.ordenador_despesa.nome }}<br> CPF: {{ cpf_ordenador_formatado }}<br>Ordenador(a) de Despesa
+            {% if ordem.exibe_nome_ordenador %}
+                _______________________________________________________________<br><br>
+                Sr(a). {{ configuracao.ordenador_despesa.nome }}<br> CPF: {{ cpf_ordenador_formatado }}<br>Ordenador(a) de Despesa
+            {% endif %}
         </div>
     </div>
 

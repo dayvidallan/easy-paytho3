@@ -666,7 +666,8 @@ class SolicitacaoLicitacao(models.Model):
         propostas = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self)
         for proposta in propostas:
             total += proposta.valor_medio * proposta.quantidade
-
+        if self.numero_meses_contratacao_global:
+            return total*self.numero_meses_contratacao_global
         return total
 
 
@@ -2541,6 +2542,7 @@ class OrdemCompra(models.Model):
     elemento_despesa_descricao = models.CharField(u'Descrição do Elemento de Despesa', max_length=200, null=True, blank=True)
     data_cadastro = models.DateTimeField(u'Cadastrada em', null=True)
     cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    exibe_nome_ordenador = models.BooleanField(u'Incluir Assinatura do Ordenador de Despesa', default=True)
 
     class Meta:
         verbose_name = u'Ordem de Compra'
