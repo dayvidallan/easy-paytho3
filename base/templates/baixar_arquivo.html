@@ -22,16 +22,21 @@
                 </div>
             </div>
 
-                <div class="col-xs-1 col-md-1">
-                    <br>
-                    <p><button id="buscapessoa" type="button" class="btn btn-primary pull-left">
-                        <span class="fa fa-search"></span>
-                      </button></p>
-                </div>
+            <div class="col-xs-1 col-md-1">
+                <br>
+                <p><button id="buscapessoa" type="button" class="btn btn-primary pull-left">
+                    <span class="fa fa-search"></span>
+                  </button></p>
+
+            </div>
 
             <div id="dados">
+                <div class="col-xs-12">
+                    <i>Utilize o campo acima para buscar seus dados ou preencha o formulário abaixo.</i>
+                </div>
 
                 <div class="col-xs-12">
+                    <br>
                     <div id="mensagem_erro" class="alert alert-warning"></div>
                     {{ form|bootstrap }}
 

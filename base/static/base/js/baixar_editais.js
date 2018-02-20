@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	$('#mensagem_erro').hide();
-	$('#dados').hide();
+
 
 
 	$("#buscapessoa").click(function(event) {
@@ -40,6 +40,7 @@ $(document).ready(function() {
 
 		event.preventDefault();
 	});
+
 
 
 });
