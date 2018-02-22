@@ -524,7 +524,6 @@ class AnexoARPForm(forms.ModelForm):
             self.fields['arquivo'].required = False
 
 class LogDownloadArquivoForm(forms.ModelForm):
-
     estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
     municipio = utils.ChainedModelChoiceField(Municipio.objects,
       label                = u'Município',

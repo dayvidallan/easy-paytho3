@@ -93,9 +93,10 @@
                         <th>Pregão</th>
                         <th>Memorando</th>
                         <th>Objeto</th>
+                        <th>Modalidade</th>
                         <th width="10%">Situação</th>
                         <th>Abertura do Certame</th>
-                        <th>Responsável</th>
+
                         <th>Valor</th>
 
                     </tr>
@@ -107,13 +108,13 @@
                            <td>{{ pregao.num_pregao }}</td>
                            <td>{{ pregao.solicitacao.num_memorando }}</td>
                            <td>{{ pregao.objeto }}</td>
+                           <td>{{ pregao.modalidade}}</td>
                            <td>{{ pregao.get_situacao }}</td>
                            <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
-                           <td>{{ pregao.responsavel}}</td>
                            <td>{{ pregao.get_valor_total|format_money }}</td>
                        </tr>
                     {% endfor %}
-                    <tr><td>Total</td><td colspan="6">{{ total|format_money }}</td></tr>
+                    <tr><td>Total</td><td colspan="100%" align="right">{{ total|format_money }}</td></tr>
                 </tbody>
             </table>
         {% elif relatorio == 'Relatório de Economia' %}
@@ -123,6 +124,7 @@
                         <th>Pregão</th>
                         <th>Memorando</th>
                         <th>Objeto</th>
+                        <th>Modalidade</th>
                         <th>Total Previsto</th>
                         <th>Total Final</th>
                         <th>Total Desconto</th>
@@ -137,6 +139,7 @@
                            <td>{{ pregao.num_pregao }}</td>
                            <td>{{ pregao.solicitacao.num_memorando }}</td>
                            <td>{{ pregao.objeto }}</td>
+                           <td>{{ pregao.modalidade}}</td>
                            {% with a=pregao.get_economia_alcancada %}
                                <td>{{ a.0|format_money  }}</td>
                                <td>{{ a.1|format_money  }}</td>
@@ -146,7 +149,7 @@
                        </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="3">Total</td>
+                        <td colspan="4">Total</td>
                         <td>{{ total_previsto|format_money }}</td>
                         <td>{{ total_final|format_money }}</td>
                         <td>{{ total_desconto }}</td>

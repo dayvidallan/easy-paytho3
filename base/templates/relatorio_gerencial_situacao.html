@@ -65,9 +65,9 @@ ul{
                     <th width="15%">Pregão</th>
                     <th width="20%">Memorando</th>
                     <th width="50%">Objeto</th>
+                    <th width="20%">Modalidade</th>
                     <th width="20%">Situação</th>
                     <th width="20%">Abertura do Certame</th>
-                    <th width="20%">Responsável</th>
                     <th width="15%">Valor</th>
 
                 </tr>
@@ -78,9 +78,9 @@ ul{
                        <td>{{ pregao.num_pregao }}</td>
                        <td>{{ pregao.solicitacao.num_memorando }}</td>
                        <td>{{ pregao.objeto }}</td>
+                       <td>{{ pregao.modalidade }}</td>
                        <td>{{ pregao.get_situacao }}</td>
                        <td>{{ pregao.data_abertura }} às {{pregao.hora_abertura}}</td>
-                       <td>{{ pregao.responsavel }}</td>
                        <td>{{ pregao.get_valor_total|format_money }}</td>
                    </tr>
                 {% endfor %}

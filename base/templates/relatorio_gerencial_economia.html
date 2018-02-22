@@ -65,6 +65,7 @@ ul{
                 <th width="15%">Pregão</th>
                 <th width="20%">Memorando</th>
                 <th width="50%">Objeto</th>
+                <th  width="20%">Modalidade</th>
                 <th width="20%">Total Previsto</th>
                 <th width="20%">Total Final</th>
                 <th width="20%">Total Desconto</th>
@@ -77,6 +78,7 @@ ul{
                    <td>{{ pregao.num_pregao }}</td>
                    <td>{{ pregao.solicitacao.num_memorando }}</td>
                    <td>{{ pregao.objeto }}</td>
+                   <td>{{ pregao.modalidade }}</td>
                    <td>{{ pregao.get_total_previsto|format_money  }}</td>
                    <td>{{ pregao.get_total_final|format_money  }}</td>
                    <td>{{ pregao.get_total_desconto }}</td>
@@ -84,7 +86,7 @@ ul{
                </tr>
             {% endfor %}
             <tr>
-                <td colspan="3">Total</td>
+                <td colspan="4">Total</td>
                 <td>{{ total_previsto|format_money }} ({{ total_previsto|format_numero_extenso }})</td>
                 <td>{{ total_final|format_money }} ({{ total_final|format_numero_extenso }})</td>
                 <td>{{ total_desconto }}</td>

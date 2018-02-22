@@ -1,0 +1,112 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4;
+            margin: 1.5cm;
+            @frame header {
+                -pdf-frame-content: headerblock;
+                top: 0cm;
+                margin-left: 9cm;
+                margin-right: 1cm;
+                height: 1.3cm;
+            }
+            @frame footer {
+                -pdf-frame-content: footerblock;
+                bottom: 0cm;
+                margin-left: 9cm;
+                margin-right: 1cm;
+                height: 1.3cm;
+            }
+
+
+
+
+
+
+     }
+
+ </style>
+{% endblock %}
+
+
+
+{% block content %}
+    <h1 class="page-header">
+        {% include "cabecalho.html" %}
+        <center>
+            <font size="4">{{ solicitacoes.count }} Solicitações Encontradas</font>
+        </center>
+    </h1>
+    <center>
+        <div id="headerblock" align="right">
+
+        </div>
+        <table border="1" width="95%" cellpadding="5" cellspacing="5">
+            <thead>
+                <tr>
+                    <th>Memorando</th>
+                    <th>Setor Atual</th>
+                    <th>Objeto</th>
+                    <th>Tipo</th>
+                    <th>Situação</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitacao in solicitacoes %}
+                   <tr>
+
+                       <td width="20%">{{ solicitacao.num_memorando }}<br><small>Cadastrado em: {{ solicitacao.data_cadastro|date:'d/m/Y H:i' }}</small></td>
+                       <td width="20%">{{ solicitacao.setor_atual }}</td>
+                       <td width="40%">{{ solicitacao.objeto }}</td>
+                       <td width="15%">{% if solicitacao.tipo == solicitacao.COMPRA %}
+                            Compra
+                           {% else %}
+                            {{ solicitacao.tipo_aquisicao }}
+                           {% endif %}
+                       </td>
+                       <td width="25%">{{ solicitacao.get_situacao }}</td>
+                   </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </center>
+
+
+    <div id="footerblock" align="right">
+       Página <pdf:pagenumber> de <pdf:pagecount>
+    </div>
+
+
+{% endblock %}
+
+
+

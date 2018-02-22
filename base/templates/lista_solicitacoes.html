@@ -163,6 +163,11 @@
             {% elif not form.is_bound and outras %}
                 <p class="alert alert-info">As solicitações abaixo tramitaram pelo seu setor. Utilize os filtros para localizar outras solicitações.</p>
             {% endif %}
+            {% if buscou_ou_nao %}
+                <div class="pull-right">
+                    <a class="btn btn-info" href="{{request.get_full_path }}{{buscou_ou_nao}}">Imprimir</a>
+                </div>
+            {% endif %}
 
             {% if form %}
                 <fieldset>

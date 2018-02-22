@@ -1,8 +1,6 @@
 $(document).ready(function() {
 	$('#mensagem_erro').hide();
 
-
-
 	$("#buscapessoa").click(function(event) {
 		$("#mensagem_erro").hide();
 		$('#dados').show();
