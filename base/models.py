@@ -663,7 +663,7 @@ class SolicitacaoLicitacao(models.Model):
 
     def get_valor_da_solicitacao(self):
         total = Decimal(0.00)
-        propostas = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self)
+        propostas = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=False)
         for proposta in propostas:
             total += proposta.valor_medio * proposta.quantidade
         return total
