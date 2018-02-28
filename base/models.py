@@ -333,6 +333,7 @@ class SolicitacaoLicitacao(models.Model):
     )
 
     TIPO_AQUISICAO_E_COMPRAS_CHOICES = (
+        (u'', u'---------------'),
         ('Compra', 'Compra'),
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
         (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
