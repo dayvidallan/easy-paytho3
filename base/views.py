@@ -10534,3 +10534,14 @@ def sortear_inicio_lances(request, item_id):
                 return HttpResponseRedirect(u'/base/lances_item/%s/' % item.id)
 
     return render(request, 'sortear_inicio_lances.html', locals(), RequestContext(request))
+
+@login_required()
+def editar_certidao(request, certidao_id):
+    title = u'Editar Certidão'
+    certidao = get_object_or_404(CertidaoCRC, pk=certidao_id)
+    form = CertidaoCRCForm(request.POST or None, instance=certidao)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Certidão editada com sucesso.')
+        return HttpResponseRedirect(u'/base/ver_crc/%s/' % certidao.crc.fornecedor.id)
+    return render(request, 'cadastrar_certidao_crc.html', locals(), RequestContext(request))

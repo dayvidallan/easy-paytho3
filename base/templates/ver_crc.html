@@ -56,10 +56,6 @@
                         <th width="20%">Natureza Jurídica</th>
                         <td>{{ registro.natureza_juridica }}</td>
                     </tr>
-                    <tr>
-                        <th>Ramo de Negócio</th>
-                        <td>{{ registro.ramo_negocio }}</td>
-                    </tr>
                 </thead>
 
             </table>
@@ -150,8 +146,6 @@
                     <tr>
                         <th width="20%">Carteira de identidade (RG)</th>
                         <td>{{ registro.rg }} / {{ registro.rg_emissor }}</td>
-                        <th  width="20%">Data de Expedição</th>
-                        <td>{{ registro.data_expedicao }}</td>
                     </tr>
                     <tr>
                         <th width="20%">Email</th>
@@ -167,10 +161,8 @@
 
             {% if socios %}
                 {% for item in socios %}
-                    <div class="pull-right">
 
-                    </div>
-                    <br><br>
+
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
 
@@ -201,6 +193,7 @@
                     <br><br>
                 {% endfor %}
             {% else %}
+                <br><br>
                 <p class="alert alert-warning">Nenhum CNAES Secundário.</p>
             {% endif %}
             {% if certidoes.exists %}
@@ -214,6 +207,7 @@
                                 <th>Nome</th>
                                 <th>Validade</th>
                                 <th>Arquivo</th>
+                                <th>Opções</th>
                             </tr>
                     </thead>
                     <tbody>
@@ -222,6 +216,7 @@
                                 <td>{{ certidao.nome }}</td>
                                 <td>{{ certidao.validade }}</td>
                                 <td><a href="/media/{{ certidao.arquivo }}">Ver Certidão</a></td>
+                                <td><a class="btn btn-sm btn-success" href="/base/editar_certidao/{{ certidao.id }}/">Editar</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>
