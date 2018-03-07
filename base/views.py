@@ -5872,27 +5872,38 @@ def visualizar_ata_registro_preco(request, ata_id):
 
     materiais  = dict()
     secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
-    # for num in secretarias:
-    #     chave = '%s' % num['setor__secretaria__nome']
-    #     tabela[chave] = materiais
-    #     for item in pedidos.filter(setor__secretaria__nome=chave):
-    #         if item.item.fornecedor:
-    #             nome = u'Fornecedor: %s' % (item.item.fornecedor.razao_social)
-    #         else:
-    #             nome = u'Fornecedor: %s' % (item.item.participante.fornecedor.razao_social)
-    #         materiais[nome] = dict(pedidos=list())
-    #
-    # for pedido in pedidos:
-    #     if pedido.item.fornecedor:
-    #         nome = u'Fornecedor: %s' % (pedido.item.fornecedor.razao_social)
-    #     else:
-    #         nome = u'Fornecedor: %s' % (pedido.item.participante.fornecedor.razao_social)
-    #     materiais[nome]['pedidos'].append(pedido)
-    #
-    # resultado = collections.OrderedDict(sorted(tabela.items()))
-
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
+    buscou_ou_nao = u'?imprimir=1'
+    form = PedidoSecretariaForm(request.GET or None, pedidos=pedidos)
+    if form.is_valid():
+        buscou_ou_nao = u'&imprimir=1'
+        pedidos = pedidos.filter(setor__secretaria=form.cleaned_data.get('secretaria'))
+
+    if request.GET.get('imprimir'):
+        configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+        data = {'pedidos':pedidos, 'configuracao': configuracao}
+
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+        template = get_template('pedidos_arp.html')
+        destino_arquivo = u'upload/resultados/solicitacoes.pdf'
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
 
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
@@ -6446,7 +6457,11 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
 def documentos_atas(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
 
-
+    itens = ata.itemataregistropreco_set.all()
+    if ata.adesao:
+        participantes = Fornecedor.objects.filter(id__in=itens.values_list('fornecedor', flat=True))
+    else:
+        participantes = ParticipantePregao.objects.filter(id__in=itens.values_list('participante', flat=True))
     title= u'Documentos - %s' % ata
     return render(request, 'documentos_atas.html', locals(), RequestContext(request))
 

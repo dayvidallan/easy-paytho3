@@ -1505,3 +1505,12 @@ class EditarProcessoForm(forms.ModelForm):
     class Meta:
         model = Processo
         fields = ('numero', 'objeto', 'palavras_chave')
+
+
+class PedidoSecretariaForm(forms.Form):
+    METHOD = u'GET'
+    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria',  widget=forms.Select(attrs={'onchange':'submeter_form(this)'}))
+    def __init__(self, *args, **kwargs):
+        self.pedidos = kwargs.pop('pedidos', None)
+        super(PedidoSecretariaForm, self).__init__(*args, **kwargs)
+        self.fields['secretaria'].queryset = Secretaria.objects.filter(id__in=self.pedidos.values_list('setor__secretaria', flat=True))

@@ -99,7 +99,7 @@
 {% block extrajs %}
     <script>
         function submeter_form(campo) {
-            window.location = window.location.pathname + "?participante=" + escape( $('#'+campo.id).val()) + "#classificacao";
+            window.location = window.location.pathname + "?secretaria=" + escape( $('#'+campo.id).val()) + "#pedidos";
 
         }
         $(function () {
@@ -466,6 +466,19 @@
                         </div>
 
                 {% endfor %}
+                <div class="pull-right">
+                    <a class="btn btn-info" href="{{request.get_full_path }}{{buscou_ou_nao}}">Imprimir</a>
+                </div>
+                <form action="." method="post" class="form-horizontal">
+                    {% csrf_token %}
+                     <div class="miolo">
+                        <div class="row-fluid">
+                            <div class="col-xs-12">
+                                {{ form|bootstrap }}
+                            </div>
+                        </div>
+                     </div>
+                </form>
                 <table class="table table-bordered table-condensed table-striped">
                     <thead>
 
