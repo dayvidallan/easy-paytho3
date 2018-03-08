@@ -111,8 +111,7 @@ ul{
                         <tr><th colspan="7">{{ lote }}</th></tr>
                         <tr>
                             <th>Item/Lote</th>
-                            <th>Material/Serviço</th>
-                            <th>Marca</th>
+                            <th width="50%">Material/Serviço</th>
                             <th>Unidade</th>
                             <th>Empresa</th>
                             <th>Valor</th>
@@ -125,12 +124,11 @@ ul{
                             <tr>
                                 {% if ata.adesao %}
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ opcao.material|truncatechars:500 }}</td>
+                                    <td width="50%">{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.get_item_arp.marca|default_if_none:"-" }}{% endif %}</td>
                                 {% else %}
                                     <td>{{ opcao }}</td>
-                                    <td>{{ opcao.material|truncatechars:500 }}</td>
+                                    <td width="50%">{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.get_item_arp.marca|default_if_none:"-" }}{% endif %}</td>
                                 {% endif %}
-                                <td>{{ opcao.get_item_arp.marca|default_if_none:"-" }}</td>
                                 <td>{{ opcao.get_item_arp.unidade|default_if_none:"-" }}</td>
                                 {% if ata.adesao %}
                                     <td>{{ opcao.get_item_arp.fornecedor }}</td>
@@ -154,7 +152,6 @@ ul{
                     <tr>
                         <th>Item</th>
                         <th>Material/Serviço</th>
-                        <th>Marca</th>
                         <th>Unidade</th>
                         <th>Empresa</th>
                         <th>Valor</th>
@@ -168,12 +165,11 @@ ul{
                         <tr>
                             {% if ata.adesao %}
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ opcao.material|truncatechars:500 }}</td>
+                            <td  width="50%">{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA:{{ opcao.marca|default_if_none:"-" }}{% endif %}</td>
                             {% else %}
                                 <td>{{ opcao.item }}</td>
-                                <td>{{ opcao.item.material|truncatechars:500 }}</td>
+                                <td  width="50%">{{ opcao.item.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.marca|default_if_none:"-" }}{% endif %}</td>
                             {% endif %}
-                            <td>{{ opcao.marca|default_if_none:"-" }}</td>
                             <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                             {% if ata.adesao %}
                                 <td>{{ opcao.fornecedor }}</td>

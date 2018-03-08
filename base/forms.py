@@ -10,7 +10,7 @@ from localflavor.br.forms import BRCNPJField
 from form_utils.forms import BetterForm
 from dateutil.relativedelta import relativedelta
 from newadmin.utils import to_ascii
-
+import datetime
 class CadastraParticipantePregaoForm(forms.ModelForm):
     sem_representante = forms.BooleanField(label=u'Representante Ausente', initial=False, required=False)
     obs_ausencia_participante = forms.CharField(label=u'Motivo da Ausência do Representante', widget=forms.Textarea, required=False)
