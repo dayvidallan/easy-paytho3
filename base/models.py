@@ -3241,6 +3241,7 @@ class ItemAtaRegistroPreco(models.Model):
         return u'Item %s da ARP: %s' % (self.item, self.ata)
 
     def get_quantidade_disponivel(self):
+        
         usuario = tl.get_user()
         if usuario.groups.filter(name=u'Gerente').exists():
             pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True)
@@ -3259,18 +3260,18 @@ class ItemAtaRegistroPreco(models.Model):
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
 
-            if total:
-                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
-                if pedidos.exists():
-                    valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
 
-                transferencias = TransferenciaItemARP.objects.filter(item=self)
-                if transferencias.exists():
-                    if transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).exists():
-                        perdeu_item = transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
+            if pedidos.exists():
+                valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
 
-                    if transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).exists():
-                        ganhou_item = transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+            transferencias = TransferenciaItemARP.objects.filter(item=self)
+            if transferencias.exists():
+                if transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).exists():
+                    perdeu_item = transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+
+                if transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).exists():
+                    ganhou_item = transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
 
             return total - valor_pedidos + ganhou_item - perdeu_item
 
