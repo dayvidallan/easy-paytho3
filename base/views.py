@@ -194,6 +194,35 @@ def index(request):
 
     return render(request, 'index.html', locals(), RequestContext(request))
 
+
+def solicitar_mudanca_senha(request):
+    title = u'Mudança de senha'
+    form = SoliticarTrocarSenhaForm(request.POST or None)
+    if form.is_valid():
+        obj = TrocarSenha.objects.create(username=form.cleaned_data['username'])
+        obj.enviar_email()
+        messages.success(request, u'Foi enviado um email para {} com as instruções para realizar a mudança de senha.'.format(
+                          obj.email))
+        return HttpResponseRedirect(u'/')
+    return render(request, 'trocar_senha.html', locals(), RequestContext(request))
+
+def trocar_senha(request, username, token):
+    title = u'Efetuar mudança de senha do usuário {}'.format(username)
+    if not TrocarSenha.token_valido(username, token):
+        messages.error(request, u'Token inválido. Preencha o fomulário abaixo para cadastrar uma nova senha.')
+        return HttpResponseRedirect('/base/solicitar_trocar_senha/')
+
+    form = ChangePasswordForm(request.POST or None, username=username)
+    if form.is_valid():
+        from django.contrib.auth.hashers import get_hasher, make_password
+        hasher=get_hasher('unsalted_md5')
+        password =  make_password(form.cleaned_data.get('password'), '', hasher)
+        updates = User.objects.filter(username=username).update(password=password)
+        return HttpResponseRedirect('/', u'Senha alterada com sucesso!')
+
+    return render(request, 'trocar_senha.html', locals(), RequestContext(request))
+
+
 @login_required()
 def solicitacoes(request):
     title = u'Solicitações'

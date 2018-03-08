@@ -1,0 +1,22 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap static %}
+{% block content %}
+    <form action="." method="post" class="form-horizontal">
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-12">
+                        {{ form|bootstrap }}
+                    </div>
+		        </div>
+
+                    <div>
+                        <div class="controls">
+                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+                        </div>
+                    </div>
+
+             </div>
+        </form>
+{% endblock %}

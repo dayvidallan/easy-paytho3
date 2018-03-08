@@ -24,6 +24,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from localflavor.br.forms import BRCPFField
 
+from unicodedata import normalize
 
 phone_digits_re = re.compile(r'^(\d{2})[-\.]?(\d{4,5})[-\.]?(\d{4})$')
 
@@ -418,3 +419,9 @@ class ChainedModelMultipleChoiceField(forms.ModelMultipleChoiceField):
         self.widget.queryset = queryset
 
 
+def to_ascii(txt, codif='utf-8'):
+    if not isinstance(txt, basestring):
+        txt = unicode(txt)
+    if isinstance(txt, unicode):
+        txt = txt.encode('utf-8')
+    return normalize('NFKD', txt.decode(codif)).encode('ASCII', 'ignore')

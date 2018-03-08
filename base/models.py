@@ -9,11 +9,14 @@ from newadmin.utils import CepModelField
 from decimal import Decimal
 from django.db.models import Sum, Q
 import datetime
+from datetime import datetime, timedelta
 from ckeditor.fields import RichTextField
 from base.templatetags.app_filters import format_money
 TWOPLACES = Decimal(10) ** -2
 import os
-
+import hashlib
+from django.conf import settings
+from django.core.mail import send_mail
 
 def get_tl():
     """
@@ -3241,7 +3244,7 @@ class ItemAtaRegistroPreco(models.Model):
         return u'Item %s da ARP: %s' % (self.item, self.ata)
 
     def get_quantidade_disponivel(self):
-        
+
         usuario = tl.get_user()
         if usuario.groups.filter(name=u'Gerente').exists():
             pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True)
@@ -3563,3 +3566,50 @@ class CertidaoCRC(models.Model):
 
     def __unicode__(self):
         return self.nome
+
+
+class TrocarSenha(models.Model):
+    """
+    Guarda o token para mudança de senha e é utilizado no suapexterno.
+    """
+    username = models.CharField(max_length=200)
+    email = models.EmailField()
+    token = models.CharField(max_length=128)
+    validade = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        """
+        Define os atributos ``email``, ``token`` e ``validade``.
+        """
+
+        pessoa_fisica = PessoaFisica.objects.get(user__username=self.username)
+
+
+        # Definindo email
+        self.email = pessoa_fisica.email
+
+        # Definindo validade
+        agora = datetime.now()
+        self.validade = agora + timedelta(1)  # válido por 24 horas
+
+        # Definindo token
+        frase = u'{}{}{}'.format(str(agora), self.username, settings.SECRET_KEY)
+        self.token = hashlib.sha512(frase).hexdigest()
+
+        super(TrocarSenha, self).save(*args, **kwargs)
+
+    @classmethod
+    def token_valido(cls, username, token):
+        agora = datetime.now()
+        return cls.objects.filter(username=username,
+                                  token=token,
+                                  validade__gte=agora).exists()
+
+    def enviar_email(self, base_url=''):
+        url = u'{}/base/trocar_senha/{}/{}/'.format(settings.SITE_URL, self.username, self.token)
+        conteudo = u'''<h1>Solicitação de Mudança de Senha</h1>
+        <p>Prezado usuário,</p>
+        <p>Para realizar a mudança de senha referente às suas credenciais da rede, por favor, acesse o endereço abaixo:</p>
+        <p><a href="{url}">{url}</a></p>'''.format(url=url)
+        return send_mail(u'[SUAP] Solicitação de Mudança de Senha',
+                         conteudo, settings.DEFAULT_FROM_EMAIL, [self.email])

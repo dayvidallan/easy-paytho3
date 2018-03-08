@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 from localflavor.br.forms import BRCNPJField
 from form_utils.forms import BetterForm
 from dateutil.relativedelta import relativedelta
+from newadmin.utils import to_ascii
 
 class CadastraParticipantePregaoForm(forms.ModelForm):
     sem_representante = forms.BooleanField(label=u'Representante Ausente', initial=False, required=False)
@@ -65,6 +66,40 @@ class CadastraPrecoRodadaPregaoForm(forms.ModelForm):
         if self.cleaned_data.get('valor') and self.cleaned_data.get('valor') > self.item.valor_medio:
             self.add_error('valor', u'O valor não pode ser maior do que o valor máximo')
 
+class SoliticarTrocarSenhaForm(forms.Form):
+    username = forms.CharField(label=u'Usuário',
+                               help_text=u'Informe o seu CPF sem pontos e traços.')
+    cpf = utils.CpfFormField(label=u'CPF', required=True)
+
+    def clean(self):
+        if 'username' not in self.cleaned_data or \
+                        'cpf' not in self.cleaned_data:
+            return self.cleaned_data
+
+        try:
+            pf = PessoaFisica.objects.get(user__username=self.cleaned_data['username'])
+        except PessoaFisica.DoesNotExist:
+            raise forms.ValidationError(u'Nenhum usuário encontrado com os dados especificados.')
+
+        return self.cleaned_data
+
+class ChangePasswordForm(forms.Form):
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput,
+                               label=u'Senha')
+    password_confirm = forms.CharField(max_length=100, widget=forms.PasswordInput,
+                                       label=u'Confirmação de senha')
+
+    def __init__(self, *args, **kwargs):
+        self.username = kwargs.pop('username')
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+
+    def clean_password_confirm(self):
+        if self.cleaned_data.get('password') != self.cleaned_data.get('password_confirm'):
+            raise forms.ValidationError(u'A confirmação de senha não é igual à senha.')
+        if self.cleaned_data.get('password') != to_ascii(self.cleaned_data.get('password')):
+            raise forms.ValidationError(u'A senha não pode ter caracteres com acentuação.')
+
+        return self.cleaned_data['password']
 
 class PessoaFisicaForm(forms.ModelForm):
     METHOD = 'POST'
