@@ -3609,7 +3609,7 @@ class TrocarSenha(models.Model):
         url = u'{}/base/trocar_senha/{}/{}/'.format(settings.SITE_URL, self.username, self.token)
         conteudo = u'''<h1>Solicitação de Mudança de Senha</h1>
         <p>Prezado usuário,</p>
-        <p>Para realizar a mudança de senha referente às suas credenciais da rede, por favor, acesse o endereço abaixo:</p>
-        <p><a href="{url}">{url}</a></p>'''.format(url=url)
+        <p>Para realizar a mudança de senha referente às suas credenciais da rede, por favor, acesse o endereço abaixo (Copie e cole no navegador):</p>
+        {url}'''.format(url=url)
         return send_mail(u'[SUAP] Solicitação de Mudança de Senha',
                          conteudo, settings.DEFAULT_FROM_EMAIL, [self.email])
