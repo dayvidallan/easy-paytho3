@@ -154,7 +154,7 @@ BOOTSTRAP3 = {
 }
 
 
-SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br:86'
+SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br'
 
 DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = ['base.MaterialConsumo', ]
 
