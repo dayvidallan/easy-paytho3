@@ -1061,6 +1061,7 @@ class DocumentoSolicitacaoForm(forms.ModelForm):
 
 
 class FornecedorForm(forms.ModelForm):
+    cnpj = BRCNPJField(label=u'CNPJ', help_text=u'Utilize pontos e traços.')
     class Meta:
         model = Fornecedor
         fields = ('__all__')
