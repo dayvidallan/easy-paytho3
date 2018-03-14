@@ -1061,11 +1061,20 @@ class DocumentoSolicitacaoForm(forms.ModelForm):
 
 
 class FornecedorForm(forms.ModelForm):
-    cnpj = BRCNPJField(label=u'CNPJ', help_text=u'Utilize pontos e traços.')
+    cnpj = BRCNPJField(label=u'CNPJ', help_text=u'Utilize pontos e traços, no formato: XX.XXX.XXX/XXXX-XX')
     class Meta:
         model = Fornecedor
         fields = ('__all__')
 
+    def clean(self):
+        if len(self.cleaned_data.get('cnpj')) != 18:
+            self.add_error('cnpj', u'Formato inválido.')
+        if not self.instance.pk:
+            if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exists():
+                self.add_error(('cpnj', u'Já existe um fornecedor cadastrado com esse CNPJ.'))
+        else:
+            if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exclude(id=self.instance.pk).exists():
+                self.add_error(('cpnj', u'Já existe um fornecedor cadastrado com esse CNPJ.'))
 
 class UploadTermoHomologacaoForm(forms.ModelForm):
     class Meta:
