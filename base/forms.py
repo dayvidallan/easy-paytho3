@@ -1067,7 +1067,7 @@ class FornecedorForm(forms.ModelForm):
         fields = ('__all__')
 
     def clean(self):
-        if len(self.cleaned_data.get('cnpj')) != 18:
+        if self.cleaned_data.get('cnpj') and len(self.cleaned_data.get('cnpj')) != 18:
             self.add_error('cnpj', u'Formato inválido.')
         if not self.instance.pk:
             if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exists():
