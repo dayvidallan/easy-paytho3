@@ -794,7 +794,7 @@ class BuscarLicitacaoForm(forms.Form):
     def clean(self):
 
          if self.cleaned_data.get('data_final') and self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final') < self.cleaned_data.get('data_inicial'):
-             self.add_error('data_final', u'A data final não pode ser menor do que a data inciial.')
+             self.add_error('data_final', u'A data final não pode ser menor do que a data inicial.')
 
 class MaterialConsumoForm(forms.ModelForm):
     class Meta:
@@ -1071,10 +1071,10 @@ class FornecedorForm(forms.ModelForm):
             self.add_error('cnpj', u'Formato inválido.')
         if not self.instance.pk:
             if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exists():
-                self.add_error(('cpnj', u'Já existe um fornecedor cadastrado com esse CNPJ.'))
+                self.add_error('cpnj', u'Já existe um fornecedor cadastrado com esse CNPJ.')
         else:
             if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exclude(id=self.instance.pk).exists():
-                self.add_error(('cpnj', u'Já existe um fornecedor cadastrado com esse CNPJ.'))
+                self.add_error('cpnj', u'Já existe um fornecedor cadastrado com esse CNPJ.')
 
 class UploadTermoHomologacaoForm(forms.ModelForm):
     class Meta:
