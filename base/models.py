@@ -443,7 +443,7 @@ class SolicitacaoLicitacao(models.Model):
 
     def pode_receber_pedidos_secretarias(self):
         if self.prazo_resposta_interessados:
-            return self.prazo_resposta_interessados >= datetime.date.today()
+            return self.prazo_resposta_interessados >= datetime.now().date()
         return False
 
     def get_proximo_item(self, eh_lote=False):
@@ -532,7 +532,7 @@ class SolicitacaoLicitacao(models.Model):
         return texto[:-1]
 
     def dentro_prazo_resposta(self):
-        hoje = datetime.date.today()
+        hoje = datetime.now().date()
         if self.prazo_resposta_interessados:
             if self.prazo_resposta_interessados >= hoje:
                 return True
