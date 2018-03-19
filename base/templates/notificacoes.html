@@ -14,7 +14,7 @@
             <h3>Licitações com data de movimentação nos próximos 15 dias:</h3>
             <table class="table table-bordered table-condensed table-striped">
                 {% for pregao in licitacoes_agendadas %}
-                    <tr><td><a href="/base/pregao/{{ pregao.id }}/" target="_blank">{{ pregao }} - {{ pregao.data_abertura }}</a></td></tr>
+                    <tr><td><a href="/base/pregao/{{ pregao.id }}/" target="_blank">{{ pregao }} - {{ pregao.data_abertura }} às {{ pregao.hora_abertura }}{% if pregao.data_retorno %} - Retorno em {{ pregao.data_retorno }}{% endif %}</a></td></tr>
                 {% endfor %}
             </table>
         {% endif %}
