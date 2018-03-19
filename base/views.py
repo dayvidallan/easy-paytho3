@@ -262,6 +262,15 @@ def fornecedor(request, fornecedor_id):
 def pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk= pregao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao'):
+        tem_conflito = Pregao.objects.exclude(id=pregao.id).filter(data_abertura=pregao.data_abertura, hora_abertura=pregao.hora_abertura)
+        if tem_conflito.exists():
+            tem_conflito = tem_conflito[0]
+
+        else:
+            tem_conflito = Pregao.objects.exclude(id=pregao.id).filter(data_retorno=pregao.data_abertura, hora_abertura=pregao.hora_abertura)
+            if tem_conflito.exists():
+                tem_conflito = tem_conflito[0]
+
         recebida_setor = pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor)
         # if not (pregao.solicitacao.setor_atual == request.user.pessoafisica.setor) and pregao.eh_ativo():
         #     pregao.situacao = Pregao.CONCLUIDO
