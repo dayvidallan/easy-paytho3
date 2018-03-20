@@ -71,11 +71,6 @@ ul{
         {% for key, lances in resultado.items %}
 
                 {% if lances %}
-                    {% block content_title %}
-                        <br>
-
-
-                    {% endblock %}
 
                     {% if eh_lote %}
                         <h2>Lote {{ key }}</h2>
@@ -83,7 +78,7 @@ ul{
                         <h2>Item {{ key }}</h2>
                     {% endif %}
                     {%  for num_rodada, lances_item in lances.items  %}
-                        <h2>Rodada: {{ num_rodada }}</h2>
+                        <h3>Rodada: {{ num_rodada }}</h3>
 
                         <table border="1" width="95%" cellpadding="5" cellspacing="5">
                             <thead>
