@@ -791,7 +791,10 @@ def ver_pregoes(request):
             pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
 
         if form.cleaned_data.get('situacao'):
-            pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
+            if form.cleaned_data.get('situacao') == Pregao.ADJUDICADO:
+                pregoes = pregoes.filter(Q(situacao=form.cleaned_data.get('situacao')) | Q(pode_homologar=True))
+            else:
+                pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
 
         if form.cleaned_data.get('secretaria'):
             pregoes = pregoes.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
