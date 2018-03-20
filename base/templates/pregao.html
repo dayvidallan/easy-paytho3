@@ -171,7 +171,7 @@
 
 
 {% block content %}
-    {% if tem_conflito %}
+    {% if tem_conflito and pregao.eh_ativo %}
         <p class="alert alert-danger"><a href="/base/pregao/{{ tem_conflito.id }}/">ATENÇÃO!!! Já existe uma licitação marcada no mesmo dia e no mesmo horário.</a></p>
     {% endif %}
     <table class="table table-bordered table-condensed table-striped">

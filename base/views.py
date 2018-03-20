@@ -7437,7 +7437,7 @@ def ata_sessao_outras_modalidades(request, pregao_id):
         c) Forma e ordem em que os licitantes pediriam a palavra;
         d) Vedação a intervenções fora da ordem definida;
         e) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;
-        f) Pedido para que não se retirasse (em) antes do término, em face à possibilidade de repregoar;
+        f) Pedido para que não se retirasse (em) antes do término;
         g) Observou o Presidente, que ele e a Comissão de Licitação têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e
         h)  Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).
         Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es).
@@ -7452,7 +7452,7 @@ def ata_sessao_outras_modalidades(request, pregao_id):
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.add_run(u'DA HABILITAÇÃO').bold = True
-    texto += u'''
+    texto = u'''
     Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente e Membros da CPL, passaram a analisar a Aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital.
     Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.
     '''
