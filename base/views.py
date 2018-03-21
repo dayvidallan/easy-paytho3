@@ -6884,7 +6884,8 @@ def ata_sessao(request, pregao_id):
             row_cells = table.add_row().cells
             row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
             row_cells[1].text = u'%s' % me
-            texto = u'''
+
+        texto = u'''
 
         Aberta a sessão, o Sr. Pregoeiro deu início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:
 
@@ -6907,7 +6908,50 @@ def ata_sessao(request, pregao_id):
         Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final.
         Dando continuidade procedeu-se à análise da (as) proposta (as), quando foi verificado se cada proposta atendia aos requisitos do edital, quanto ao objeto, prazo de entrega, garantia. Como resultado da análise foi (ram) classificada a (as) empresa (as) que atenderam todos os requisitos do edital e seus anexos.
         '''
-        p = document.add_paragraph(texto)
+
+
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'Aberta a sessão, o Sr. Pregoeiro deu início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:')
+        p = document.add_paragraph()
+        p.add_run(u'a) Objetivos do Pregão;')
+        p = document.add_paragraph()
+        p.add_run(u'b) Ordenação dos trabalhos;')
+        p = document.add_paragraph()
+        p.add_run(u'c) Forma e ordem em que os licitantes pediriam a palavra;')
+        p = document.add_paragraph()
+        p.add_run(u'd) Vedação a intervenções fora da ordem definida;')
+        p = document.add_paragraph()
+        p.add_run(u'e) Forma como serão feitos os lances;')
+        p = document.add_paragraph()
+        p.add_run(u'f) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;')
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'g) Pedido para que não se retirasse (em) antes do término, em face à possibilidade de repregoar;')
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'h) As penalidades previstas no art. 70 da lei no 10.520/2002 com a correção de redação do texto da lei, conforme exposto no subitem 2.8.2.2;')
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'i) Observou o pregoeiro que ele e a comissão de apoio têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e')
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'j) Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).')
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es). Em seguida passou-se à abertura do (os) envelope (es) da (as) proposta (as) observando-se os seguintes passos:')
+        p = document.add_paragraph()
+        p.add_run(u'Abertura;')
+        p = document.add_paragraph()
+        p.add_run(u'Conferência do conteúdo; e')
+
+        p = document.add_paragraph()
+        p.add_run(u'Numeração.')
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.add_run(u'Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final. Dando continuidade procedeu-se à análise da (as) proposta (as), quando foi verificado se cada proposta atendia aos requisitos do edital, quanto ao objeto, prazo de entrega, garantia. Como resultado da análise foi (ram) classificada a (as) empresa (as) que atenderam todos os requisitos do edital e seus anexos.')
+
+       #p = document.add_paragraph(texto)
 
 
         if pregao.tem_resultado():
@@ -6961,7 +7005,7 @@ def ata_sessao(request, pregao_id):
 
             for item in ocorrencias:
                 p = document.add_paragraph()
-                #p.alignment = 3
+                p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
                 p.add_run(item)
 
 
@@ -7396,8 +7440,7 @@ def ata_sessao_outras_modalidades(request, pregao_id):
 
     comissao = u', '.join(comissao)
     texto = u'''
-    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as documentações de habilitação e propostas de preços, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Projeto Base/Termo de Referência. anexo à este Edital. Presentes o Presidente da CPL, %s bem como os Membros da CPL, constituída pelos servidores: %s - Portaria: %s
-    ''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.objeto, pregao.responsavel, comissao, portaria)
+    Às %s do dia %s, no(a) %s, realizou-se  a sessão pública para recebimento e abertura dos envelopes contendo as documentações de habilitação e propostas de preços, apresentados em razão do certame licitatório na modalidade %s, cujo objeto é %s, conforme especificações mínimas constantes no Projeto Base/Termo de Referência. anexo à este Edital. Presentes o Presidente da CPL, %s bem como os Membros da CPL, constituída pelos servidores: %s - Portaria: %s''' % (pregao.hora_abertura, localize(pregao.data_abertura), pregao.local, pregao, pregao.objeto, pregao.responsavel, comissao, portaria)
 
     if pregao.comissao and pregao.comissao.data_designacao:
         texto += u'Data de Designação: %s.' % pregao.comissao.data_designacao.strftime('%d/%m/%Y')
@@ -7432,32 +7475,65 @@ def ata_sessao_outras_modalidades(request, pregao_id):
         row_cells = table.add_row().cells
         row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
         row_cells[1].text = u'%s' % me
-        texto = u'''
 
-    Aberta a sessão, o Sr. Presidente e Membros da CPL, deram início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:
-        a) Objetivos da Licitação;
-        b) Ordenação dos trabalhos;
-        c) Forma e ordem em que os licitantes pediriam a palavra;
-        d) Vedação a intervenções fora da ordem definida;
-        e) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;
-        f) Pedido para que não se retirasse (em) antes do término;
-        g) Observou o Presidente, que ele e a Comissão de Licitação têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e
-        h)  Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).
-        Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es).
-        Em seguida passou-se à abertura do (os) envelope (es) de Habilitação, observando-se os seguintes passos:
-                Abertura;
-                Conferência do conteúdo; e
-                Numeração.
-        Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final.
-        Dando continuidade procedeu-se à análise da (as) Documentações, quando foi verificado se atendia (am) ao (os) requisitos do edital.
-    '''
-    p = document.add_paragraph(texto)
+
+    texto = u''' Aberta a sessão, o Sr. Presidente e Membros da CPL, deram início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:
+    a) Objetivos da Licitação;
+    b) Ordenação dos trabalhos;
+    c) Forma e ordem em que os licitantes pediriam a palavra;
+    d) Vedação a intervenções fora da ordem definida;
+    e) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;
+    f) Pedido para que não se retirasse (em) antes do término;
+    g) Observou o Presidente, que ele e a Comissão de Licitação têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e
+    h)  Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).
+    Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es).
+    Em seguida passou-se à abertura do (os) envelope (es) de Habilitação, observando-se os seguintes passos:
+    Abertura;
+    Conferência do conteúdo; e
+    Numeração.
+    Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final.
+    Dando continuidade procedeu-se à análise da (as) Documentações, quando foi verificado se atendia (am) ao (os) requisitos do edital.'''
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(u'Aberta a sessão, o Sr. Presidente e Membros da CPL, deram início aos trabalhos, fazendo comunicação ao (os) presente (es) sobre:')
+    p = document.add_paragraph()
+    p.add_run(u'a) Objetivos da Licitação;')
+    p = document.add_paragraph()
+    p.add_run(u'b) Ordenação dos trabalhos;')
+    p = document.add_paragraph()
+    p.add_run(u'c) Forma e ordem em que os licitantes pediriam a palavra;')
+    p = document.add_paragraph()
+    p.add_run(u'd) Vedação a intervenções fora da ordem definida;')
+    p = document.add_paragraph()
+    p.add_run(u'e) Aviso sobre empresas coligadas e vedações do art. 90 da lei no 8.666/1993;')
+    p = document.add_paragraph()
+    p.add_run(u'f) Pedido para que não se retirasse (em) antes do término;')
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(u'g) Observou o Presidente, que ele e a Comissão de Licitação têm interesse em cumprir a lei, respeitar os direitos dos licitantes e a lisura do certame; e')
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(u'h)  Após, foram esclarecidas as dúvidas do (os) licitante (es) e informado (os) o (os) nome (es) do (os) licitante (es) que estava (am) credenciado (os) para participar do certame, conforme listagem que foi exibida ao (os) presente (es).')
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(u' Dando continuidade passou-se ao procedimento de recebimento dos envelopes, que foram conferidos e apresentado ao (os) presente (es). Em seguida passou-se à abertura do (os) envelope (es) de Habilitação, observando-se os seguintes passos')
+    p = document.add_paragraph()
+    p.add_run(u'Abertura;')
+    p = document.add_paragraph()
+    p.add_run(u'Conferência do conteúdo; e')
+    p = document.add_paragraph()
+    p.add_run(u'Numeração.')
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.add_run(u'Na oportunidade foi esclarecido que a rubrica por um dos membros da equipe e pelo (os) licitante (es) que convidado (os) aceitar (em) rubricar, seria realizada no final. Dando continuidade procedeu-se à análise da (as) Documentações, quando foi verificado se atendia (am) ao (os) requisitos do edital.')
+
+    #p.add_run(texto)
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.add_run(u'DA HABILITAÇÃO').bold = True
     texto = u'''
     Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente e Membros da CPL, passaram a analisar a Aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital.
-    Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital. Posteriormente, foi analisada a documentação da referida empresa.
+    Em seguida, foi analisada a aceitabilidade da(s) proposta(s) detentora(s) do menor preço, conforme previsto no edital.
     '''
     #document.add_paragraph(texto)
     p = document.add_paragraph()
@@ -7490,7 +7566,7 @@ def ata_sessao_outras_modalidades(request, pregao_id):
 
         for item in ocorrencias:
             p = document.add_paragraph()
-            #p.alignment = 3
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.add_run(item)
 
 
