@@ -1090,30 +1090,63 @@ class ItemSolicitacaoLicitacao(models.Model):
         if participantes.count()<=3:
             return
         else:
-            valores = participantes.order_by('valor').values('valor').distinct()
-            if len(valores) > 2:
-                valor_maximo_aceito = valores[2]['valor']
-            melhor_valor = participantes[0].valor
-            participantes.update(desclassificado=False, desistencia=False, concorre=True)
-            ordenado = participantes.order_by('-valor')
 
-            for item in ordenado:
-                # if ordenado.filter(concorre=True).count()<=3:
-                #     continue
-                if item.valor > (melhor_valor + (10*melhor_valor)/100):
-                    if valor_maximo_aceito and item.valor > valor_maximo_aceito:
+            if self.solicitacao.eh_maior_desconto():
+                valores = participantes.order_by('-valor').values('valor').distinct()
+                melhor_valor = valores[0]['valor']
+                valor_do_lance = self.valor_medio - (melhor_valor*self.valor_medio)/100
+                desconto_10pct = (10*valor_do_lance)/100
+
+                valor_maximo_aceito = desconto_10pct + valor_do_lance
+
+
+                participantes.update(desclassificado=False, desistencia=False, concorre=True)
+                ordenado = participantes.order_by('-valor')
+
+                for item in ordenado:
+                    #if ordenado.filter(concorre=True).count()<=3:
+                    #     continue
+                    
+                    if valor_maximo_aceito and (self.valor_medio - ((item.valor*self.valor_medio)/100)) > valor_maximo_aceito:
+
                         item.concorre = False
                         item.save()
-            concorrentes = participantes.filter(concorre=True).count()
-            if  concorrentes >= 3:
-                return
-            else:
+                concorrentes = participantes.filter(concorre=True).count()
+                if  concorrentes >= 3:
+                    return
+                else:
 
-                for item in PropostaItemPregao.objects.filter(item=self, concorre=False, desclassificado=False, desistencia=False).order_by('valor'):
-                    if concorrentes < 3 or item.valor <= valores[len(valores)-1]['valor']:
-                        item.concorre = True
-                        item.save()
-                        concorrentes += 1
+                    for item in PropostaItemPregao.objects.filter(item=self, concorre=False, desclassificado=False, desistencia=False).order_by('-valor'):
+                        if concorrentes < 3 or item.valor <= valores[len(valores)-1]['valor']:
+                            item.concorre = True
+                            item.save()
+                            concorrentes += 1
+
+            else:
+                valores = participantes.order_by('valor').values('valor').distinct()
+                if len(valores) > 2:
+                    valor_maximo_aceito = valores[2]['valor']
+                melhor_valor = participantes[0].valor
+                participantes.update(desclassificado=False, desistencia=False, concorre=True)
+                ordenado = participantes.order_by('-valor')
+
+                for item in ordenado:
+                    # if ordenado.filter(concorre=True).count()<=3:
+                    #     continue
+                    if item.valor > (melhor_valor + (10*melhor_valor)/100):
+                        if valor_maximo_aceito and item.valor > valor_maximo_aceito:
+                            item.concorre = False
+                            item.save()
+                concorrentes = participantes.filter(concorre=True).count()
+                if  concorrentes >= 3:
+                    return
+                else:
+
+                    for item in PropostaItemPregao.objects.filter(item=self, concorre=False, desclassificado=False, desistencia=False).order_by('valor'):
+                        if concorrentes < 3 or item.valor <= valores[len(valores)-1]['valor']:
+                            item.concorre = True
+                            item.save()
+                            concorrentes += 1
             return
 
     def filtrar_todos_ativos(self):
