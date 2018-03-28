@@ -747,6 +747,7 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_valor_unitario_final_item_lote(self):
         valor_lote = ItemLote.objects.filter(item=self)[0].lote.get_total_lance_ganhador()
+
         if valor_lote:
             return self.valor_medio - ((self.valor_medio * valor_lote)/100)
         return None
@@ -1106,7 +1107,7 @@ class ItemSolicitacaoLicitacao(models.Model):
                 for item in ordenado:
                     #if ordenado.filter(concorre=True).count()<=3:
                     #     continue
-                    
+
                     if valor_maximo_aceito and (self.valor_medio - ((item.valor*self.valor_medio)/100)) > valor_maximo_aceito:
 
                         item.concorre = False

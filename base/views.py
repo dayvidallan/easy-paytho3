@@ -7117,6 +7117,7 @@ def ata_sessao_credenciamento(request, pregao_id):
     for item in HistoricoPregao.objects.filter(pregao=pregao):
         nome = u'%s'% item.obs
         ocorrencias.append(nome.replace('&',"e"))
+
     portaria = None
     if pregao.comissao:
         for item in MembroComissaoLicitacao.objects.filter(comissao=pregao.comissao).order_by('-funcao'):
@@ -7174,7 +7175,8 @@ def ata_sessao_credenciamento(request, pregao_id):
                 lista.append(item.item)
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            #resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, ' % (result[0], nome_tipo, lista)
             total_geral = total_geral + result[1]['total']
 
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
@@ -7258,6 +7260,8 @@ def ata_sessao_credenciamento(request, pregao_id):
             row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
             row_cells[1].text = u'%s' % me
 
+
+
         texto = u'''
             Após o resultado, o Sr. Presidente da CPL/PMG concedeu a palavra a estes para os eventuais registros quanto a documentação de habilitação apresentada, tendo estes declarado que não há nada a registrar.
 
@@ -7265,8 +7269,21 @@ def ata_sessao_credenciamento(request, pregao_id):
 
             Nada mais havendo a tratar, deu o Sr. Presidente por encerrado os trabalhos da reunião às 15h00min (quinze horas), com a lavratura da presente Ata, a qual depois de lida e aprovada, vai assinada pelo Presidente, Membros da CPL/PMG presentes à Sessão.
         '''
+
+
+
         p = document.add_paragraph(texto)
 
+    if ocorrencias:
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run(u'DAS OCORRÊNCIAS DA SESSÃO PÚBLICA').bold = True
+
+
+        for item in ocorrencias:
+            p = document.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.add_run(item)
 
 
     for item in membros:
