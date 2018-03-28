@@ -7261,19 +7261,6 @@ def ata_sessao_credenciamento(request, pregao_id):
             row_cells[1].text = u'%s' % me
 
 
-
-        texto = u'''
-            Após o resultado, o Sr. Presidente da CPL/PMG concedeu a palavra a estes para os eventuais registros quanto a documentação de habilitação apresentada, tendo estes declarado que não há nada a registrar.
-
-            Em seguida, o Presidente da CPL/PMG comunicou aos presentes que encerraria a Sessão, informando que o resultado será publicado no Diário Oficial dos Municípios do Estado do Rio Grande do Norte – FEMURN, e após, o objeto do certame será adjudicado às empresas vencedoras.
-
-            Nada mais havendo a tratar, deu o Sr. Presidente por encerrado os trabalhos da reunião às 15h00min (quinze horas), com a lavratura da presente Ata, a qual depois de lida e aprovada, vai assinada pelo Presidente, Membros da CPL/PMG presentes à Sessão.
-        '''
-
-
-
-        p = document.add_paragraph(texto)
-
     if ocorrencias:
         p = document.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -7284,6 +7271,20 @@ def ata_sessao_credenciamento(request, pregao_id):
             p = document.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.add_run(item)
+            
+    texto = u'''
+        Após o resultado, o Sr. Presidente da CPL/PMG concedeu a palavra a estes para os eventuais registros quanto a documentação de habilitação apresentada, tendo estes declarado que não há nada a registrar.
+
+        Em seguida, o Presidente da CPL/PMG comunicou aos presentes que encerraria a Sessão, informando que o resultado será publicado no Diário Oficial dos Municípios do Estado do Rio Grande do Norte – FEMURN, e após, o objeto do certame será adjudicado às empresas credenciadas.
+
+        Nada mais havendo a tratar, deu o Sr. Presidente por encerrado os trabalhos da reunião às 15h00min (quinze horas), com a lavratura da presente Ata, a qual depois de lida e aprovada, vai assinada pelo Presidente, Membros da CPL/PMG presentes à Sessão.
+    '''
+
+
+
+    p = document.add_paragraph(texto)
+
+
 
 
     for item in membros:
