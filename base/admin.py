@@ -14,6 +14,8 @@ admin.site.register(PropostaItemPregao)
 
 
 class ItemSolicitacaoLicitacaoAdmin(NewModelAdmin):
+    list_display = ('material', 'solicitacao', 'unidade', 'quantidade')
+    search_fields = ('solicitacao__num_memorando', )
     form = AlterarItemSolicitacaoForm
 
     def response_change(self, request, obj):
@@ -25,6 +27,15 @@ class ItemSolicitacaoLicitacaoAdmin(NewModelAdmin):
         return HttpResponseRedirect('/itens_solicitacao/%s/' % str(obj.solicitacao.pk))
 
 admin.site.register(ItemSolicitacaoLicitacao, ItemSolicitacaoLicitacaoAdmin)
+
+
+class ItemAtaRegistroPrecoAdmin(NewModelAdmin):
+    list_display = ('ata', 'item', 'marca', 'quantidade', 'valor')
+    search_fields = ('ata__numero', )
+    form = AlterarItemARPForm
+
+
+admin.site.register(ItemAtaRegistroPreco, ItemAtaRegistroPrecoAdmin)
 
 class FornecedorAdmin(NewModelAdmin):
 

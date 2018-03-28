@@ -182,6 +182,15 @@ class AlterarItemSolicitacaoForm(forms.ModelForm):
             self.add_error('material', u'Este material já foi cadastrado.')
 
 
+class AlterarItemARPForm(forms.ModelForm):
+    material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
+
+    class Meta:
+        model = ItemAtaRegistroPreco
+        fields = ['marca', 'valor', 'quantidade']
+
+
+
 class UploadPropostaPesquisaForm(forms.Form):
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
 
