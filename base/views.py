@@ -7272,6 +7272,10 @@ def ata_sessao_credenciamento(request, pregao_id):
             p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.add_run(item)
 
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(u'DO ENCERRAMENTO').bold = True
+
     texto = u'''
         Após o resultado, o Sr. Presidente da CPL/PMG concedeu a palavra a estes para os eventuais registros quanto a documentação de habilitação apresentada, tendo estes declarado que não há nada a registrar.
 
