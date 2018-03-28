@@ -699,6 +699,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     ativo = models.BooleanField(u'Ativo', default=True)
     eh_lote = models.BooleanField(u'Lote', default=False)
     arquivo_referencia_valor_medio = models.FileField(u'Arquivo com a Referência do Valor Médio', null=True, upload_to=u'upload/referencias_valor_medio/')
+    desconto_item = models.DecimalField(u'Desconto', max_digits=20, decimal_places=2, null=True, blank=True)
 
     def __unicode__(self):
 
@@ -747,10 +748,10 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_valor_unitario_final_item_lote(self):
         #valor_lote = ItemLote.objects.filter(item=self)[0].lote.get_total_lance_ganhador()
-        ganhador = ItemLote.objects.filter(item=self)[0].lote.get_vencedor()
-        if ganhador:
-            desconto = PropostaItemPregao.objects.filter(item=self, participante=ganhador.participante)[0].valor
-            return self.valor_medio - ((self.valor_medio*desconto)/100)
+        #ganhador = ItemLote.objects.filter(item=self)[0].lote.get_vencedor()
+        if self.desconto_item:
+            #desconto = PropostaItemPregao.objects.filter(item=self, participante=ganhador.participante)[0].valor
+            return self.valor_medio - ((self.valor_medio*self.desconto_item)/100)
 
         return None
 
