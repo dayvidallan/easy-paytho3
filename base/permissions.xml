@@ -34,6 +34,22 @@
                     <permission>change_ataregistropreco</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>tipomodelo</name>
+                <permissions>
+                    <permission>add_tipomodelo</permission>
+                    <permission>change_tipomodelo</permission>
+                </permissions>
+            </model>
+            <model>
+                <app>base</app>
+                <name>tipoobjetomodelo</name>
+                <permissions>
+                    <permission>add_tipoobjetomodelo</permission>
+                    <permission>change_tipoobjetomodelo</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
@@ -109,6 +125,22 @@
                     <permission>change_tipounidade</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>tipomodelo</name>
+                <permissions>
+                    <permission>add_tipomodelo</permission>
+                    <permission>change_tipomodelo</permission>
+                </permissions>
+            </model>
+            <model>
+                <app>base</app>
+                <name>tipoobjetomodelo</name>
+                <permissions>
+                    <permission>add_tipoobjetomodelo</permission>
+                    <permission>change_tipoobjetomodelo</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
@@ -166,6 +198,22 @@
                     <permission>change_tipounidade</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>tipomodelo</name>
+                <permissions>
+                    <permission>add_tipomodelo</permission>
+                    <permission>change_tipomodelo</permission>
+                </permissions>
+            </model>
+            <model>
+                <app>base</app>
+                <name>tipoobjetomodelo</name>
+                <permissions>
+                    <permission>add_tipoobjetomodelo</permission>
+                    <permission>change_tipoobjetomodelo</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
@@ -196,6 +244,22 @@
                     <permission>change_dotacaoorcamentaria</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>tipomodelo</name>
+                <permissions>
+                    <permission>add_tipomodelo</permission>
+                    <permission>change_tipomodelo</permission>
+                </permissions>
+            </model>
+            <model>
+                <app>base</app>
+                <name>tipoobjetomodelo</name>
+                <permissions>
+                    <permission>add_tipoobjetomodelo</permission>
+                    <permission>change_tipoobjetomodelo</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
@@ -218,6 +282,22 @@
                     <permission>change_fornecedor</permission>
                 </permissions>
             </model>
+            <model>
+                <app>base</app>
+                <name>tipomodelo</name>
+                <permissions>
+                    <permission>add_tipomodelo</permission>
+                    <permission>change_tipomodelo</permission>
+                </permissions>
+            </model>
+            <model>
+                <app>base</app>
+                <name>tipoobjetomodelo</name>
+                <permissions>
+                    <permission>add_tipoobjetomodelo</permission>
+                    <permission>change_tipoobjetomodelo</permission>
+                </permissions>
+            </model>
         </models>
     </group>
     <group>
@@ -228,6 +308,22 @@
                 <name>user</name>
                 <permissions>
                     <permission>pode_abrir_processo</permission>
+                </permissions>
+            </model>
+            <model>
+                <app>base</app>
+                <name>tipomodelo</name>
+                <permissions>
+                    <permission>add_tipomodelo</permission>
+                    <permission>change_tipomodelo</permission>
+                </permissions>
+            </model>
+            <model>
+                <app>base</app>
+                <name>tipoobjetomodelo</name>
+                <permissions>
+                    <permission>add_tipoobjetomodelo</permission>
+                    <permission>change_tipoobjetomodelo</permission>
                 </permissions>
             </model>
         </models>

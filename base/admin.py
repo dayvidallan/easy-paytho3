@@ -383,12 +383,19 @@ class TipoModeloAdmin(NewModelAdmin):
     ordering = ('nome',)
     search_fields = ('nome',)
 
+    def response_add(self, request, obj):
+       return HttpResponseRedirect('/base/cadastrar_modelo_documento/')
+
+
 admin.site.register(TipoModelo, TipoModeloAdmin)
 
 class TipoObjetoModeloAdmin(NewModelAdmin):
     list_display = ('nome', 'ativo', )
     ordering = ('nome',)
     search_fields = ('nome',)
+
+    def response_add(self, request, obj):
+       return HttpResponseRedirect('/base/cadastrar_modelo_documento/')
 
 admin.site.register(TipoObjetoModelo, TipoObjetoModeloAdmin)
 

@@ -172,7 +172,20 @@
 
 
 {% block content %}
-
+    <form action="." method="get" class="form-horizontal">
+        {% csrf_token %}
+         <div class="miolo">
+            <div class="row-fluid">
+                <div class="col-xs-6">
+                    {{ form|bootstrap }}
+                </div>
+                <div class="col-xs-1 col-md-1">
+                    <br>
+                    <p><button type="submit" class="btn btn-primary">Filtrar</button></p>
+                </div>
+            </div>
+         </div>
+    </form>
     {%  if contratos.exists %}
         {% autopaginate contratos 10 %}
         {% paginate %} <br>

@@ -16,6 +16,10 @@ $(function() {
 </script>
 {% endblock %}
 {% block content %}
+         <div class="pull-right">
+            <a class="btn btn-success" href="/admin/base/tipomodelo/add">Cadastrar Tipo</a>
+            <a class="btn btn-success" href="/admin/base/tipoobjetomodelo/add">Cadastrar Tipo Objeto</a>
+         </div>
         <form action="." method="post" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
              <div class="miolo">
