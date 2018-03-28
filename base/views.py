@@ -7178,7 +7178,7 @@ def ata_sessao_credenciamento(request, pregao_id):
             #resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
             resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, ' % (result[0], nome_tipo, lista)
             total_geral = total_geral + result[1]['total']
-
+    
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
     from docx import Document
     from docx.shared import Inches, Pt
@@ -7240,7 +7240,7 @@ def ata_sessao_credenciamento(request, pregao_id):
         p = document.add_paragraph()
         p.alignment = 3
 
-        p.add_run(u'Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente da CPL/PMG e Membros da Equipe de Apoio, declararam como CREDENCIADA(s) do procedimento, a (s) empresa (s):')
+        p.add_run(u'Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, a Comissão Permanente de Licitação declarou como CREDENCIADA(s) a(s) empresa(s):')
 
         p.add_run(resultado_pregao)
 
