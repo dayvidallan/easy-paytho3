@@ -7240,25 +7240,25 @@ def ata_sessao_credenciamento(request, pregao_id):
         p = document.add_paragraph()
         p.alignment = 3
 
-        p.add_run(u'Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente da CPL/PMG e Membros da Equipe de Apoio, declararam como APTA (s) do procedimento, a (s) empresa (s):')
+        p.add_run(u'Diante da regularidade frente às exigências de habilitação contidas no instrumento convocatório, o Presidente da CPL/PMG e Membros da Equipe de Apoio, declararam como CREDENCIADA(s) do procedimento, a (s) empresa (s):')
 
         p.add_run(resultado_pregao)
 
-        table = document.add_table(rows=1, cols=2)
-        hdr_cells = table.rows[0].cells
-        hdr_cells[0].text = 'Empresa'
-        hdr_cells[1].text = 'Representante'
-
-
-
-        for item in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False, excluido_dos_itens=False):
-            me = u'Não Compareceu'
-            if item.nome_representante:
-                me = item.nome_representante
-
-            row_cells = table.add_row().cells
-            row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
-            row_cells[1].text = u'%s' % me
+        # table = document.add_table(rows=1, cols=2)
+        # hdr_cells = table.rows[0].cells
+        # hdr_cells[0].text = 'Empresa'
+        # hdr_cells[1].text = 'Representante'
+        #
+        #
+        #
+        # for item in ParticipantePregao.objects.filter(pregao=pregao, desclassificado=False, excluido_dos_itens=False):
+        #     me = u'Não Compareceu'
+        #     if item.nome_representante:
+        #         me = item.nome_representante
+        #
+        #     row_cells = table.add_row().cells
+        #     row_cells[0].text = u'%s - %s' % (item.fornecedor.razao_social, item.fornecedor.cnpj)
+        #     row_cells[1].text = u'%s' % me
 
 
     if ocorrencias:
@@ -7271,7 +7271,7 @@ def ata_sessao_credenciamento(request, pregao_id):
             p = document.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.add_run(item)
-            
+
     texto = u'''
         Após o resultado, o Sr. Presidente da CPL/PMG concedeu a palavra a estes para os eventuais registros quanto a documentação de habilitação apresentada, tendo estes declarado que não há nada a registrar.
 
