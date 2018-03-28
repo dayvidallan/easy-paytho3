@@ -4420,7 +4420,7 @@ def termo_adjudicacao(request, pregao_id):
         if item.get_vencedor():
             chave = u'%s' % item.get_vencedor().participante.fornecedor
             if eh_desconto:
-                texto += u'%s (Desconto de %s)' % (item.item, item.get_vencedor().get_valor())
+                texto += '%s (Desconto de %s)' % (item.item, item.get_vencedor().get_valor())
             else:
                 texto = item.item
 
@@ -5880,7 +5880,7 @@ def termo_homologacao(request, pregao_id):
             valor = tabela[chave]['total']
             if pregao.eh_maior_desconto():
                 valor = valor + item.get_valor_final_total_desconto()
-                texto += u' %s (Desconto de %s)' % (item.item, item.get_vencedor().get_valor())
+                texto += ' %s (Desconto de %s)' % (item.item, item.get_vencedor().get_valor())
             else:
                 valor = valor + item.get_total_lance_ganhador()
                 texto = item.item
