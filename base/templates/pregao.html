@@ -658,6 +658,9 @@
                                                         <th>Valor Máximo</th>
                                                         <th>Valor Unitário Proposto</th>
                                                         <th>Valor Total Proposto</th>
+                                                        {% if eh_maior_desconto %}
+                                                            <th>Desconto</th>
+                                                        {% endif %}
                                                         <th>Valor Unitário Final</th>
                                                         <th>Valor Total Final</th>
 
@@ -683,6 +686,9 @@
                                                                     {{ item.get_valor_total_proposto|format_money }}
                                                                 {% endif %}
                                                             </td>
+                                                            {% if eh_maior_desconto %}
+                                                                <td>{% if item.desconto_item %}{{ item.desconto_item }} %{% else %}-{% endif %}</td>
+                                                            {% endif %}
                                                             <td>
                                                                 {% if eh_maior_desconto %}
                                                                     {{ item.get_valor_unitario_final_item_lote|format_money }}
@@ -710,6 +716,8 @@
 
                                             {% if recebida_setor and not pregao.data_adjudicacao and not eh_maior_desconto %}
                                                 <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
+                                            {% elif recebida_setor and not pregao.data_adjudicacao and eh_maior_desconto %}
+                                                <a href="/base/informar_desconto_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Desconto Final</a>
                                             {% endif %}
 
 

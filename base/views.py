@@ -5429,6 +5429,39 @@ def informar_valor_final_itens_lote(request, lote_id, pregao_id):
     else:
         raise PermissionDenied
 
+
+@login_required()
+def informar_desconto_final_itens_lote(request, lote_id, pregao_id):
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        lote =get_object_or_404(ItemSolicitacaoLicitacao, pk=lote_id)
+        itens = ItemLote.objects.filter(lote=lote)
+        ids_itens_do_lote = ItemLote.objects.filter(lote=lote).values_list('item', flat=True)
+        vencedor = lote.get_empresa_vencedora()
+        title=u'Informar Desconto Unitário Final do %s' % (lote)
+        form = ValorFinalItemLoteForm(request.POST or None)
+        erro_total = False
+        if request.POST:
+            contador = 0
+            for id_do_item in request.POST.getlist('id_item'):
+                tem_erro = False
+                item = ItemSolicitacaoLicitacao.objects.get(pk=id_do_item)
+                valor_informado = Decimal(request.POST.getlist('itens')[contador])
+                item.desconto_item = valor_informado
+                item.save()
+                contador += 1
+
+            messages.success(request, u'Descontos cadastrados com sucesso.')
+            return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao_id)
+        return render(request, 'informar_valor_final_itens_lote.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+
+
+
+
+
 @login_required()
 def gerar_ordem_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
