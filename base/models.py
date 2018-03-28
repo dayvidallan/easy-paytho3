@@ -757,6 +757,9 @@ class ItemSolicitacaoLicitacao(models.Model):
 
     def get_valor_unitario_proposto_item_lote(self):
         proposta = ItemLote.objects.filter(item=self)[0].lote.get_vencedor()
+        if self.get_licitacao().tipo_desconto == TipoPregaoDesconto.TABELA:
+            return self.valor_medio
+
         if proposta:
             if PropostaItemPregao.objects.filter(participante=proposta.participante, item=self).exists():
                 valor_proposto = PropostaItemPregao.objects.filter(participante=proposta.participante, item=self)[0].valor
@@ -765,7 +768,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return 0
 
     def get_valor_total_final_item_lote(self):
-        if self.get_valor_unitario_final_item_lote():
+        if self.get_valor_unitario_final_item_lote() and not self.get_licitacao().tipo_desconto == TipoPregaoDesconto.TABELA:
             return self.get_valor_unitario_final_item_lote() * self.quantidade
         return 0
 
