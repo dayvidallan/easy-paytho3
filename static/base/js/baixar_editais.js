@@ -1,7 +1,5 @@
 $(document).ready(function() {
 	$('#mensagem_erro').hide();
-	$('#dados').hide();
-
 
 	$("#buscapessoa").click(function(event) {
 		$("#mensagem_erro").hide();
@@ -40,6 +38,7 @@ $(document).ready(function() {
 
 		event.preventDefault();
 	});
+
 
 
 });

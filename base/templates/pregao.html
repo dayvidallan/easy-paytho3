@@ -646,7 +646,9 @@
                                                 {{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
                                             {% endif %}
                                         </td>
-                                        <td>{{ lote.get_total_lance_ganhador|format_money }}%</td>
+                                        {% if eh_maior_desconto %}
+                                            <td>{{ lote.get_total_lance_ganhador|format_money }}%</td>
+                                        {% endif %}
                                         <td>{{ lote.get_total_lance_ganhador_lote|format_money }}</td>
 
                                         <td>

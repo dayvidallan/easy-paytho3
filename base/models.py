@@ -3085,17 +3085,8 @@ class AditivoItemContrato(models.Model):
         verbose_name_plural = u'Aditivos de Itens de Contrato'
 
     def __unicode__(self):
-        tipo = u''
-        if self.de_prazo:
-            tipo += u'de Prazo, '
 
-        if self.de_valor:
-            tipo += u'de Valor, '
-
-
-        if len(tipo)==0:
-            tipo = u'Indefinido'
-        return u'Aditivo do Item: (%s)' % (self.item)
+        return u'Aditivo do Item: (%s - %s)' % (self.item, self.tipo)
 
 class ItemContrato(models.Model):
     contrato = models.ForeignKey(Contrato)
