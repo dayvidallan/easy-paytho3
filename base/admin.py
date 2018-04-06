@@ -37,6 +37,14 @@ class ItemAtaRegistroPrecoAdmin(NewModelAdmin):
 
 admin.site.register(ItemAtaRegistroPreco, ItemAtaRegistroPrecoAdmin)
 
+class ItemContratoAdmin(NewModelAdmin):
+    list_display = ('contrato', 'item', 'marca', 'quantidade', 'valor')
+    search_fields = ('contrato__numero', )
+    form = AlterarItemContratoForm
+
+
+admin.site.register(ItemContrato, ItemContratoAdmin)
+
 class FornecedorAdmin(NewModelAdmin):
 
     list_display = ('get_opcoes', 'cnpj', 'razao_social','telefones', 'email')

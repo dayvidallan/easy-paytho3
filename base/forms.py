@@ -190,6 +190,14 @@ class AlterarItemARPForm(forms.ModelForm):
         fields = ['marca', 'valor', 'quantidade']
 
 
+class AlterarItemContratoForm(forms.ModelForm):
+    material = forms.ModelChoiceField(queryset=MaterialConsumo.objects, label=u'Material', required=False, widget=autocomplete.ModelSelect2(url='materialconsumo-autocomplete'))
+
+    class Meta:
+        model = ItemContrato
+        fields = ['marca', 'valor', 'quantidade']
+
+
 class AnoForm(forms.Form):
     METHOD = 'GET'
     ano = forms.ChoiceField([],
