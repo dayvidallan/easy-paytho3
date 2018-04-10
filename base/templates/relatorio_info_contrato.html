@@ -94,6 +94,9 @@ ul{
        <tr>
            <td width="15%"><b>Aplicação do Art. 57 da Lei 8666/93: </b></td><td align="left">{{ contrato.get_aplicacao_artigo_57_display|default_if_none:"-" }}</td>
        </tr>
+       <tr>
+           <td width="15%"><b>Empresa:</b></td><td align="left">{{ contrato.get_fornecedor }}</td>
+       </tr>
    </table>
    <br>
     {% if contrato.aditivos_set.exists %}
