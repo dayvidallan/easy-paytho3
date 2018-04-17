@@ -3141,14 +3141,14 @@ class ItemContrato(models.Model):
 
             pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
 
-            if origem:
-                if pedidos.exists():
-                    return total - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
-                return total + quantidade_aditivo
-            else:
-                if pedidos.exists():
-                    return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
-                return total
+            #if origem:
+            if pedidos.exists():
+                return total - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
+            return total + quantidade_aditivo
+            # else:
+            #     if pedidos.exists():
+            #         return total - pedidos.aggregate(soma=Sum('quantidade'))['soma']
+            #     return total
 
         return 0
 
