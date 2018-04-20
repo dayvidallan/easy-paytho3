@@ -8596,6 +8596,8 @@ def cadastrar_empresa_credenciamento(request, credenciamento_id):
         if form.is_valid():
             if ParticipantePregao.objects.filter(pregao=credenciamento.pregao, fornecedor=form.cleaned_data.get('fornecedor')).exists():
                 ParticipantePregao.objects.filter(pregao=credenciamento.pregao, fornecedor=form.cleaned_data.get('fornecedor')).update(desclassificado=False, excluido_dos_itens=False)
+                participante = ParticipantePregao.objects.filter(pregao=credenciamento.pregao, fornecedor=form.cleaned_data.get('fornecedor'))[0]
+                ResultadoItemPregao.objects.filter(participante=participante).update(situacao=ResultadoItemPregao.CLASSIFICADO)
             else:
                 novo_participante = ParticipantePregao()
                 novo_participante.fornecedor = form.cleaned_data.get('fornecedor')
