@@ -716,9 +716,9 @@
                                         </td>
                                         <td>
 
-                                            {% if recebida_setor and not pregao.data_adjudicacao and not eh_maior_desconto %}
+                                            {% if recebida_setor and not eh_maior_desconto %}
                                                 <a href="/base/informar_valor_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Valor Final</a>
-                                            {% elif recebida_setor and not pregao.data_adjudicacao and eh_maior_desconto %}
+                                            {% elif recebida_setor  and eh_maior_desconto %}
                                                 <a href="/base/informar_desconto_final_itens_lote/{{lote.id}}/{{pregao.id}}/" class="btn btn-success btn-sm">Informar Desconto Final</a>
                                             {% endif %}
 
