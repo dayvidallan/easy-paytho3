@@ -5799,6 +5799,21 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
 def registrar_adjudicacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
+        tem_erro = False
+        if pregao.eh_lote():
+            if pregao.eh_desconto():
+
+                if ItemSolicitacaoLicitacao.objects.filter(eh_lote=False, desconto_item__isnull=True, solicitacao=pregao.solicitacao).exists():
+                    tem_erro = True
+            else:
+                for lote in pregao.solicitacao.get_lotes():
+                    vencedor = lote.get_empresa_vencedora()
+                    if PropostaItemPregao.objects.filter(participante=vencedor, valor_item_lote__isnull=True).exists():
+                        tem_erro = True
+        if tem_erro:
+            messages.error(request, u'Registre os valores finais dos itens ou do desconto do lote antes de adjudicar.')
+            return HttpResponseRedirect(u'/base/pregao/%s/#homologacao' % pregao.id)
+
         title=u'Registrar Adjudicação'
         form = RegistrarAdjudicacaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
