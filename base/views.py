@@ -4838,9 +4838,9 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
             fornecedor = request.POST.get('fornecedor')
             participante = ParticipantePregao.objects.get(id=fornecedor)
 
-            if eh_lote and '0' in request.POST.getlist('quantidades'):
-                messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
-                return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
+            # if eh_lote and '0' in request.POST.getlist('quantidades'):
+            #     messages.error(request, u'Informe a quantidade solicitada para cada item do lote')
+            #     return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_arp/%s/%s/' % (ata_id, solicitacao_atual.id))
 
 
             if eh_lote:
@@ -5057,13 +5057,13 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
             else:
                 resultados = itens_contrato.filter(fornecedor=participante)
 
-            if eh_lote and '0' in request.POST.getlist('quantidades'):
-
-                for idx, item in enumerate(request.POST.getlist('quantidades'), 0):
-                    if item == u'0':
-                         if resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel() > 0:
-                            messages.error(request, u'Informe a quantidade solicitada para cada item do lote.')
-                            return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/%s/' % (contrato_id, solicitacao_atual.id, eh_lote))
+            # if eh_lote and '0' in request.POST.getlist('quantidades'):
+            #
+            #     for idx, item in enumerate(request.POST.getlist('quantidades'), 0):
+            #         if item == u'0':
+            #              if resultados.get(id=request.POST.getlist('id')[idx]).get_quantidade_disponivel() > 0:
+            #                 messages.error(request, u'Informe a quantidade solicitada para cada item do lote.')
+            #                 return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/%s/' % (contrato_id, solicitacao_atual.id, eh_lote))
 
 
             # if eh_lote:
