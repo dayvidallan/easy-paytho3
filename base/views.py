@@ -4804,7 +4804,7 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
     setor = request.user.pessoafisica.setor
     solicitacao_atual = get_object_or_404(SolicitacaoLicitacaoTmp, pk=solicitacao_id)
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    itens_ata = ata.itemataregistropreco_set.all()
+    itens_ata = ata.itemataregistropreco_set.filter(ativo=True)
     solicitacao = ata.solicitacao
     title=u'Pedido de Compra - %s' % ata
     participantes = ParticipantePregao.objects.filter(id__in=itens_ata.values_list('participante', flat=True))
@@ -4930,7 +4930,7 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
     setor = request.user.pessoafisica.setor
     solicitacao_atual = get_object_or_404(SolicitacaoLicitacaoTmp, pk=solicitacao_id)
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
-    itens_ata = ata.itemataregistropreco_set.all()
+    itens_ata = ata.itemataregistropreco_set.filter(ativo=True)
     solicitacao = ata.solicitacao
     title=u'Pedido de Compra - %s' % ata
     participantes = Fornecedor.objects.filter(id__in=itens_ata.values_list('fornecedor', flat=True))

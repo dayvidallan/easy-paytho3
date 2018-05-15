@@ -3266,6 +3266,7 @@ class ItemAtaRegistroPreco(models.Model):
     material = models.ForeignKey('base.MaterialConsumo', null=True)
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     ordem = models.IntegerField(u'Ordem', null=True)
+    ativo = models.BooleanField(u'Ativo', default=True)
 
     class Meta:
         ordering = ['ordem']
