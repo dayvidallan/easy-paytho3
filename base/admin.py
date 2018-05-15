@@ -30,11 +30,13 @@ admin.site.register(ItemSolicitacaoLicitacao, ItemSolicitacaoLicitacaoAdmin)
 
 
 class ItemAtaRegistroPrecoAdmin(NewModelAdmin):
-    list_display = ('ata', 'item', 'marca', 'quantidade', 'valor')
+    list_display = ('ata', 'get_descricao', 'marca', 'quantidade', 'valor')
     search_fields = ('ata__numero', )
     form = AlterarItemARPForm
 
-
+    def get_descricao(self, obj):
+        return obj.material
+    get_descricao.short_description = u'Item'
 admin.site.register(ItemAtaRegistroPreco, ItemAtaRegistroPrecoAdmin)
 
 class ItemContratoAdmin(NewModelAdmin):

@@ -5101,6 +5101,7 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
                         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/%s/' % (contrato_id, solicitacao_atual.id, eh_lote))
                     else:
                         return HttpResponseRedirect(u'/base/informar_quantidades_do_pedido_contrato/%s/%s/' % (contrato_id, solicitacao_atual.id))
+
                 valor_pedido = int(valor)
 
                 if valor_pedido > 0:

@@ -187,7 +187,7 @@ class AlterarItemARPForm(forms.ModelForm):
 
     class Meta:
         model = ItemAtaRegistroPreco
-        fields = ['marca', 'valor', 'quantidade']
+        fields = ['marca', 'valor', 'quantidade', 'fornecedor']
 
 
 class AlterarItemContratoForm(forms.ModelForm):
