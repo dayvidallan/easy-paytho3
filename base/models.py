@@ -1668,6 +1668,9 @@ class Pregao(models.Model):
     def eh_pregao(self):
         return self.modalidade.id  in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.PREGAO]
 
+    def eh_lote(self):
+        return self.criterio.id == CriterioPregao.LOTE
+
     def tem_resultado(self):
         return ResultadoItemPregao.objects.filter(item__solicitacao=self.solicitacao).exists()
 

@@ -5802,7 +5802,7 @@ def registrar_adjudicacao(request, pregao_id):
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         tem_erro = False
         if pregao.eh_lote():
-            if pregao.eh_desconto():
+            if pregao.eh_maior_desconto():
 
                 if ItemSolicitacaoLicitacao.objects.filter(eh_lote=False, desconto_item__isnull=True, solicitacao=pregao.solicitacao).exists():
                     tem_erro = True
