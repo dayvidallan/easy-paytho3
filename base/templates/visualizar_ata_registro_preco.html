@@ -358,7 +358,7 @@
                                                 {% endif %}
                                                 <th>Quantidade Inicial</th>
                                                 <th>Quantidade Disponível</th>
-
+                                                <th>Situação</th>
                                                 <th>Opções</th>
 
 
@@ -375,12 +375,18 @@
                                                         <td>{{ opcao.item }}</td>
                                                         <td>{{ opcao.item.material|truncatechars:500 }}</td>
                                                     {% endif %}
-                                                    <td>{{ opcao.marca|default_if_none:"-" }}</td>
+                                                    <td>{{ opcao.id}} - {{ opcao.marca|default_if_none:"-" }}</td>
                                                     <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                                                     {% if ata.adesao %}
                                                         <td>{{ opcao.fornecedor.razao_social }}</td>
                                                     {% else %}
-                                                        <td>{{ opcao.participante.fornecedor.razao_social }}</td>
+                                                        <td>
+                                                            {% if opcao.fornecedor %}
+                                                                {{ opcao.fornecedor.razao_social }}
+                                                            {% else %}
+                                                                {{ opcao.participante.fornecedor.razao_social }}
+                                                            {% endif %}
+                                                        </td>
                                                     {% endif %}
                                                     <td>{{ opcao.valor|format_money }}</td>
                                                     {% if eh_desconto %}
@@ -388,6 +394,7 @@
                                                     {% endif %}
                                                     <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                     <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                                                    <td>{% if opcao.ativo %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
                                                     <td>
                                                         {% if True or ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
                                                             {% if opcao.tem_varias_secretarias %}
@@ -633,6 +640,7 @@
                 <table class="table table-bordered table-condensed table-striped" width="90%">
                     <thead>
                         <tr>
+                            <th>Item</th>
                             <th>Secretaria de Origem</th>
                             <th>Secretaria de Destino</th>
                             <th>Quantidade</th>
@@ -644,6 +652,7 @@
                     <tbody>
                        {% for registro in tem_transferencias %}
                         <tr>
+                            <td width="45%">{{ registro.item.material }}</td>
                             <td>{{ registro.secretaria_origem }}</td>
                             <td>{{ registro.secretaria_destino}}</td>
                             <td>{{ registro.quantidade }}</td>
