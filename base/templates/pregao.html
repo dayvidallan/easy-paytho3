@@ -635,7 +635,7 @@
                                         <td>
                                             {% if lote.tem_empate or lote.ganhou_com_valor_acima %}
                                                 <font color="red">{{ lote.get_vencedor.participante.fornecedor|default_if_none:"-" }}
-                                                {% if lote.ganhou_com_valor_acima %}
+                                                {% if lote.ganhou_com_valor_acima and not eh_maior_desconto %}
                                                     <br>* Venceu com valor acima do valor máximo.
                                                 {% endif %}
                                                 {% if lote.tem_empate %}
