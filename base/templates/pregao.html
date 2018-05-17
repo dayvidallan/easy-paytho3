@@ -802,7 +802,7 @@
                                             <td>
                                                 {% if item.tem_empate or item.ganhou_com_valor_acima %}
                                                     <font color="red">{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}
-                                                    {% if item.ganhou_com_valor_acima and not eh_desconto %}
+                                                    {% if item.ganhou_com_valor_acima and not eh_maior_desconto %}
                                                         <br>* Venceu com valor acima do valor máximo.
                                                     {% endif %}
                                                     </font>
