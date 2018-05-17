@@ -330,7 +330,7 @@ class PregaoForm(forms.ModelForm):
 
         if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino'):
             teste = self.cleaned_data.get('data_termino')- self.cleaned_data.get('data_inicio')
-            if self.cleaned_data.get('modalidade').nome == u'Pregão Presencial' and teste.days < 10:
+            if self.cleaned_data.get('modalidade').nome in [u'Pregão Presencial', u'Pregão Presencial - Sistema de Registro de Preços (SRP)'] and teste.days < 8:
                 self.add_error('data_termino', u'A data de término deve ser de pelo menos 8 dias úteis de acordo com a legislação atual.')
             elif self.cleaned_data.get('modalidade').nome == u'Carta Convite' and teste.days < 5:
                 self.add_error('data_termino', u'A data de término deve ser de pelo menos 5 dias corridos de acordo com a legislação atual.')
