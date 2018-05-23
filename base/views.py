@@ -2729,7 +2729,7 @@ def importar_itens(request, solicitacao_id):
                                 with transaction.atomic():
                                     Decimal(qtd)
                             except:
-                                messages.error(request, u'a quantidade %s %s é inválida.' % (qtd))
+                                messages.error(request, u'a quantidade %s é inválida.' % (qtd))
                                 return HttpResponseRedirect(u'/base/importar_itens/%s/' % solicitacao.id)
                             if TipoUnidade.objects.filter(nome=unidade).exists():
                                 un = TipoUnidade.objects.filter(nome=unidade)[0]
