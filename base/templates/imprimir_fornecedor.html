@@ -77,6 +77,12 @@ ul{
                     </td>
 
                 </tr>
+                {% if fornecedor.suspenso %}
+                    <tr>
+                        <td colspan="4"><br><b>Fornecedor suspenso até {{ fornecedor.suspenso_ate }}. {% if fornecedor.motivo_suspensao %}Motivo: {{ fornecedor.motivo_suspensao }}{% endif %}</b></td>
+                    </tr>
+
+                {% endif %}
                 <tr>
                     <td colspan="4" align="center"><br><br><br>Emitido em: {{ data_emissao }}</td>
                 </tr>
