@@ -1851,6 +1851,9 @@ class Fornecedor(models.Model):
     endereco = models.CharField(u'Endereço', max_length=255)
     telefones = models.CharField(u'Telefones', max_length=300)
     email = models.EmailField(u'Email')
+    suspenso = models.BooleanField(u'Fornecedor Suspenso', default=False)
+    suspenso_ate = models.DateField(u'Suspenso Até', null=True, blank=True)
+    motivo_suspensao = models.CharField(u'Motivo da Suspensão', max_length=5000, null=True, blank=True)
 
     class Meta:
         verbose_name = u'Fornecedor'

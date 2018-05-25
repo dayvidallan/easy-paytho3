@@ -1100,6 +1100,16 @@ class FornecedorForm(forms.ModelForm):
         model = Fornecedor
         fields = ('__all__')
 
+    class Media:
+            js = ['/static/base/js/fornecedor.js']
+
+    def __init__(self, *args, **kwargs):
+        super(FornecedorForm, self).__init__(*args, **kwargs)
+        self.fields['suspenso_ate'].widget.attrs = {'class': 'vDateField'}
+        self.fields['suspenso_ate'].required=False
+        self.fields['motivo_suspensao'].required=False
+
+
     def clean(self):
         if self.cleaned_data.get('cnpj') and len(self.cleaned_data.get('cnpj')) != 18:
             self.add_error('cnpj', u'Formato inválido.')
@@ -1109,6 +1119,9 @@ class FornecedorForm(forms.ModelForm):
         else:
             if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exclude(id=self.instance.pk).exists():
                 self.add_error('cnpj', u'Já existe um fornecedor cadastrado com esse CNPJ.')
+
+        if self.cleaned_data.get('suspenso') and not self.cleaned_data.get('suspenso_ate'):
+            self.add_error('suspenso_ate', u'Informe até qual data o fornecedor ficará suspenso')
 
 class UploadTermoHomologacaoForm(forms.ModelForm):
     class Meta:

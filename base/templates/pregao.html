@@ -391,8 +391,7 @@
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
-                                <th>CNPJ</th>
-                                <th>Razão Social</th>
+                                <th>Fornecedor</th>
                                 <th>ME/EPP</th>
                                 <th>Nome do Representante</th>
                                 <th>Situação</th>
@@ -403,8 +402,7 @@
                             {%  for item in pregao.participantepregao_set.all %}
                                 <tr>
 
-                                    <td>{{ item.fornecedor.cnpj }}</td>
-                                    <td>{{ item.fornecedor.razao_social }}</td>
+                                    <td>{{ item.fornecedor.razao_social }} - {{ item.fornecedor.cnpj }} {% if item.fornecedor.suspenso %}<span class="label label-danger">Suspenso</span>{% endif %}</td>
                                     <td>
                                         {% if item.me_epp %}
                                             <font color="green">Sim</font></span>

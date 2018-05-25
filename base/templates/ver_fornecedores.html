@@ -60,7 +60,7 @@
                         <th>Endereço</th>
                         <th>Telefones</th>
                         <th>Email</th>
-
+                        <th>Situação</th>
                         <th>Opções</th>
 
                     </tr>
@@ -76,6 +76,13 @@
                            <td>{{ fornecedor.endereco }}</td>
                            <td>{{ fornecedor.telefones }}</td>
                            <td>{{ fornecedor.email }}</td>
+                           <td>
+                               {% if fornecedor.suspenso %}
+                                <span class="label label-danger">Suspenso até {{ fornecedor.suspenso_ate }}. {% if fornecedor.motivo_suspensao %} Motivo: {{ fornecedor.motivo_suspensao }}{% endif %}</span>
+                               {% else %}
+                                <span class="label label-success">Ativo</span>
+                               {% endif %}
+                           </td>
 
                            <td>
                                <ul class="action-bar">
