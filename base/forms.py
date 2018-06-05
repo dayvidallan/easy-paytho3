@@ -1234,7 +1234,7 @@ class EditarPedidoContratoForm(forms.ModelForm):
 
     def clean(self):
         if self.cleaned_data.get('quantidade') and self.instance.item.get_quantidade_disponivel() < self.cleaned_data.get('quantidade'):
-            self.add_error('quantidade', u'A quantidade solicitada é maior do que a quantidade disponível do item.')
+            self.add_error('quantidade', u'A quantidade solicitada é maior do que a quantidade disponível do item (%s).' % self.instance.item.get_quantidade_disponivel())
         return self.cleaned_data
 
 
@@ -1246,7 +1246,7 @@ class EditarPedidoARPForm(forms.ModelForm):
 
     def clean(self):
         if self.cleaned_data.get('quantidade') and self.instance.item.get_quantidade_disponivel() < self.cleaned_data.get('quantidade'):
-            self.add_error('quantidade', u'A quantidade solicitada é maior do que a quantidade disponível do item.')
+            self.add_error('quantidade', u'A quantidade solicitada é maior do que a quantidade disponível do item (%s).' % self.instance.item.get_quantidade_disponivel())
         return self.cleaned_data
 
 class VisitantePregaoForm(forms.ModelForm):
