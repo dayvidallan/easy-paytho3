@@ -2663,7 +2663,12 @@ def informar_quantidades(request, solicitacao_id):
                     novo_preco.solicitacao = solicitacao
                     novo_preco.item = item_do_pregao
                     novo_preco.secretaria = request.user.pessoafisica.setor.secretaria
-                    novo_preco.quantidade = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                    try:
+                        novo_preco.quantidade = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
+                    except:
+                        messages.error(request, u'Utilize apenas números.Valor inválido: %s.' % request.POST.getlist('quantidade')[idx-1])
+                        return HttpResponseRedirect(u'/base/informar_quantidades/%s/' % solicitacao.id)
+
                     novo_preco.save()
 
             messages.success(request, u'Quantidades cadastradas com sucesso. Faça o upload do memorando de solicitação.')

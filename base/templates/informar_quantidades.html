@@ -11,6 +11,7 @@
 
 {% block content %}
 
+    <p class="alert alert-info">Utilize apenas números na coluna 'Quantidade'.</p>
      <form action="." method="post" class="form-horizontal" onsubmit="return confirm('Tem certeza que deseja continuar?');">
             {% csrf_token %}
              <div class="miolo">
