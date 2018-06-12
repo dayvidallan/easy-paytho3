@@ -5814,7 +5814,7 @@ def registrar_adjudicacao(request, pregao_id):
             else:
                 for lote in pregao.solicitacao.get_lotes():
                     vencedor = lote.get_empresa_vencedora()
-                    if PropostaItemPregao.objects.filter(participante=vencedor, valor_item_lote__isnull=True).exists():
+                    if PropostaItemPregao.objects.filter(participante=vencedor, valor_item_lote__isnull=True, item__in=lote.get_itens_do_lote().values_list('id', flat=True)).exists():
                         tem_erro = True
         if tem_erro:
             messages.error(request, u'Registre os valores finais dos itens ou do desconto do lote antes de adjudicar.')
