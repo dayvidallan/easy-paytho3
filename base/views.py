@@ -4670,7 +4670,7 @@ def aprovar_todos_pedidos_secretaria(request, solicitacao_id, secretaria_id):
 def novo_pedido_compra_contrato(request, contrato_id, lote_id=None):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
     title=u'Novo Pedido de Compra - %s' % contrato
-    if contrato.data_fim <= datetime.date.today():
+    if contrato.get_data_fim() <= datetime.date.today():
         contrato.liberada_compra = False
         contrato.save()
     form = NovoPedidoCompraForm(request.POST or None)
