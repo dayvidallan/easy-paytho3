@@ -4694,6 +4694,12 @@ def novo_pedido_compra_contrato(request, contrato_id, lote_id=None):
 def novo_pedido_compra_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
     title=u'Novo Pedido de Compra - %s' % ata
+    if ata.data_fim <= datetime.date.today():
+        ata.liberada_compra = False
+        ata.save()
+        messages.error(request, u'O prazo desta ARP terminou.')
+        return HttpResponseRedirect(u'/base/gestao_pedidos_tipo/')
+
     form = NovoPedidoCompraForm(request.POST or None)
     if form.is_valid():
         o = form.save(False)

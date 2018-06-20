@@ -198,9 +198,11 @@
                     <th>Nº do Ofício</th>
                     <th>Órgão de Origem</th>
                 {% endif %}
+                <th>Valor Total</th>
                 <th>Início da Vigência</th>
                 <th>Término da Vigência</th>
                 <th>Situação</th>
+                <th>Liberada para Compra</th>
 
             </tr>
         </thead>
@@ -213,9 +215,11 @@
                     <td>{{ ata.num_oficio }}</td>
                     <td>{{ ata.orgao_origem|default_if_none:"-" }}</td>
                 {% endif %}
+                <td>{{ ata.get_valor_total|format_money }}</td>
                 <td>{{ ata.data_inicio }}</td>
                 <td>{{ ata.data_fim|default_if_none:"-" }}</td>
-                <td>{{ ata.get_situacao }}</td>
+                <td>{% if ata.get_situacao %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
+                <td>{% if ata.liberada_compra %}<span class="label label-success">Sim</span>{% else %}<span class="label label-danger">Não</span>{% endif %}</td>
             </tr>
 
         </tbody>
@@ -324,7 +328,10 @@
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-                                                    <td colspan="8" align="center"><b>Total do Lote: R$ {{ lote.get_valor_total_lote|format_money }} ({{ lote.get_valor_total_lote|format_numero_extenso }})</b></td>
+                                                    <td colspan="8" align="center"><b>Valor do Lote (Mensal): R$ {{ lote.get_valor_total_lote|format_money }} ({{ lote.get_valor_total_lote|format_numero_extenso }})</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="8" align="center"><b>Total do lote ({{ ata.solicitacao.numero_meses_contratacao_global }} meses): R$ {{ lote.get_valor_total_lote_meses|format_money }} ({{ lote.get_valor_total_lote_meses|format_numero_extenso }})</b></td>
                                                 </tr>
                                             </tbody>
                                         </table>

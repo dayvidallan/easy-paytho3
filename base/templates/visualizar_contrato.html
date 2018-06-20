@@ -210,6 +210,7 @@
                 <th>Valor Aditivado</th>
                 <th>Total do Aditivo do Contrato</th>
                 <th>Situação</th>
+                <th>Liberado para Compra</th>
             </tr>
         </thead>
         <tbody>
@@ -223,7 +224,8 @@
                 <td>{{ contrato.get_valor_aditivado|format_money }}</td>
                 <td>{{ contrato.get_valor_total_com_aditivos|format_money }} {% if eh_global %}(Contratação global: {{ contrato.solicitacao.numero_meses_contratacao_global }} meses){% endif %}</td>
                 <td>{{ contrato.get_total_indices_aditivos }}%</td>
-                <td>{{ contrato.get_situacao }}</td>
+                <td>{% if contrato.get_situacao %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
+                <td>{% if contrato.liberada_compra %}<span class="label label-success">Sim</span>{% else %}<span class="label label-danger">Não</span>{% endif %}</td>
             </tr>
         </tbody>
    </table>

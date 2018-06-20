@@ -1351,6 +1351,12 @@ class ItemSolicitacaoLicitacao(models.Model):
             total += item.get_item_arp().valor * item.quantidade
         return total
 
+    def get_valor_total_lote_meses(self):
+        if self.solicitacao.numero_meses_contratacao_global:
+            return self.get_valor_total_lote() * self.solicitacao.numero_meses_contratacao_global
+        return self.get_valor_total_lote()
+
+
     def get_valor_total_item_lote(self):
         total = 0
         itens = self.get_itens_do_lote()
@@ -2698,7 +2704,10 @@ class AtaRegistroPreco(models.Model):
             itens = itens.filter(fornecedor=ganhador)
         total = 0
         for item in itens:
-            total = total + (item.quantidade * item.valor)
+            valor_do_item = (item.quantidade * item.valor)
+            if self.solicitacao and self.solicitacao.numero_meses_contratacao_global:
+                valor_do_item = valor_do_item * self.solicitacao.numero_meses_contratacao_global
+            total = total + valor_do_item
         return total
 
     def get_itens(self):
