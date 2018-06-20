@@ -193,6 +193,7 @@
                 <th>Início da Vigência</th>
                 <th>Término da Vigência</th>
                 <th>Situação</th>
+                <th>Liberado para Compra</th>
 
             </tr>
         </thead>
@@ -205,7 +206,8 @@
 
                 <td>{{ credenciamento.data_inicio }}</td>
                 <td>{{ credenciamento.data_fim|default_if_none:"-" }}</td>
-                <td>{{ credenciamento.get_situacao }}</td>
+                <td>{% if credenciamento.get_situacao %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
+                <td>{% if credenciamento.liberada_compra %}<span class="label label-success">Sim</span>{% else %}<span class="label label-danger">Não</span>{% endif %}</td>
             </tr>
 
         </tbody>

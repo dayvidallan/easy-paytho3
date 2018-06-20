@@ -4670,6 +4670,9 @@ def aprovar_todos_pedidos_secretaria(request, solicitacao_id, secretaria_id):
 def novo_pedido_compra_contrato(request, contrato_id, lote_id=None):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
     title=u'Novo Pedido de Compra - %s' % contrato
+    if contrato.data_fim <= datetime.date.today():
+        contrato.liberada_compra = False
+        contrato.save()
     form = NovoPedidoCompraForm(request.POST or None)
 
 
@@ -4722,6 +4725,9 @@ def novo_pedido_compra_arp(request, ata_id):
 def novo_pedido_compra_credenciamento(request, credenciamento_id):
     credenciamento = get_object_or_404(Credenciamento, pk=credenciamento_id)
     title=u'Novo Pedido de Compra - %s' % credenciamento
+    if credenciamento.data_fim <= datetime.date.today():
+        credenciamento.liberada_compra = False
+        credenciamento.save()
     form = NovoPedidoCompraForm(request.POST or None)
     if form.is_valid():
         o = form.save(False)
