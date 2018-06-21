@@ -9,43 +9,41 @@
 
 {% block content %}
 
-    {% if perms.base.pode_cadastrar_pregao %}
-        {% if licitacoes_agendadas.exists %}
-            <h3>Licitações com data de movimentação nos próximos 15 dias:</h3>
-            <table class="table table-bordered table-condensed table-striped">
-                {% for pregao in licitacoes_agendadas %}
-                    <tr><td><a href="/base/pregao/{{ pregao.id }}/" target="_blank">{{ pregao }} - {{ pregao.data_abertura }} às {{ pregao.hora_abertura }}{% if pregao.data_retorno %} - Retorno em {{ pregao.data_retorno }}{% endif %}</a></td></tr>
-                {% endfor %}
-            </table>
-        {% endif %}
 
+    {% if licitacoes_agendadas.exists %}
+        <h3>Licitações com data de movimentação nos próximos 15 dias:</h3>
+        <table class="table table-bordered table-condensed table-striped">
+            {% for pregao in licitacoes_agendadas %}
+                <tr><td><a href="/base/pregao/{{ pregao.id }}/" target="_blank">{{ pregao }} - {{ pregao.data_abertura }} às {{ pregao.hora_abertura }}{% if pregao.data_retorno %} - Retorno em {{ pregao.data_retorno }}{% endif %}</a></td></tr>
+            {% endfor %}
+        </table>
     {% endif %}
-    {% if perms.base.pode_gerenciar_contrato %}
-        {% if contratos_sem_vigencia.exists %}
-            <h3>Contratos com a vigência encerrada:</h3>
-            <table class="table table-bordered table-condensed table-striped">
-                {% for contrato in contratos_sem_vigencia %}
-                    <tr><td><a href="/base/visualizar_contrato/{{ contrato.id }}/" target="_blank">{{ contrato }}  - {{ contrato.get_data_fim }}</a></td></tr>
-                {% endfor %}
-            </table>
-        {% endif %}
-        {% if contratos_a_vencer.exists %}
-            <h3>Contratos com vencimento nos próximos 30 dias:</h3>
-            <table class="table table-bordered table-condensed table-striped">
-                {% for contrato in contratos_a_vencer %}
-                    <tr><td><a href="/base/visualizar_contrato/{{ contrato.id }}/" target="_blank">{{ contrato }}  - {{ contrato.get_data_fim }}</a></td></tr>
-                {% endfor %}
-            </table>
-        {% endif %}
-        {% if atas_a_vencer.exists %}
-            <h3>Atas de Registro de Preço com vencimento nos próximos 30 dias:</h3>
-            <table class="table table-bordered table-condensed table-striped">
-                {% for ata in atas_a_vencer %}
-                    <tr><td><a href="/base/visualizar_ata_registro_preco/{{ ata.id }}/" target="_blank">{{ ata }}  - {{ ata.get_data_fim }}</a></td></tr>
-                {% endfor %}
-            </table>
-        {% endif %}
+
+    {% if contratos_sem_vigencia.exists %}
+        <h3>Contratos com a vigência encerrada:</h3>
+        <table class="table table-bordered table-condensed table-striped">
+            {% for contrato in contratos_sem_vigencia %}
+                <tr><td><a href="/base/visualizar_contrato/{{ contrato.id }}/" target="_blank">{{ contrato }}  - {{ contrato.get_data_fim }}</a></td></tr>
+            {% endfor %}
+        </table>
     {% endif %}
+    {% if contratos_a_vencer.exists %}
+        <h3>Contratos com vencimento nos próximos 30 dias:</h3>
+        <table class="table table-bordered table-condensed table-striped">
+            {% for contrato in contratos_a_vencer %}
+                <tr><td><a href="/base/visualizar_contrato/{{ contrato.id }}/" target="_blank">{{ contrato }}  - {{ contrato.get_data_fim }}</a></td></tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    {% if atas_a_vencer.exists %}
+        <h3>Atas de Registro de Preço com vencimento nos próximos 30 dias:</h3>
+        <table class="table table-bordered table-condensed table-striped">
+            {% for ata in atas_a_vencer %}
+                <tr><td><a href="/base/visualizar_ata_registro_preco/{{ ata.id }}/" target="_blank">{{ ata }}  - {{ ata.data_fim }}</a></td></tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
     {% if not tem_notificacao %}
         <p class="alert alert-info">Nenhuma notificação.</p>
     {% endif %}

@@ -9586,40 +9586,48 @@ def notificacoes(request):
     hoje = datetime.date.today()
 
     tem_notificacao = False
-    if request.user.has_perm('base.pode_cadastrar_pregao'):
-        prazo_15dias = hoje + timedelta(days=15)
-        licitacoes_agendadas = Pregao.objects.filter(data_abertura__gte=hoje, data_abertura__lte=prazo_15dias).order_by('data_abertura')
-        if licitacoes_agendadas.exists():
-            tem_notificacao = True
-
-    if request.user.has_perm('base.pode_gerenciar_contrato'):
-        ids_a_vencer = list()
-        contratos_a_vencer = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False)
-        hoje = datetime.datetime.now().date()
-        for contrato in contratos_a_vencer:
-            vencimento = contrato.get_data_fim()
-            if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
-                ids_a_vencer.append(contrato.id)
-        contratos_a_vencer = contratos_a_vencer.filter(id__in=ids_a_vencer)
+    secretaria_do_usuario = request.user.pessoafisica.setor.secretaria
+    prazo_15dias = hoje + timedelta(days=15)
+    licitacoes_agendadas = Pregao.objects.filter(data_abertura__gte=hoje, data_abertura__lte=prazo_15dias).order_by('data_abertura')
+    if not request.user.has_perm('base.pode_cadastrar_pregao'):
+        licitacoes_agendadas = licitacoes_agendadas.filter(solicitacao__setor_origem__secretaria=secretaria_do_usuario)
+    if licitacoes_agendadas.exists():
+        tem_notificacao = True
 
 
-        ids_atas_a_vencer = list()
-        atas_a_vencer = AtaRegistroPreco.objects.filter(suspenso=False, cancelado=False, concluido=False)
-        hoje = datetime.datetime.now().date()
-        for ata in atas_a_vencer:
-            vencimento = ata.data_fim
-            if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
-                ids_atas_a_vencer.append(ata.id)
-        atas_a_vencer = atas_a_vencer.filter(id__in=ids_atas_a_vencer)
+    ids_a_vencer = list()
+    contratos_a_vencer = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False)
+    if not request.user.has_perm('base.pode_gerenciar_contrato'):
+        contratos_a_vencer = contratos_a_vencer.filter(solicitacao__setor_origem__secretaria=secretaria_do_usuario)
+    hoje = datetime.datetime.now().date()
+    for contrato in contratos_a_vencer:
+        vencimento = contrato.get_data_fim()
+        if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
+            ids_a_vencer.append(contrato.id)
+    contratos_a_vencer = contratos_a_vencer.filter(id__in=ids_a_vencer)
 
-        contratos_sem_vigencia = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False, data_inicio__lte=hoje)
-        ids_vencidos = list()
-        for item in contratos_sem_vigencia:
-            if item.get_data_fim() < hoje:
-                if item.eh_gerente(request.user):
-                    ids_vencidos.append(item.id)
-                    tem_notificacao = True
-        contratos_sem_vigencia = contratos_sem_vigencia.filter(id__in=ids_vencidos)
+
+    ids_atas_a_vencer = list()
+    atas_a_vencer = AtaRegistroPreco.objects.filter(suspenso=False, cancelado=False, concluido=False)
+    if not request.user.has_perm('base.pode_gerenciar_contrato'):
+        atas_a_vencer = atas_a_vencer.filter(solicitacao__setor_origem__secretaria=secretaria_do_usuario)
+    hoje = datetime.datetime.now().date()
+    for ata in atas_a_vencer:
+        vencimento = ata.data_fim
+        if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
+            ids_atas_a_vencer.append(ata.id)
+    atas_a_vencer = atas_a_vencer.filter(id__in=ids_atas_a_vencer)
+
+    contratos_sem_vigencia = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False, data_inicio__lte=hoje)
+    if not request.user.has_perm('base.pode_gerenciar_contrato'):
+        contratos_sem_vigencia = contratos_sem_vigencia.filter(solicitacao__setor_origem__secretaria=secretaria_do_usuario)
+    ids_vencidos = list()
+    for item in contratos_sem_vigencia:
+        if item.get_data_fim() < hoje:
+            if item.eh_gerente(request.user):
+                ids_vencidos.append(item.id)
+                tem_notificacao = True
+    contratos_sem_vigencia = contratos_sem_vigencia.filter(id__in=ids_vencidos)
 
     return render(request, 'notificacoes.html', locals(), RequestContext(request))
 

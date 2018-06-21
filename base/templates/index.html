@@ -141,26 +141,23 @@
 
 
     {% endif %}
-    {% if perms.base.pode_gerenciar_contrato or  perms.base.pode_cadastrar_pregao %}
-        <a href="/notificacoes/">
-
-            <div class="col-lg-2 col-md-4">
-                <div class="panel panel-danger">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-bell fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ num_membros }}</div>
-                                <div><strong>Notificações</strong></div>
-                            </div>
+    <a href="/notificacoes/">
+        <div class="col-lg-2 col-md-4">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-bell fa-3x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{{ num_membros }}</div>
+                            <div><strong>Notificações</strong></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </a>
-    {% endif %}
+        </div>
+    </a>
     <a href="/base/modelos_documentos/">
         <div class="col-lg-2 col-md-4">
             <div class="panel panel-success">
