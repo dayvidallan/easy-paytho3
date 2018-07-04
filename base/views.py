@@ -9602,7 +9602,7 @@ def notificacoes(request):
     hoje = datetime.datetime.now().date()
     for contrato in contratos_a_vencer:
         vencimento = contrato.get_data_fim()
-        if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
+        if vencimento > hoje and vencimento < (hoje + timedelta(days=60)):
             ids_a_vencer.append(contrato.id)
     contratos_a_vencer = contratos_a_vencer.filter(id__in=ids_a_vencer)
 
@@ -9614,7 +9614,7 @@ def notificacoes(request):
     hoje = datetime.datetime.now().date()
     for ata in atas_a_vencer:
         vencimento = ata.data_fim
-        if vencimento > hoje and vencimento < (hoje + timedelta(days=30)):
+        if vencimento > hoje and vencimento < (hoje + timedelta(days=60)):
             ids_atas_a_vencer.append(ata.id)
     atas_a_vencer = atas_a_vencer.filter(id__in=ids_atas_a_vencer)
 

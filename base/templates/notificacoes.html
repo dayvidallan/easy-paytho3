@@ -28,7 +28,7 @@
         </table>
     {% endif %}
     {% if contratos_a_vencer.exists %}
-        <h3>Contratos com vencimento nos próximos 30 dias:</h3>
+        <h3>Contratos com vencimento nos próximos 60 dias:</h3>
         <table class="table table-bordered table-condensed table-striped">
             {% for contrato in contratos_a_vencer %}
                 <tr><td><a href="/base/visualizar_contrato/{{ contrato.id }}/" target="_blank">{{ contrato }}  - {{ contrato.get_data_fim }}</a></td></tr>
@@ -36,7 +36,7 @@
         </table>
     {% endif %}
     {% if atas_a_vencer.exists %}
-        <h3>Atas de Registro de Preço com vencimento nos próximos 30 dias:</h3>
+        <h3>Atas de Registro de Preço com vencimento nos próximos 60 dias:</h3>
         <table class="table table-bordered table-condensed table-striped">
             {% for ata in atas_a_vencer %}
                 <tr><td><a href="/base/visualizar_ata_registro_preco/{{ ata.id }}/" target="_blank">{{ ata }}  - {{ ata.data_fim }}</a></td></tr>
