@@ -9605,6 +9605,8 @@ def notificacoes(request):
         if vencimento > hoje and vencimento < (hoje + timedelta(days=60)):
             ids_a_vencer.append(contrato.id)
     contratos_a_vencer = contratos_a_vencer.filter(id__in=ids_a_vencer)
+    if contratos_a_vencer.exists():
+        tem_notificacao = True
 
 
     ids_atas_a_vencer = list()
@@ -9617,6 +9619,8 @@ def notificacoes(request):
         if vencimento > hoje and vencimento < (hoje + timedelta(days=60)):
             ids_atas_a_vencer.append(ata.id)
     atas_a_vencer = atas_a_vencer.filter(id__in=ids_atas_a_vencer)
+    if atas_a_vencer.exists():
+        tem_notificacao = True
 
     contratos_sem_vigencia = Contrato.objects.filter(suspenso=False, cancelado=False, concluido=False, data_inicio__lte=hoje)
     if not request.user.has_perm('base.pode_gerenciar_contrato'):
@@ -9628,7 +9632,8 @@ def notificacoes(request):
                 ids_vencidos.append(item.id)
                 tem_notificacao = True
     contratos_sem_vigencia = contratos_sem_vigencia.filter(id__in=ids_vencidos)
-
+    if contratos_sem_vigencia.exists():
+        tem_notificacao = True
     return render(request, 'notificacoes.html', locals(), RequestContext(request))
 
 @login_required()
