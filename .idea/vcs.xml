@@ -3,6 +3,5 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../integra" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../telediagnostico" vcs="Git" />
   </component>
 </project>
