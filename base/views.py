@@ -1591,18 +1591,33 @@ def remover_participante(request, proposta_id, situacao):
         elif situacao == u'2':
             title=u'Registrar Desistências'
 
+        elif situacao == u'4':
+            title = u'Registrar Motivo da Reintegração'
+
+
+
         form = RemoverParticipanteForm(request.POST or None)
         if form.is_valid():
             if situacao in [u'1', u'3']:
                 proposta.desclassificado = True
                 proposta.motivo_desclassificacao = form.cleaned_data.get('motivo')
+                proposta.concorre = False
+                proposta.save()
 
             elif situacao == u'2':
                 proposta.desistencia = True
                 proposta.motivo_desistencia = form.cleaned_data.get('motivo')
 
-            proposta.concorre = False
-            proposta.save()
+                proposta.concorre = False
+                proposta.save()
+
+            elif situacao == u'4':
+
+                proposta.desclassificado = False
+                proposta.motivo_desclassificacao = None
+                proposta.concorre = True
+                proposta.save()
+
 
             historico = HistoricoPregao()
             historico.pregao = proposta.pregao
@@ -1611,9 +1626,11 @@ def remover_participante(request, proposta_id, situacao):
                 historico.obs = u'Desclassificação do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
             elif situacao == u'2':
                 historico.obs = u'Desistência do participante: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
+            elif situacao == u'4':
+                historico.obs = u'Reintegração: %s do Item: %s. Motivo: %s' % (proposta.participante, proposta.item.item, form.cleaned_data.get('motivo'))
             historico.save()
             messages.success(request, u'Desistência/Desclassificação registrada com sucesso.')
-            if situacao == u'3':
+            if situacao in [u'3', u'4']:
                 return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (proposta.pregao.id, proposta.participante.id))
             else:
                 return HttpResponseRedirect(u'/base/lances_item/%s/' % proposta.item.id)

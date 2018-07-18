@@ -3307,6 +3307,7 @@ class ItemAtaRegistroPreco(models.Model):
             perdeu_item = 0
             ganhou_item = 0
             total = 0
+            
             if self.ata.adesao:
                 total = self.quantidade
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():

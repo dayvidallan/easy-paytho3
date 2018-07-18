@@ -119,9 +119,14 @@
                                         <td>{{ item.marca|default_if_none:"-" }}</td>
                                         <td>{{ item.valor }}</td>
                                         <td>
-                                            {% if not item.item.tem_lance_registrado and item.ativo %}
-                                                <a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a>
-                                                <a href="/base/remover_participante/{{ item.id }}/3/" class="btn btn-danger btn-sm">Desclassificar</a>
+                                            {% if not item.item.tem_lance_registrado %}
+                                                {% if item.ativo %}
+                                                    <a href="/base/editar_proposta/{{ item.id }}/" class="btn btn-success btn-sm">Editar</a>
+                                                    <a href="/base/remover_participante/{{ item.id }}/3/" class="btn btn-danger btn-sm">Desclassificar</a>
+                                                {% else %}
+                                                    <a href="/base/remover_participante/{{ item.id }}/4/" class="btn btn-success btn-sm">Reintegrar</a>
+                                                {% endif %}
+
                                             {% endif %}
                                         </td>
                                     </tr>
