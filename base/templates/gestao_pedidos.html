@@ -446,7 +446,7 @@
                                                         <td>{{ opcao.item.material|truncatechars:500 }}</td>
                                                     {% endif %}
                                                     <td>{{ opcao.marca|default_if_none:"-" }}</td>
-                                                    {% if ata.adesao %}
+                                                    {% if ata.adesao or opcao.fornecedor %}
                                                         <td>{{ opcao.fornecedor }}</td>
                                                     {% else %}
                                                         <td>{{ opcao.participante }}</td>
