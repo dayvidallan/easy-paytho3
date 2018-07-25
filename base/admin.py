@@ -295,7 +295,7 @@ admin.site.register(Contrato, ContratoAdmin)
 class MaterialConsumoAdmin(NewModelAdmin):
     list_display = ('codigo', 'nome',)
     ordering = ('nome',)
-    search_fields = ('nome', )
+    search_fields = ('nome', 'codigo', )
     form = MaterialConsumoForm
 
     def save_model(self, request, obj, form, change):
