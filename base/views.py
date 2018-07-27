@@ -39,7 +39,7 @@ from django.db import transaction
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx import Document
 from docx.shared import Inches, Pt
-
+from base.formwidgets import CalendarioPlus
 
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
@@ -10810,3 +10810,138 @@ def editar_certidao(request, certidao_id):
         messages.success(request, u'Certidão editada com sucesso.')
         return HttpResponseRedirect(u'/base/ver_crc/%s/' % certidao.crc.fornecedor.id)
     return render(request, 'cadastrar_certidao_crc.html', locals(), RequestContext(request))
+
+
+@login_required()
+def ver_calendario(request):
+    title = u'Calendário de Atividades'
+
+    # ------------
+    # até o mês do último agendamento que 'caia' pelo menos dentro do mês corrente
+    qs_solicitacoes = Pregao.objects.all().order_by('data_abertura')
+    cal_meses = []
+
+    uo = u''
+    setor = u''
+    status = u''
+    mes_filtro = u''
+    ano_filtro = u''
+
+    data_agora = datetime.datetime.now()
+    ano_corrente = data_agora.year
+    mes_corrente = data_agora.month
+    # if request.GET.get('status__exact'):
+    #     status = request.GET.get('status__exact')
+    #     qs_solicitacoes = ViagemAgendamento.objects.filter(status=status)
+    #
+    # data_agora = datetime.now()
+    # ano_corrente = data_agora.year
+    # mes_corrente = data_agora.month
+    #
+    # if request.GET.get('setor__uo__id__exact'):
+    #     uo = get_object_or_404(UnidadeOrganizacional, pk=request.GET.get('setor__uo__id__exact'))
+    #     qs_solicitacoes = qs_solicitacoes.filter(setor__uo=uo)
+    #
+    # if not request.user.has_perm('frota.tem_acesso_viatura_sistemico'):
+    #     qs_solicitacoes = qs_solicitacoes.filter(setor__uo=get_uo(request.user))
+    #
+    # if request.GET.get('setor__id__exact'):
+    #     setor = get_object_or_404(Setor, pk=request.GET.get('setor__id__exact'))
+    #     qs_solicitacoes = qs_solicitacoes.filter(setor=setor)
+    #
+    # if request.GET.get('data_saida__year'):
+    #     ano_filtro = int(request.GET.get('data_saida__year'))
+    #     qs_solicitacoes = qs_solicitacoes.filter(data_saida__year=ano_filtro)
+    #     ano_corrente = ano_filtro
+    #
+    #     if request.GET.get('data_saida__month'):
+    #         mes_filtro = int(request.GET.get('data_saida__month'))
+    #         qs_solicitacoes = qs_solicitacoes.filter(data_saida__month=mes_filtro)
+    #         mes_corrente = mes_filtro
+    #     else:
+    #         mes_corrente = 1
+    # else:
+    #     qs_solicitacoes = qs_solicitacoes.filter(data_saida__year=data_agora.date().year)
+
+    if qs_solicitacoes.exists():
+
+        data_fim = datetime.date(2018, 12 ,31)
+        if (data_fim.year == ano_corrente and data_fim.month >= mes_corrente) or (data_fim.year > ano_corrente):
+            ultimo_ano = data_fim.year
+            ultimo_mes = data_fim.month
+
+            cal = CalendarioPlus()
+            cal.mostrar_mes_e_ano = True
+
+            mes = mes_corrente  # inicializa mês
+
+            for ano in range(ano_corrente, ultimo_ano + 1):
+                mes_final = 12  # por padrão
+                if ano == ultimo_ano:
+                    mes_final = ultimo_mes
+                for mes in range(mes, mes_final + 1):
+                    # -----------------------
+                    # Adição das Solicitações
+                    for solicitacao in qs_solicitacoes:
+                        solicitacao_conflito = False
+                        for [agenda_data_inicio, agenda_data_fim] in [
+                            [solicitacao.data_abertura, solicitacao.data_abertura]]:
+                            if agenda_data_inicio.year == ano and agenda_data_inicio.month == mes:
+
+                                dia_todo_list = False
+
+                                if solicitacao.situacao in [Pregao.CONCLUIDO, Pregao.ADJUDICADO]:
+                                    css = 'success'
+                                elif solicitacao.situacao == Pregao.CADASTRADO:
+                                    css = 'alert'
+                                else:
+
+                                    css = 'error'
+
+                                # Se for o dia todo os eventos são separados, o primeiro e o ultimo tem o horário diferenciado
+                                if dia_todo_list:
+
+                                    data_fim = datetime.datetime(agenda_data_inicio.year,
+                                                        agenda_data_inicio.month,
+                                                        agenda_data_inicio.day,
+                                                        23, 59, 59)  # hour,minute,second
+                                    horario = u'{} às {}'.format(agenda_data_inicio.strftime("%H:%M"),
+                                                                 data_fim.strftime("%H:%M"))
+
+                                    descricao = u'<a href="/frota/agendamento/{}/"><strong>{}</strong> {}</a>'.format(
+                                        solicitacao.id, horario, solicitacao.objeto)
+
+                                    cal.adicionar_evento_calendario(agenda_data_inicio, data_fim, descricao, css)
+
+                                    for dia_todo in dia_todo_list:
+                                        if dia_todo.day != agenda_data_fim.day:
+                                            horario = u'Todo o dia'
+
+                                            descricao = u'<a href="/frota/agendamento/{}/"><strong>{}</strong> {}</a>'.format(
+                                                solicitacao.id, horario, solicitacao.objeto)
+
+                                            cal.adicionar_evento_calendario(dia_todo, dia_todo, descricao, css,
+                                                                            dia_todo=True)
+
+                                    data_inicio = datetime.datetime(agenda_data_fim.year,
+                                                           agenda_data_fim.month,
+                                                           agenda_data_fim.day,
+                                                           0, 0, 0)  # hour,minute,second
+                                    horario = u'{} às {}'.format(data_inicio.strftime("%H:%M"),
+                                                                 agenda_data_fim.strftime("%H:%M"))
+                                    descricao = u'<a href="/frota/agendamento/{}/"><strong>{}</strong> {}</a>'.format(
+                                        solicitacao.id, horario, solicitacao.objeto)
+
+                                    cal.adicionar_evento_calendario(data_inicio, agenda_data_fim, descricao, css)
+                                else:
+                                    horario = u'Início às {}'.format(solicitacao.hora_abertura.strftime("%H:%M"))
+                                    descricao = u'<a href="/base/pregao/{}/" target="_blank"><strong>{}</strong> Abertura das Propostas: Licitação {}</a>'.format(
+                                        solicitacao.id, horario, solicitacao.num_pregao)
+
+                                    cal.adicionar_evento_calendario(agenda_data_inicio, agenda_data_fim, descricao,
+                                                                    css)
+                    cal_meses.append(cal.formato_mes(ano, mes))
+                    # -------------------
+                mes = 1
+
+    return render(request, 'ver_calendario.html', locals(), RequestContext(request))

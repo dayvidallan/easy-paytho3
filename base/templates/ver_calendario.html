@@ -1,0 +1,29 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+	{% if cal_meses %}
+		<div class="legenda">
+			<p>Legenda:</p>
+			<ul>
+				<li class="hoje">Hoje</li>
+				<li class="success">Licitações Concluídas</li>
+                <li class="alert">Licitações Previstas</li>
+				<li class="error">Licitações Suspensas</li>
+			</ul>
+		</div>
+		{% for mes in cal_meses %}
+			{{ mes|safe }}
+		{% endfor %}
+	{% else %}
+		<p class="msg alert">Nenhum agendamento encontrado.</p>
+	{% endif %}
+
+{% endblock %}

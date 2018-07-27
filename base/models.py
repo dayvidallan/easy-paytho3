@@ -1538,6 +1538,7 @@ class Pregao(models.Model):
     def __unicode__(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
 
+
     def save(self):
 
         if self.modalidade.id in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.CONCORRENCIA_SRP]:
