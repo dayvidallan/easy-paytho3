@@ -7544,7 +7544,11 @@ def ata_sessao_outras_modalidades(request, pregao_id):
 
 
             resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
-            total_geral = total_geral + result[1]['total']
+            if pregao.solicitacao.contratacao_global:
+                resultado_pregao = resultado_pregao + u'(contratação global de %s meses: R$: %s (%s)), ' % (pregao.solicitacao.numero_meses_contratacao_global, format_money(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global), format_numero_extenso(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global))
+                total_geral = total_geral + (result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global)
+            else:
+                total_geral = total_geral + result[1]['total']
 
 
     document = Document()
