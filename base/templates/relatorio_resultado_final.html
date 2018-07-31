@@ -78,9 +78,8 @@ ul{
             {% else %}
                 <tr>
                     <th width="7%">Item</th>
-                    <th>Material/Serviço</th>
-                    <th width="15%">Unidade</th>
-                    <th width="13%">Qtd</th>
+                    <th width="35%">Material/Serviço</th>
+
                     {% if not pregao.eh_credenciamento %}
                         <th width="25%">Vencedora</th>
                     {% endif %}
@@ -89,11 +88,11 @@ ul{
                         <th width="20%">Valor Médio</th>
                         <th width="20%">Desconto</th>
                     {% else %}
-                        <th width="20%">Valor Unit.</th>
-                        <th width="20%">Total</th>
+                        <th width="25%">Valor Unit.</th>
+                        <th width="25%">Total</th>
                     {% endif %}
                     {% if eh_global %}
-                        <th>Total Geral (R$)<br><small>contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses</small></th>
+                        <th width="25%">Total Geral (R$)<br><small>contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses</small></th>
                     {% endif %}
 
 
@@ -127,9 +126,8 @@ ul{
 
                     <tr>
                         <td>{{ item.item }}</td>
-                        <td style="text-align: left;">{{ item.material }} - MARCA: {{ item.get_vencedor.marca|default_if_none:"-" }}</td>
-                        <td>{{ item.unidade }}</td>
-                        <td>{{ item.quantidade|format_quantidade  }}</td>
+                        <td style="text-align: left;">{{ item.material }} - UNIDADE: {{ item.unidade }} - QUANTIDADE: {{ item.quantidade|format_quantidade  }} - MARCA: {{ item.get_vencedor.marca|default_if_none:"-" }}</td>
+
                         {% if not pregao.eh_credenciamento %}
                             <td>{{ item.get_vencedor.participante.fornecedor|default_if_none:"-" }}</td>
                         {% endif %}
