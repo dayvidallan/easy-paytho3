@@ -187,7 +187,14 @@ class AlterarItemARPForm(forms.ModelForm):
 
     class Meta:
         model = ItemAtaRegistroPreco
-        fields = ['marca', 'valor', 'quantidade', 'unidade', 'fornecedor', 'ativo']
+        fields = ['marca', 'valor', 'quantidade', 'unidade', 'fornecedor', 'participante', 'ativo']
+
+    def __init__(self, *args, **kwargs):
+        super(AlterarItemARPForm, self).__init__(*args, **kwargs)
+        if self.instance.ata.pregao:
+            self.fields['participante'].queryset = ParticipantePregao.objects.filter(id__in=self.instance.ata.pregao.participantepregao_set.values_list('id', flat=True))
+
+
 
 
 class AlterarItemContratoForm(forms.ModelForm):
