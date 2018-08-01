@@ -7281,7 +7281,7 @@ def ata_sessao_credenciamento(request, pregao_id):
             else:
                 total_geral = total_geral + result[1]['total']
 
-            
+
 
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
     from docx import Document

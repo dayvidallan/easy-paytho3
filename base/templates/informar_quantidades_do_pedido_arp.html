@@ -131,7 +131,7 @@
                                     {% endif %}
                                     <td>{{ resultado.marca|default_if_none:"-" }}</td>
                                     <td>{{ resultado.unidade|default_if_none:"-" }}</td>
-                                    {% if not origem_pregao %}
+                                    {% if not origem_pregao or resultado.fornecedor %}
                                         <td>{{ resultado.fornecedor }}</td>
                                     {% else %}
                                         <td>{{ resultado.participante }}</td>
