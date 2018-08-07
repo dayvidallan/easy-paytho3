@@ -238,8 +238,8 @@ class SolicitacaoLicitacaoTmp(models.Model):
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
     TIPO_AQUISICAO_COMPRA = u'Compra'
     TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
-    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 8.000,00)'
-    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 15.000,00)'
+    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 17.600,00)'
+    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 33.000,00)'
     CREDENCIAMENTO = u'Credenciamento'
     CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = u'Chamada Pública - Alimentação Escolar'
     CHAMADA_PUBLICA_OUTROS = u'Chamada Pública - Outros'
@@ -247,8 +247,8 @@ class SolicitacaoLicitacaoTmp(models.Model):
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
         (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
-        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
-        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 17.600,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 33.000,00 - Obras ou Serviços de Engenharia)'),
         (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
         (CREDENCIAMENTO, CREDENCIAMENTO),
         (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
@@ -406,9 +406,9 @@ class SolicitacaoLicitacao(models.Model):
         if self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO:
             return False
         if self.tem_item_cadastrado() and ItemPesquisaMercadologica.objects.filter(pesquisa__solicitacao=self).exists():
-            if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao_dispensa() > 8000:
+            if self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_8MIL and self.get_valor_da_solicitacao_dispensa() > 17600:
                 return True
-            elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao_dispensa() > 15000:
+            elif self.tipo_aquisicao == self.DISPENSA_LICITACAO_ATE_15MIL and self.get_valor_da_solicitacao_dispensa() > 33000:
                 return True
         return False
 
