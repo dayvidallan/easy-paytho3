@@ -315,8 +315,8 @@ class SolicitacaoLicitacao(models.Model):
     TIPO_AQUISICAO_INEXIGIBILIDADE = u'Inexigibilidade'
     TIPO_AQUISICAO_COMPRA = u'Compra'
     TIPO_AQUISICAO_ADESAO_ARP = u'Adesão à ARP'
-    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 8.000,00)'
-    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 15.000,00)'
+    DISPENSA_LICITACAO_ATE_8MIL = u'Dispensa de Licitação (Até R$ 17.600,00)'
+    DISPENSA_LICITACAO_ATE_15MIL = u'Dispensa de Licitação (Até R$ 33.000,00)'
     CREDENCIAMENTO = u'Credenciamento'
     CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR = u'Chamada Pública - Alimentação Escolar'
     CHAMADA_PUBLICA_OUTROS = u'Chamada Pública - Outros'
@@ -326,8 +326,8 @@ class SolicitacaoLicitacao(models.Model):
     TIPO_AQUISICAO_CHOICES = (
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
         (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
-        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
-        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 17.600,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 33.000,00 - Obras ou Serviços de Engenharia)'),
         (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
         (CREDENCIAMENTO, CREDENCIAMENTO),
         (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
@@ -340,8 +340,8 @@ class SolicitacaoLicitacao(models.Model):
         ('Compra', 'Compra'),
         (TIPO_AQUISICAO_LICITACAO, TIPO_AQUISICAO_LICITACAO),
         (TIPO_AQUISICAO_DISPENSA, u'Dispensa de Licitação (Outros)'),
-        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 8.000,00 - Aquisição de Bens ou Serviços Comuns)'),
-        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 15.000,00 - Obras ou Serviços de Engenharia)'),
+        (DISPENSA_LICITACAO_ATE_8MIL, u'Dispensa de Licitação (Até R$ 17.600,00 - Aquisição de Bens ou Serviços Comuns)'),
+        (DISPENSA_LICITACAO_ATE_15MIL, u'Dispensa de Licitação (Até R$ 33.000,00 - Obras ou Serviços de Engenharia)'),
         (TIPO_AQUISICAO_INEXIGIBILIDADE, u'Inexigibilidade de Licitação'),
         (CREDENCIAMENTO, CREDENCIAMENTO),
         (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
