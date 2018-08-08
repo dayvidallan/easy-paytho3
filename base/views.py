@@ -10950,6 +10950,9 @@ def ver_calendario(request):
 
                                     cal.adicionar_evento_calendario(agenda_data_inicio, agenda_data_fim, descricao,
                                                                     css)
+
+
+
                     cal_meses.append(cal.formato_mes(ano, mes))
                     # -------------------
                 mes = 1

@@ -1628,3 +1628,9 @@ class PedidoSecretariaForm(forms.Form):
         self.pedidos = kwargs.pop('pedidos', None)
         super(PedidoSecretariaForm, self).__init__(*args, **kwargs)
         self.fields['secretaria'].queryset = Secretaria.objects.filter(id__in=self.pedidos.values_list('setor__secretaria', flat=True))
+
+
+class FeriadoForm(forms.ModelForm):
+     class Meta:
+        model = Feriado
+        fields = ('data', 'descricao', 'recorrente',)

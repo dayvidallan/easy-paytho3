@@ -710,10 +710,22 @@ class CalendarioPlus(Calendario):
             data.append(str(mes))
             data.append(str(ano))
             data = datetime.strptime(u'-'.join(data), "%d-%m-%Y").date()
+            texto = u''
+            from base.models import Feriado
+            if Feriado.objects.filter(data=data).exists() or Feriado.objects.filter(data__day=data.day, data__month=data.month, recorrente=True).exists():
+                cssclass.add(u'info')
+                if Feriado.objects.filter(data=data).exists() :
+                    texto = Feriado.objects.filter(data=data)[0].descricao
+                else:
+                    texto = Feriado.objects.filter(data__day=data.day, data__month=data.month, recorrente=True)[0].descricao
+
             eventos = sorted(self.eventos_da_data(data), key=lambda e: e['data_inicio'])
             cssclass.add(self.eh_dia_todo(eventos, data))
-            conteudo = self.montar_eventos(eventos)
-            return self.celula_do_dia(u' '.join(cssclass), u'', dia, dia_da_semana, conteudo)
+            if texto:
+                conteudo = u'  ' + texto + self.montar_eventos(eventos)
+            else:
+                conteudo = self.montar_eventos(eventos)
+            return self.celula_do_dia(u' '.join(cssclass), texto, dia, dia_da_semana, conteudo)
 
     def eh_dia_todo(self, eventos, data):
         if len(eventos) <= 1:

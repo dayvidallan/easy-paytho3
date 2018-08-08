@@ -415,3 +415,17 @@ class MotivoSuspensaoPregaoAdmin(NewModelAdmin):
     search_fields = ('nome',)
 
 admin.site.register(MotivoSuspensaoPregao, MotivoSuspensaoPregaoAdmin)
+
+class FeriadoAdmin(NewModelAdmin):
+    form = FeriadoForm
+    list_display = ('data', 'recorrente', 'cadastrado_por')
+    ordering = ('data',)
+    list_filter = ('recorrente', )
+    search_fields = ('data',)
+
+    def save_model(self, request, obj, form, change):
+        obj.cadastrado_por = request.user
+        obj.save()
+
+
+admin.site.register(Feriado, FeriadoAdmin)

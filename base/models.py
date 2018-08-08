@@ -3664,3 +3664,16 @@ class TrocarSenha(models.Model):
         {url}'''.format(url=url)
         return send_mail(u'[SUAP] Solicitação de Mudança de Senha',
                          conteudo, settings.DEFAULT_FROM_EMAIL, [self.email])
+
+
+class Feriado(models.Model):
+    data = models.DateField()
+    descricao = models.CharField(u'Descrição', max_length=300, null=True)
+    recorrente = models.BooleanField(default=False,
+                                     help_text=u'Selecione para as datas que serão abonadas todos os anos, como feriados nacionais.')
+    cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    cadastrado_em = models.DateTimeField(u'Data de Cadastro', auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        verbose_name = u'Feriado'
+        verbose_name_plural = u'Feriados'

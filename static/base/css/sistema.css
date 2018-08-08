@@ -1504,3 +1504,317 @@ footer section#content-footer p {
 .formulario-bar > li > ul {
     list-style: none;
 }
+table:not(.calendario-dias, .timeline-horizontal) tbody tr:hover td,
+table:not(.calendario-dias, .timeline-horizontal) tbody tr:hover th {
+    background: #f1f1f1 !important;
+}
+
+/* Calendários */
+.calendarios {
+    display: inline-block;
+    margin: 10px 0;
+    width: 100%;
+}
+.calendarios-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    margin: 0 -15px;
+    width: calc(100% + 30px);
+}
+.calendarios-container > .calendario {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 16.6666667%;
+}
+.calendario {
+    padding: 20px 15px;
+}
+.calendario caption {
+    background: transparent;
+    border: 0 none;
+    color: #555;
+    font-weight: 400;
+    padding: 0 0 5px;
+}
+.calendario li {
+    list-style: none;
+}
+.calendario p {
+    background: #aaa;
+    font-size: 110%;
+    font-weight: 700;
+    margin: 0 !important;
+    outline: 1px solid #999;
+    padding: 3px 1%;
+    text-align: center !important;
+    width: 98%;
+}
+.calendario ul {
+    padding: 0 !important;
+}
+.calendario-dias {
+    border: 0 none;
+    margin: 0 0 3px;
+}
+.calendario .fds {
+    background: #eee;
+    color: #888;
+}
+.calendario .alert,
+.calendario .recesso,
+.legenda .alert,
+.legenda .recesso { /* Amarelo */
+    background: rgba(241, 196, 15, 0.4);
+}
+.calendario .error,
+.calendario .feriado,
+.legenda .error,
+.legenda .feriado { /* Vermelho */
+    background: rgba(231, 76, 60, 0.4);
+}
+.calendario .info,
+.calendario .evento,
+.legenda .info,
+.legenda .evento { /* Azul */
+    background: rgba(52, 152, 219, 0.4);
+}
+.calendario .success,
+.calendario .ferias,
+.legenda .success,
+.legenda .ferias { /* Verde */
+    background: rgba(46, 204, 113, 0.4);
+}
+.calendario .hoje,
+.legenda .hoje { /* Hoje */
+    background: #ecf0f1;
+    font-weight: 900;
+}
+.calendario .hoje {
+    cursor: help;
+    font-size: 115%;
+}
+.calendario .extra,
+.legenda .extra {
+    background: rgba(230, 126, 34, 0.4);
+}
+.calendario .extra2,
+.legenda .extra2 {
+    background: rgba(155, 89, 182, 0.4);
+}
+.calendario .extra3,
+.legenda .extra3 {
+    background: rgba(52, 73, 94, 0.4);
+}
+.calendario .conflito_leve,
+.calendario .ferias_conflito_leve,
+.legenda .conflito_leve,
+.legenda .ferias_conflito_leve {
+    background: rgba(231, 76, 60, 0.8);
+    color: #fff;
+}
+.calendario .conflito,
+.calendario .ferias_conflito_varios,
+.calendario .avaliacao,
+.legenda .conflito,
+.legenda .ferias_conflito_varios,
+.legenda .avaliacao {
+    background: rgb(231, 76, 60);
+    color: #fff;
+}
+.calendario .evento.feriado span,
+.calendario .evento.ferias span,
+.calendario .evento.recesso span,
+.calendario .ferias.feriado span,
+.calendario .ferias.recesso span,
+.calendario .recesso.feriado span {
+    border-bottom: 1px dotted #a94442 !important;
+    cursor: help;
+}
+.calendario.calendario-mensal {
+    margin: 0 0 20px;
+    width: 100%;
+}
+.calendario-dias td,
+.calendario-dias th {
+    border: 0 none;
+    box-shadow: 0 0 0;
+    float: left;
+    margin: 1px 0 0;
+    outline: 1px solid #ccc;
+    padding: 0;
+    text-align: center;
+    width: 14.28%;
+}
+.calendario-dias td {
+    background: #fff;
+    height: 23px;
+    line-height: 23px;
+}
+.calendario-dias th {
+    background: #ddd;
+    color: #777;
+    font-size: 80%;
+    font-weight: 400;
+    line-height: 1.8em;
+}
+.calendario-mensal li {
+    line-height: 1.3em;
+    margin: 3px 0 0;
+    padding: 4px 6px;
+}
+.calendario-mensal td {
+    vertical-align: top;
+    width: 14.2857%;
+}
+.calendario-mensal td > span {
+    background: #ddd;
+    border-radius: 50%;
+    display: inline-block;
+    height: 22px;
+    line-height: 22px;
+    margin: 0 0 7px;
+    text-align: center;
+    width: 22px
+}
+.calendario-mensal td.alert > span {
+    background: #8a6d3b;
+    color: #fff;
+}
+.calendario-mensal td.error > span {
+    background: #a94442;
+    color: #fff;
+}
+.calendario-mensal td.info > span {
+    background: #31708f;
+    color: #fff;
+}
+.calendario-mensal td.success > span {
+    background: #3c763d;
+    color: #fff;
+}
+.calendario-mensal strong {
+    display: block;
+    margin: 0 0 3px;
+}
+.calendario-referencia {
+    display: block;
+    width: 100%;
+}
+.calendario-referencia li {
+    background: #eee;
+    border: 0 none;
+    color: #222;
+    float: left;
+    font-size: 85%;
+    margin: 6px 0 0;
+    padding: 4px;
+    width: 100%;
+}
+.calendario-mensal .calendario-referencia li {
+    font-size: 100%;
+    padding: 0;
+}
+.calendario-mensal .alert .calendario-referencia li,
+.calendario-mensal .error .calendario-referencia li,
+.calendario-mensal .info .calendario-referencia li,
+.calendario-mensal .success .calendario-referencia li {
+    border: 0 none;
+}
+.calendario-referencia li a,
+.calendario-referencia li p {
+    display: block;
+    font-size: 90%;
+    padding: 6px;
+    text-decoration: none;
+}
+.calendario-referencia li a:hover {
+    opacity: 0.5;
+}
+.calendario-referencia li p {
+    background-color: transparent;
+    font-weight: 400;
+    outline: 0 none;
+    text-align: left !important;
+}
+.calendario-mensal .alert a {
+    color: #8a6d3b;
+}
+.calendario-mensal .error a {
+    color: #a94442;
+}
+.calendario-mensal .evento a {
+    color: #31708f;
+}
+.calendario-mensal .success a {
+    color: #3c763d;
+}
+.legenda {
+    display: inline-block;
+    margin: 0 0 15px;
+    width: 100%;
+}
+.legenda li {
+    color: #222;
+    float: left;
+    font-size: 95%;
+    list-style: none;
+    margin: 0 2px 2px 0 !important;
+    padding: 3px 7px;
+}
+.legenda p {
+    background: transparent;
+    border: 0 none;
+    border-radius: 3px 0 0 3px;
+    color: #666;
+    float: left;
+    font-size: 95%;
+    font-weight: normal;
+    outline: 0 none;
+    padding: 5px 5px 5px 0;
+    width: auto;
+}
+.legenda ul {
+    float: left;
+    padding: 0 !important;
+}
+.legenda.flat li {
+    border-left: 1px solid #444;
+    color: #fff;
+}
+.legenda.flat .black {
+    background: #444;
+}
+.legenda.flat .blue {
+    background: #31708f;
+}
+.legenda.flat .grey {
+    background: #999;
+}
+.legenda.flat .orange {
+    background: #e98b39;
+}
+.legenda.flat .red {
+    background: #e74c3c;
+}
+.legenda.flat .yellow {
+    background: #f1c40f;
+}
+caption {
+    background: #ddd;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    font-weight: 700;
+    font-size: 150%;
+    padding: 8px 5px;
+    text-align: center;
+    text-transform: uppercase;
+}
+caption a {
+    color: #333;
+    font-size: 120%;
+    font-weight: 700;
+}
