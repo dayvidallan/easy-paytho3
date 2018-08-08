@@ -714,17 +714,10 @@ class CalendarioPlus(Calendario):
             from base.models import Feriado
             if Feriado.objects.filter(data=data).exists() or Feriado.objects.filter(data__day=data.day, data__month=data.month, recorrente=True).exists():
                 cssclass.add(u'info')
-                if Feriado.objects.filter(data=data).exists() :
-                    texto = Feriado.objects.filter(data=data)[0].descricao
-                else:
-                    texto = Feriado.objects.filter(data__day=data.day, data__month=data.month, recorrente=True)[0].descricao
 
             eventos = sorted(self.eventos_da_data(data), key=lambda e: e['data_inicio'])
             cssclass.add(self.eh_dia_todo(eventos, data))
-            if texto:
-                conteudo = u'  ' + texto + self.montar_eventos(eventos)
-            else:
-                conteudo = self.montar_eventos(eventos)
+            conteudo = self.montar_eventos(eventos)
             return self.celula_do_dia(u' '.join(cssclass), texto, dia, dia_da_semana, conteudo)
 
     def eh_dia_todo(self, eventos, data):

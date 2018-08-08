@@ -10883,6 +10883,7 @@ def ver_calendario(request):
             cal = CalendarioPlus()
             cal.mostrar_mes_e_ano = True
 
+
             mes = mes_corrente  # inicializa mês
 
             for ano in range(ano_corrente, ultimo_ano + 1):
