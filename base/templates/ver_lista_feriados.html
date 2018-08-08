@@ -1,0 +1,61 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block content %}
+        {% if form %}
+        <fieldset>
+            <form action="." method="GET" class="form-horizontal">
+                {% csrf_token %}
+                <div class="row-fluid">
+                    <div class="col-xs-2">
+                        <div class="controls">{{ form.ano|bootstrap }}
+                            {% if form.ano.help_text %}
+                                <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-xs-1 col-md-1">
+                    <br>
+                    <p><button type="submit" class="btn btn-primary">Filtrar</button></p>
+                </div>
+                </div>
+
+
+
+            </form>
+
+        </fieldset>
+    {% endif %}
+        {% if feriados.exists %}
+
+            <table border="2" class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Recorrente</th>
+
+                </thead>
+                <tbody>
+                    {% for feriado in feriados %}
+                        <tr>
+                            <td>{{ feriado.data }}</td>
+                            <td>{{ feriado.descricao }}</td>
+                            <td>{% if feriado.recorrente %}<span class="label label-success">Sim</span>{% else %}<span class="label label-danger">Não</span>{% endif %}</td>
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">Nenhum feriado cadastrado.</p>
+        {% endif %}
+
+
+
+{% endblock %}

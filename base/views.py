@@ -10959,3 +10959,13 @@ def ver_calendario(request):
                 mes = 1
 
     return render(request, 'ver_calendario.html', locals(), RequestContext(request))
+
+@login_required()
+def ver_lista_feriados(request):
+    title = u'Feriados Cadastrados'
+    feriados = Feriado.objects.order_by('data')
+    form = AnoForm(request.GET or None)
+    if form.is_valid():
+        feriados = feriados.filter(data__year=form.cleaned_data.get('ano'))
+
+    return render(request, 'ver_lista_feriados.html', locals(), RequestContext(request))
