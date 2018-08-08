@@ -418,7 +418,7 @@ admin.site.register(MotivoSuspensaoPregao, MotivoSuspensaoPregaoAdmin)
 
 class FeriadoAdmin(NewModelAdmin):
     form = FeriadoForm
-    list_display = ('data', 'recorrente', 'cadastrado_por')
+    list_display = ('data', 'descricao', 'recorrente', 'cadastrado_por')
     ordering = ('data',)
     list_filter = ('recorrente', )
     search_fields = ('data',)
