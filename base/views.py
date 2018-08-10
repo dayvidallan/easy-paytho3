@@ -878,6 +878,18 @@ def baixar_editais(request):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
         if form.cleaned_data.get('numero'):
             pregoes = pregoes.filter(num_pregao__icontains=form.cleaned_data.get('numero'))
+            
+        if form.cleaned_data.get('data_inicial'):
+            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
+
+        if form.cleaned_data.get('data_final'):
+            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
+
+        if form.cleaned_data.get('situacao'):
+            if form.cleaned_data.get('situacao') == Pregao.ADJUDICADO:
+                pregoes = pregoes.filter(Q(situacao=form.cleaned_data.get('situacao')) | Q(pode_homologar=True))
+            else:
+                pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
 
     return render(request, 'baixar_editais.html', locals(), RequestContext(request))
 

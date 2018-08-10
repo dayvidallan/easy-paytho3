@@ -8,30 +8,49 @@
     <p class="alert alert-info">Qualquer dúvida ou sugestão, entrar em contato pelo email: <b>cpl.guamare@gmail.com</b></p>
     <form action="." method="GET" class="form-horizontal">
         {% csrf_token %}
-        <div class="col-xs-5 col-md-3">
+        <div class="row-fluid">
+            <div class="col-xs-6">
+                <div class="controls">{{ form.numero|bootstrap }}
+                    {% if form.numero.help_text %}
+                        <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-2 col-md-2">
+            <div class="controls">{{ form.data_inicial|bootstrap }}
+                {% if form.data_inicial.help_text %}
+                    <p class="help-inline"><small>{{ form.data_inicial.help_text }}</small></p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-xs-2 col-md-2">
+            <div class="controls">{{ form.data_final|bootstrap }}
+                {% if form.data_final.help_text %}
+                    <p class="help-inline"><small>{{ form.data_final.help_text }}</small></p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-xs-2 col-md-2">
             <div class="controls">{{ form.modalidade|bootstrap }}
                 {% if form.modalidade.help_text %}
                     <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
                 {% endif %}
             </div>
         </div>
-        <div class="col-xs-5 col-md-3">
-            <div class="controls">{{ form.numero|bootstrap }}
-                {% if form.numero.help_text %}
-                    <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+
+        <div class="col-xs-2 col-md-2">
+            <div class="controls">{{ form.situacao|bootstrap }}
+                {% if form.situacao.help_text %}
+                    <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
                 {% endif %}
             </div>
         </div>
-
 
         <div class="col-xs-1 col-md-1">
             <br>
             <p><button type="submit" class="btn btn-primary">Buscar</button></p>
         </div>
-
-
-
-
 
     </form>
 

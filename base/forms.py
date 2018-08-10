@@ -1144,8 +1144,13 @@ class UploadTermoHomologacaoForm(forms.ModelForm):
 
 class BaixarEditaisForm(forms.Form):
     METHOD = u'GET'
+
+    numero = forms.CharField(label=u'Digite o número da licitação/procedimento', required=False)
+    data_inicial = forms.DateField(label=u'Data Inicial do Certame', required=False)
+    data_final = forms.DateField(label=u'Data Final do Certame', required=False)
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
-    numero = forms.CharField(label=u'Filtrar por Número do Pregão', required=False)
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
+
 
 class BaixarAtasForm(forms.Form):
     numero = forms.CharField(label=u'Filtrar por Número da Ata', required=False)
