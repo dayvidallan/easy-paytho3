@@ -878,7 +878,7 @@ def baixar_editais(request):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
         if form.cleaned_data.get('numero'):
             pregoes = pregoes.filter(num_pregao__icontains=form.cleaned_data.get('numero'))
-            
+
         if form.cleaned_data.get('data_inicial'):
             pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
 
@@ -1179,6 +1179,19 @@ def cadastrar_material(request, solicitacao_id):
         return HttpResponseRedirect(u'/base/cadastrar_item_solicitacao/%s/' % solicitacao_id)
 
     return render(request, 'base_template_form.html', locals(), RequestContext(request))
+
+
+@login_required()
+def cadastrar_unidade(request, solicitacao_id):
+    title=u'Cadastrar Unidade'
+    form = TipoUnidadeForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, u'Unidade %s cadastrada com sucesso.' % form.instance)
+        return HttpResponseRedirect(u'/base/cadastrar_item_solicitacao/%s/' % solicitacao_id)
+
+    return render(request, 'base_template_form.html', locals(), RequestContext(request))
+
 
 @login_required()
 def cadastrar_documento(request, solicitacao_id):

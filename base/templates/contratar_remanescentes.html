@@ -11,14 +11,7 @@
         <a href="javascript:void(0);">{{ title }}</a>
     {% endblock %}
 {% endif %}
-{% block extrajs %}
 
-<script>
-$(function() {
-    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy', locale: 'pt-br' });
-});
-</script>
-{% endblock %}
 {% block content %}
     <form action="." method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza que deseja continuar?');">
         <fieldset>

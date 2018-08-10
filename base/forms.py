@@ -842,6 +842,10 @@ class MaterialConsumoForm(forms.ModelForm):
         model = MaterialConsumo
         fields = ('nome', 'observacao',)
 
+class TipoUnidadeForm(forms.ModelForm):
+    class Meta:
+        model = TipoUnidade
+        fields = ('nome', )
 
 class CriarLoteForm(forms.Form):
     solicitacoes = forms.ModelMultipleChoiceField(queryset=ItemSolicitacaoLicitacao.objects, label=u'Selecione os Itens', widget=forms.CheckboxSelectMultiple())
@@ -1151,6 +1155,15 @@ class BaixarEditaisForm(forms.Form):
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
 
+    def __init__(self, *args, **kwargs):
+        super(BaixarEditaisForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicial'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_final'].widget.attrs = {'class': 'vDateField'}
+
+    def clean(self):
+
+         if self.cleaned_data.get('data_final') and self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final') < self.cleaned_data.get('data_inicial'):
+             self.add_error('data_final', u'A data final não pode ser menor do que a data inicial.')
 
 class BaixarAtasForm(forms.Form):
     numero = forms.CharField(label=u'Filtrar por Número da Ata', required=False)

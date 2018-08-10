@@ -1,14 +1,7 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
-{% block extrajs %}
 
-<script>
-$(function() {
-    $( ".vDateField" ).datepicker({ dateFormat: 'dd/mm/yy' });
-});
-</script>
-{% endblock %}
 {% if request.user.pessoafisica %}
     {% block breadcrumbs_class %}administracao{% endblock %}
     {% block breadcrumbs %}

@@ -1,7 +1,8 @@
-{% extends super_template|default:"admin/base_publica.html" %}
+{% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
 {% load pagination_tags %}
+
 {% block content %}
 
     <br><h3>Editais - Licitações</h3>
@@ -127,4 +128,9 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
 {% endblock %}
