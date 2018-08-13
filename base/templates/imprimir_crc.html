@@ -90,21 +90,20 @@ ul{
 
         <br><br>
 
-        Razão Social: {{ registro.fornecedor.razao_social }}<br>
-        Nome Fantasia: {{ registro.fornecedor.razao_social }}<br>
-        CNPJ: {{ registro.fornecedor.cnpj }}<br>
-        Ramo de Atividade Principal: {{ registro.ramo_negocio }}<br>
-        Endereço: {{ registro.fornecedor.endereco }}<br>
-        Telefone: {{ registro.fornecedor.telefones }} - Email: {{ registro.fornecedor.email }}<br>
-        Capital Integralizado: {{ registro.capital_social }}<br>
-          Data de Constituição: {{ registro.data_abertura }}<br>
-          
-        Inscrição Municipal: {{ registro.inscricao_municipal }} - Inscrição Estadual: {{ registro.inscricao_estadual }}<br>
-       CNAE: {{ registro.cnae_primario_codigo }} - {{ registro.cnae_primario_descricao }}  <br>
-      Representante Legal: <br><br>
-      01. Nome: {{ registro.nome }}<br>
-      Identidade: {{ registro.rg }}/{{ registro.rg_emissor }}
-      CPF: {{ registro.cpf }}
+        <b>Razão Social:</b> {{ registro.fornecedor.razao_social }}<br>
+        <b>CNPJ:</b> {{ registro.fornecedor.cnpj }}<br>
+        <b>Ramo de Atividade Principal:</b> {{ registro.ramo_negocio }}<br>
+        <b>Endereço:</b> {{ registro.fornecedor.endereco }}<br>
+        <b>Telefone:</b> {{ registro.fornecedor.telefones }} - <b>Email:</b> {{ registro.fornecedor.email }}<br>
+        <b>Capital Integralizado:</b> {{ registro.capital_social }}<br>
+          <b>Data de Constituição:</b> {{ registro.data_abertura }}<br>
+
+        <b>Inscrição Municipal:</b> {{ registro.inscricao_municipal }} - <b>Inscrição Estadual:</b> {{ registro.inscricao_estadual }}<br>
+       <b>CNAE:</b> {{ registro.cnae_primario_codigo }} - {{ registro.cnae_primario_descricao }}  <br>
+      <b>Representante Legal:</b> <br><br>
+      01. <b>Nome:</b> {{ registro.nome }}<br>
+      <b>Identidade:</b> {{ registro.rg }}/{{ registro.rg_emissor }} -
+      <b>CPF:</b> {{ registro.cpf }}
       <br><br>
         {% if certidoes.exists %}
                 Regulamentação Fiscal<br><br>
