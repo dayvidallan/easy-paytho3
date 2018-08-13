@@ -1397,7 +1397,7 @@ class CRCForm(forms.ModelForm):
 
     class Meta:
         model = FornecedorCRC
-        fields = ('porte_empresa', 'data_abertura', 'inscricao_estadual', 'inscricao_municipal', 'natureza_juridica', 'cnae_primario_codigo', 'cnae_primario_descricao', 'objetivo_social', 'capital_social', 'data_ultima_integralizacao', 'banco', 'agencia', 'conta', 'nome', 'cpf', 'rg', 'rg_emissor', 'data_nascimento', 'email')
+        fields = ('porte_empresa', 'data_abertura', 'inscricao_estadual', 'inscricao_municipal', 'natureza_juridica', 'ramo_negocio', 'cnae_primario_codigo', 'cnae_primario_descricao', 'objetivo_social', 'capital_social', 'data_ultima_integralizacao', 'banco', 'agencia', 'conta', 'nome', 'cpf', 'rg', 'rg_emissor', 'data_nascimento', 'email')
 
     def __init__(self, *args, **kwargs):
         super(CRCForm, self).__init__(*args, **kwargs)

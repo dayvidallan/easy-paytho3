@@ -61,18 +61,18 @@ ul{
   <h1 class="page-header">
     {% include "cabecalho.html" %}
     <center>
-        <font size="4">COMISSÃO PERMANENTE DE LICITAÇÃO</font><br><br>
+        <font size="3">COMISSÃO PERMANENTE DE LICITAÇÃO</font><br><br>
         {% if registro.renovado %}
-            <font size="4">RENOVAÇÃO</font><br><br>
+            <font size="3">RENOVAÇÃO</font><br><br>
         {% endif %}
-        <font size="4">CERTIFICADO DE REGISTRO CADASTRAL DE HABILITAÇÃO DE LICITANTES</font><br><br>
+        <font size="3">CERTIFICADO DE REGISTRO CADASTRAL DE HABILITAÇÃO DE LICITANTES</font><br><br>
     </center>
   </h1>
 
 {% endblock %}
 
 {% block content %}
-  <p align="justify">
+  <p align="justify" size="2">
 
        <center>
            <table width="90%">
@@ -83,7 +83,7 @@ ul{
             </table>
 
        </center>
-       <br><br><br>
+       <br>
         A COMISSÃO PERMANENTE DE LICITAÇÃO da {{ configuracao.nome }}, na conformidade do que estabelece os arts. 34 e seguintes da Lei 8.666/93, em sua redação oficial, CERTIFICA que a empresa abaixo certificada encontra-se
       inscrita no CADASTRO DE HABILITAÇÃO DE LICITANTES, estando consequentemente <b><u>habilitada</u></b>, após cumpridas as demais exigências contidas na Lei 8.666/93, em sua redação atual, e porventura constantes
       dos atos convocatórios correspondentes, a participar das licitações promovidas pelo MUNICÍPIO DE {{ configuracao.municipio }}.
@@ -111,17 +111,12 @@ ul{
                 Regulamentação Fiscal<br><br>
 
                 {% for certidao in certidoes %}
-                    {{ certidao.nome }} - Validade: {{ certidao.validade }}
+                    {{ certidao.nome }} - Validade: {{ certidao.validade }}<br>
 
                 {% endfor %}
-                <br><br>
             {% endif %}
 
          <center>
-        <br><br>
-
-
-
         <br><br>
         <b>__________________________________</b><br>
         Presidente da CPL
