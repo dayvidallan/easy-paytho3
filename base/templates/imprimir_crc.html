@@ -62,6 +62,9 @@ ul{
     {% include "cabecalho.html" %}
     <center>
         <font size="4">COMISSÃO PERMANENTE DE LICITAÇÃO</font><br><br>
+        {% if registro.renovado %}
+            <font size="4">RENOVAÇÃO</font><br><br>
+        {% endif %}
         <font size="4">CERTIFICADO DE REGISTRO CADASTRAL DE HABILITAÇÃO DE LICITANTES</font><br><br>
     </center>
   </h1>
@@ -97,14 +100,26 @@ ul{
           Data de Constituição: {{ registro.data_abertura }}<br>
           CNPJ: {{ registro.fornecedor.cnpj }}<br>
         Inscrição Municipal: {{ registro.inscricao_municipal }}<br>
-      Inscrição Estadual: {{ registro.inscricao_estadual }}<br><br>
+      Inscrição Estadual: {{ registro.inscricao_estadual }}<br>
+       CNAE: {{ registro.cnae_primario_codigo }} - {{ registro.cnae_primario_descricao }}  <br><br>
       Representante Legal: <br><br>
       01. Nome: {{ registro.nome }}<br>
       Identidade: {{ registro.rg }}/{{ registro.rg_emissor }}
       CPF: {{ registro.cpf }}
+      <br><br>
+        {% if certidoes.exists %}
+                Regulamentação Fiscal<br><br>
+
+                {% for certidao in certidoes %}
+                    {{ certidao.nome }} - Validade: {{ certidao.validade }}
+
+                {% endfor %}
+                <br><br>
+            {% endif %}
 
          <center>
         <br><br>
+
 
 
         <br><br>

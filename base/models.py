@@ -3446,6 +3446,7 @@ class FornecedorCRC(models.Model):
     validade = models.DateField(u'Validade')
     numero = models.IntegerField(u'Número', null=True, blank=True)
     ano = models.IntegerField(u'Ano', null=True, blank=True)
+    renovado = models.BooleanField(u'Renovado', default=False)
 
     class Meta:
         verbose_name = u'Certificado de Registro Cadastral'

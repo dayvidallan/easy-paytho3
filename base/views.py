@@ -8924,6 +8924,7 @@ def imprimir_crc(request, fornecedor_id):
     if request.user.has_perm('base.pode_cadastrar_pregao'):
         fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
         registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
+        certidoes = CertidaoCRC.objects.filter(crc=registro)
         configuracao = get_config_geral()
         logo = None
         if configuracao.logo:
@@ -8935,7 +8936,7 @@ def imprimir_crc(request, fornecedor_id):
         caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
 
 
-        data = {'registro': registro, 'configuracao': configuracao, 'logo': logo}
+        data = {'registro': registro,'certidoes': certidoes, 'configuracao': configuracao, 'logo': logo}
 
         template = get_template('imprimir_crc.html')
 
@@ -8964,6 +8965,7 @@ def renovar_crc(request, fornecedor_id):
         form = DataRenovaCRCForm(request.POST or None)
         if form.is_valid():
             registro.validade = form.cleaned_data.get('data') + timedelta(days=364)
+            registro.renovado = True
             registro.save()
             messages.success(request, u'CRC renovado com sucesso.')
             return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
