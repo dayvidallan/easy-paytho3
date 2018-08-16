@@ -2051,7 +2051,7 @@ class LanceItemRodadaPregao(models.Model):
         if not self.declinio:
             lance = self.valor
 
-            if PropostaItemPregao.objects.filter(participante=self.participante, item=self.item).exists():
+            if lance and PropostaItemPregao.objects.filter(participante=self.participante, item=self.item).exists():
                 valor = PropostaItemPregao.objects.filter(participante=self.participante, item=self.item)[0].valor
                 return Decimal(100 - ((lance * 100) / valor)).quantize(Decimal(10) ** -2)
         return 0
