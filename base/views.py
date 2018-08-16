@@ -4739,7 +4739,7 @@ def novo_pedido_compra_contrato(request, contrato_id, lote_id=None):
 def novo_pedido_compra_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
     title=u'Novo Pedido de Compra - %s' % ata
-    if ata.data_fim < datetime.date.today():
+    if ata.data_fim < datetime.date.today() and not Secretaria.objects.filter(responsavel=request.user.pessoafisica).exists():
         ata.liberada_compra = False
         ata.save()
         messages.error(request, u'O prazo desta ARP terminou.')
