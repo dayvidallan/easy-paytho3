@@ -948,7 +948,11 @@ class ContratoForm(forms.ModelForm):
             if ultima.numero:
                 lista = ultima.numero.split('/')
                 if len(lista) > 1:
-                    self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+                    try:
+                        int(lista[0])
+                        self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
+                    except:
+                        pass
 
     def clean(self):
         if self.cleaned_data.get('garantia_execucao_objeto'):
