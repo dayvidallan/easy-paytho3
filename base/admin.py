@@ -292,6 +292,18 @@ class ContratoAdmin(NewModelAdmin):
 
 admin.site.register(Contrato, ContratoAdmin)
 
+class CredenciamentoAdmin(NewModelAdmin):
+    form = CredenciamentoForm
+    list_display = ('numero',)
+    ordering = ('numero',)
+
+    def response_change(self, request, obj):
+        self.message_user(request, u'Credenciamento alterado com sucesso.')
+        return HttpResponseRedirect('/base/visualizar_credenciamento/%s/' % str(obj.pk))
+
+
+admin.site.register(Credenciamento, CredenciamentoAdmin)
+
 class MaterialConsumoAdmin(NewModelAdmin):
     list_display = ('codigo', 'nome',)
     ordering = ('nome',)
