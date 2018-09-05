@@ -10867,6 +10867,10 @@ def ver_calendario(request):
     data_agora = datetime.datetime.now()
     ano_corrente = data_agora.year
     mes_corrente = data_agora.month
+    form = AnoMesForm(request.GET or None)
+    if form.is_valid():
+        ano_corrente = int(form.cleaned_data.get('ano'))
+        mes_corrente = int(form.cleaned_data.get('mes'))
     if qs_solicitacoes.exists():
 
         data_fim = datetime.date(ano_corrente, 12 ,31)
@@ -10918,80 +10922,6 @@ def ver_calendario(request):
                 mes = 1
 
     return render(request, 'ver_calendario.html', locals(), RequestContext(request))
-
-@login_required()
-def ver_calendario_completo(request):
-    title = u'Calendário Anual de Atividades'
-
-    # ------------
-    # até o mês do último agendamento que 'caia' pelo menos dentro do mês corrente
-    qs_solicitacoes = Pregao.objects.all().order_by('data_abertura')
-    cal_meses = []
-
-    uo = u''
-    setor = u''
-    status = u''
-    mes_filtro = u''
-    ano_filtro = u''
-
-    data_agora = datetime.datetime.now()
-    ano_corrente = data_agora.year
-    mes_corrente = 1
-
-    form = AnoMesForm(request.GET or None)
-    if form.is_valid():
-        ano_corrente = int(form.cleaned_data.get('ano'))
-        mes_corrente = int(form.cleaned_data.get('mes'))
-    if qs_solicitacoes.exists():
-
-        data_fim = datetime.date(ano_corrente, 12 ,31)
-        if (data_fim.year == ano_corrente and data_fim.month >= mes_corrente) or (data_fim.year > ano_corrente):
-            ultimo_ano = ano_corrente
-            ultimo_mes = data_fim.month
-
-            cal = CalendarioPlus()
-            cal.mostrar_mes_e_ano = True
-
-
-            mes = mes_corrente  # inicializa mês
-
-            for ano in range(ano_corrente, ultimo_ano + 1):
-                mes_final = 12  # por padrão
-                if ano == ultimo_ano:
-                    mes_final = ultimo_mes
-                for mes in range(mes, mes_final + 1):
-                    # -----------------------
-                    # Adição das Solicitações
-                    for solicitacao in qs_solicitacoes:
-                        solicitacao_conflito = False
-                        for [agenda_data_inicio, agenda_data_fim] in [
-                            [solicitacao.data_abertura, solicitacao.data_abertura]]:
-                            if agenda_data_inicio.year == ano and agenda_data_inicio.month == mes:
-
-                                dia_todo_list = False
-
-                                if solicitacao.situacao in [Pregao.CONCLUIDO, Pregao.ADJUDICADO]:
-                                    css = 'success'
-                                elif solicitacao.situacao == Pregao.CADASTRADO:
-                                    css = 'alert'
-                                else:
-
-                                    css = 'error'
-
-
-                                horario = u'Início às {}'.format(solicitacao.hora_abertura.strftime("%H:%M"))
-                                descricao = u'<a href="/base/pregao/{}/" target="_blank">{} - <strong>{}</strong> {} {}</a>'.format(
-                                    solicitacao.id, horario, solicitacao.get_situacao(), solicitacao.modalidade, solicitacao.num_pregao)
-
-                                cal.adicionar_evento_calendario(agenda_data_inicio, agenda_data_fim, descricao,
-                                                                    css)
-
-
-
-                    cal_meses.append(cal.formato_mes(ano, mes))
-                    # -------------------
-                mes = 1
-    return render(request, 'ver_calendario_completo.html', locals(), RequestContext(request))
 
 
 @login_required()

@@ -1,5 +1,7 @@
 {% extends super_template|default:"admin/base.html" %}
 {% load staticfiles %}
+{% load bootstrap %}
+{% load app_filters %}
 {% block breadcrumbs_class %}administracao{% endblock %}
 {% block breadcrumbs %}
     <a href="/">Início <i class="fa fa-angle-right"></i></a>
@@ -9,12 +11,38 @@
 
 {% block content %}
 	 <div class="pull-right">
-            <a class="btn btn-info" href="/base/ver_calendario_completo/" target="_blank">Ver Calendário Completo</a>
 		 	<a class="btn btn-success" href="/base/ver_lista_feriados/" target="_blank">Ver Lista dos Feriados</a>
 
             <br><br>
         </div>
+	<fieldset>
+        <form action="." method="GET" class="form-horizontal">
+            {% csrf_token %}
+            <div class="row-fluid">
+                <div class="col-xs-2">
+                    <div class="controls">{{ form.ano|bootstrap }}
+                        {% if form.ano.help_text %}
+                            <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-2">
+                    <div class="controls">{{ form.mes|bootstrap }}
+                        {% if form.mes.help_text %}
+                            <p class="help-inline"><small>{{ form.mes.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-1 col-md-1">
+                <br>
+                <p><button type="submit" class="btn btn-primary">Filtrar</button></p>
+            </div>
+            </div>
 
+
+        </form>
+
+    </fieldset>
 	{% if cal_meses %}
 		<div class="legenda">
 			<p>Legenda:</p>

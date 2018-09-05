@@ -343,7 +343,6 @@ urlpatterns = [
     url(r'^trocar_senha/(?P<username>\w+)/(?P<token>\w+)/$', views.trocar_senha, name='trocar_senha'),
     url(r'^solicitar_mudanca_senha/$', views.solicitar_mudanca_senha, name='solicitar_mudanca_senha'),
     url(r'^ver_calendario/$', views.ver_calendario, name='ver_calendario'),
-    url(r'^ver_calendario_completo/$', views.ver_calendario_completo, name='ver_calendario_completo'),
     url(r'^ver_lista_feriados/$', views.ver_lista_feriados, name='ver_lista_feriados'),
     url(r'^cadastrar_unidade/(?P<solicitacao_id>\d+)/$', views.cadastrar_unidade, name='cadastrar_unidade'),
 
