@@ -21,6 +21,13 @@
                         {% endif %}
                     </div>
                 </div>
+                <div class="col-xs-2">
+                    <div class="controls">{{ form.mes|bootstrap }}
+                        {% if form.mes.help_text %}
+                            <p class="help-inline"><small>{{ form.mes.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
                 <div class="col-xs-1 col-md-1">
                 <br>
                 <p><button type="submit" class="btn btn-primary">Filtrar</button></p>

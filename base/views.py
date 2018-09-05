@@ -10938,9 +10938,10 @@ def ver_calendario_completo(request):
     ano_corrente = data_agora.year
     mes_corrente = 1
 
-    form = AnoForm(request.GET or None)
+    form = AnoMesForm(request.GET or None)
     if form.is_valid():
         ano_corrente = int(form.cleaned_data.get('ano'))
+        mes_corrente = int(form.cleaned_data.get('mes'))
     if qs_solicitacoes.exists():
 
         data_fim = datetime.date(ano_corrente, 12 ,31)

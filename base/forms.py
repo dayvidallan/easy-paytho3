@@ -223,6 +223,44 @@ class AnoForm(forms.Form):
         ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         self.fields['ano'].choices = ANO_CHOICES
 
+class AnoMesForm(forms.Form):
+    METHOD = 'GET'
+    ano = forms.ChoiceField([],
+                            required=False,
+                            label=u'Filtrar por Ano:',
+                            )
+    mes = forms.ChoiceField([],
+                            required=False,
+                            label=u'Filtrar por Mês:',
+                            )
+
+    def __init__(self, *args, **kwargs):
+        super(AnoMesForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+
+        ANO_CHOICES = []
+
+
+        ano_inicio = 2015
+        ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        self.fields['ano'].choices = ANO_CHOICES
+
+        MESES = (
+            (1, u'Janeiro'),
+            (2, u'Fevereiro'),
+            (3, u'Março'),
+            (4,  u'Abril'),
+            (5, u'Maio' ),
+            (6, u'Junho'),
+            (7,  u'Julho'),
+            (8, u'Agosto'),
+            (9, u'Setembro'),
+            (10,  u'Outubro'),
+            (11, u'Novembro' ),
+            (12,u'Dezembro' ),
+        )
+        self.fields['mes'].choices = MESES
+
 class UploadPropostaPesquisaForm(forms.Form):
     arquivo = forms.FileField(label=u'Arquivo com as Propostas', required=False)
 
