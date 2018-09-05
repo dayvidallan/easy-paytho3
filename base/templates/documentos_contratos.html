@@ -25,6 +25,11 @@
             <tr>
                 <td><a href="/base/relatorio_qtd_consumida_contrato/{{ contrato.pk }}/" target="_blank">Quantidades Consumidas do Contrato</a></td>
             </tr>
+            {% if solicitacao.get_pregao.tem_item_deserto_fracassado %}
+                <tr>
+                    <td><a href="/base/relatorio_itens_desertos/{{ solicitacao.get_pregao.id }}/" target="_blank">Relatório de Itens Desertos ou Fracassados</a></td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
     <br>
