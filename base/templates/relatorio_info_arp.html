@@ -139,7 +139,7 @@ ul{
                                 {% endif %}
                                 <td>{{ opcao.get_item_arp.valor|format_money }}</td>
                                 <td>{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
-                                <td>{{ opcao.get_item_arp.get_data_esgotamento }}</td>
+                                <td>{{ opcao.get_item_arp.get_data_esgotamento|default_if_none:"-" }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -183,7 +183,7 @@ ul{
                             <td>{{ opcao.valor|format_money }}</td>
                             <td>{{ opcao.quantidade|format_quantidade }}</td>
                             <td>{{ opcao.get_total|format_money }}</td>
-                            <td>{{ opcao.get_data_esgotamento }}</td>
+                            <td>{{ opcao.get_data_esgotamento|default_if_none:"-" }}</td>
 
                         </tr>
                     {% endfor %}

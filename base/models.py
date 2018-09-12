@@ -3303,12 +3303,12 @@ class ItemAtaRegistroPreco(models.Model):
     def get_data_esgotamento(self):
         if self.data_esgotamento:
             return self.data_esgotamento.strftime('%d/%m/%Y')
-        return u'-'
+        return None
 
     def get_quantidade_disponivel(self, total=False):
 
         usuario = tl.get_user()
-        if usuario.groups.filter(name=u'Gerente').exists() or total:
+        if usuario and usuario.groups.filter(name=u'Gerente').exists() or total:
             pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True)
             if pedidos.exists():
                 return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']
