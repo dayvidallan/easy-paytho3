@@ -4966,11 +4966,12 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
                     novo_pedido.ata = ata
                     novo_pedido.solicitacao = nova_solicitacao
                     if eh_lote:
-
-                        novo_pedido.item = ItemAtaRegistroPreco.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
+                        item_da_ata = ItemAtaRegistroPreco.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx]))
+                        novo_pedido.item = item_da_ata
                         novo_pedido.valor = ItemAtaRegistroPreco.objects.get(item=resultados.get(id=request.POST.getlist('id')[idx])).valor
                     else:
-                        novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                        item_da_ata = resultados.get(id=request.POST.getlist('id')[idx])
+                        novo_pedido.item = item_da_ata
                         novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
 
                     novo_pedido.quantidade = valor_pedido
@@ -4978,6 +4979,13 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
                     novo_pedido.pedido_por = request.user
                     novo_pedido.pedido_em = datetime.datetime.now()
                     novo_pedido.save()
+
+                    if item_da_ata.get_quantidade_disponivel(total=True) <= 0:
+                        item_da_ata.data_esgotamento = datetime.datetime.now().date()
+                        item_da_ata.save()
+                        if not ItemAtaRegistroPreco.objects.filter(ata=ata, data_esgotamento__isnull=True).exists():
+                            ata.data_esgotamento = datetime.datetime.now().date()
+                            ata.save()
 
             messages.success(request, u'Pedido cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)
@@ -5050,7 +5058,8 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
                     novo_pedido = PedidoAtaRegistroPreco()
                     novo_pedido.ata = ata
                     novo_pedido.solicitacao = nova_solicitacao
-                    novo_pedido.item = resultados.get(id=request.POST.getlist('id')[idx])
+                    item_da_ata = resultados.get(id=request.POST.getlist('id')[idx])
+                    novo_pedido.item = item_da_ata
                     novo_pedido.valor = resultados.get(id=request.POST.getlist('id')[idx]).valor
 
                     novo_pedido.quantidade = valor_pedido
@@ -5058,6 +5067,13 @@ def informar_quantidades_do_pedido_adesao_arp(request, ata_id, solicitacao_id):
                     novo_pedido.pedido_por = request.user
                     novo_pedido.pedido_em = datetime.datetime.now()
                     novo_pedido.save()
+                    if item_da_ata.get_quantidade_disponivel(total=True) <= 0:
+                        item_da_ata.data_esgotamento = datetime.datetime.now().date()
+                        item_da_ata.save()
+                        if not ItemAtaRegistroPreco.objects.filter(ata=ata, data_esgotamento__isnull=True).exists():
+                            ata.data_esgotamento = datetime.datetime.now().date()
+                            ata.save()
+
 
             messages.success(request, u'Pedido cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % nova_solicitacao.id)

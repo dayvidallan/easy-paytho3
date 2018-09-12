@@ -2666,6 +2666,7 @@ class AtaRegistroPreco(models.Model):
     objeto = models.TextField(u'Objeto', null=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
     fornecedor_adesao_arp = models.ForeignKey('base.Fornecedor', null=True, related_name=u'fornecedor_contrato_adesao', verbose_name=u'Fornecedor')
+    data_esgotamento = models.DateField(u'Data de Esgotamento da Ata', null=True)
 
     class Meta:
         verbose_name = u'Ata de Registro de Preço'
@@ -2686,6 +2687,11 @@ class AtaRegistroPreco(models.Model):
             return u'Cancelado'
         else:
             return u'Ativo'
+
+    def get_data_esgotamento(self):
+        if self.data_esgotamento:
+            return self.data_esgotamento.strftime('%d/%m/%Y')
+        return u'-'
 
     def get_arquivos_publicos(self):
         return AnexoAtaRegistroPreco.objects.filter(ata=self, publico=True)
@@ -3283,6 +3289,7 @@ class ItemAtaRegistroPreco(models.Model):
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     ordem = models.IntegerField(u'Ordem', null=True)
     ativo = models.BooleanField(u'Ativo', default=True)
+    data_esgotamento = models.DateField(u'Data de Esgotamento do Item', null=True)
 
     class Meta:
         ordering = ['ordem']
@@ -3293,10 +3300,15 @@ class ItemAtaRegistroPreco(models.Model):
     def __unicode__(self):
         return u'Item %s da ARP: %s' % (self.item, self.ata)
 
-    def get_quantidade_disponivel(self):
+    def get_data_esgotamento(self):
+        if self.data_esgotamento:
+            return self.data_esgotamento.strftime('%d/%m/%Y')
+        return u'-'
+
+    def get_quantidade_disponivel(self, total=False):
 
         usuario = tl.get_user()
-        if usuario.groups.filter(name=u'Gerente').exists():
+        if usuario.groups.filter(name=u'Gerente').exists() or total:
             pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True)
             if pedidos.exists():
                 return self.quantidade - pedidos.aggregate(soma=Sum('quantidade'))['soma']

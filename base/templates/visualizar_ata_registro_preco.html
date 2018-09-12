@@ -331,7 +331,7 @@
                                                     <td colspan="8" align="center"><b>Valor do Lote (Mensal): R$ {{ lote.get_valor_total_lote|format_money }} ({{ lote.get_valor_total_lote|format_numero_extenso }})</b></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="8" align="center"><b>Total do lote ({{ ata.solicitacao.numero_meses_contratacao_global }} meses): R$ {{ lote.get_valor_total_lote_meses|format_money }} ({{ lote.get_valor_total_lote_meses|format_numero_extenso }})</b></td>
+                                                    <td colspan="8" align="center"><b>Total do lote {% if ata.solicitacao.numero_meses_contratacao_global %}({{ ata.solicitacao.numero_meses_contratacao_global }} meses){% endif %}: R$ {{ lote.get_valor_total_lote_meses|format_money }} ({{ lote.get_valor_total_lote_meses|format_numero_extenso }})</b></td>
                                                 </tr>
                                             </tbody>
                                         </table>

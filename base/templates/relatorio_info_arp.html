@@ -71,6 +71,7 @@ ul{
                 <th>Início da Vigência</th>
                 <th>Término da Vigência</th>
                 <th>Situação</th>
+                <th>Esgotada Em</th>
             </tr>
         </thead>
         <tbody>
@@ -85,6 +86,7 @@ ul{
                 <td>{{ ata.data_inicio }}</td>
                 <td>{{ ata.data_fim|default_if_none:"-" }}</td>
                 <td>{{ ata.get_situacao }}</td>
+                <td>{{ ata.get_data_esgotamento }}</td>
             </tr>
 
         </tbody>
@@ -98,7 +100,6 @@ ul{
            <td width="15%"><b>Objeto:</b></td><td align="left">{{ ata.solicitacao.objeto }}</td>
        </tr>
    </table>
-   <br>
 
         {% if ata.solicitacao.eh_lote %}
             <h3>Lotes da Ata</h3>
@@ -110,12 +111,13 @@ ul{
                     <thead>
                         <tr><th colspan="7">{{ lote }}</th></tr>
                         <tr>
-                            <th>Item/Lote</th>
+                            <th width="13%">Item/Lote</th>
                             <th width="50%">Material/Serviço</th>
-                            <th>Unidade</th>
-                            <th>Empresa</th>
-                            <th>Valor</th>
-                            <th>Quantidade Inicial</th>
+                            <th width="20%">Unidade</th>
+                            <th width="35%">Empresa</th>
+                            <th width="13%">Valor</th>
+                            <th width="20%">Quantidade Inicial</th>
+                            <th width="13%">Esgotado em</th>
 
                         </tr>
                     </thead>
@@ -137,6 +139,7 @@ ul{
                                 {% endif %}
                                 <td>{{ opcao.get_item_arp.valor|format_money }}</td>
                                 <td>{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
+                                <td>{{ opcao.get_item_arp.get_data_esgotamento }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -157,6 +160,7 @@ ul{
                         <th>Valor</th>
                         <th>Quantidade Inicial</th>
                         <th>Total</th>
+                        <th width="13%">Esgotado em</th>
 
                     </tr>
                 </thead>
@@ -179,6 +183,7 @@ ul{
                             <td>{{ opcao.valor|format_money }}</td>
                             <td>{{ opcao.quantidade|format_quantidade }}</td>
                             <td>{{ opcao.get_total|format_money }}</td>
+                            <td>{{ opcao.get_data_esgotamento }}</td>
 
                         </tr>
                     {% endfor %}
