@@ -10925,8 +10925,8 @@ def ver_calendario(request):
 
 
                                 horario = u'Início às {}'.format(solicitacao.hora_abertura.strftime("%H:%M"))
-                                descricao = u'<a href="/base/pregao/{}/" target="_blank">{} - <strong>{}</strong> {} {}</a>'.format(
-                                    solicitacao.id, horario, solicitacao.get_situacao(), solicitacao.modalidade, solicitacao.num_pregao)
+                                descricao = u'<a href="/base/pregao/{}/" target="_blank">{} <strong>{}</strong> {} {}</a>'.format(
+                                    solicitacao.id,  solicitacao.modalidade, horario, solicitacao.get_situacao(), solicitacao.num_pregao)
 
                                 cal.adicionar_evento_calendario(agenda_data_inicio, agenda_data_fim, descricao,
                                                                     css)

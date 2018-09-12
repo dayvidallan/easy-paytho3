@@ -221,7 +221,6 @@
                 <td>{{ ata.data_fim|default_if_none:"-" }}</td>
                 <td>{% if ata.get_situacao %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
                 <td>{% if ata.liberada_compra %}<span class="label label-success">Sim</span>{% else %}<span class="label label-danger">Não</span>{% endif %}</td>
-                <td>{{ ata.get_data_esgotamento }}</td>
             </tr>
 
         </tbody>
@@ -324,7 +323,7 @@
                                                         {% endif %}
                                                         <td width="4%">{{ opcao.get_item_arp.valor|format_money }}</td>
                                                         <td width="5%">{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
-                                                        <td width="5%">{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }}</td>
+                                                        <td width="5%">{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }} {% if opcao.get_item_arp.get_data_esgotamento %} (Esgotado: {{opcao.get_item_arp.get_data_esgotamento }}){% endif %}</td>
 
 
                                                     </tr>
@@ -402,7 +401,7 @@
                                                         <td>{{ opcao.item.get_vencedor.get_valor }}</td>
                                                     {% endif %}
                                                     <td>{{ opcao.quantidade|format_quantidade }}</td>
-                                                    <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                                                    <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}{% if opcao.get_data_esgotamento %} (Esgotado: {{opcao.get_data_esgotamento }}){% endif %}</td>
                                                     <td>{% if opcao.ativo %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
                                                     <td>
                                                         {% if True or ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
