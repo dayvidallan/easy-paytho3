@@ -193,7 +193,7 @@
 
                 <th>Nº da Solicitação</th>
                 <th>Nº Processo</th>
-                {% if ata.pregao %}
+                {% if ata.solicitacao.get_pregao %}
                     <th>Nº do Procedimento/Licitação</th>
                 {% endif %}
 
@@ -214,8 +214,8 @@
             <tr>
                 <td><a href="/base/itens_solicitacao/{{ ata.solicitacao.id }}/">{{ ata.solicitacao.num_memorando }}</a></td>
                 <td>{{ ata.solicitacao.processo|default_if_none:"-" }}</td>
-                {% if ata.pregao %}
-                    <td>{{ ata.pregao.num_pregao }}</td>
+                {% if ata.solicitacao.get_pregao  %}
+                    <td>{{ ata.solicitacao.get_pregao.num_pregao }}</td>
                 {% endif %}
                 {% if ata.adesao %}
                     <td>{{ ata.num_oficio }}</td>
