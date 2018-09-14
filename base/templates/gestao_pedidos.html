@@ -172,20 +172,35 @@
 
 
 {% block content %}
-    <form action="." method="get" class="form-horizontal">
-        {% csrf_token %}
-         <div class="miolo">
+    <fieldset>
+        <legend>Filtrar</legend>
+        <form action="." method="GET" class="form-horizontal">
+            {% csrf_token %}
             <div class="row-fluid">
-                <div class="col-xs-6">
-                    {{ form|bootstrap }}
+                <div class="col-xs-3">
+                    <div class="controls">{{ form.info|bootstrap }}
+                        {% if form.info.help_text %}
+                            <p class="help-inline"><small>{{ form.info.help_text }}</small></p>
+                        {% endif %}
+                    </div>
                 </div>
+
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.ano|bootstrap }}
+                        {% if form.ano.help_text %}
+                            <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <div class="col-xs-1 col-md-1">
                     <br>
-                    <p><button type="submit" class="btn btn-primary">Filtrar</button></p>
+                    <p><button type="submit" class="btn btn-primary">Buscar</button></p>
                 </div>
             </div>
-         </div>
-    </form>
+        </form>
+
+    </fieldset>
     {%  if contratos.exists %}
         {% autopaginate contratos 10 %}
         {% paginate %} <br>

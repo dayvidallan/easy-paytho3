@@ -4574,7 +4574,7 @@ def gestao_pedidos_tipo(request):
 @login_required()
 def gestao_pedidos(request, tipo_id):
     setor = request.user.pessoafisica.setor
-    form = AnoForm(request.GET or None)
+    form = GestaoPedidoForm(request.GET or None)
     nome = u''
     if tipo_id == u'1':
         nome = u'Contratos'
@@ -4585,20 +4585,29 @@ def gestao_pedidos(request, tipo_id):
     title=u'Gestão de Pedidos - %s' % nome
     if form.is_valid():
         filtrou = True
+        valor = None
         if form.cleaned_data.get('ano') == u'Todos':
             filtrou = False
         meus_pedidos = ItemQuantidadeSecretaria.objects.filter(secretaria=setor.secretaria).values_list('solicitacao', flat=True)
         contratos = atas = credenciamentos = sem_registro = nome = None
+        if form.cleaned_data.get('info'):
+            valor = form.cleaned_data.get('info')
+
         if tipo_id == u'1':
             contratos = Contrato.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
             if filtrou:
                 contratos = contratos.filter(data_inicio__year=form.cleaned_data.get('ano'))
+            if valor:
+                contratos = contratos.filter(numero__icontains=valor)
+
             if not contratos.exists():
                 sem_registro = u'Nenhum contrato disponível para pedidos.'
         elif tipo_id == u'2':
             atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
             if filtrou:
                 atas = atas.filter(data_inicio__year=form.cleaned_data.get('ano'))
+            if valor:
+                atas = atas.filter(numero__icontains=valor)
             if not atas.exists():
                 sem_registro = u'Nenhuma ata disponível para pedidos.'
         #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
@@ -4606,6 +4615,8 @@ def gestao_pedidos(request, tipo_id):
             credenciamentos = Credenciamento.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
             if filtrou:
                 credenciamentos = credenciamentos.filter(data_inicio__year=form.cleaned_data.get('ano'))
+            if valor:
+                credenciamentos = credenciamentos.filter(numero__icontains=valor)
             if not credenciamentos.exists():
                 sem_registro = u'Nenhum credenciamento disponível para pedidos.'
         pode_editar = request.user.groups.filter(name=u'Gerente')

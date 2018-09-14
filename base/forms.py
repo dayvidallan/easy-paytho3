@@ -205,6 +205,27 @@ class AlterarItemContratoForm(forms.ModelForm):
         fields = ['marca', 'valor', 'quantidade']
 
 
+
+class GestaoPedidoForm(forms.Form):
+    METHOD = 'GET'
+    info = forms.CharField(label=u'Digite o número de identificação', required=False)
+    ano = forms.ChoiceField([],
+                            required=False,
+                            label=u'Filtrar por Ano:',
+                            )
+
+    def __init__(self, *args, **kwargs):
+        super(GestaoPedidoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+
+        ANO_CHOICES = []
+
+        ANO_CHOICES.append([u'Todos', u'Todos'])
+        ano_inicio = 2015
+        ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        self.fields['ano'].choices = ANO_CHOICES
+
+
 class AnoForm(forms.Form):
     METHOD = 'GET'
     ano = forms.ChoiceField([],
