@@ -206,6 +206,7 @@ class AlterarItemContratoForm(forms.ModelForm):
 
 
 
+
 class GestaoPedidoForm(forms.Form):
     METHOD = 'GET'
     info = forms.CharField(label=u'Digite o número de identificação', required=False)

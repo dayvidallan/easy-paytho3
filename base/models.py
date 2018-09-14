@@ -475,6 +475,14 @@ class SolicitacaoLicitacao(models.Model):
     def pode_gerar_ordem(self):
         return  self.eh_inexigibilidade() or self.eh_dispensa()
 
+    def pode_abrir_para_compra(self):
+        nao_tem_ordem =  not self.tem_ordem_compra()
+        nao_foi_homologado = True
+        if self.get_pregao() and self.get_pregao().data_homologacao:
+            nao_foi_homologado = False
+        return nao_tem_ordem and nao_foi_homologado
+
+
     def eh_pedido(self):
         return self.arp_origem or self.contrato_origem or self.credenciamento_origem
 

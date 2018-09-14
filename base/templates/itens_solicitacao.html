@@ -108,7 +108,7 @@
                     <a class="btn btn-info" href="/base/ver_pesquisas/{{ solicitacao.id }}/">Ver Pesquisas</a>
                     <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
                     <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
-                {% elif not solicitacao.tem_ordem_compra %}
+                {% elif solicitacao.pode_abrir_para_compra %}
                     <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
 
                 {% endif %}
