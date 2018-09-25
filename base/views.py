@@ -5546,9 +5546,6 @@ def informar_desconto_final_itens_lote(request, lote_id, pregao_id):
 
 
 
-
-
-
 @login_required()
 def gerar_ordem_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
@@ -5568,7 +5565,7 @@ def gerar_ordem_compra(request, solicitacao_id):
     id_sessao = "%s_solicitacao" % (request.user.pessoafisica.id)
     request.session[id_sessao] = solicitacao.id
     title = u'Gerar Ordem de Compra/Serviço - %s' % solicitacao
-    form = CriarOrdemForm(request.POST or None)
+    form = CriarOrdemForm(request.POST or None, solicitacao=solicitacao)
     if form.is_valid():
         o = form.save(False)
         o.solicitacao = solicitacao

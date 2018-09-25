@@ -1122,6 +1122,7 @@ class CriarOrdemForm(forms.ModelForm):
             js = ['/static/base/js/ordem.js']
 
     def __init__(self, *args, **kwargs):
+        self.solicitacao = kwargs.pop('solicitacao', None)
         super(CriarOrdemForm, self).__init__(*args, **kwargs)
         self.fields['data'].widget.attrs = {'class': 'vDateField'}
         if OrdemCompra.objects.all().exists():
@@ -1130,6 +1131,10 @@ class CriarOrdemForm(forms.ModelForm):
         else:
             self.fields['numero'].initial = 1
 
+
+    def clean(self):
+        if self.solicitacao.get_ata() and self.solicitacao.get_ata().data_fim < self.cleaned_data.get('data'):
+            raise forms.ValidationError(u'A data da ordem não pode ser posterior a data de término da vigência da ata.')
 
 class RegistrarAdjudicacaoForm(forms.ModelForm):
     class Meta:
