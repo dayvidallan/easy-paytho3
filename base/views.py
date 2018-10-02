@@ -8945,39 +8945,37 @@ def cadastrar_socio(request, crc_id):
 
 
 def imprimir_crc(request, fornecedor_id):
-    if request.user.has_perm('base.pode_cadastrar_pregao'):
-        fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
-        registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
-        certidoes = CertidaoCRC.objects.filter(crc=registro)
-        configuracao = get_config_geral()
-        logo = None
-        if configuracao.logo:
-            logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    registro = get_object_or_404(FornecedorCRC, fornecedor=fornecedor)
+    certidoes = CertidaoCRC.objects.filter(crc=registro)
+    configuracao = get_config_geral()
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        destino_arquivo = u'upload/extratos/%s.pdf' % fornecedor.id
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
-            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
-        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
-
-
-        data = {'registro': registro,'certidoes': certidoes, 'configuracao': configuracao, 'logo': logo}
-
-        template = get_template('imprimir_crc.html')
-
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
+    destino_arquivo = u'upload/extratos/%s.pdf' % fornecedor.id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
 
 
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
-    else:
-        raise PermissionDenied
+    data = {'registro': registro,'certidoes': certidoes, 'configuracao': configuracao, 'logo': logo}
+
+    template = get_template('imprimir_crc.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+
+
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
 
 
 @login_required()
