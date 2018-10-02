@@ -17,6 +17,9 @@ import os
 import hashlib
 from django.conf import settings
 from django.core.mail import send_mail
+import cStringIO as StringIO
+import qrcode
+import base64
 
 def get_tl():
     """
@@ -3483,6 +3486,21 @@ class FornecedorCRC(models.Model):
         else:
             return 1
 
+    def get_absolute_url(self):
+        string= '/base/imprimir_crc/{0}/'.format(self.id)
+        return u'%s%s' % (settings.SITE_URL, string)
+
+    @property
+    def qrcode(self):
+        img = qrcode.make(self.get_absolute_url())
+        buffer_img = StringIO.StringIO()
+        img.save(buffer_img, 'png')
+        return buffer_img
+
+    @property
+    def qrcode_base64image(self):
+        qrcode_data = base64.b64encode(self.qrcode.getvalue())
+        return "data:image/png;base64," + qrcode_data
 
 class CnaeSecundario(models.Model):
     crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC')

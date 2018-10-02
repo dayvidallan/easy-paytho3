@@ -8943,7 +8943,7 @@ def cadastrar_socio(request, crc_id):
     else:
         raise PermissionDenied
 
-@login_required()
+
 def imprimir_crc(request, fornecedor_id):
     if request.user.has_perm('base.pode_cadastrar_pregao'):
         fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
