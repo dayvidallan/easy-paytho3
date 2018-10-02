@@ -3487,7 +3487,7 @@ class FornecedorCRC(models.Model):
             return 1
 
     def get_absolute_url(self):
-        string= '/base/imprimir_crc/{0}/'.format(self.id)
+        string= '/base/imprimir_crc/{0}/'.format(self.fornecedor.id)
         return u'%s%s' % (settings.SITE_URL, string)
 
     @property
