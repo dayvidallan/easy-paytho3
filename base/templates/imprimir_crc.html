@@ -58,8 +58,32 @@ ul{
 
 {% block content_title %}
     <br>
+
   <h1 class="page-header">
-    {% include "cabecalho.html" %}
+
+    <table border="0" width="100%">
+      <tr>
+        <td  width="30%" cellspacing="10" cellpadding="10"><img src="{{ logo }}"  width="150" height="90"></td>
+
+        <td>
+            <table>
+                <tr>
+                    <td style="font-size:14px;">{{configuracao.nome}}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px;">CNPJ: {{configuracao.cnpj }}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px;">Endereço: {{configuracao.endereco}}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px;">Telefone: {{configuracao.telefones|default_if_none:""}} - Email: {{configuracao.email|default_if_none:""}}</td>
+                </tr>
+            </table>
+        </td>
+        <td width="30%"><img src="{{ registro.qrcode_base64image }}" height="130" widht="130" class="img-qrcode" align="right" /></td>
+      </tr>
+</table>
     <center>
         <font size="3">COMISSÃO PERMANENTE DE LICITAÇÃO</font><br><br>
         {% if registro.renovado %}
@@ -122,7 +146,7 @@ ul{
 
     </p>
 
-    <img src="{{ registro.qrcode_base64image }}" height="130" widht="130" class="img-qrcode" align="right" />
+
     <div id="footerContent">
         OBSERVAÇÃO: Qualquer rasura invalida este certificado.
 
