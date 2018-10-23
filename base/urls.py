@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 from base import views
-from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete
+from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete, PregaoView
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -348,7 +348,7 @@ urlpatterns = [
 
 
 
-
+     url(r'^pregoes/$', PregaoView.as_view(), name="pregoes"),
 
 ]
 

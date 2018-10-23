@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'base',
     'easyaudit',
     #'debug_toolbar',
+    'rest_framework',
 
 
 
@@ -160,9 +161,18 @@ DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = ['base.MaterialConsumo', ]
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
+}
+
 try:
     from settings_base import *
 except ImportError, e:
     pass
 
 SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br'
+
+
