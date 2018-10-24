@@ -348,7 +348,8 @@ urlpatterns = [
 
 
 
-     url(r'^pregoes/$', PregaoView.as_view(), name="pregoes"),
+     url(r'^pregoes/$', PregaoView.as_view({'get': 'list'}), name="pregoes"),
+    url(r'^pregoes/(?P<pk>\d+)/$', PregaoView.as_view({'get': 'retrieve'}), name="pregoes_get"),
 
 ]
 

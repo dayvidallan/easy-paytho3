@@ -10961,14 +10961,16 @@ from rest_framework import generics
 from .serializers import PregaoSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-class PregaoView(generics.ListAPIView):
+from rest_framework import viewsets
+class PregaoView(viewsets.ReadOnlyModelViewSet):
     """This class defines the create behavior of our rest api."""
     queryset = Pregao.objects.all()
     serializer_class = PregaoSerializer
 
-    def list(self,request):
-          queryset=Pregao.objects.all()
-          serializer=PregaoSerializer(queryset,many=True)
-          return Response(serializer.data)
+    def get(self, request, format=None):
+        snippets = Pregao.objects.filter(num_pregao__isnull=False).order_by('-data_abertura')
+        serializer = PregaoSerializer(snippets, many=True)
+        return Response(serializer.data)
+
 
 
