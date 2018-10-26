@@ -10957,13 +10957,12 @@ def ver_lista_feriados(request):
     return render(request, 'ver_lista_feriados.html', locals(), RequestContext(request))
 
 
-from rest_framework import generics
-from .serializers import PregaoSerializer
-from rest_framework.views import APIView
+
+from .serializers import PregaoSerializer, ARPSerializer
+
 from rest_framework.response import Response
 from rest_framework import viewsets
 class PregaoView(viewsets.ReadOnlyModelViewSet):
-    """This class defines the create behavior of our rest api."""
     queryset = Pregao.objects.all()
     serializer_class = PregaoSerializer
 
@@ -10972,5 +10971,15 @@ class PregaoView(viewsets.ReadOnlyModelViewSet):
         serializer = PregaoSerializer(snippets, many=True)
         return Response(serializer.data)
 
+
+class ARPView(viewsets.ReadOnlyModelViewSet):
+
+    queryset = AtaRegistroPreco.objects.all()
+    serializer_class = ARPSerializer
+
+    def get(self, request, format=None):
+        snippets = AtaRegistroPreco.objects.all().order_by('-numero')
+        serializer = ARPSerializer(snippets, many=True)
+        return Response(serializer.data)
 
 

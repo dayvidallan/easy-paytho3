@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 from base import views
-from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete, PregaoView
+from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete, PregaoView, ARPView
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -349,7 +349,9 @@ urlpatterns = [
 
 
      url(r'^pregoes/$', PregaoView.as_view({'get': 'list'}), name="pregoes"),
-    url(r'^pregoes/(?P<pk>\d+)/$', PregaoView.as_view({'get': 'retrieve'}), name="pregoes_get"),
+     url(r'^pregoes/(?P<pk>\d+)/$', PregaoView.as_view({'get': 'retrieve'}), name="pregoes_get"),
+     url(r'^atas/$', ARPView.as_view({'get': 'list'}), name="atas"),
+     url(r'^atas/(?P<pk>\d+)/$', ARPView.as_view({'get': 'retrieve'}), name="atas_get"),
 
 ]
 
