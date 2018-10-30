@@ -271,13 +271,13 @@ ul{
             <br><br>
 
             _______________________________________________________________<br><br>
-            Sr(a). {{ configuracao.responsavel.nome }}<br> CPF: {{ cpf_secretario_formatado }}<br>Secretário(a)
+            Sr(a). {{ solicitacao.responsavel_secretaria.nome }}<br> CPF: {{ cpf_secretario_formatado }}<br>Secretário(a)
 
 
                <br><br>
             {% if ordem.exibe_nome_ordenador %}
                 _______________________________________________________________<br><br>
-                Sr(a). {{ configuracao.ordenador_despesa.nome }}<br> CPF: {{ cpf_ordenador_formatado }}<br>Ordenador(a) de Despesa
+                Sr(a). {{ solicitacao.ordenador_despesa_secretaria.nome }}<br> CPF: {{ cpf_ordenador_formatado }}<br>Ordenador(a) de Despesa
             {% endif %}
         </div>
     </div>

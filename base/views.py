@@ -2595,7 +2595,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
                     '#VALOR#': str(total.quantize(Decimal(10) ** -2)).replace('.',','),
                     '#DESCRICAO#': format_numero_extenso(total),
                     '#OBJETO#': solicitacao.objeto,
-                    '#PREFEITURA#': config.ordenador_despesa.nome,
+                    '#PREFEITURA#': solicitacao.ordenador_despesa.nome,
 
 
                 }
@@ -2878,7 +2878,7 @@ def relatorio_resultado_final(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     solicitacao = pregao.solicitacao
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -3038,7 +3038,7 @@ def relatorio_economia(request, pregao_id):
 def relatorio_resultado_final_por_vencedor(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -3109,7 +3109,7 @@ def relatorio_lista_participantes(request, pregao_id):
     data_emissao = datetime.date.today()
     participantes = ParticipantePregao.objects.filter(pregao=pregao)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -3168,7 +3168,7 @@ def relatorio_lista_visitantes(request, pregao_id):
 def relatorio_classificacao_por_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
 
@@ -3237,7 +3237,7 @@ def relatorio_ocorrencias(request, pregao_id):
     data_emissao = datetime.date.today()
     registros = HistoricoPregao.objects.filter(pregao=pregao)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -3264,7 +3264,7 @@ def relatorio_ocorrencias(request, pregao_id):
 def relatorio_propostas_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -3325,7 +3325,7 @@ def relatorio_propostas_pregao(request, pregao_id):
 def relatorio_lances_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -3408,7 +3408,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     municipio = config_geral.municipio
 
     if pregao.comissao:
-        configuracao_logo = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao_logo = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao_logo = get_config(pregao.solicitacao.setor_origem.secretaria)
 
@@ -3420,9 +3420,9 @@ def relatorio_ata_registro_preco(request, pregao_id):
         nome_ordenador = configuracao.nome
         cnpj_ordenador =  configuracao.cnpj
         endereco_ordenador =  configuracao.endereco
-        orgao = configuracao.ordenador_despesa.setor.secretaria.nome
-        nome_pessoa_ordenadora = configuracao.ordenador_despesa.nome
-        cpf_pessoa_ordenadora = configuracao.cpf_ordenador_despesa
+        orgao = pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria.nome
+        nome_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa_secretaria.nome
+        cpf_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa_secretaria.cpf
 
     else:
 
@@ -3430,8 +3430,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
         cnpj_ordenador =  config_geral.cnpj
         endereco_ordenador =  config_geral.endereco
         orgao = config_geral.nome
-        nome_pessoa_ordenadora = config_geral.ordenador_despesa.nome
-        cpf_pessoa_ordenadora = config_geral.cpf_ordenador_despesa
+        nome_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa.nome
+        cpf_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa.cpf
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     tabela = {}
@@ -4307,7 +4307,7 @@ def extrato_inicial(request, pregao_id):
     # return HttpResponse(pdf, 'application/pdf')
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -4430,7 +4430,7 @@ def extrato_inicial(request, pregao_id):
 def termo_adjudicacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -5647,10 +5647,10 @@ def ver_ordem_compra(request, solicitacao_id):
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
-    cpf_secretario = configuracao.responsavel.cpf
+    cpf_secretario = solicitacao.responsavel_secretaria.cpf
     cpf_secretario_formatado = "%s.%s.%s-%s" % ( cpf_secretario[0:3], cpf_secretario[3:6], cpf_secretario[6:9], cpf_secretario[9:11] )
 
-    cpf_ordenador = configuracao.ordenador_despesa.cpf
+    cpf_ordenador = solicitacao.ordenador_despesa_secretaria.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
     data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'credenciamento': credenciamento, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
@@ -5792,10 +5792,10 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
         total += item.get_total()
 
 
-    cpf_secretario = configuracao.responsavel.cpf
+    cpf_secretario = solicitacao.responsavel_secretaria.cpf
     cpf_secretario_formatado = "%s.%s.%s-%s" % ( cpf_secretario[0:3], cpf_secretario[3:6], cpf_secretario[6:9], cpf_secretario[9:11] )
 
-    cpf_ordenador = configuracao.ordenador_despesa.cpf
+    cpf_ordenador = solicitacao.ordenador_despesa_secretaria.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
     data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
 
@@ -5936,7 +5936,7 @@ def termo_homologacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     eh_desconto = pregao.eh_maior_desconto()
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     config_geral = get_config_geral()
@@ -6765,7 +6765,7 @@ def relatorio_lista_download_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -6846,7 +6846,7 @@ def ata_sessao(request, pregao_id):
     eh_desconto = pregao.eh_maior_desconto()
 
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
 
@@ -7228,7 +7228,7 @@ def ata_sessao_credenciamento(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
 
@@ -7504,7 +7504,7 @@ def ata_sessao_outras_modalidades(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
 
@@ -8626,7 +8626,7 @@ def relatorio_dados_licitacao(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -9987,7 +9987,7 @@ def relatorio_itens_desertos(request, pregao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
     if pregao.comissao:
-        configuracao = get_config(pregao.comissao.secretaria.ordenador_despesa.setor.secretaria)
+        configuracao = get_config(pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria)
     else:
         configuracao = get_config(pregao.solicitacao.setor_origem.secretaria)
     logo = None
@@ -10247,7 +10247,7 @@ def imprimir_aditivo(request, aditivo_id):
 
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    p.add_run(u'CONTRATANTE: O Município %s, inscrito no CNPJ sob o nº. %s, sediado na %s, neste ato representado por %s - CPF: %s.' % (config_geral.nome, config_geral.cnpj, config_geral.endereco, config_geral.ordenador_despesa.nome, config_geral.cpf_ordenador_despesa ))
+    p.add_run(u'CONTRATANTE: O Município %s, inscrito no CNPJ sob o nº. %s, sediado na %s, neste ato representado por %s - CPF: %s.' % (config_geral.nome, config_geral.cnpj, config_geral.endereco, aditivo.contrato.solicitacao.ordenador_despesa.nome, aditivo.contrato.solicitacao.ordenador_despesa.cpf ))
 
     if aditivo.de_prazo and aditivo.de_valor:
         p = document.add_paragraph()
@@ -10547,7 +10547,7 @@ def imprimir_aditivo(request, aditivo_id):
 
 
     orgao = config_geral.nome
-    nome_pessoa_ordenadora = config_geral.ordenador_despesa.nome
+    nome_pessoa_ordenadora = aditivo.contrato.solicitacao.ordenador_despesa.nome
 
 
     document.add_paragraph()

@@ -382,6 +382,9 @@ class SolicitacaoLicitacao(models.Model):
     termo_inexigibilidade = models.FileField(u'Termo de Inexigibilidade', null=True, blank=True, upload_to=u'upload/minutas/')
     contratacao_global = models.BooleanField(u'Contratação Global (Com pagamentos mensais fixos)', default=False)
     numero_meses_contratacao_global = models.IntegerField(u'Informe o Número de Meses do Contrato', null=True)
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa')
+    ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria')
+    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria')
 
 
     def __unicode__(self):
