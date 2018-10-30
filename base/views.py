@@ -5913,7 +5913,7 @@ def registrar_adjudicacao(request, pregao_id):
 @login_required()
 def registrar_homologacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
-    if request.user.pessoafisica == pregao.solicitacao.setor_origem.secretaria.ordenador_despesa:
+    if (request.user.pessoafisica == pregao.solicitacao.setor_origem.secretaria.ordenador_despesa) or (get_config() and request.user.pessoafisica == get_config().ordenador_despesa):
         if pregao.eh_credenciamento():
             title=u'Credenciar'
         else:
