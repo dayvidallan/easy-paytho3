@@ -73,7 +73,7 @@ ul{
 
 
 
-        O Prefeito do Município de <b>{{configuracao.nome}}</b>,
+        O(A) Prefeito(a) do Município de <b>{{configuracao.nome}}</b>,
         no uso de suas atribuições legais, em atendimento ao disposto no art. 43, inciso VI, da Lei Federal nº 8.666/93, em sua redação atual, resolve <b>homologar</b> os atos praticados no procedimento licitatório referente a(ao) <b>{{ pregao }} {% if  pregao.solicitacao.processo %}, Processo N° {{ pregao.solicitacao.processo }}{% endif %}</b>
         originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.objeto}}</b>,
 
@@ -88,7 +88,7 @@ ul{
 
         <br><br>
         <b>{{ pregao.ordenador_despesa.nome }}</b><br>
-        Prefeito Municipal
+        Prefeito(a) Municipal
     </center>
 
     </p>
