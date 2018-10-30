@@ -129,7 +129,7 @@
 
                            <ul class="action-bar">
                                {% if perms.base.pode_cadastrar_pregao %}
-                                   <a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a>
+                                   <li><a class="btn btn-info btn-sm" href="/pregao/{{pregao.id}}/">Visualizar</a></li>
                                    <!-- <li><a class="btn btn-default btn-sm" href="/base/editar_pregao/{{pregao.id}}/">Editar</a></li> -->
                                {% endif %}
                                {% if eh_ordenador_despesa and pregao.tem_resultado %}
