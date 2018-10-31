@@ -21,6 +21,14 @@ import cStringIO as StringIO
 import qrcode
 import base64
 
+
+def get_config(secretaria=None):
+    if secretaria and secretaria.logo:
+        return secretaria
+    if Configuracao.objects.exists():
+        return Configuracao.objects.latest('id')
+    return False
+
 def get_tl():
     """
     Retorna threadlocals.
@@ -394,6 +402,12 @@ class SolicitacaoLicitacao(models.Model):
         verbose_name = u'Solicitação de Licitação'
         verbose_name_plural = u'Solicitações de Licitação'
 
+    def save(self):
+        if get_config():
+            self.ordenador_despesa = get_config().ordenador_despesa
+            self.ordenador_despesa_secretaria = get_config(self.setor_origem.secretaria).ordenador_despesa
+            self.responsavel_secretaria = get_config(self.setor_origem.secretaria).responsavel
+        super(SolicitacaoLicitacao, self).save()
 
     def tem_empate_propostas(self):
         valores = list()

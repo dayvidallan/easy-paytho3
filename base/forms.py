@@ -954,10 +954,10 @@ class EditarPedidoForm(forms.ModelForm):
 
 
 class AtaRegistroPrecoForm(forms.ModelForm):
-    fornecedor_adesao_arp = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True)
+    #fornecedor_adesao_arp = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True)
     class Meta:
         model = AtaRegistroPreco
-        fields = ('numero', 'data_inicio', 'data_fim', 'fornecedor_adesao_arp', )
+        fields = ('numero', 'data_inicio', 'data_fim', )
 
     def __init__(self, *args, **kwargs):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
@@ -970,8 +970,8 @@ class AtaRegistroPrecoForm(forms.ModelForm):
                 if len(lista) > 1:
                     self.fields['numero'].initial = u'%s/%s' % (int(lista[0])+1, lista[1])
 
-        if not self.instance.pk or not self.instance.adesao:
-            self.fields['fornecedor_adesao_arp'].required=False
+        #if not self.instance.pk or not self.instance.adesao:
+         #   self.fields['fornecedor_adesao_arp'].required=False
 
 
 class CredenciamentoForm(forms.ModelForm):
