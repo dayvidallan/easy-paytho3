@@ -3420,9 +3420,9 @@ def relatorio_ata_registro_preco(request, pregao_id):
         nome_ordenador = configuracao.nome
         cnpj_ordenador =  configuracao.cnpj
         endereco_ordenador =  configuracao.endereco
-        orgao = pregao.solicitacao.ordenador_despesa_secretaria.setor.secretaria.nome
-        nome_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa_secretaria.nome
-        cpf_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa_secretaria.cpf
+        orgao = pregao.ordenador_despesa.setor.secretaria.nome
+        nome_pessoa_ordenadora = pregao.ordenador_despesa.nome
+        cpf_pessoa_ordenadora = pregao.ordenador_despesa.cpf
 
     else:
 
@@ -3430,8 +3430,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
         cnpj_ordenador =  config_geral.cnpj
         endereco_ordenador =  config_geral.endereco
         orgao = config_geral.nome
-        nome_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa.nome
-        cpf_pessoa_ordenadora = pregao.solicitacao.ordenador_despesa.cpf
+        nome_pessoa_ordenadora = pregao.ordenador_despesa.nome
+        cpf_pessoa_ordenadora = pregao.ordenador_despesa.cpf
 
     eh_lote = pregao.criterio.id == CriterioPregao.LOTE
     tabela = {}
