@@ -2628,11 +2628,20 @@ class OrdemCompra(models.Model):
     data_cadastro = models.DateTimeField(u'Cadastrada em', null=True)
     cadastrado_por = models.ForeignKey(User, null=True, blank=True)
     exibe_nome_ordenador = models.BooleanField(u'Incluir Assinatura do Ordenador de Despesa', default=True)
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa_ordem')
+    ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria_ordem')
+    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria_ordem')
 
     class Meta:
         verbose_name = u'Ordem de Compra'
         verbose_name_plural = u'Ordens de Compra'
 
+    def save(self):
+        if get_config():
+            self.ordenador_despesa = get_config().ordenador_despesa
+            self.ordenador_despesa_secretaria = get_config(self.solicitacao.setor_origem.secretaria).ordenador_despesa
+            self.responsavel_secretaria = get_config(self.solicitacao.setor_origem.secretaria).responsavel
+        super(OrdemCompra, self).save()
 
     @transaction.atomic
     def delete(self, *args, **kwargs):
