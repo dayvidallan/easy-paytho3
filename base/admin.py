@@ -441,3 +441,6 @@ class FeriadoAdmin(NewModelAdmin):
 
 
 admin.site.register(Feriado, FeriadoAdmin)
+
+
+
