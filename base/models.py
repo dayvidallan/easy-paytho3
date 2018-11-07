@@ -2162,6 +2162,9 @@ class PessoaFisica(models.Model):
         self.cpf = cpf.replace('-','').replace('.','')
         if self.pk:
             self.user.username = self.cpf
+            self.user.first_name = self.nome[:30]
+            if self.email:
+                self.user.email = self.email
             self.user.save()
         super(PessoaFisica, self).save()
 
