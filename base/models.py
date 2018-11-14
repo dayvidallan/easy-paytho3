@@ -2598,6 +2598,7 @@ class Configuracao(models.Model):
     cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
     url = models.CharField(u'URL de Acesso', max_length=500, null=True)
 
+
     def __unicode__(self):
         return u'Configuração Geral'
 

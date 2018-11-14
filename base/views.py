@@ -890,7 +890,7 @@ def baixar_editais(request):
                 pregoes = pregoes.filter(Q(situacao=form.cleaned_data.get('situacao')) | Q(pode_homologar=True))
             else:
                 pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
-
+    email = get_config_geral().email
     return render(request, 'baixar_editais.html', locals(), RequestContext(request))
 
 def baixar_atas(request):
@@ -900,6 +900,7 @@ def baixar_atas(request):
     if form.is_valid():
         if form.cleaned_data.get('numero'):
             atas = atas.filter(numero__icontains=form.cleaned_data.get('numero'))
+    email = get_config_geral().email
 
     return render(request, 'baixar_atas.html', locals(), RequestContext(request))
 
@@ -8298,6 +8299,7 @@ def localizar_processo(request):
                 solicitacao = solicitacao[0]
                 movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).order_by('-data_envio')
 
+    email = get_config_geral().email
 
     return render(request, 'localizar_processo.html', locals(), RequestContext(request))
 
