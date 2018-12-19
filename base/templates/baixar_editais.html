@@ -78,7 +78,7 @@
                     <td>{{ pregao.objeto }}</td>
                 </tr>
                 <tr>
-                    <th><b>Critério de Avaliação / Julgamento</b></th>
+                    <th><b>Critério de Julgamento / Adjudicação</b></th>
                     <td>{{ pregao.tipo }} / {{ pregao.criterio }}</td>
                 </tr>
                 <tr>
@@ -124,18 +124,18 @@
                     <th><b>Participantes</b></th>
                     <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
                 </tr>
-                 {%  if pregao.tem_resultado %}
+                 <!--{%  if pregao.tem_resultado %}-->
 
-                    <tr><th><b>Resultados</b></th>
-                        <td>
-                            <a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a>
-                            {% if pregao.eh_pregao %}
-                                <br><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a>
-                            {% endif %}
-                            <br><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a>
-                        </td>
-                    </tr>
-                {% endif %}
+                    <!--<tr><th><b>Resultados</b></th>-->
+                        <!--<td>-->
+                            <!--<a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a>-->
+                            <!--{% if pregao.eh_pregao %}-->
+                                <!--<br><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a>-->
+                            <!--{% endif %}-->
+                            <!--<br><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                <!--{% endif %}-->
 
             </table>
            </fieldset>
