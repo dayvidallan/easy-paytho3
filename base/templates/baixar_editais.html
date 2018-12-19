@@ -65,6 +65,10 @@
 
 
             <table class="table table-bordered table-condensed table-striped">
+                <tr>
+                    <th><b>Número do Processo</b></th>
+                    <td>{{ pregao.solicitacao.processo|default_if_none:"-" }}</td>
+                </tr>
                  <tr>
                     <th><b>Situação</b></th>
                     <td>{{ pregao.get_situacao }}</td>
