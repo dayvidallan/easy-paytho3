@@ -65,9 +65,9 @@
 
 
             <table class="table table-bordered table-condensed table-striped">
-                <tr>
-                    <th width="20%"><b>{{ pregao.modalidade }} N°</b></th>
-                    <td>{{ pregao.num_pregao }}</td>
+                 <tr>
+                    <th><b>Situação</b></th>
+                    <td>{{ pregao.get_situacao }}</td>
                 </tr>
                  <tr>
                     <th width="20%"><b>Secretaria Solicitante</b></th>
@@ -78,28 +78,32 @@
                     <td>{{ pregao.objeto }}</td>
                 </tr>
                 <tr>
+                    <th><b>Critério de Avaliação / Julgamento</b></th>
+                    <td>{{ pregao.criterio }} / {{ pregao.tipo }}</td>
+                </tr>
+                <tr>
+                <tr>
                     <th><b>Data de Retirada do Edital</b></th>
                     <td>{{ pregao.data_inicio }} à {{ pregao.data_termino }}</td>
                 </tr>
                 <tr>
                     <th><b>Data da Abertura</b></th>
-                    <td>{{ pregao.data_abertura }}</td>
+                    <td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura }}<br> Local: {{ pregao.local }}</td>
                 </tr>
+                {% if pregao.data_adjudicacao %}
+                    <tr>
+                        <th><b>Data de Adjudicação</b></th>
+                        <td>{{ pregao.data_adjudicacao }}</td>
+                    </tr>
+                {% endif %}
+                {% if pregao.data_homologacao %}
+                    <tr>
+                        <th><b>Data de Homologação</b></th>
+                        <td>{{ pregao.data_homologacao }}</td>
+                    </tr>
+                {% endif %}
                 <tr>
-                    <th><b>Horário</b></th>
-                    <td>{{ pregao.hora_abertura }}</td>
-                </tr>
-                <tr>
-                    <th><b>Local</b></th>
-                    <td>{{ pregao.local }}</td>
-                </tr>
-                <tr>
-                    <th><b>Situação</b></th>
-                    <td>{{ pregao.get_situacao }}</td>
-                </tr>
-
-                <tr>
-                    <th><b>Arquivos</b></th>
+                    <th><b>Publicações</b></th>
                     <td>
                         {% for arquivo in pregao.get_arquivos_publicos %}
                             <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
