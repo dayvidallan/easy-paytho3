@@ -10986,3 +10986,26 @@ class ARPView(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
+
+@login_required()
+def relatorio_auditoria(request):
+    title = u'Auditoria'
+    from easyaudit.models import CRUDEvent
+
+    form = AuditoriaForm(request.GET or None)
+    if form.is_valid():
+        inicio = form.cleaned_data.get('data_inicio')
+        fim = form.cleaned_data.get('data_final')
+        secretaria = form.cleaned_data.get('secretaria')
+        acao = form.cleaned_data.get('acao')
+        if inicio:
+            registros = CRUDEvent.objects.filter(datetime__gte=datetime.datetime(inicio.year, inicio.month, inicio.day, 0,0,0))
+        if fim:
+            registros = registros.filter(datetime__lte=datetime.datetime(fim.year, fim.month, fim.day, 23,59,59))
+        if secretaria:
+            registros = registros.filter(user__pessoafisica__setor__secretaria=secretaria)
+        if acao:
+            registros = registros.filter(event_type=acao)
+
+
+    return render(request, 'relatorio_auditoria.html', locals(), RequestContext(request))

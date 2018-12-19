@@ -340,6 +340,7 @@ class ConfiguracaoAdmin(NewModelAdmin):
 admin.site.register(Configuracao, ConfiguracaoAdmin)
 
 class OrdemCompraAdmin(NewModelAdmin):
+    search_fields = ('numero', 'data', )
     list_display = ('numero', 'solicitacao',  'data')
     ordering = ('numero',)
 

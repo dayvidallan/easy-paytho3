@@ -1721,3 +1721,19 @@ class FeriadoForm(forms.ModelForm):
      class Meta:
         model = Feriado
         fields = ('data', 'descricao', 'recorrente',)
+
+from easyaudit.models import CRUDEvent
+class AuditoriaForm(forms.Form):
+    data_inicio = forms.DateField(label=u'Data Inicial')
+    data_final = forms.DateField(label=u'Data Final')
+    secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    acao = forms.ChoiceField(label=u'Tipo de Ação', choices=[(u'', u'Todos'), (CRUDEvent.CREATE, u'CREATE'),(CRUDEvent.UPDATE, 'UPDATE'),(CRUDEvent.DELETE, U'DELETE'),], required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(AuditoriaForm, self).__init__(*args, **kwargs)
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_final'].widget.attrs = {'class': 'vDateField'}
+
+    def clean(self):
+        if self.cleaned_data.get('data_final') and self.cleaned_data.get('data_inicio') and  self.cleaned_data.get('data_inicio')  > self.cleaned_data.get('data_final'):
+            raise forms.ValidationError(u'A data inicial não pode ser maior do que a data final')

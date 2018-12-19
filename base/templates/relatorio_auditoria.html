@@ -1,0 +1,127 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load pagination_tags %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function submeter_form(campo) {
+            window.location = window.location.pathname + "?situacao=" + escape( $('#'+campo.id).val());
+
+        }
+
+        $(function() {
+            $( ".vDateField" ).datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+
+             });
+        });
+
+	</script>
+{% endblock %}
+{% block content %}
+
+    {% if form %}
+        <fieldset>
+            <form action="." method="GET" class="form-horizontal">
+                {% csrf_token %}
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.data_inicio|bootstrap }}
+                        {% if form.data_inicio.help_text %}
+                            <p class="help-inline"><small>{{ form.data_inicio.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.data_final|bootstrap }}
+                        {% if form.data_final.help_text %}
+                            <p class="help-inline"><small>{{ form.data_final.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.secretaria|bootstrap }}
+                        {% if form.secretaria.help_text %}
+                            <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.acao|bootstrap }}
+                        {% if form.acao.help_text %}
+                            <p class="help-inline"><small>{{ form.acao.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                <div class="col-xs-1 col-md-1">
+                    <br>
+                    <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                </div>
+
+            </form>
+
+        </fieldset>
+    {% endif %}
+    {% if form.is_bound %}
+        {% if registros.exists %}
+
+            <h4>{{ registros.count }} registro(s) encontrado(s).</h4>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Ação</th>
+                        <th>Modelo</th>
+                        <th>ID do Objeto</th>
+                        <th>Objeto</th>
+                        <th>Usuário</th>
+                        <th>Secretaria</th>
+                        <th>Data</th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% autopaginate registros 1000 %}
+                    {% paginate %}
+                    {% for registro in registros %}
+                       <tr>
+                           <td>{{ registro.get_event_type_display }}</td>
+                           <td>{{ registro.content_type }}</td>
+                           <td>{{ registro.object_id }} </td>
+                           <td>{{ registro.object_repr }}</td>
+                           <td>{{ registro.user.pessoafisica }}</td>
+                           <td>{{ registro.user.pessoafisica.setor.secretaria }}</td>
+                           <td>{{ registro.datetime }}</td>
+
+                       </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <br><br>
+            <p class="alert alert-info">Nenhum registro cadastrado.</p>
+        {% endif %}
+    {% else %}
+        <p class="alert alert-info">Utilize os filtros para realizar a busca.</p>
+    {% endif %}
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}
