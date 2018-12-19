@@ -2874,7 +2874,7 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
 
     return render(request, 'upload_itens_pesquisa_mercadologica.html', locals(), RequestContext(request))
 
-@login_required()
+
 def relatorio_resultado_final(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     solicitacao = pregao.solicitacao
@@ -3035,7 +3035,7 @@ def relatorio_economia(request, pregao_id):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
-@login_required()
+
 def relatorio_resultado_final_por_vencedor(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
@@ -3099,7 +3099,7 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
-@login_required()
+
 def relatorio_lista_participantes(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
@@ -3165,7 +3165,7 @@ def relatorio_lista_visitantes(request, pregao_id):
     file.close()
     return HttpResponse(pdf, 'application/pdf')
 
-@login_required()
+
 def relatorio_classificacao_por_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if pregao.comissao:
