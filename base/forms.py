@@ -1724,6 +1724,7 @@ class FeriadoForm(forms.ModelForm):
 
 from easyaudit.models import CRUDEvent
 class AuditoriaForm(forms.Form):
+    METHOD = u'GET'
     data_inicio = forms.DateField(label=u'Data Inicial')
     data_final = forms.DateField(label=u'Data Final')
     secretaria = forms.ModelChoiceField(Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
