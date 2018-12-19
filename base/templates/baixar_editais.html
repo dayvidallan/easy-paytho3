@@ -69,6 +69,10 @@
                     <th width="20%"><b>{{ pregao.modalidade }} N°</b></th>
                     <td>{{ pregao.num_pregao }}</td>
                 </tr>
+                 <tr>
+                    <th width="20%"><b>Secretaria Solicitante</b></th>
+                    <td>{{ pregao.solicitacao.setor_origem.secretaria }}</td>
+                </tr>
                 <tr>
                     <th><b>Objeto</b></th>
                     <td>{{ pregao.objeto }}</td>
