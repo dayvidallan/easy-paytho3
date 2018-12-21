@@ -554,20 +554,20 @@
         </div>
         <div id="classificacao" class="tab-pane">
             <h2>Resultados</h2>
-            {% if not pregao.eh_pregao and not pregao.tem_resultado %}
-                {% if pregao.tem_proposta and recebida_setor %}
-                    <div class="pull-right">
+            <div class="pull-right">
+                {% if not pregao.eh_pregao and not pregao.tem_resultado %}
+                    {% if pregao.tem_proposta and recebida_setor %}
                         <a href="/base/gerar_resultado_licitacao_toda/{{ pregao.id }}/" class="btn btn-success">Gerar Resultado</a>
-                    </div>
-                {% elif eh_credenciamento %}
-                    <div class="pull-right">
+                    {% elif eh_credenciamento %}
                         <a href="/base/gerar_resultado_credenciamento/{{ pregao.id }}/" class="btn btn-success">Gerar Resultado</a>
-                    </div>
-
-                {% else %}
-                    <p class="alert alert-warning">Nenhuma proposta cadastrada.</p>
+                    {% else %}
+                        <p class="alert alert-warning">Nenhuma proposta cadastrada.</p>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+                {% if pregao.tem_resultado %}
+                    <a href="/base/gerar_xml_comprasnet/{{ pregao.id }}/" class="btn btn-success" target="_blank">XML para o COMPRASNET</a>
+                {% endif %}
+            </div>
             {%  if pregao.solicitacao.itemsolicitacaolicitacao_set.exists %}
 
                     <form action="." method="post" class="form-horizontal">

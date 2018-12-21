@@ -11009,3 +11009,83 @@ def relatorio_auditoria(request):
 
 
     return render(request, 'relatorio_auditoria.html', locals(), RequestContext(request))
+
+
+@login_required()
+def gerar_xml_comprasnet(request, pregao_id):
+
+    if request.user.has_perm('base.pode_cadastrar_pregao'):
+        pregao = get_object_or_404(Pregao, pk=pregao_id)
+        if pregao.tem_resultado():
+            cpf = '12345678900'
+            senha = 'senha_exemplo'
+            usag = '123456'
+            modalidade = '1'
+            numero = pregao.num_pregao.split('/')[0]
+            ano = pregao.num_pregao.split('/')[1]
+            if pregao.modalidade == ModalidadePregao.CARTA_CONVITE:
+                modalidade = u'01'
+            elif pregao.modalidade == ModalidadePregao.TOMADA_PRECO:
+                modalidade = u'02'
+            elif pregao.modalidade == ModalidadePregao.CONCORRENCIA:
+                modalidade = u'03'
+            else:
+                modalidade = u'05'
+            itens = u''
+            if pregao.eh_lote():
+                itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=True, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
+                for lote in itens_pregao:
+                    for item in lote.get_itens_do_lote():
+                        itens = itens + u'''
+                        <item>
+                         <acao_item>inclusão</acao_item>
+                         <num_item>%s</num_item>
+                         <cpfcnpj>%s</cpfcnpj>
+                         <marca>''</marca>
+                         <quantidade>%s</quantidade>
+                         <valor_total>%s</valor_total>
+                      </item>''' % (item, lote.get_vencedor().participante.fornecedor.cnpj,  item.quantidade, lote.get_valor_total_item_lote().replace('.', '').replace(',', ''))
+            else:
+                itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=pregao.solicitacao, eh_lote=False, situacao=ItemSolicitacaoLicitacao.CADASTRADO)
+                for item in itens_pregao:
+                    if  pregao.eh_maior_desconto():
+                        valor_total = item.get_valor_final_total_desconto()
+                    else:
+                        valor_total = item.get_total_lance_ganhador()
+
+                    itens = itens + u'''<item>
+                       <acao_item>inclusão</acao_item>
+                       <num_item>%s</num_item>
+                       <cpfcnpj>%s</cpfcnpj>
+                       <marca>%s</marca>
+                       <quantidade>%s</quantidade>
+                       <valor_total>%s</valor_total>
+                    </item>
+                     ''' % (item.item, item.get_vencedor().participante.fornecedor.cnpj.replace('.', '').replace('/', '').replace('-', ''), item.get_vencedor().marca, int(item.quantidade), str(valor_total).replace('.', '').replace(',', ''))
+
+            xml = u'''
+            <?xml version="1.0" encoding="ISO-8859-1"?>
+              <cnet xmlns="cnet_resultado">
+              <ambiente>produção</ambiente>
+              <cpf>%s</cpf>
+              <senha>%s</senha>
+              <uasg>%s</uasg>
+              <modalidade>%s</modalidade>
+              <numero>%s</numero>
+              <ano>%s</ano>
+              <sistema>easygestao</sistema>
+              <itens>
+                %s
+              </itens>
+              </cnet>''' % (cpf, senha, usag, modalidade, numero, ano, itens)
+            return render(request, 'gerar_xml_comprasnet.html', locals(), RequestContext(request))
+
+
+
+        else:
+            messages.error(request, u'Licitação sem resultado.')
+            return HttpResponseRedirect(u'/base/pregao/%s/#classificacao' % pregao.id)
+
+    else:
+        raise PermissionDenied
+
