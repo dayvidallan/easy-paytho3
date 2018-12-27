@@ -1,0 +1,22 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/ver_pregoes/">Licitações<i class="fa fa-angle-right"></i></a>
+    <a href="/base/pregao/{{pregao.id}}/">{{pregao }}<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+
+{% block content %}
+
+    <div class="pull-right"><a href="/base/pregao/{{ pregao_id}}/" class="btn btn-default">Voltar para a Licitação</a>
+
+    </div>
+<br><br><br>
+<center>
+        <iframe src="https://www.comprasgovernamentais.gov.br/" width="100%" height="768">
+
+        </iframe>
+</center>
+{% endblock %}

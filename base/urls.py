@@ -348,6 +348,7 @@ urlpatterns = [
     url(r'^cadastrar_unidade/(?P<solicitacao_id>\d+)/$', views.cadastrar_unidade, name='cadastrar_unidade'),
 
     url(r'^gerar_xml_comprasnet/(?P<pregao_id>\d+)/$', views.gerar_xml_comprasnet, name='gerar_xml_comprasnet'),
+    url(r'^comprasnet/(?P<pregao_id>\d+)/$', views.comprasnet, name='comprasnet'),
 
      url(r'^pregoes/$', PregaoView.as_view({'get': 'list'}), name="pregoes"),
      url(r'^pregoes/(?P<pk>\d+)/$', PregaoView.as_view({'get': 'retrieve'}), name="pregoes_get"),

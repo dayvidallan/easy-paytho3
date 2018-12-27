@@ -11089,3 +11089,9 @@ def gerar_xml_comprasnet(request, pregao_id):
     else:
         raise PermissionDenied
 
+
+@login_required()
+def comprasnet(request, pregao_id):
+    title = u'Pregão Eletrônico'
+    pregao = get_object_or_404(Pregao, pk=pregao_id)
+    return render(request, 'comprasnet.html', locals(), RequestContext(request))
