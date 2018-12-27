@@ -9508,7 +9508,7 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
             itens = ItemAtaRegistroPreco.objects.filter(ata=ata, participante=part_pregao)
 
     total = 0
-    itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
+    #itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).order_by('pedido_em')
 
 
