@@ -2218,6 +2218,9 @@ class Municipio(models.Model):
     def __unicode__(self):
         return u'%s / %s' % (self.nome, self.estado.sigla)
 
+    def get_sigla_estado(self):
+        return u' %s / %s' % (self.nome, self.estado.sigla)
+
 
 class ComissaoLicitacao(models.Model):
     nome = models.CharField(u'Portaria', max_length=80)

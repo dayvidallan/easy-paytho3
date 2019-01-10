@@ -11105,6 +11105,81 @@ def comprasnet(request, pregao_id):
     return render(request, 'comprasnet.html', locals(), RequestContext(request))
 
 
+@login_required()
+def anexo_10(request):
+    title = u'Anexo 10 - TCE-RN'
+    form = AnoForm(request.POST or None)
+    if form.is_valid():
+
+        import openpyxl
+        from openpyxl.utils import get_column_letter
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=anexo_10_tce_licitacao_%s.xlsx' % form.cleaned_data.get('ano')
+        wb = openpyxl.Workbook()
+        ws = wb.get_active_sheet()
+        ws.title = "Anexo 10 - TCE-RN"
+        comissoes = ComissaoLicitacao.objects.filter(data_designacao__year=form.cleaned_data.get('ano'))
+
+        row_num = 0
+
+        columns = [
+            (u"MODELO 10 - RELAÇÃO DAS COMISSÕES DE LICITAÇÕES, PREGOEIRO E EQUIPE DE APOIO %s" % form.cleaned_data.get('ano'), 20),
+        ]
+        for col_num in xrange(len(columns)):
+            c = ws.cell(row=row_num + 1, column=col_num + 1)
+            c.value = columns[col_num][0]
+            #c.style.font.bold = True
+            # set column width
+            ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
+
+        row_num = 3
+        columns = [
+            (u"Nome", 30),
+            (u"CPF", 20),
+            (u"Cargo ou função", 20),
+            (u"Matrícula", 20),
+            (u"Ato de nomeação", 20),
+            (u"Data do ato", 20),
+            (u"Período de efetivo exercício ", 20),
+            (u"Endereço eletrônico", 30),
+            (u"Telefone funcional", 30),
+            (u"Endereço funcional", 50),
+            (u"Endereço residencial", 50),
+        ]
+
+        for col_num in xrange(len(columns)):
+            c = ws.cell(row=row_num + 1, column=col_num + 1)
+            c.value = columns[col_num][0]
+            #c.style.font.bold = True
+            # set column width
+            ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
+        contador_total = row_num
+        for membro in MembroComissaoLicitacao.objects.filter(comissao__id__in=comissoes.values_list('id', flat=True)):
+            row_index = contador_total + 1
+            row = [
+                membro.membro.nome,
+                membro.membro.cpf,
+                membro.funcao,
+                membro.matricula,
+                '',
+                membro.comissao.data_designacao.strftime('%d/%m/%Y'),
+                '',
+                membro.membro.email,
+                membro.membro.setor.secretaria.telefones,
+                membro.membro.setor.secretaria.endereco,
+                membro.membro.get_endereco(),
+            ]
+            for col_num in xrange(len(row)):
+                c = ws.cell(row=row_index + 1, column=col_num + 1)
+                c.value = row[col_num]
+                #c.style.alignment.wrap_text = True
+            contador_total += 1
+        wb.save(response)
+        return response
+    return render(request, 'anexo_11.html', locals(), RequestContext(request))
+
+
+@login_required()
 def anexo_11(request):
     title = u'Anexo 11 - TCE-RN'
     form = AnoForm(request.POST or None)
