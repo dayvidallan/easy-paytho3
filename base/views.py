@@ -11095,3 +11095,86 @@ def comprasnet(request, pregao_id):
     title = u'Pregão Eletrônico'
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     return render(request, 'comprasnet.html', locals(), RequestContext(request))
+
+
+def anexo_11(request):
+    title = u'Anexo 11 - TCE-RN'
+    form = AnoForm(request.POST or None)
+    if form.is_valid():
+
+        import openpyxl
+        from openpyxl.utils import get_column_letter
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=anexo_11_tce_licitacao_%s.xlsx' % form.cleaned_data.get('ano')
+        wb = openpyxl.Workbook()
+        ws = wb.get_active_sheet()
+        ws.title = "Anexo 11 - TCE-RN"
+        pregoes = Pregao.objects.filter(data_abertura__year=form.cleaned_data.get('ano'))
+
+        row_num = 0
+
+        columns = [
+            (u"Nº do Processo Administrativo", 20),
+            (u"Nº do Processo licitatório", 20),
+            (u"Data da abertura do certame", 20),
+            (u"Data da homologação da licitação", 20),
+            (u"Modalidade", 40),
+            (u"Tipo de licitação", 25),
+            (u"Descrição do objeto", 50),
+            (u"Valor orçado", 20),
+            (u"Nome dos participantes", 30),
+            (u"Licitante Vencedor", 30),
+            (u"Valor adjudicado", 20),
+            (u"Situação", 30),
+        ]
+
+        for col_num in xrange(len(columns)):
+            c = ws.cell(row=row_num + 1, column=col_num + 1)
+            c.value = columns[col_num][0]
+            #c.style.font.bold = True
+            # set column width
+            ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
+        contador_total = 0
+        for pregao in pregoes:
+            row_index = contador_total + 1
+            if pregao.tipo and pregao.tipo.nome:
+                tipo = pregao.tipo.nome
+            else:
+                tipo = u'-'
+
+            if pregao.data_homologacao:
+                data_homologacao = pregao.data_homologacao.strftime('%d/%m/%Y')
+
+            else:
+                data_homologacao = u'-'
+            desc_part = ''
+            for participante in ParticipantePregao.objects.filter(pregao=pregao, excluido_dos_itens=False, desclassificado=False):
+                desc_part = desc_part + '%s (%s) ' % (participante.fornecedor.razao_social, participante.fornecedor.cnpj)
+
+            vencedores = u''
+            for vencedor in pregao.get_vencedores():
+                vencedores = vencedores + '%s (%s) ' % (vencedor.fornecedor.razao_social, vencedor.fornecedor.cnpj)
+
+            row = [
+                pregao.solicitacao.processo.numero,
+                pregao.num_pregao,
+                pregao.data_abertura.strftime('%d/%m/%Y'),
+                data_homologacao,
+                pregao.modalidade.nome,
+                tipo,
+                pregao.objeto,
+                format_money(pregao.solicitacao.get_valor_da_solicitacao()),
+                desc_part,
+                vencedores,
+                format_money(pregao.get_total_adjudicado()),
+                pregao.situacao,
+
+            ]
+            for col_num in xrange(len(row)):
+                c = ws.cell(row=row_index + 1, column=col_num + 1)
+                c.value = row[col_num]
+                #c.style.alignment.wrap_text = True
+            contador_total += 1
+        wb.save(response)
+        return response
+    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))

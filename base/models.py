@@ -1863,6 +1863,27 @@ class Pregao(models.Model):
 
         return False
 
+    def get_total_adjudicado(self):
+        eh_lote = self.criterio.id == CriterioPregao.LOTE
+        if eh_lote:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+        else:
+            itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao, eh_lote=False, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
+        total = 0
+        eh_global = self.solicitacao.contratacao_global
+        total_global = 0
+        for item in itens_pregao:
+            if item.get_total_lance_ganhador():
+                total = total + item.get_total_lance_ganhador()
+                if eh_global:
+                    total_global += item.get_total_lance_ganhador() * self.solicitacao.numero_meses_contratacao_global
+        if eh_global:
+            return total_global
+        else:
+            return total
+
+
+
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
     pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')

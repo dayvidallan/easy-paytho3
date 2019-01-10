@@ -354,6 +354,8 @@ urlpatterns = [
      url(r'^pregoes/(?P<pk>\d+)/$', PregaoView.as_view({'get': 'retrieve'}), name="pregoes_get"),
      url(r'^atas/$', ARPView.as_view({'get': 'list'}), name="atas"),
      url(r'^atas/(?P<pk>\d+)/$', ARPView.as_view({'get': 'retrieve'}), name="atas_get"),
+     url(r'^anexo_11/$', views.anexo_11, name='anexo_11'),
+
 
 ]
 
