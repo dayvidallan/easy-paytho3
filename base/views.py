@@ -11114,6 +11114,17 @@ def anexo_11(request):
         row_num = 0
 
         columns = [
+            (u"MODELO 11 - MAPA DEMONSTRATIVO CONSOLIDADO DOS PROCESSOS LICITATÓRIOS %s" % form.cleaned_data.get('ano'), 20),
+        ]
+        for col_num in xrange(len(columns)):
+            c = ws.cell(row=row_num + 1, column=col_num + 1)
+            c.value = columns[col_num][0]
+            #c.style.font.bold = True
+            # set column width
+            ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
+
+        row_num = 3
+        columns = [
             (u"Nº do Processo Administrativo", 20),
             (u"Nº do Processo licitatório", 20),
             (u"Data da abertura do certame", 20),
@@ -11126,6 +11137,11 @@ def anexo_11(request):
             (u"Licitante Vencedor", 30),
             (u"Valor adjudicado", 20),
             (u"Situação", 30),
+            (u"Nº da Nota do Empenho", 30),
+            (u"Data de Emissão do Empenho", 30),
+            (u"Nº do contrato decorrente da licitação", 30),
+            (u"Data de celebração do contrato", 30),
+
         ]
 
         for col_num in xrange(len(columns)):
@@ -11134,7 +11150,7 @@ def anexo_11(request):
             #c.style.font.bold = True
             # set column width
             ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
-        contador_total = 0
+        contador_total = row_num
         for pregao in pregoes:
             row_index = contador_total + 1
             if pregao.tipo and pregao.tipo.nome:
@@ -11155,6 +11171,17 @@ def anexo_11(request):
             for vencedor in pregao.get_vencedores():
                 vencedores = vencedores + '%s (%s) ' % (vencedor.fornecedor.razao_social, vencedor.fornecedor.cnpj)
 
+            tipo_contato = ''
+            data_inicio = ''
+            if AtaRegistroPreco.objects.filter(pregao=pregao).exists():
+                tipo_contato = u'Ata de Registro de Preço %s' % AtaRegistroPreco.objects.filter(pregao=pregao)[0].numero
+                data_inicio = AtaRegistroPreco.objects.filter(pregao=pregao)[0].data_inicio.strftime('%d/%m/%Y')
+            elif Contrato.objects.filter(pregao=pregao).exists():
+                tipo_contato = u'Contrato %s' % Contrato.objects.filter(pregao=pregao)[0].numero
+                data_inicio = Contrato.objects.filter(pregao=pregao)[0].data_inicio.strftime('%d/%m/%Y')
+
+
+
             row = [
                 pregao.solicitacao.processo.numero,
                 pregao.num_pregao,
@@ -11168,6 +11195,11 @@ def anexo_11(request):
                 vencedores,
                 format_money(pregao.get_total_adjudicado()),
                 pregao.situacao,
+                '',
+                '',
+                tipo_contato,
+                data_inicio,
+
 
             ]
             for col_num in xrange(len(row)):
