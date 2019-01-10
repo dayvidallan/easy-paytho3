@@ -258,6 +258,14 @@ def fornecedor(request, fornecedor_id):
     exibe_popup = True
     return render(request, 'ver_fornecedores.html', locals(), RequestContext(request))
 
+
+
+@login_required()
+def relatorios_tce(request):
+    title = u'Relatórios - TCE'
+    return render(request, 'relatorios_tce.html', locals(), RequestContext(request))
+
+
 @login_required()
 def pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk= pregao_id)
@@ -11209,4 +11217,4 @@ def anexo_11(request):
             contador_total += 1
         wb.save(response)
         return response
-    return render(request, 'cadastrar_anexo_pregao.html', locals(), RequestContext(request))
+    return render(request, 'anexo_11.html', locals(), RequestContext(request))

@@ -1,0 +1,80 @@
+{% extends super_template|default:"admin/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% block breadcrumbs_class %}administracao{% endblock %}
+{% block breadcrumbs %}
+    <a href="/">Início <i class="fa fa-angle-right"></i></a>
+    <a href="/base/relatorios_tce/">Relatórios TCE<i class="fa fa-angle-right"></i></a>
+    <a href="javascript:void(0);">{{ title }}</a>
+{% endblock %}
+{% block extrajs %}
+
+<script>
+$(function() {
+   $( ".vDateField" ).datepicker({
+             dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+
+    });
+});
+</script>
+<script type="text/javascript">// <![CDATA[
+        function loading(){
+            if ($('#id_enviar_email').is(':checked') || $('#id_enviar_email_participantes').is(':checked')) {
+                $("#loading").show();
+                $("#texto").show();
+            }
+        }
+// ]]>
+</script>
+{% endblock %}
+{% block extrastyle %}
+    <style>
+    div#loading {
+    width: 35px;
+    height: 35px;
+    display: none;
+    background: url(/static/base/css/images/ajax-loader.gif) no-repeat;
+    cursor: wait;
+    }
+    div#texto {
+    width: 200px;
+    height: 80px;
+    display: none;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+
+        <div id="texto"><h2>Enviando emails...</h2></div><div id="loading"></div>
+
+        <form action="." method="post" class="form-horizontal" enctype="multipart/form-data" >
+            {% csrf_token %}
+             <div class="miolo">
+				<div class="row-fluid">
+                    <div class="col-xs-6">
+                        {{ form|bootstrap }}
+                    </div>
+		        </div>
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary" onclick="loading();">Cadastrar</button>
+                </div>
+
+             </div>
+        </form>
+
+    </div>
+
+
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}

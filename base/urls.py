@@ -355,6 +355,7 @@ urlpatterns = [
      url(r'^atas/$', ARPView.as_view({'get': 'list'}), name="atas"),
      url(r'^atas/(?P<pk>\d+)/$', ARPView.as_view({'get': 'retrieve'}), name="atas_get"),
      url(r'^anexo_11/$', views.anexo_11, name='anexo_11'),
+     url(r'^relatorios_tce/$', views.relatorios_tce, name='relatorios_tce'),
 
 
 ]
