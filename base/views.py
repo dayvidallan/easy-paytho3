@@ -11247,7 +11247,7 @@ def anexo_11(request):
             else:
                 data_homologacao = u'-'
             desc_part = ''
-            for participante in ParticipantePregao.objects.filter(pregao=pregao, excluido_dos_itens=False, desclassificado=False):
+            for participante in ParticipantePregao.objects.filter(pregao=pregao):
                 desc_part = desc_part + '%s (%s) ' % (participante.fornecedor.razao_social, participante.fornecedor.cnpj)
 
             vencedores = u''
@@ -11268,7 +11268,7 @@ def anexo_11(request):
             row = [
                 pregao.solicitacao.processo.numero,
                 pregao.num_pregao,
-                pregao.data_abertura.strftime('%d/%m/%Y'),
+                pregao.data_termino.strftime('%d/%m/%Y'),
                 data_homologacao,
                 pregao.modalidade.nome,
                 tipo,
