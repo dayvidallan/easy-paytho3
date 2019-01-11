@@ -11157,8 +11157,8 @@ def anexo_10(request):
         for membro in MembroComissaoLicitacao.objects.filter(comissao__id__in=comissoes.values_list('id', flat=True)).order_by('comissao'):
             fim_periodo = None
             row_index = contador_total + 1
-            if ComissaoLicitacao.objects.filter(id__gt=membro.comissao.id).exists():
-                fim_periodo = ComissaoLicitacao.objects.filter(id__gt=membro.comissao.id).order_by('id')[0].data_designacao.strftime('%d/%m/%Y')
+            if ComissaoLicitacao.objects.filter(id__gt=membro.comissao.id, tipo=membro.comissao.tipo).exists():
+                fim_periodo = ComissaoLicitacao.objects.filter(id__gt=membro.comissao.id, tipo=membro.comissao.tipo).order_by('id')[0].data_designacao.strftime('%d/%m/%Y')
             if fim_periodo:
                 periodo_total = u'%s - %s' % (membro.comissao.data_designacao.strftime('%d/%m/%Y'), fim_periodo)
             else:

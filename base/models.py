@@ -2223,9 +2223,16 @@ class Municipio(models.Model):
 
 
 class ComissaoLicitacao(models.Model):
+    CPL = u'CPL'
+    PREGAO = u'Pregão'
+    TIPO_CHOICES = (
+        (CPL, CPL),
+        (PREGAO, PREGAO),
+    )
     nome = models.CharField(u'Portaria', max_length=80)
     data_designacao = models.DateField(u'Data de Designação', null=True)
     secretaria = models.ForeignKey('base.Secretaria', null=True)
+    tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=CPL)
 
 
     def __unicode__(self):
@@ -2247,7 +2254,6 @@ class MembroComissaoLicitacao(models.Model):
     FUNCAO_CHOICES = (
         (APOIO, APOIO),
         (MEMBRO, MEMBRO),
-        (MEMBRO_EQUIPE, MEMBRO_EQUIPE),
         (MEMBRO_SUPLENTE, MEMBRO_SUPLENTE),
         (PREGOEIRO, PREGOEIRO),
         (PRESIDENTE, PRESIDENTE),

@@ -103,7 +103,7 @@ admin.site.register(Pregao, PregaoAdmin)
 class ComissaoLicitacaoAdmin(NewModelAdmin):
 
     form = ComissaoLicitacaoForm
-    list_display = ('nome', 'secretaria', 'get_membros', 'get_opcoes')
+    list_display = ('nome', 'secretaria', 'tipo', 'get_membros', 'get_opcoes')
     ordering = ('nome',)
     list_filter = ('nome',)
 

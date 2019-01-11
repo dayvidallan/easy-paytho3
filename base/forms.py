@@ -1278,7 +1278,7 @@ class RemoverMembroComissaoLicitacaoForm(forms.Form):
 class ComissaoLicitacaoForm(forms.ModelForm):
     class Meta:
         model = ComissaoLicitacao
-        fields = ('nome', 'data_designacao', 'secretaria')
+        fields = ('nome', 'data_designacao', 'secretaria', 'tipo')
 
     def __init__(self, *args, **kwargs):
         super(ComissaoLicitacaoForm, self).__init__(*args, **kwargs)
