@@ -11154,16 +11154,24 @@ def anexo_10(request):
             # set column width
             ws.column_dimensions[get_column_letter(col_num+1)].width = columns[col_num][1]
         contador_total = row_num
-        for membro in MembroComissaoLicitacao.objects.filter(comissao__id__in=comissoes.values_list('id', flat=True)):
+        for membro in MembroComissaoLicitacao.objects.filter(comissao__id__in=comissoes.values_list('id', flat=True)).order_by('comissao'):
+            fim_periodo = None
             row_index = contador_total + 1
+            if ComissaoLicitacao.objects.filter(id__gt=membro.comissao.id).exists():
+                fim_periodo = ComissaoLicitacao.objects.filter(id__gt=membro.comissao.id).order_by('id')[0].data_designacao.strftime('%d/%m/%Y')
+            if fim_periodo:
+                periodo_total = u'%s - %s' % (membro.comissao.data_designacao.strftime('%d/%m/%Y'), fim_periodo)
+            else:
+                periodo_total = u'%s - ' % (membro.comissao.data_designacao.strftime('%d/%m/%Y'))
+
             row = [
                 membro.membro.nome,
                 membro.membro.cpf,
                 membro.funcao,
                 membro.matricula,
-                '',
+                membro.comissao.nome,
                 membro.comissao.data_designacao.strftime('%d/%m/%Y'),
-                '',
+                periodo_total,
                 membro.membro.email,
                 membro.membro.setor.secretaria.telefones,
                 membro.membro.setor.secretaria.endereco,
@@ -11263,8 +11271,6 @@ def anexo_11(request):
                 tipo_contato = u'Contrato %s' % Contrato.objects.filter(pregao=pregao)[0].numero
                 data_inicio = Contrato.objects.filter(pregao=pregao)[0].data_inicio.strftime('%d/%m/%Y')
 
-
-
             row = [
                 pregao.solicitacao.processo.numero,
                 pregao.num_pregao,
@@ -11288,7 +11294,7 @@ def anexo_11(request):
             for col_num in xrange(len(row)):
                 c = ws.cell(row=row_index + 1, column=col_num + 1)
                 c.value = row[col_num]
-                #c.style.alignment.wrap_text = True
+
             contador_total += 1
         wb.save(response)
         return response
