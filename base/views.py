@@ -11169,7 +11169,7 @@ def anexo_10(request):
                 membro.membro.cpf,
                 membro.funcao,
                 membro.matricula,
-                membro.comissao.nome,
+                u'Portaria %s' % membro.comissao.nome,
                 membro.comissao.data_designacao.strftime('%d/%m/%Y'),
                 periodo_total,
                 membro.membro.email,
