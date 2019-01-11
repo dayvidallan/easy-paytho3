@@ -2236,7 +2236,7 @@ class ComissaoLicitacao(models.Model):
 
 
     def __unicode__(self):
-        return self.nome
+        return u'%s - %s' % (self.nome, self.tipo)
 
     class Meta:
         verbose_name = u'Comissão de Licitação'
