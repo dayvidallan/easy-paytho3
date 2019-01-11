@@ -103,7 +103,7 @@ admin.site.register(Pregao, PregaoAdmin)
 class ComissaoLicitacaoAdmin(NewModelAdmin):
 
     form = ComissaoLicitacaoForm
-    list_display = ('nome', 'secretaria', 'tipo', 'get_membros', 'get_opcoes')
+    list_display = ('get_nome', 'secretaria', 'tipo', 'get_membros', 'get_opcoes')
     ordering = ('nome',)
     list_filter = ('nome',)
 
@@ -128,6 +128,12 @@ class ComissaoLicitacaoAdmin(NewModelAdmin):
 
     get_opcoes.short_description = u'Opções'
     get_opcoes.allow_tags = True
+
+    def get_nome(self, obj):
+        return u'%s - %s' % (obj.nome, obj.tipo)
+
+    get_nome.short_description = u'Portaria'
+    get_nome.allow_tags = True
 
 
 admin.site.register(ComissaoLicitacao, ComissaoLicitacaoAdmin)
