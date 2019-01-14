@@ -2797,6 +2797,12 @@ class AtaRegistroPreco(models.Model):
         else:
             return 1
 
+    def get_saldo_disponivel(self):
+        valor_inicial = self.get_valor_total()
+        for item in self.pedidoataregistropreco_set.all():
+            valor_inicial = valor_inicial - (item.valor*item.quantidade)
+        return valor_inicial
+
 
 class Credenciamento(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
@@ -2853,6 +2859,12 @@ class Credenciamento(models.Model):
         for item in itens:
             total = total + (item.quantidade * item.valor)
         return total
+
+    def get_saldo_disponivel(self):
+        valor_inicial = self.get_valor_total()
+        for item in self.pedidocredenciamento_set.all():
+            valor_inicial = valor_inicial - (item.valor*item.quantidade)
+        return valor_inicial
 
 
 class ItemCredenciamento(models.Model):
@@ -3099,7 +3111,6 @@ class Contrato(models.Model):
         return None
 
 
-
     def get_ordem(self):
         if Aditivo.objects.filter(contrato=self).exists():
             return Aditivo.objects.filter(contrato=self).order_by('-ordem')[0].ordem + 1
@@ -3111,6 +3122,15 @@ class Contrato(models.Model):
 
     def eh_gerente(self, user):
         return user.groups.filter(name='Gerente') and self.solicitacao.recebida_setor(user.pessoafisica.setor)
+
+    def get_valor_total(self):
+        return self.get_valor_total_com_aditivos()
+
+    def get_saldo_disponivel(self):
+        valor_inicial = self.get_valor_total_com_aditivos()
+        for item in self.pedidocontrato_set.all():
+            valor_inicial = valor_inicial - (item.valor*item.quantidade)
+        return valor_inicial
 
 class Aditivo(models.Model):
 

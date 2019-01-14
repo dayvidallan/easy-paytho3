@@ -91,6 +91,7 @@
                     <th>Objeto</th>
                     <th width="10%">Situação</th>
                     <th>Valor Global</th>
+                    <th>Saldo Disponível</th>
                     <th width="20%">Vigência</th>
 
                 </tr>
@@ -103,7 +104,8 @@
                        <td>{{ contrato.solicitacao.num_memorando }}</td>
                        <td>{{ contrato.solicitacao.objeto }}</td>
                        <td>{{ contrato.get_situacao }}</td>
-                       <td>{{ contrato.valor|format_money }}</td>
+                       <td>{{ contrato.get_valor_total|format_money }}</td>
+                       <td>{{ contrato.get_saldo_disponivel|format_money }}</td>
                        <td>{{ contrato.data_inicio }} à {{ contrato.data_fim }}</td>
                    </tr>
                 {% endfor %}
