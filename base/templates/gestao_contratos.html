@@ -237,7 +237,6 @@
                         <th>Nº Processo</th>
                         <th>Solicitação de Origem</th>
                         <th>Objeto</th>
-                        <th>Data da Assinatura do Contrato</th>
                         <th>Vigência</th>
                         <th>Valor</th>
                         <th>Situação</th>
@@ -251,7 +250,6 @@
                             <td>{{ item.solicitacao.processo|default_if_none:"-" }}</td>
                             <td>{{ item.solicitacao.num_memorando }}</td>
                             <td>{{ item.solicitacao.objeto }}</td>
-                            <td>{{ item.data_inicio }}</td>
                             <td>{{ item.data_inicio }} à {{ item.get_data_fim|default_if_none:"-" }}</td>
                             <td>R$ {{ item.valor|format_money }}</td>
                             <td>{{ item.get_situacao }}</td>
