@@ -2803,6 +2803,9 @@ class AtaRegistroPreco(models.Model):
             valor_inicial = valor_inicial - (item.valor*item.quantidade)
         return valor_inicial
 
+    def get_data_fim(self):
+        return self.data_fim
+
 
 class Credenciamento(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
@@ -2866,7 +2869,10 @@ class Credenciamento(models.Model):
             valor_inicial = valor_inicial - (item.valor*item.quantidade)
         return valor_inicial
 
+    def get_data_fim(self):
+        return self.data_fim
 
+    
 class ItemCredenciamento(models.Model):
     credenciamento = models.ForeignKey(Credenciamento)
     item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
