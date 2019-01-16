@@ -100,7 +100,7 @@
 
                 {% for contrato in contratos %}
                    <tr>
-                       <td>{{ contrato.numero }}</td>
+                       <td>{{ contrato.numero }}{% if contrato.eh_adesao %} - (Adesão à ARP){% endif %}</td>
                        <td>{{ contrato.solicitacao.num_memorando }}</td>
                        <td>{{ contrato.solicitacao.objeto }}</td>
                        <td>{{ contrato.get_situacao }}</td>

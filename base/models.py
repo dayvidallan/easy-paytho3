@@ -2806,6 +2806,9 @@ class AtaRegistroPreco(models.Model):
     def get_data_fim(self):
         return self.data_fim
 
+    def eh_adesao(self):
+        return False
+
 
 class Credenciamento(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
@@ -2872,7 +2875,9 @@ class Credenciamento(models.Model):
     def get_data_fim(self):
         return self.data_fim
 
-
+    def eh_adesao(self):
+        return False
+    
 class ItemCredenciamento(models.Model):
     credenciamento = models.ForeignKey(Credenciamento)
     item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
@@ -3137,6 +3142,9 @@ class Contrato(models.Model):
         for item in self.pedidocontrato_set.all():
             valor_inicial = valor_inicial - (item.valor*item.quantidade)
         return valor_inicial
+
+    def eh_adesao(self):
+        return AtaRegistroPreco.objects.filter(adesao=True, solicitacao=self.solicitacao).exists()
 
 class Aditivo(models.Model):
 
