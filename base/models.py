@@ -2872,7 +2872,7 @@ class Credenciamento(models.Model):
     def get_data_fim(self):
         return self.data_fim
 
-    
+
 class ItemCredenciamento(models.Model):
     credenciamento = models.ForeignKey(Credenciamento)
     item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)

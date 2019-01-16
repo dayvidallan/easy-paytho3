@@ -252,7 +252,7 @@
                             <td>{{ item.solicitacao.num_memorando }}</td>
                             <td>{{ item.solicitacao.objeto }}</td>
                             <td>{{ item.data_inicio }}</td>
-                            <td>{{ item.get_data_fim|default_if_none:"-" }}</td>
+                            <td>{{ item.data_inicio }} à {{ item.get_data_fim|default_if_none:"-" }}</td>
                             <td>R$ {{ item.valor|format_money }}</td>
                             <td>{{ item.get_situacao }}</td>
                             <td>
