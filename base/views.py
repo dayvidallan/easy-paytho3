@@ -8483,7 +8483,7 @@ def ver_relatorios_gerenciais_atas(request):
         form = RelatoriosGerenciaisContratosForm(request.POST or None, fornecedor=exibe_fornecedor)
 
         if form.is_valid():
-            contratos = AtaRegistroPreco.objects.all().order_by('numero')
+            contratos = AtaRegistroPreco.objects.filter(adesao=False).order_by('numero')
             relatorio =  form.cleaned_data.get('relatorio')
             situacao = form.cleaned_data.get('situacao')
             visualizar = form.cleaned_data.get('visualizar')
