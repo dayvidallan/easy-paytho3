@@ -82,6 +82,7 @@
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Ação</th>
                         <th>Modelo</th>
                         <th>ID do Objeto</th>
@@ -98,6 +99,7 @@
                     {% paginate %}
                     {% for registro in registros %}
                        <tr>
+                           <td>{{ registro.id }}</td>
                            <td>{{ registro.get_event_type_display }}</td>
                            <td>{{ registro.content_type }}</td>
                            <td>{{ registro.object_id }} </td>
