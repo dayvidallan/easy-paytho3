@@ -2877,7 +2877,7 @@ class Credenciamento(models.Model):
 
     def eh_adesao(self):
         return False
-    
+
 class ItemCredenciamento(models.Model):
     credenciamento = models.ForeignKey(Credenciamento)
     item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)

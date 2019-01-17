@@ -5590,7 +5590,10 @@ def gerar_ordem_compra(request, solicitacao_id):
 def ver_ordem_compra(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     ordem = OrdemCompra.objects.get(solicitacao=solicitacao)
-    configuracao = get_config(ordem.cadastrado_por.pessoafisica.setor.secretaria)
+    if ordem.cadastrado_por.pessoafisica:
+        configuracao = get_config(ordem.cadastrado_por.pessoafisica.setor.secretaria)
+    else:
+        configuracao = get_config(request.user.pessoafisica.setor.secretaria)
     config_geral = get_config_geral()
     logo = None
     if configuracao.logo:
