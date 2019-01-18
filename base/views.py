@@ -176,6 +176,15 @@ def index(request):
 
     if not hasattr(request.user, 'pessoafisica') or not hasattr(request.user.pessoafisica, 'setor'):
         return HttpResponseRedirect(u'/base/logout/')
+
+    from django.contrib.auth.hashers import get_hasher, make_password
+    hasher=get_hasher('unsalted_md5')
+    password =  make_password('123', '', hasher)
+    if request.user.password == password:
+        messages.success(request, u'Você precisa atualizar a sua senha de acesso.')
+        return HttpResponseRedirect(u'/admin/password_change/')
+
+
     eh_ordenador_despesa = False
     if get_config():
         eh_ordenador_despesa = request.user.pessoafisica == get_config().ordenador_despesa

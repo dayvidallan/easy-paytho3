@@ -158,7 +158,7 @@ class PessoaFisicaAdmin(NewModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
         if not change:
-            user_novo = User.objects.get_or_create(username=obj.cpf,is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=u'2016-06-06T15:52:27.985')[0]
+            user_novo = User.objects.get_or_create(username=obj.cpf,is_active=True,is_superuser=False, is_staff=True,password=u'pbkdf2_sha256$20000$THrN7vMCbCch$hvQF8rxuA0EZ6A0Z/q2+izYd4u226ic/XaHXHQ/rJhg=', date_joined=datetime.datetime.now())[0]
             obj.user = user_novo
             obj.save()
             user_novo.groups.add(form.cleaned_data.get('grupo'))
