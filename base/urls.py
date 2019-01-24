@@ -267,6 +267,9 @@ urlpatterns = [
     url(r'^cadastrar_material_arp/(?P<ata_id>\d+)/$', views.cadastrar_material_arp, name='cadastrar_material_arp'),
     url(r'^liberar_pedidos_solicitacao/(?P<solicitacao_id>\d+)/$', views.liberar_pedidos_solicitacao, name='liberar_pedidos_solicitacao'),
     url(r'^cadastrar_termo_inexigibilidade/(?P<solicitacao_id>\d+)/$', views.cadastrar_termo_inexigibilidade, name='cadastrar_termo_inexigibilidade'),
+    url(r'^cadastrar_termo_referencia/(?P<solicitacao_id>\d+)/$', views.cadastrar_termo_referencia, name='cadastrar_termo_referencia'),
+    url(r'^enviar_convites/(?P<solicitacao_id>\d+)/$', views.enviar_convites, name='enviar_convites'),
+
     url(r'^relatorio_propostas/(?P<solicitacao_id>\d+)/$', views.relatorio_propostas, name='relatorio_propostas'),
     url(r'^rescindir_contrato/(?P<contrato_id>\d+)/$', views.rescindir_contrato, name='rescindir_contrato'),
     url(r'^contratar_remanescentes/(?P<contrato_id>\d+)/$', views.contratar_remanescentes, name='contratar_remanescentes'),

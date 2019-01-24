@@ -11311,3 +11311,37 @@ def anexo_11(request):
         wb.save(response)
         return response
     return render(request, 'anexo_11.html', locals(), RequestContext(request))
+
+@login_required()
+def cadastrar_termo_referencia(request, solicitacao_id):
+    title=u'Cadastrar Termo de Referência'
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto:
+        form = CadastrarTermoReferenciaForm(request.POST or None, request.FILES or None, instance=solicitacao)
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, u'Termo de referência cadastrado com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+
+        return render(request, 'cadastrar_termo_referencia.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+
+@login_required()
+def enviar_convites(request, solicitacao_id):
+    title=u'Enviar Convites'
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    if solicitacao.prazo_aberto and solicitacao.recebida_setor(request.user.pessoafisica.setor) and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica'):
+        form = EnviarConviteForm(request.POST or None)
+        if form.is_valid():
+            send_mail(form.cleaned_data.get('titulo'), form.cleaned_data.get('mensagem'), settings.EMAIL_HOST_USER,
+             [form.cleaned_data.get('destinatarios')], fail_silently=False)
+
+            messages.success(request, u'Convites enviados com sucesso.')
+            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+
+        return render(request, 'cadastrar_termo_referencia.html', locals(), RequestContext(request))
+    else:
+        raise PermissionDenied
+

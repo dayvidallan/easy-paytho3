@@ -71,7 +71,13 @@ function exibir_esconder_campo() {
 
              </div>
          </fieldset>
-
+    {% if solicitacao.termo_referencia %}
+         <fieldset>
+            <legend>Termo de Referência</legend>
+             <a href="/media/{{ solicitacao.termo_referencia }}" target="_blank">Clique aqui</a> para ter acesso ao termo de referência.
+         </fieldset>
+        <br>
+    {% endif %}
     <fieldset>
         <legend>Dados da Pesquisa</legend>
         <div id="mensagem_erro" class="alert alert-warning">Para sua comodidade, baixe a planilha de itens, preencha os dados e importe o arquivo no campo abaixo ou preencha manualmente a proposta clicando na opção abaixo.</div>

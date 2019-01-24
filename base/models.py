@@ -21,6 +21,11 @@ import cStringIO as StringIO
 import qrcode
 import base64
 
+def upload_path_documento(instance, filename):
+    return os.path.join('upload/documentos_solicitacao/%s/' % instance.solicitacao.id, filename)
+
+def upload_path_termo_referencia(instance, filename):
+    return os.path.join('upload/documentos_solicitacao/%s/' % instance.id, filename)
 
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
@@ -393,7 +398,7 @@ class SolicitacaoLicitacao(models.Model):
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa')
     ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria')
     responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria')
-
+    termo_referencia = models.FileField(u'Termo de Referência', null=True, blank=True, upload_to=upload_path_termo_referencia)
 
     def __unicode__(self):
         return u'Solicitação N°: %s' % self.num_memorando
@@ -2545,8 +2550,6 @@ class MovimentoSolicitacao(models.Model):
     def __unicode__(self):
         return u'Movimento %s da Solicitação: %s' % (self.id, self.solicitacao)
 
-def upload_path_documento(instance, filename):
-    return os.path.join('upload/documentos_solicitacao/%s/' % instance.solicitacao.id, filename)
 
 class DocumentoSolicitacao(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')

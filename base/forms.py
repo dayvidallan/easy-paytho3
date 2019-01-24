@@ -1741,3 +1741,16 @@ class AuditoriaForm(forms.Form):
     def clean(self):
         if self.cleaned_data.get('data_final') and self.cleaned_data.get('data_inicio') and  self.cleaned_data.get('data_inicio')  > self.cleaned_data.get('data_final'):
             raise forms.ValidationError(u'A data inicial não pode ser maior do que a data final')
+
+
+
+class CadastrarTermoReferenciaForm(forms.ModelForm):
+    class Meta:
+        model = SolicitacaoLicitacao
+        fields = ('termo_referencia', )
+
+
+class EnviarConviteForm(forms.Form):
+    titulo = forms.CharField(label=u'Título do Email', max_length=100)
+    destinatarios = forms.CharField(label=u'Emails dos Destinatários', help_text=u'Separe os emails com ponto-e-vírgula (;).', max_length=5000)
+    mensagem = forms.CharField(label=u'Mensagem do Email', max_length=5000, widget=forms.Textarea())
