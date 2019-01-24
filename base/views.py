@@ -1367,7 +1367,8 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
                         workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
                         sheet = workbook.sheet_by_index(0)
                 except XLRDError:
-                    raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    messages.error(request, u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
 
                 validade = unicode(sheet.cell_value(7, 1)).strip()
                 if not validade:
