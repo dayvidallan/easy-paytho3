@@ -74,7 +74,7 @@ function exibir_esconder_campo() {
     {% if solicitacao.termo_referencia %}
          <fieldset>
             <legend>Termo de Referência</legend>
-             <a href="/media/{{ solicitacao.termo_referencia }}" target="_blank">Clique aqui</a> para ter acesso ao termo de referência.
+             <div class="alert alert-warning"><a href="/media/{{ solicitacao.termo_referencia }}" target="_blank">Clique aqui</a> para ter acesso ao termo de referência.</div>
          </fieldset>
         <br>
     {% endif %}
