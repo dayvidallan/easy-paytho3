@@ -1427,7 +1427,10 @@ class CriarContratoAdesaoAtaForm(forms.Form):
         valor_contrato = None
         nome_campos = u''
         if len(lista) > 1:
-            valor_contrato = int(lista[0])+1
+            try:
+                valor_contrato = int(lista[0])+1
+            except:
+                valor_contrato = 0
 
         i = self.ata.fornecedor_adesao_arp
         label = u'Número do Contrato - Fornecedor: %s' % (i)
