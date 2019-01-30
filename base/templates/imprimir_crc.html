@@ -28,7 +28,7 @@ ul{
      @page {
             @frame content_frame {
 				    {% block content_frame %}
-    				top: 20;
+    				top: 8;
     				left: 20;
     				right: 20;
     				bottom: 60;
@@ -89,7 +89,7 @@ ul{
         {% if registro.renovado %}
             <font size="3">RENOVAÇÃO</font><br><br>
         {% endif %}
-        <font size="3">CERTIFICADO DE REGISTRO CADASTRAL DE HABILITAÇÃO DE LICITANTES</font><br><br>
+        <font size="3">CERTIFICADO DE REGISTRO CADASTRAL DE HABILITAÇÃO DE LICITANTES</font><br>
     </center>
   </h1>
 
@@ -115,25 +115,25 @@ ul{
         <br><br>
 
         <b>Razão Social:</b> {{ registro.fornecedor.razao_social }}<br>
-        <b>CNPJ:</b> {{ registro.fornecedor.cnpj }}<br>
+        <b>CNPJ:</b> {{ registro.fornecedor.cnpj }} -
         <b>Ramo de Atividade Principal:</b> {{ registro.ramo_negocio }}<br>
         <b>Endereço:</b> {{ registro.fornecedor.endereco }}<br>
         <b>Telefone:</b> {{ registro.fornecedor.telefones }} - <b>Email:</b> {{ registro.fornecedor.email }}<br>
-        <b>Capital Integralizado:</b> {{ registro.capital_social }}<br>
+        <b>Capital Integralizado:</b> R$ {{ registro.capital_social }} -
           <b>Data de Constituição:</b> {{ registro.data_abertura }}<br>
 
         <b>Inscrição Municipal:</b> {{ registro.inscricao_municipal }} - <b>Inscrição Estadual:</b> {{ registro.inscricao_estadual }}<br>
        <b>CNAE:</b> {{ registro.cnae_primario_codigo }} - {{ registro.cnae_primario_descricao }}  <br>
-      <b>Representante Legal:</b> <br><br>
-      01. <b>Nome:</b> {{ registro.nome }}<br>
-      <b>Identidade:</b> {{ registro.rg }}/{{ registro.rg_emissor }} -
+      <b>Representante Legal:</b> <br>
+      01. <b>Nome:</b> {{ registro.nome }} -
+      <b>RG:</b> {{ registro.rg }}/{{ registro.rg_emissor }} -
       <b>CPF:</b> {{ registro.cpf }}
       <br><br>
         {% if certidoes.exists %}
-                Regulamentação Fiscal<br><br>
+                <u>Regulamentação Fiscal</u><br><br>
 
                 {% for certidao in certidoes %}
-                    {{ certidao.nome }} - Validade: {{ certidao.validade }}<br>
+                    <b>{{ certidao.nome }}</b> - Validade: <b>{{ certidao.validade }}</b><br>
 
                 {% endfor %}
             {% endif %}
@@ -141,6 +141,7 @@ ul{
          <center>
         <br><br>
         <b>__________________________________</b><br>
+        <b>{{ membro.membro.nome }} - Matrícula: {{ membro.membro.matricula }}</b><br>
         Presidente da CPL
     </center>
 

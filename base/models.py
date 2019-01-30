@@ -2269,7 +2269,7 @@ class MembroComissaoLicitacao(models.Model):
     funcao = models.CharField(u'Função', max_length=100, choices=FUNCAO_CHOICES, default=APOIO)
 
     def __unicode__(self):
-        return self.nome
+        return u' Membros da comissão {}'.format(self.comissao.nome)
 
     class Meta:
         verbose_name = u'Membro da Comissão de Licitação'

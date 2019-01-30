@@ -8981,9 +8981,16 @@ def imprimir_crc(request, fornecedor_id):
     if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/extratos')):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/extratos'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    membro = None
+    if ComissaoLicitacao.objects.filter(tipo=ComissaoLicitacao.CPL, data_designacao__isnull=False).order_by('-data_designacao').exists():
+        comissao = ComissaoLicitacao.objects.filter(tipo=ComissaoLicitacao.CPL, data_designacao__isnull=False).order_by('-data_designacao')[0]
+        print comissao
+        if MembroComissaoLicitacao.objects.filter(comissao=comissao, funcao=MembroComissaoLicitacao.PRESIDENTE).exists():
+            membro = MembroComissaoLicitacao.objects.filter(comissao=comissao, funcao=MembroComissaoLicitacao.PRESIDENTE)[0]
 
 
-    data = {'registro': registro,'certidoes': certidoes, 'configuracao': configuracao, 'logo': logo}
+
+    data = {'registro': registro,'certidoes': certidoes, 'configuracao': configuracao, 'logo': logo, 'membro': membro}
 
     template = get_template('imprimir_crc.html')
 
