@@ -816,7 +816,7 @@ def ver_pregoes(request):
         if form.cleaned_data.get('secretaria'):
             pregoes = pregoes.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
     if eh_ordenador_despesa:
-        pregoes = pregoes.order_by('-data_homologacao', 'data_adjudicacao')
+        pregoes = pregoes.order_by('arquivo_homologacao')
     return render(request, 'ver_pregoes.html', locals(), RequestContext(request))
 
 @login_required()
