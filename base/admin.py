@@ -75,6 +75,7 @@ class PregaoAdmin(NewModelAdmin):
     list_display = ('solicitacao', 'modalidade', 'tipo','data_abertura', 'local', 'get_opcoes')
     ordering = ('solicitacao',)
     list_filter = ('solicitacao', 'modalidade', 'tipo')
+    search_fields = ('objeto',  )
 
 
 
@@ -181,6 +182,7 @@ class SolicitacaoLicitacaoAdmin(NewModelAdmin):
     list_display = ('num_memorando','objeto', 'objetivo', 'situacao','get_opcoes')
     ordering = ('num_memorando',)
     list_filter = ('num_memorando',)
+    search_fields = ('objeto', 'objetivo', )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(SolicitacaoLicitacaoAdmin, self).get_form(request, obj, **kwargs)
@@ -355,7 +357,7 @@ admin.site.register(OrdemCompra, OrdemCompraAdmin)
 class ProcessoAdmin(NewModelAdmin):
     list_display = ('numero', 'data_cadastro',  'pessoa_cadastro')
     ordering = ('numero',)
-    search_fields = ('numero',)
+    search_fields = ('numero', 'objeto')
 
 admin.site.register(Processo, ProcessoAdmin)
 

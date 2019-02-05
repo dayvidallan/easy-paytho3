@@ -952,7 +952,7 @@ def ver_solicitacoes(request):
         class_aba2 = u''
         outras = SolicitacaoLicitacao.objects.all()
         if form.cleaned_data.get('info'):
-            outras = outras.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
+            outras = outras.filter(Q(objeto__icontains=form.cleaned_data.get('info')) | Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
         if form.cleaned_data.get('ano'):
            outras = outras.filter(data_cadastro__year=form.cleaned_data.get('ano'))
 
@@ -986,7 +986,7 @@ def solicitacoes_do_setor(request):
         #outras = SolicitacaoLicitacao.objects.all()
         buscou_ou_nao = u'&imprimir=1'
         if form.cleaned_data.get('info'):
-            solicitacoes = solicitacoes.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
+            solicitacoes = solicitacoes.filter(Q(objeto__icontains=form.cleaned_data.get('info')) | Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
         if form.cleaned_data.get('ano'):
            solicitacoes = solicitacoes.filter(data_cadastro__year=form.cleaned_data.get('ano'))
 
@@ -998,6 +998,8 @@ def solicitacoes_do_setor(request):
                 solicitacoes = solicitacoes.filter(tipo=SolicitacaoLicitacao.COMPRA)
             else:
                 solicitacoes = solicitacoes.filter(tipo_aquisicao=form.cleaned_data.get('tipo'))
+    else:
+        solicitacoes = solicitacoes.filter(data_cadastro__year=datetime.datetime.now().year)
     if request.GET.get('imprimir'):
         configuracao = get_config(setor.secretaria)
         data = {'solicitacoes':solicitacoes, 'configuracao': configuracao}
@@ -1048,7 +1050,7 @@ def outras_solicitacoes(request):
 
         solicitacoes = SolicitacaoLicitacao.objects.all()
         if form.cleaned_data.get('info'):
-            solicitacoes = solicitacoes.filter(Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
+            solicitacoes = solicitacoes.filter(Q(objeto__icontains=form.cleaned_data.get('info')) | Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
         if form.cleaned_data.get('ano'):
            solicitacoes = solicitacoes.filter(data_cadastro__year=form.cleaned_data.get('ano'))
 
@@ -4617,7 +4619,7 @@ def gestao_pedidos(request, tipo_id):
             if filtrou:
                 contratos = contratos.filter(data_inicio__year=form.cleaned_data.get('ano'))
             if valor:
-                contratos = contratos.filter(numero__icontains=valor)
+                contratos = contratos.filter(Q(solicitacao__objeto__icontains=valor) | Q(numero__icontains=valor))
 
             if not contratos.exists():
                 sem_registro = u'Nenhum contrato disponível para pedidos.'
@@ -4626,7 +4628,7 @@ def gestao_pedidos(request, tipo_id):
             if filtrou:
                 atas = atas.filter(data_inicio__year=form.cleaned_data.get('ano'))
             if valor:
-                atas = atas.filter(numero__icontains=valor)
+                atas = atas.filter(Q(solicitacao__objeto__icontains=valor) | Q(numero__icontains=valor))
             if not atas.exists():
                 sem_registro = u'Nenhuma ata disponível para pedidos.'
         #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
@@ -4635,7 +4637,7 @@ def gestao_pedidos(request, tipo_id):
             if filtrou:
                 credenciamentos = credenciamentos.filter(data_inicio__year=form.cleaned_data.get('ano'))
             if valor:
-                credenciamentos = credenciamentos.filter(numero__icontains=valor)
+                credenciamentos = credenciamentos.filter(Q(solicitacao__objeto__icontains=valor) | Q(numero__icontains=valor))
             if not credenciamentos.exists():
                 sem_registro = u'Nenhum credenciamento disponível para pedidos.'
         pode_editar = request.user.groups.filter(name=u'Gerente')
@@ -4671,7 +4673,7 @@ def gestao_contratos(request, tipo_id):
         if form.is_valid():
             if form.cleaned_data.get('info'):
                 valor = form.cleaned_data.get('info')
-                registros = registros.filter(Q(numero__icontains=valor) | Q(solicitacao__processo__numero__icontains=valor) | Q(solicitacao__num_memorando__icontains=valor))
+                registros = registros.filter(Q(objeto__icontains=valor) | Q(numero__icontains=valor) | Q(solicitacao__processo__numero__icontains=valor) | Q(solicitacao__num_memorando__icontains=valor))
 
             if form.cleaned_data.get('ano'):
                 registros = registros.filter(data_inicio__year=form.cleaned_data.get('ano'))
