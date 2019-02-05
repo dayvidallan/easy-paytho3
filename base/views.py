@@ -4383,7 +4383,7 @@ def extrato_inicial(request, pregao_id):
     document.add_paragraph()
     p = document.add_paragraph()
     p.alignment = 3
-    p.add_run(u'Extrato Inicial -  %s' % pregao).bold = True
+    p.add_run(u'Aviso de Licitação -  %s' % pregao).bold = True
 
 
 
