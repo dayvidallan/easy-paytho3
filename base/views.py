@@ -4673,7 +4673,7 @@ def gestao_contratos(request, tipo_id):
         if form.is_valid():
             if form.cleaned_data.get('info'):
                 valor = form.cleaned_data.get('info')
-                registros = registros.filter(Q(objeto__icontains=valor) | Q(numero__icontains=valor) | Q(solicitacao__processo__numero__icontains=valor) | Q(solicitacao__num_memorando__icontains=valor))
+                registros = registros.filter(Q(solicitacao__objeto__icontains=valor) | Q(numero__icontains=valor) | Q(solicitacao__processo__numero__icontains=valor) | Q(solicitacao__num_memorando__icontains=valor))
 
             if form.cleaned_data.get('ano'):
                 registros = registros.filter(data_inicio__year=form.cleaned_data.get('ano'))
