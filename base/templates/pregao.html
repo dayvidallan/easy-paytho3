@@ -372,6 +372,7 @@
 
             <div class="pull-right">
                 {% if pregao.eh_ativo %}
+                    <a class="btn btn-default" href="https://certidoes-apf.apps.tcu.gov.br/" target="_blank">Consultar Certidões</a>
                     {% if not pregao.tem_resultado %}
                         <a class="btn btn-success" href="/base/cadastra_participante_pregao/{{ pregao.pk }}/">Adicionar Participante</a>
                         <a class="btn btn-primary" href="/base/gerenciar_visitantes/{{ pregao.pk }}/">Gerenciar Visitante</a>
