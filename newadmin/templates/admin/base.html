@@ -76,7 +76,9 @@
                     <p><img src="/static/base/imagens/logo2.png" width="25%" height="10%"></p>
 
                   </a>
+
                 </div>
+
                 {% if user.is_authenticated %}
                     <div class="links">
                       <a href="/base/editar_meu_perfil/{{ request.user.pessoafisica.id}}/"><i class="fa fa-user"></i>Editar Meu Perfil</a>
@@ -86,6 +88,7 @@
                      </div>
                 {% endif %}
               </div>
+              <div><font color="white">Prefeitura Municipal de Guamaré</font></div>
             </div>
           </div>
         </section>
@@ -164,7 +167,7 @@
               <section id="content-footer">
                   <div class="container">
                       <div class="row">
-                          <p>E@sy 2017 - Todos os Direitos Reservados.</p>
+                          <p>E@sy 2019 - Todos os Direitos Reservados.</p>
                       </div>
                   </div>
               </section>
