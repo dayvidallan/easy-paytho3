@@ -8316,11 +8316,8 @@ def localizar_processo(request):
     form = LocalizarProcessoForm(request.POST or None)
     if form.is_valid():
         if Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero')).exists():
-            processo = Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero'))[0]
-            solicitacao = SolicitacaoLicitacao.objects.filter(processo=processo)
-            if solicitacao.exists():
-                solicitacao = solicitacao[0]
-                movimentos = MovimentoSolicitacao.objects.filter(solicitacao=solicitacao).order_by('-data_envio')
+            processos = Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero'))
+
 
     email = get_config_geral().email
 

@@ -217,7 +217,12 @@ class Processo(models.Model):
 
 
     def get_memorando(self):
-        return SolicitacaoLicitacao.objects.filter(processo=self)[0]
+        if SolicitacaoLicitacao.objects.filter(processo=self).exists():
+            return SolicitacaoLicitacao.objects.filter(processo=self)[0]
+        return None
+
+    def get_movimentacoes(self):
+        return MovimentoSolicitacao.objects.filter(solicitacao=self.get_memorando())
 
 class SolicitacaoLicitacaoTmp(models.Model):
 

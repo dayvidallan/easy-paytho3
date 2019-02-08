@@ -3,6 +3,44 @@
 {% load bootstrap %}
 
 {% block content %}
+    <style>
+   .modal-content {
+  position: fixed;
+  display: none;
+  z-index: 1000;
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 2px 16px;
+    background-color: #4A708B;
+    color: white;
+}
+
+/* Modal Body */
+.modal-body {padding: 2px 16px;}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #4A708B;
+    color: white;
+}
+
+/* Modal Content */
+.modal-content {
+    position: absolute;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 40%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+
+}
+
+
+</style>
     <p class="alert alert-info">Qualquer dúvida ou sugestão, entrar em contato pelo email: <b>{{ email|default_if_none:"-" }}</b></p>
 
    <fieldset>
@@ -26,84 +64,106 @@
 
         </fieldset>
     {% if form.is_bound %}
-        {% if processo %}
-            <fieldset>
-                <legend>Informações do Processo</legend>
-                <table class="table table-bordered table-condensed table-striped">
-                    <tr>
-                        <th>Número</th>
-                        <td>{{ processo.numero }}</td>
-                    </tr>
-                    <tr>
-                        <th>Objeto</th>
-                        <td>{{ processo.objeto }}</td>
-                    </tr>
-                    <tr>
-                        <th>Tipo</th>
-                        <td>{{ processo.get_tipo_display }}</td>
-                    </tr>
-                    <tr>
-
-                    <tr>
-                        <th>Setor de Origem</th>
-                        <td>{{ processo.setor_origem }}</td>
-                    </tr>
-                    <tr>
-                        <th>Setor Atual</th>
-                        <td>{{ solicitacao.setor_atual }}</td>
-                    </tr>
-
-                    <tr>
-                        <th>Cadastrado Em</th>
-                        <td>{{ processo.data_cadastro }}</td>
-                    </tr>
-
-                </table>
-            </fieldset>
-            {% if movimentos.exists %}
+        {% if processos %}
+            {% for processo in processos %}
                 <fieldset>
-                    <legend>Movimentação do Processo</legend>
-                    <table border="2" class="table table-bordered table-condensed table-striped">
-                        <thead>
-                            <th>Setor Origem</th>
-                            <th>Data de Envio</th>
-                            <th>Enviado Por</th>
-                            <th>Setor Destino</th>
-                            <th>Data de Recebimento</th>
-                            <th>Recebido Por</th>
-                            <th>Observações</th>
-                        </thead>
-                        <tbody>
-                            {% for mov in movimentos %}
-                                <tr>
-                                    <td>{{ mov.setor_origem }}</td>
-                                    <td>{{ mov.data_envio|date:'d/m/Y H:i' }}</td>
-                                    <td>{{ mov.enviado_por.pessoafisica.nome }}</td>
-                                    <td>{{ mov.setor_destino|default_if_none:'-' }}</td>
-                                    <td>{{ mov.data_recebimento|date:'d/m/Y H:i' }}</td>
-                                    <td>{{ mov.recebido_por.pessoafisica.nome|default_if_none:'-' }}</td>
-                                    <td>{{ mov.obs|default_if_none:'-' }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
+                    <legend>Informações do Processo</legend>
+                    <table class="table table-bordered table-condensed table-striped">
+                        <tr>
+                            <th><b>Número</b></th>
+                            <td>{{ processo.numero }}</td>
+                            <th><b>Tipo</b></th>
+                            <td>{{ processo.get_tipo_display }}</td>
+                            <th><b>Setor de Origem</b></th>
+                            <td>{{ processo.setor_origem }}</td>
+                            <th><b>Setor Atual</b></th>
+                            <td>{{ solicitacao.setor_atual }}</td>
+                        </tr>
+                        <tr>
+                            <th><b>Objeto</b></th>
+                            <td colspan="5">{{ processo.objeto }}</td>
+                            <th><b>Cadastrado Em</b></th>
+                            <td>{{ processo.data_cadastro }}</td>
+                        </tr>
+
                     </table>
                 </fieldset>
-            {% else %}
-                <p class="alert alert-warning">Nenhuma movimentação.</p>
-            {% endif %}
+                {% if processo.get_movimentacoes %}
+                    <fieldset>
+                        <legend><a data-toggle="collapse" data-target="#demoa{{processo.id}}">Ver Movimentação do Processo</a></legend>
+                        <div id="demoa{{processo.id}}" class="collapse">
+                            <table border="2" class="table table-bordered table-condensed table-striped">
+                                <thead>
+                                    <th>Setor Origem</th>
+                                    <th>Data de Envio</th>
+                                    <th>Enviado Por</th>
+                                    <th>Setor Destino</th>
+                                    <th>Data de Recebimento</th>
+                                    <th>Recebido Por</th>
+                                    <th>Observações</th>
+                                </thead>
+                                <tbody>
+                                    {% for mov in processo.get_movimentacoes %}
+                                        <tr>
+                                            <td>{{ mov.setor_origem }}</td>
+                                            <td>{{ mov.data_envio|date:'d/m/Y H:i' }}</td>
+                                            <td>{{ mov.enviado_por.pessoafisica.nome }}</td>
+                                            <td>{{ mov.setor_destino|default_if_none:'-' }}</td>
+                                            <td>{{ mov.data_recebimento|date:'d/m/Y H:i' }}</td>
+                                            <td>{{ mov.recebido_por.pessoafisica.nome|default_if_none:'-' }}</td>
+                                            <td>{{ mov.obs|default_if_none:'-' }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
 
+
+                {% else %}
+                    <p class="alert alert-warning">Nenhuma movimentação.</p>
+                {% endif %}
+                <hr>
+            {% endfor %}
         {% else %}
             <p class="alert alert-warning">Nenhuma licitação cadastrada.</p>
         {% endif %}
+
     {% else %}
         <p class="alert alert-info">Digite o número do processo para maiores informações.</p>
     {% endif %}
 
-    <div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Content will be loaded here from "remote.php" file -->
-            </div>
-        </div>
-    </div>
+
+
+
+<script>
+    $(document).ready(function() {
+    // config
+        popup = $('.modal-content');
+        clickme = $('.button-to-click');
+
+    // pop-up
+        vh = $(window).height();
+        vw = $(window).width();
+        bw = popup.width();
+        bh = popup.height();
+        clickme.click(function(e) {
+            e.preventDefault();
+            popup.fadeOut();
+            popup.css('left', vw/2 - bw/2);
+            popup.css('top', vh/2 - bh/2);
+            popup.fadeIn();
+        });
+   //close button
+      $('.close').click(function() {
+            $('.modal-content').fadeOut();
+        });
+});
+
+$('#id_username').focus();
+$('#id_username').blur(function() {
+    var valor = $('#id_username').val();
+    $('#id_username').val(valor.replace(/[\.-]/g, ""));
+});
+</script>
 {% endblock %}
