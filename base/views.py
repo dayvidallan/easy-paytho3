@@ -6424,6 +6424,8 @@ def cadastrar_fornecedor(request, opcao):
         messages.success(request, u'Fornecedor cadastrado com sucesso.')
         if opcao == u'0':
             return HttpResponseRedirect(u'/base/ver_fornecedores/')
+        if opcao == u'1':
+            return HttpResponseRedirect(u'/base/aderir_arp/')
         else:
             return HttpResponseRedirect(u'/base/cadastra_participante_pregao/%s/' % int(opcao))
 
