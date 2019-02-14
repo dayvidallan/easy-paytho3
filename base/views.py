@@ -11325,13 +11325,13 @@ def anexo_11(request):
 def cadastrar_termo_referencia(request, solicitacao_id):
     title=u'Cadastrar Termo de Referência'
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if solicitacao.setor_origem == request.user.pessoafisica.setor and not solicitacao.prazo_aberto:
+    if True:
         form = CadastrarTermoReferenciaForm(request.POST or None, request.FILES or None, instance=solicitacao)
         if form.is_valid():
             form.save()
 
             messages.success(request, u'Termo de referência cadastrado com sucesso.')
-            return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
+            return HttpResponseRedirect(u'/base/enviar_convites/%s/' % solicitacao.id)
 
         return render(request, 'cadastrar_termo_referencia.html', locals(), RequestContext(request))
     else:
@@ -11340,6 +11340,9 @@ def cadastrar_termo_referencia(request, solicitacao_id):
 @login_required()
 def enviar_convites(request, solicitacao_id):
     title=u'Enviar Convites'
+    config = get_config_geral()
+    if config:
+        url = config.url
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     if solicitacao.prazo_aberto and solicitacao.recebida_setor(request.user.pessoafisica.setor) and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica'):
         form = EnviarConviteForm(request.POST or None)
@@ -11350,7 +11353,7 @@ def enviar_convites(request, solicitacao_id):
             messages.success(request, u'Convites enviados com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
-        return render(request, 'cadastrar_termo_referencia.html', locals(), RequestContext(request))
+        return render(request, 'enviar_convites.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
 

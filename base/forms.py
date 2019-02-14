@@ -1421,9 +1421,10 @@ class CriarContratoAdesaoAtaForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.ata = kwargs.pop('ata', None)
         super(CriarContratoAdesaoAtaForm, self).__init__(*args, **kwargs)
-        ultima = Contrato.objects.latest('id')
-        if ultima.numero:
-            lista = ultima.numero.split('/')
+        if Contrato.objects.exists():
+            ultima = Contrato.objects.latest('id')
+            if ultima.numero:
+                lista = ultima.numero.split('/')
         valor_contrato = None
         nome_campos = u''
         if len(lista) > 1:

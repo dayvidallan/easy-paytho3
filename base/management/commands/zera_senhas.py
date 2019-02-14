@@ -8,7 +8,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         updates = 0
         hasher=get_hasher('unsalted_md5')
-        password =  make_password('123', '', hasher)
+        password =  make_password('456', '', hasher)
         updates = User.objects.update(password=password)
-        print self.style.SQL_COLTYPE('%d passwords changed to "123"' % updates)
-        self.stdout.write('Successfully %d passwords changed to 123"' % updates)
+        print self.style.SQL_COLTYPE('%d passwords changed to "456"' % updates)
+        self.stdout.write('Successfully %d passwords changed to 456"' % updates)
