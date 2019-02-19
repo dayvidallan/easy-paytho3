@@ -9,6 +9,23 @@
     <a href="javascript:void(0);">{{ title }}</a>
 {% endblock %}
 {% block content %}
+        <script>
+        function copyToClipboard(elementId) {
+
+                      // Create a "hidden" input
+                      var aux = document.createElement("input");
+
+                      aux.setAttribute("value", document.getElementById(elementId).value);
+                      // Append it to the body
+                      document.body.appendChild(aux);
+                      // Highlight its content
+                      aux.select();
+                      // Copy the highlighted text
+                      document.execCommand("copy");
+                      // Remove it from the body
+                      document.body.removeChild(aux);
+                    }
+    </script>
         <div class="pull-right">
             <a class="btn btn-success" href="/base/cadastrar_termo_referencia/{{ solicitacao.pk }}/">Cadastrar Termo de Referência</a>
         </div>
