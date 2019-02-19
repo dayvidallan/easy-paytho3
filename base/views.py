@@ -11357,3 +11357,9 @@ def enviar_convites(request, solicitacao_id):
     else:
         raise PermissionDenied
 
+
+
+def portal_transparencia(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
+    return render(request, 'portal_transparencia.html', locals(), RequestContext(request))
