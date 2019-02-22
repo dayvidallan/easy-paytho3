@@ -863,11 +863,11 @@ class BuscarSolicitacaoForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(BuscarSolicitacaoForm, self).__init__(*args, **kwargs)
         ano_limite = datetime.date.today().year
-        pregoes = Pregao.objects.all().order_by('data_abertura')
+        pregoes = SolicitacaoLicitacao.objects.all().order_by('data_cadastro')
         ANO_CHOICES = []
         if pregoes.exists():
             ANO_CHOICES.append([u'', u'--------'])
-            ano_inicio = pregoes[0].data_abertura.year-1
+            ano_inicio = pregoes[0].data_cadastro.year-1
             ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhuma solicitação encontrada'])
