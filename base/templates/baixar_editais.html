@@ -3,162 +3,332 @@
 {% load bootstrap %}
 {% load pagination_tags %}
 
-{% block content %}
 
-    <br><h3>Editais - Licitações</h3>
-    <p class="alert alert-info">Qualquer dúvida ou sugestão, entrar em contato pelo email: <b>{{ email|default_if_none:"-" }}</b></p>
-    <form action="." method="GET" class="form-horizontal">
-        {% csrf_token %}
-        <div class="row-fluid">
-            <div class="col-xs-6">
-                <div class="controls">{{ form.numero|bootstrap }}
-                    {% if form.numero.help_text %}
-                        <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+{% block content %}
+    <script>
+        $(document).ready(function () {
+
+    $("#sidebar").mCustomScrollbar({
+         theme: "minimal"
+    });
+
+    $('#sidebarCollapse').on('click', function () {
+        // open or close navbar
+        $('#sidebar').toggleClass('active');
+        // close dropdowns
+        $('.collapse.in').toggleClass('in');
+        // and also adjust aria-expanded attributes we use for the open/closed arrows
+        // in our CSS
+        $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+    });
+
+});
+    </script>
+    <style>
+        /*
+    ADDITIONAL DEMO STYLE, NOT IMPORTANT TO MAKE THINGS WORK BUT TO MAKE IT A BIT NICER :)
+*/
+
+
+
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #999;
+}
+
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+#sidebar {
+    /* don't forget to add all the previously mentioned styles here too */
+    background: #4A708B;
+    color: #fff;
+    transition: all 0.3s;
+    width: 150px;
+        position: relative;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #4A708B;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #4A708B;
+}
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+#sidebar ul li a:hover {
+    color: #7386D5;
+    background: #fff;
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: #fff;
+    background: #4A708Bc;
+}
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: #4A708B;
+}
+
+
+.container {
+    width: 100%;
+    height: 100%;
+
+    margin: auto;
+    padding: 10px;
+}
+.wrapper {
+    width: 15%;
+    height: 100%;
+
+
+}
+.content {
+    margin-left: 15%;
+    height: 100%;
+
+}
+.column1 {
+    float: left;
+    width: 20%;
+}
+.column2 {
+    float: left;
+    width: 80%;
+}
+/* Clear floats after the columns */
+.container:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+    </style>
+<section class="container">
+    <div class="column1">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>Menu</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="/base/baixar_editais_portal/">Editais</a>
+                </li>
+                <li>
+                    <a href="#">Processos</a>
+                </li>
+                <li>
+                    <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Licitações <i class="fa fa-fw fa-angle-down pull-right"></i></a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu">
+                        <li>
+                            <a href="#">Dispensa</a>
+                        </li>
+                        <li>
+                            <a href="#">Inexigibilidade</a>
+                        </li>
+                        <li>
+                            <a href="#">Pregão</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+        </nav>
+    </div>
+    <!-- Page Content -->
+    <div id="content" class="column2">
+
+        <br><h3>Editais - Licitações</h3>
+        <p class="alert alert-info">Qualquer dúvida ou sugestão, entrar em contato pelo email: <b>{{ email|default_if_none:"-" }}</b></p>
+        <form action="." method="GET" class="form-horizontal">
+            {% csrf_token %}
+            <div class="row-fluid">
+                <div class="col-xs-6">
+                    <div class="controls">{{ form.numero|bootstrap }}
+                        {% if form.numero.help_text %}
+                            <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.data_inicial|bootstrap }}
+                    {% if form.data_inicial.help_text %}
+                        <p class="help-inline"><small>{{ form.data_inicial.help_text }}</small></p>
                     {% endif %}
                 </div>
             </div>
-        </div>
-        <div class="col-xs-2 col-md-2">
-            <div class="controls">{{ form.data_inicial|bootstrap }}
-                {% if form.data_inicial.help_text %}
-                    <p class="help-inline"><small>{{ form.data_inicial.help_text }}</small></p>
-                {% endif %}
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.data_final|bootstrap }}
+                    {% if form.data_final.help_text %}
+                        <p class="help-inline"><small>{{ form.data_final.help_text }}</small></p>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="col-xs-2 col-md-2">
-            <div class="controls">{{ form.data_final|bootstrap }}
-                {% if form.data_final.help_text %}
-                    <p class="help-inline"><small>{{ form.data_final.help_text }}</small></p>
-                {% endif %}
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.modalidade|bootstrap }}
+                    {% if form.modalidade.help_text %}
+                        <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="col-xs-2 col-md-2">
-            <div class="controls">{{ form.modalidade|bootstrap }}
-                {% if form.modalidade.help_text %}
-                    <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
-                {% endif %}
+
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.situacao|bootstrap }}
+                    {% if form.situacao.help_text %}
+                        <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
+                    {% endif %}
+                </div>
             </div>
-        </div>
 
-        <div class="col-xs-2 col-md-2">
-            <div class="controls">{{ form.situacao|bootstrap }}
-                {% if form.situacao.help_text %}
-                    <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
-                {% endif %}
+            <div class="col-xs-1 col-md-1">
+                <br>
+                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
             </div>
-        </div>
 
-        <div class="col-xs-1 col-md-1">
-            <br>
-            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
-        </div>
+        </form>
 
-    </form>
-
-    {%  if pregoes.exists %}
-        <h4>{{ pregoes.count }} registro(s) encontrado(s).</h4>
-        {% autopaginate pregoes 10 %}
-        {% paginate %}
-        {%  for pregao in pregoes %}
-            <fieldset>
-                <legend><h3>{{ pregao.modalidade }} N° {{ pregao.num_pregao }}</h3></legend>
+        {%  if pregoes.exists %}
+            <h4>{{ pregoes.count }} registro(s) encontrado(s).</h4>
+            {% autopaginate pregoes 10 %}
+            {% paginate %}
+            {%  for pregao in pregoes %}
+                <fieldset>
+                    <legend><h3>{{ pregao.modalidade }} N° {{ pregao.num_pregao }}</h3></legend>
 
 
-            <table class="table table-bordered table-condensed table-striped">
-                <tr>
-                    <th><b>Número do Processo</b></th>
-                    <td>{{ pregao.solicitacao.processo|default_if_none:"-" }}</td>
-                </tr>
-                 <tr>
-                    <th><b>Situação</b></th>
-                    <td>{{ pregao.get_situacao }}</td>
-                </tr>
-                 <tr>
-                    <th width="20%"><b>Secretaria Solicitante</b></th>
-                    <td>{{ pregao.solicitacao.setor_origem.secretaria }}</td>
-                </tr>
-                <tr>
-                    <th><b>Objeto</b></th>
-                    <td>{{ pregao.objeto }}</td>
-                </tr>
-                <tr>
-                    <th><b>Critério de Julgamento / Adjudicação</b></th>
-                    <td>{{ pregao.tipo }} / {{ pregao.criterio }}</td>
-                </tr>
-                <tr>
-                <tr>
-                    <th><b>Data de Retirada do Edital</b></th>
-                    <td>{{ pregao.data_inicio }} a {{ pregao.data_termino }}</td>
-                </tr>
-                <tr>
-                    <th><b>Data da Abertura</b></th>
-                    <td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura }}<br> Local: {{ pregao.local }}</td>
-                </tr>
-                {% if pregao.data_adjudicacao %}
+                <table class="table table-bordered table-condensed table-striped">
                     <tr>
-                        <th><b>Data de Adjudicação</b></th>
-                        <td>{{ pregao.data_adjudicacao }}</td>
+                        <th><b>Número do Processo</b></th>
+                        <td>{{ pregao.solicitacao.processo|default_if_none:"-" }}</td>
                     </tr>
-                {% endif %}
-                {% if pregao.data_homologacao %}
+                     <tr>
+                        <th><b>Situação</b></th>
+                        <td>{{ pregao.get_situacao }}</td>
+                    </tr>
+                     <tr>
+                        <th width="20%"><b>Secretaria Solicitante</b></th>
+                        <td>{{ pregao.solicitacao.setor_origem.secretaria }}</td>
+                    </tr>
                     <tr>
-                        <th><b>Data de Homologação</b></th>
-                        <td>{{ pregao.data_homologacao }}</td>
+                        <th><b>Objeto</b></th>
+                        <td>{{ pregao.objeto }}</td>
                     </tr>
-                {% endif %}
-                <tr>
-                    <th><b>Publicações</b></th>
-                    <td>
-                        {% for arquivo in pregao.get_arquivos_publicos %}
-                            <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
-                        {% endfor %}
-                        {% if pregao.get_contrato %}
-                            {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
-                                <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
+                    <tr>
+                        <th><b>Critério de Julgamento / Adjudicação</b></th>
+                        <td>{{ pregao.tipo }} / {{ pregao.criterio }}</td>
+                    </tr>
+                    <tr>
+                    <tr>
+                        <th><b>Data de Retirada do Edital</b></th>
+                        <td>{{ pregao.data_inicio }} a {{ pregao.data_termino }}</td>
+                    </tr>
+                    <tr>
+                        <th><b>Data da Abertura</b></th>
+                        <td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura }}<br> Local: {{ pregao.local }}</td>
+                    </tr>
+                    {% if pregao.data_adjudicacao %}
+                        <tr>
+                            <th><b>Data de Adjudicação</b></th>
+                            <td>{{ pregao.data_adjudicacao }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if pregao.data_homologacao %}
+                        <tr>
+                            <th><b>Data de Homologação</b></th>
+                            <td>{{ pregao.data_homologacao }}</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th><b>Publicações</b></th>
+                        <td>
+                            {% for arquivo in pregao.get_arquivos_publicos %}
+                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
                             {% endfor %}
-                        {% endif %}
-                        {% if pregao.get_arp %}
-                            {% for arquivo in pregao.get_arp.get_arquivos_publicos %}
-                                <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
-                            {% endfor %}
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th><b>Participantes</b></th>
-                    <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
-                </tr>
-                 <!--{%  if pregao.tem_resultado %}-->
+                            {% if pregao.get_contrato %}
+                                {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
+                                    <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
+                                {% endfor %}
+                            {% endif %}
+                            {% if pregao.get_arp %}
+                                {% for arquivo in pregao.get_arp.get_arquivos_publicos %}
+                                    <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><b>Participantes</b></th>
+                        <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
+                    </tr>
+                     <!--{%  if pregao.tem_resultado %}-->
 
-                    <!--<tr><th><b>Resultados</b></th>-->
-                        <!--<td>-->
-                            <!--<a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a>-->
-                            <!--{% if pregao.eh_pregao %}-->
-                                <!--<br><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a>-->
-                            <!--{% endif %}-->
-                            <!--<br><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a>-->
-                        <!--</td>-->
-                    <!--</tr>-->
-                <!--{% endif %}-->
+                        <!--<tr><th><b>Resultados</b></th>-->
+                            <!--<td>-->
+                                <!--<a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a>-->
+                                <!--{% if pregao.eh_pregao %}-->
+                                    <!--<br><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a>-->
+                                <!--{% endif %}-->
+                                <!--<br><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+                    <!--{% endif %}-->
 
-            </table>
-           </fieldset>
+                </table>
+               </fieldset>
 
-        {% endfor %}
-    {% else %}
-        <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
-    {% endif %}
+            {% endfor %}
+        {% else %}
+            <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
+        {% endif %}
 
-    <div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Content will be loaded here from "remote.php" file -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Content will be loaded here from "remote.php" file -->
+                </div>
             </div>
         </div>
     </div>
+
+
+
+</section>
+
+
+
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <!-- jQuery Custom Scroller CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 {% endblock %}
 {% block footer %}
     {{ form.media }}
 
     {{ block.super }}
 {% endblock %}
+
