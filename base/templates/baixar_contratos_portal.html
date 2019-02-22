@@ -52,7 +52,7 @@ a, a:hover, a:focus {
     color: #fff;
     transition: all 0.3s;
     width: 150px;
-        position: relative;
+
 }
 
 #sidebar .sidebar-header {
@@ -96,13 +96,13 @@ ul ul a {
     height: 100%;
 
     margin: auto;
-    padding: 10px;
+
 }
 .wrapper {
     width: 15%;
     height: 100%;
 
-    float: left;
+
 }
 .content {
     margin-left: 15%;
@@ -112,9 +112,10 @@ ul ul a {
 .column1 {
     float: left;
     width: 10%;
+    background: #4A708B;
 }
 .column2 {
-    float: left;
+    float: right;
     width: 80%;
 }
 /* Clear floats after the columns */
@@ -124,36 +125,10 @@ ul ul a {
     clear: both;
 }
 
-        .side-nav {
-      position: fixed;
-      top: 60px;
-      left: 225px;
-      width: 225px;
-      margin-left: -225px;
-      border: none;
-      border-radius: 0;
-      border-top: 1px #ccc solid;
-      overflow-y: auto;
-      background-color: #1b81a2;
-      /*background-color: #5A6B7D;*/
-      bottom: 0;
-      overflow-x: hidden;
-      padding-bottom: 40px;
-   }
 
-   .side-nav>li>a {
-      width: 225px;
-      border-bottom: 1px #ccc solid;
-   }
-
-   .side-nav li a:hover,
-   .side-nav li a:focus {
-      outline: none;
-      background-color: #1a242f !important;
-      background-color: #c0c0c0 !important;
-   }
     </style>
 <section class="container">
+
     <div class="column1 wrapper">
         <!-- Sidebar -->
         <nav id="sidebar">
@@ -195,7 +170,87 @@ ul ul a {
     <!-- Page Content -->
     <div id="content" class="column2">
 
-            UTILIZE O MENU LATERAL PARA TER ACESSO ÀS INFORMAÇÕES.
+        <br><h3>Contratos</h3><br>
+    <p class="alert alert-info">Qualquer dúvida ou sugestão, entrar em contato pelo email: <b>{{ email|default_if_none:"-" }}</b></p>
+    <form action="." method="GET" class="form-horizontal">
+        {% csrf_token %}
+         <div class="miolo">
+             <div class="row-fluid">
+                 <div class="col-xs-6">
+                 <table cellspacing="10" cellpadding="10" width="60%">
+                     <tr>
+
+                         <td> {{ form.numero|bootstrap }}</td>
+                         <td width="5%">&nbsp;</td>
+                        <td>
+                            <div class="col-xs-6">
+                                <br>
+                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+
+                            </div>
+                        </td>
+                     </tr>
+
+                 </table>
+                <div>
+             </div>
+
+
+
+
+            </div>
+
+
+            </div>
+         </div>
+    </form>
+    {%  if contratos.exists %}
+        {% autopaginate contratos 5 %}
+        {% paginate %}
+        {%  for ata in contratos %}
+
+            <table class="table table-bordered table-condensed table-striped">
+                <tr>
+                    <th colspan="2"><b> Ata de Registro de Preço N°{{ ata.numero }}</b></th>
+                </tr>
+                <tr>
+                    <th><b>Objeto</b></th>
+                    <td>{{ ata.solicitacao.objeto }}</td>
+                </tr>
+                <tr>
+                    <th width="30%"><b>Período de Vigência</b></th>
+                    <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
+                </tr>
+
+                {% if ata.anexoataregistropreco_set.all %}
+                    <tr>
+                        <th><b>Arquivos</b></th>
+                        <td>
+                            {% for arquivo in ata.get_arquivos_publicos %}
+                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+                            {% endfor %}
+                            {% if ata.get_contrato %}
+                                {% for arquivo in ata.get_contrato.get_arquivos_publicos %}
+                                    <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+
+        {% endfor %}
+    {% else %}
+        <p class="alert alert-info">Nenhum contrato encontrado.</p>
+    {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+        </div>
+    </div>
     </div>
 
 
@@ -216,3 +271,4 @@ ul ul a {
 
     {{ block.super }}
 {% endblock %}
+

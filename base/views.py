@@ -11365,3 +11365,48 @@ def portal_transparencia(request):
     return render(request, 'portal_transparencia.html', locals(), RequestContext(request))
 
 
+def baixar_editais_portal(request):
+    hoje = datetime.date.today()
+    pregoes = Pregao.objects.all().order_by('-id')
+    form = BaixarEditaisForm(request.GET or None)
+    if form.is_valid():
+        if form.cleaned_data.get('modalidade'):
+            pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
+        if form.cleaned_data.get('numero'):
+            pregoes = pregoes.filter(num_pregao__icontains=form.cleaned_data.get('numero'))
+
+        if form.cleaned_data.get('data_inicial'):
+            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
+
+        if form.cleaned_data.get('data_final'):
+            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
+
+        if form.cleaned_data.get('situacao'):
+            if form.cleaned_data.get('situacao') == Pregao.ADJUDICADO:
+                pregoes = pregoes.filter(Q(situacao=form.cleaned_data.get('situacao')) | Q(pode_homologar=True))
+            else:
+                pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
+    email = get_config_geral().email
+    return render(request, 'baixar_editais_portal.html', locals(), RequestContext(request))
+
+
+def baixar_atas_portal(request):
+    hoje = datetime.date.today()
+    atas = AtaRegistroPreco.objects.all().order_by('-numero')
+    form = BaixarAtasForm(request.GET or None)
+    if form.is_valid():
+        if form.cleaned_data.get('numero'):
+            atas = atas.filter(numero__icontains=form.cleaned_data.get('numero'))
+    email = get_config_geral().email
+
+    return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))
+
+def baixar_contratos_portal(request):
+    hoje = datetime.date.today()
+    contratos = Contrato.objects.all().order_by('-numero')
+    form = BaixarContratoForm(request.POST or None)
+    if form.is_valid():
+        if form.cleaned_data.get('numero'):
+            contratos = contratos.filter(numero__icontains=form.cleaned_data.get('numero'))
+
+    return render(request, 'baixar_contratos_portal.html', locals(), RequestContext(request))
