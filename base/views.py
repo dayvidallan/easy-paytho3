@@ -6343,11 +6343,13 @@ def termo_referencia(request, solicitacao_id):
         '#DATA#': datetime.date.today(),
         '#OBJETIVO#': solicitacao.objetivo,
         '#OBJETO#': solicitacao.objeto,
+        '#TIPOAQUISICAO#': solicitacao.tipo_aquisicao,
         '#JUST#': solicitacao.justificativa,
         '#IT#': libreoffice_new_line(itens or '-'),
         '#QUANT#': libreoffice_new_line(quantidades or '-'),
         '#UN#': libreoffice_new_line(unidades or '-'),
         '#DES#': libreoffice_new_line(descricoes or '-'),
+        '#CIDADE#': municipio
 
     }
     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_referencia.docx'))
