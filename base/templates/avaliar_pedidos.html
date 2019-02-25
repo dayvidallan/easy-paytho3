@@ -62,7 +62,7 @@
                 {% for pedido in  pedidos.pedido %}
                    <tr>
 
-                       <td>{{ pedido.item }}</td>
+                       <td>{{ pedido.item }} - {{ pedido.item.material }}</td>
                        <td>{{ pedido.quantidade|format_quantidade  }}</td>
                        <td>
                            {% if pedido.avaliado_em %}
