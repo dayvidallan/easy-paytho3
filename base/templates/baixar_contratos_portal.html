@@ -26,9 +26,9 @@
     </script>
 <div class="pull-right">
     {% if buscou %}
-        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true">Imprimir em PDF</a>
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
     {% else %}
-        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}?pdf=true">Imprimir em PDF</a>
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}?pdf=true" target="_blank">Imprimir em PDF</a>
     {% endif %}
 </div>
 <section class="container">
