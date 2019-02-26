@@ -11542,4 +11542,44 @@ def baixar_contratos_portal(request):
         file.close()
         return HttpResponse(pdf, 'application/pdf')
 
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos.xls')
+        rb = open_workbook(file_path,formatting_info=True)
+
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        contador = 4
+        conta_item = 1
+
+        for item in contratos:
+            row_index = contador + 1
+            w_sheet.write(row_index, 0, item.numero)
+            w_sheet.write(row_index, 1, item.solicitacao.num_memorando )
+            w_sheet.write(row_index, 2, item.solicitacao.objeto)
+            w_sheet.write(row_index, 3, item.get_situacao())
+            w_sheet.write(row_index, 4, format_money(item.get_valor_total()))
+            w_sheet.write(row_index, 5, format_money(item.get_saldo_disponivel()))
+            data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
+            w_sheet.write(row_index, 6, data)
+            contador += 1
+            conta_item += 1
+
+        salvou = nome + u'_%s' % datetime.datetime.now() + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+
     return render(request, 'baixar_contratos_portal.html', locals(), RequestContext(request))
