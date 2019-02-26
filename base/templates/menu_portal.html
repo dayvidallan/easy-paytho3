@@ -16,9 +16,9 @@
                 <h4><a href="#pageSubmenu2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration:none; color:black;"> Licitações, Contratos e Convênios <i class="fa fa-fw fa-angle-down pull-right"></i></a></h4>
             </div>
 
-            <ul class="collapse list-unstyled" id="pageSubmenu2">
+            <ul class="{% if not contratos %}collapse{% endif%} list-unstyled" id="pageSubmenu2">
                 <li>
-                    <a href="https://certidoes-apf.apps.tcu.gov.br/" target="_blank"><i class="fa fa-arrow-right"></i> Consulta Consolidade de Pessoa Jurídica</a>
+                    <a href="https://certidoes-apf.apps.tcu.gov.br/" target="_blank"><i class="fa fa-arrow-right"></i> Consulta Consolidada de Pessoa Jurídica</a>
                 </li>
                 <li class="active">
                     <a href="/base/baixar_licitacoes_portal/"><i class="fa fa-arrow-right"></i> Licitações</a>
