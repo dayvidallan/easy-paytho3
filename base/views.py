@@ -8574,7 +8574,7 @@ def ver_relatorios_gerenciais_credenciamentos(request):
             secretaria = form.cleaned_data.get('secretaria')
             ano = form.cleaned_data.get('ano')
             hoje = datetime.date.today()
-            total = 0
+
             if ano:
                 contratos = contratos.filter(data_inicio__year=ano)
 
@@ -8605,7 +8605,7 @@ def ver_relatorios_gerenciais_credenciamentos(request):
 
 
 
-                data = {'contratos': contratos, 'titulo': 'Credenciamentos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+                data = {'contratos': contratos, 'titulo': 'Credenciamentos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
                 template = get_template('relatorio_gerencial_situacao_contratos.html')
 
 
@@ -11390,6 +11390,9 @@ def baixar_licitacoes_portal(request):
             else:
                 pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
     email = get_config_geral().email
+
+
+
     return render(request, 'baixar_licitacoes_portal.html', locals(), RequestContext(request))
 
 
@@ -11406,14 +11409,47 @@ def baixar_atas_portal(request):
 
     return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))
 
+
 def baixar_contratos_portal(request):
     config = get_config_geral()
     title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
     contratos = Contrato.objects.all().order_by('-numero')
     form = BaixarContratoForm(request.GET or None)
+    buscou = False
     if form.is_valid():
+        buscou = True
         if form.cleaned_data.get('numero'):
             contratos = contratos.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) | Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) | Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
+
+
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_contratos_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+
+        data = {'contratos': contratos, 'titulo': 'Contratos', 'situacao': '', 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+        template = get_template('relatorio_gerencial_situacao_contratos.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
 
     return render(request, 'baixar_contratos_portal.html', locals(), RequestContext(request))

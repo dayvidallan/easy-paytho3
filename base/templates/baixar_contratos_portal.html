@@ -24,7 +24,13 @@
 
 });
     </script>
-
+<div class="pull-right">
+    {% if buscou %}
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true">Imprimir em PDF</a>
+    {% else %}
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}?pdf=true">Imprimir em PDF</a>
+    {% endif %}
+</div>
 <section class="container">
 
     {% include 'menu_portal.html' %}
@@ -64,6 +70,7 @@
          </div>
     </form>
     {%  if contratos.exists %}
+        <h3>{{ contratos.count }} Contratos Encontrados.</h3>
         {% autopaginate contratos 20 %}
         {% paginate %}
         {%  for ata in contratos %}
