@@ -8643,7 +8643,6 @@ def liberar_pedidos_solicitacao(request, solicitacao_id):
         raise PermissionDenied
 
 
-@login_required()
 def relatorio_dados_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 

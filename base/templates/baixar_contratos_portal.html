@@ -91,7 +91,7 @@
                     <td><a href="/base/relatorio_info_contrato/{{ ata.pk }}/" target="_blank">Informações do Contrato</a></td>
                 </tr>
 
-                {% if ata.anexocontrato_set.all %}
+                {% if ata.get_arquivos_publicos %}
                     <tr>
                         <th><b>Arquivos</b></th>
                         <td>
