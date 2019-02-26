@@ -11415,6 +11415,6 @@ def baixar_contratos_portal(request):
     form = BaixarContratoForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('numero'):
-            contratos = contratos.filter(Q(data_inicio__year=form.cleaned_data.get('numero')) | Q(data_fim__year=form.cleaned_data.get('numero')) | Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) | Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
+            contratos = contratos.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) | Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) | Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
 
     return render(request, 'baixar_contratos_portal.html', locals(), RequestContext(request))
