@@ -11368,6 +11368,8 @@ def portal_transparencia(request):
 
 
 def baixar_editais_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
     pregoes = Pregao.objects.all().order_by('-id')
     form = BaixarEditaisForm(request.GET or None)
@@ -11393,6 +11395,8 @@ def baixar_editais_portal(request):
 
 
 def baixar_atas_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
     atas = AtaRegistroPreco.objects.all().order_by('-numero')
     form = BaixarAtasForm(request.GET or None)
@@ -11404,6 +11408,8 @@ def baixar_atas_portal(request):
     return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))
 
 def baixar_contratos_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
     contratos = Contrato.objects.all().order_by('-numero')
     form = BaixarContratoForm(request.POST or None)

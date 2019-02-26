@@ -1,0 +1,128 @@
+<style>
+
+    p {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.0em;
+        font-weight: 300;
+        line-height: 1.7em;
+        color: #999;
+    }
+
+    a, a:hover, a:focus {
+        color: inherit;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    #sidebar {
+        /* don't forget to add all the previously mentioned styles here too */
+
+        color: #000;
+        transition: all 0.3s;
+        width: 250px;
+        position: relative;
+        border-width: 1px;
+
+    }
+
+    #sidebar .sidebar-header {
+
+        color: #4A708B;
+        border-bottom: 1px solid;
+
+    }
+
+    #sidebar ul.components {
+
+        border-bottom: 1px solid;
+
+    }
+
+    #sidebar ul p {
+        color: #fff;
+        padding: 2px;
+    }
+
+    #sidebar ul li a {
+        padding: 10px;
+        font-size: 1.0em;
+        display: block;
+    }
+    #sidebar ul li a:hover {
+        color: #7386D5;
+        background: #fff;
+    }
+
+    #sidebar ul li.active > a, a[aria-expanded="true"] {
+        color: #grey;
+
+    }
+    ul ul a {
+        font-size: 0.9em !important;
+        padding-left: 30px !important;
+
+    }
+
+
+    .container {
+        width: 100%;
+        height: 100%;
+
+        margin: auto;
+        padding: 10px;
+    }
+    .wrapper {
+        width: 15%;
+        height: 100%;
+
+        float: left;
+    }
+    .content {
+        margin-left: 15%;
+        height: 100%;
+
+    }
+    .column1 {
+        float: left;
+        width: 20%;
+
+    }
+    .column2 {
+        float: left;
+        width: 80%;
+    }
+    /* Clear floats after the columns */
+    .container:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+            .side-nav {
+          position: fixed;
+          top: 60px;
+          left: 225px;
+          width: 225px;
+          margin-left: -225px;
+          border: none;
+          border-radius: 0;
+          border-top: 1px #ccc solid;
+          overflow-y: auto;
+          background-color: #1b81a2;
+          /*background-color: #5A6B7D;*/
+          bottom: 0;
+          overflow-x: hidden;
+          padding-bottom: 40px;
+       }
+
+       .side-nav>li>a {
+          width: 225px;
+          border-bottom: 1px #ccc solid;
+       }
+
+       .side-nav li a:hover,
+       .side-nav li a:focus {
+          outline: none;
+          background-color: #1a242f !important;
+          background-color: #c0c0c0 !important;
+       }
+</style>

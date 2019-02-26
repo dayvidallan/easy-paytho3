@@ -24,130 +24,36 @@
 
 });
     </script>
-    <style>
-        /*
-    ADDITIONAL DEMO STYLE, NOT IMPORTANT TO MAKE THINGS WORK BUT TO MAKE IT A BIT NICER :)
-*/
 
-
-
-
-p {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.1em;
-    font-weight: 300;
-    line-height: 1.7em;
-    color: #999;
-}
-
-a, a:hover, a:focus {
-    color: inherit;
-    text-decoration: none;
-    transition: all 0.3s;
-}
-
-#sidebar {
-    /* don't forget to add all the previously mentioned styles here too */
-    background: #4A708B;
-    color: #fff;
-    transition: all 0.3s;
-    width: 150px;
-
-}
-
-#sidebar .sidebar-header {
-    padding: 20px;
-    background: #4A708B;
-}
-
-#sidebar ul.components {
-    padding: 20px 0;
-    border-bottom: 1px solid #4A708B;
-}
-
-#sidebar ul p {
-    color: #fff;
-    padding: 10px;
-}
-
-#sidebar ul li a {
-    padding: 10px;
-    font-size: 1.1em;
-    display: block;
-}
-#sidebar ul li a:hover {
-    color: #7386D5;
-    background: #fff;
-}
-
-#sidebar ul li.active > a, a[aria-expanded="true"] {
-    color: #fff;
-    background: #4A708Bc;
-}
-ul ul a {
-    font-size: 0.9em !important;
-    padding-left: 30px !important;
-    background: #4A708B;
-}
-
-
-.container {
-    width: 100%;
-    height: 100%;
-
-    margin: auto;
-
-}
-.wrapper {
-    width: 15%;
-    height: 100%;
-
-
-}
-.content {
-    margin-left: 15%;
-    height: 100%;
-
-}
-.column1 {
-    float: left;
-    width: 10%;
-    background: #4A708B;
-}
-.column2 {
-    float: right;
-    width: 80%;
-}
-/* Clear floats after the columns */
-.container:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-
-    </style>
 <section class="container">
 
     <div class="column1 wrapper">
         <!-- Sidebar -->
         <nav id="sidebar">
             <div class="sidebar-header">
-                <h3>Menu</h3>
+                <h3><i class="fa fa-home"></i><a href="/base/portal_transparencia/"> Início</a></h3>
+            </div>
+            <div class="sidebar-header">
+                <h4><i class="fa fa-dollar"></i> Financeiro, Orçamentário e Gestão de Pessoas</h4>
+            </div>
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="http://guamare.rn.gov.br/portaldatransparencia/" target="_blank"><i class="fa fa-arrow-right"></i> Financeiro, Orçamentário e Gestão de Pessoas</a>
+                </li>
+            </ul>
+            <div class="sidebar-header">
+                <h4><i class="fa fa-gavel"></i> Licitações, Contratos e Convênios</h4>
             </div>
 
             <ul class="list-unstyled components">
-                <li class="active">
-                    <a href="/base/portal_transparencia/">Início</a>
+                <li>
+                    <a href="/base/baixar_editais_portal/"><i class="fa fa-arrow-right"></i> Editais</a>
                 </li>
                 <li>
-                    <a href="/base/baixar_editais_portal/">Editais</a>
+                    <a href="/base/baixar_atas_portal/"><i class="fa fa-arrow-right"></i> Licitações</a>
                 </li>
-                <li>
-                    <a href="/base/baixar_atas_portal/">Licitações</a>
-                </li>
-                 <li>
-                    <a href="/base/baixar_contratos_portal/">Contratos</a>
+                 <li  class="active">
+                    <a href="/base/baixar_contratos_portal/"><i class="fa fa-arrow-right"></i> Contratos</a>
                 </li>
                 <!--<li>-->
                     <!--<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Licitações <i class="fa fa-fw fa-angle-down pull-right"></i></a>-->
@@ -165,19 +71,18 @@ ul ul a {
                 <!--</li>-->
             </ul>
 
+
         </nav>
     </div>
     <!-- Page Content -->
     <div id="content" class="column2">
-
-        <br><h3>Contratos</h3><br>
-    <p class="alert alert-info">Qualquer dúvida ou sugestão, entrar em contato pelo email: <b>{{ email|default_if_none:"-" }}</b></p>
+    <h3>Contratos</h3>
     <form action="." method="GET" class="form-horizontal">
         {% csrf_token %}
          <div class="miolo">
              <div class="row-fluid">
                  <div class="col-xs-6">
-                 <table cellspacing="10" cellpadding="10" width="60%">
+                 <table cellspacing="10" cellpadding="10" width="100%">
                      <tr>
 
                          <td> {{ form.numero|bootstrap }}</td>
@@ -265,6 +170,7 @@ ul ul a {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
     <!-- jQuery Custom Scroller CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/base/css/portal.css" />
 {% endblock %}
 {% block footer %}
     {{ form.media }}
