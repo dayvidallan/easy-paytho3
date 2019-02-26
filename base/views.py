@@ -11377,7 +11377,7 @@ def baixar_editais_portal(request):
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
         if form.cleaned_data.get('numero'):
-            pregoes = pregoes.filter(num_pregao__icontains=form.cleaned_data.get('numero'))
+            pregoes = pregoes.filter(Q(num_pregao__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')))
 
         if form.cleaned_data.get('data_inicial'):
             pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
@@ -11402,7 +11402,7 @@ def baixar_atas_portal(request):
     form = BaixarAtasForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('numero'):
-            atas = atas.filter(numero__icontains=form.cleaned_data.get('numero'))
+            atas = atas.filter(Q(numero__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
     email = get_config_geral().email
 
     return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))
