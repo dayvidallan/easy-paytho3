@@ -67,11 +67,9 @@
         {% autopaginate contratos 20 %}
         {% paginate %}
         {%  for ata in contratos %}
-
+            <hr class="new4">
+            <h3>Contrato N°{{ ata.numero }}</h3>
             <table class="table table-bordered table-condensed table-striped">
-                <tr>
-                    <th colspan="2"><b>Contrato N°{{ ata.numero }}</b></th>
-                </tr>
                 <tr>
                     <th><b>Objeto</b></th>
                     <td>{{ ata.solicitacao.objeto }}</td>

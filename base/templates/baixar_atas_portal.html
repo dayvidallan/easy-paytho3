@@ -68,11 +68,9 @@
         {% autopaginate atas 20 %}
         {% paginate %}
         {%  for ata in atas %}
-
+            <hr class="new4">
+            <h3>Ata de Registro de Preço N°{{ ata.numero }}</h3>
             <table class="table table-bordered table-condensed table-striped">
-                <tr>
-                    <th colspan="2"><b> Ata de Registro de Preço N°{{ ata.numero }}</b></th>
-                </tr>
                 <tr>
                     <th><b>Objeto</b></th>
                     <td>{{ ata.solicitacao.objeto }}</td>
@@ -102,7 +100,7 @@
                     </tr>
                 {% endif %}
             </table>
-            <hr>
+
 
         {% endfor %}
     {% else %}
