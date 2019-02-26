@@ -2759,13 +2759,13 @@ class AtaRegistroPreco(models.Model):
 
     def get_situacao(self):
         if self.concluido:
-            return u'Concluído'
+            return u'Encerrado'
         elif self.suspenso:
             return u'Suspenso'
         elif self.cancelado:
             return u'Cancelado'
         else:
-            return u'Ativo'
+            return u'Vigente'
 
     def get_data_esgotamento(self):
         if self.data_esgotamento:
@@ -2847,13 +2847,13 @@ class Credenciamento(models.Model):
 
     def get_situacao(self):
         if self.concluido:
-            return u'Concluído'
+            return u'Encerrado'
         elif self.suspenso:
             return u'Suspenso'
         elif self.cancelado:
             return u'Cancelado'
         else:
-            return u'Ativo'
+            return u'Vigente'
 
     def get_ordem(self):
         if ItemCredenciamento.objects.filter(credenciamento=self).exists():
@@ -3039,13 +3039,13 @@ class Contrato(models.Model):
 
     def get_situacao(self):
         if self.concluido:
-            return u'Concluído'
+            return u'Encerrado'
         elif self.suspenso:
             return u'Suspenso'
         elif self.cancelado:
             return u'Cancelado'
         else:
-            return u'Ativo'
+            return u'Vigente'
 
     def eh_ativo(self):
         return not self.cancelado

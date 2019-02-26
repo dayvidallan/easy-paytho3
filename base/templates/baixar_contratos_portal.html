@@ -81,9 +81,29 @@
                     <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
                 </tr>
                 <tr>
+                    <th><b>Situação</b></th>
+                    <td>{{ ata.get_situacao }}</td>
+                </tr>
+                <tr>
                     <th><b>Fornecedor</b></th>
                     <td>{{ ata.get_fornecedor }}</td>
                 </tr>
+                <tr>
+                    <th><b>Dados do Contrato</b></th>
+                    <td><a href="/base/relatorio_info_contrato/{{ ata.pk }}/" target="_blank">Informações do Contrato</a></td>
+                </tr>
+
+                {% if ata.anexocontrato_set.all %}
+                    <tr>
+                        <th><b>Arquivos</b></th>
+                        <td>
+                            {% for arquivo in ata.get_arquivos_publicos %}
+                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+                            {% endfor %}
+
+                        </td>
+                    </tr>
+                {% endif %}
             </table>
 
         {% endfor %}

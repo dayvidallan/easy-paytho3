@@ -11402,7 +11402,7 @@ def baixar_atas_portal(request):
     form = BaixarAtasForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('numero'):
-            atas = atas.filter(Q(numero__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
+            atas = atas.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) |Q(numero__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
     email = get_config_geral().email
 
     return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))

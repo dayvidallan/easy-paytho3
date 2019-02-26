@@ -120,6 +120,7 @@
                         <th><b>Data da Abertura</b></th>
                         <td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura }}<br> Local: {{ pregao.local }}</td>
                     </tr>
+
                     {% if pregao.data_adjudicacao %}
                         <tr>
                             <th><b>Data de Adjudicação</b></th>
@@ -152,7 +153,11 @@
                     </tr>
                     <tr>
                         <th><b>Participantes</b></th>
-                        <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" target="_blank">Lista de Participantes</a></td>
+                        <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" class=link" target="_blank">Lista de Participantes</a></td>
+                    </tr>
+                    <tr>
+                        <th><b>Dados da Licitação</b></th>
+                        <td><a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" class=link" target="_blank">Ver Dados</a></td>
                     </tr>
                      <!--{%  if pregao.tem_resultado %}-->
 

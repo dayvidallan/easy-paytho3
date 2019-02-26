@@ -81,6 +81,10 @@
                     <th width="30%"><b>Período de Vigência</b></th>
                     <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
                 </tr>
+                <tr>
+                    <th><b>Situação</b></th>
+                    <td>{{ ata.get_situacao }}</td>
+                </tr>
 
                 {% if ata.anexoataregistropreco_set.all %}
                     <tr>

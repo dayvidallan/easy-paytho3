@@ -1235,7 +1235,7 @@ class BaixarEditaisForm(forms.Form):
              self.add_error('data_final', u'A data final não pode ser menor do que a data inicial.')
 
 class BaixarAtasForm(forms.Form):
-    numero = forms.CharField(label=u'Filtrar por Número da Ata', required=False)
+    numero = forms.CharField(label=u'Digite o número, ano de vigência ou palavra-chave:', required=False)
 
 class BaixarContratoForm(forms.Form):
     numero = forms.CharField(label=u'Digite o número, nome do fornecedor, ano de vigência ou palavra-chave:', required=False)
