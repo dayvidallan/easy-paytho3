@@ -925,10 +925,10 @@ def baixar_atas(request):
 def baixar_contratos(request):
     hoje = datetime.date.today()
     contratos = Contrato.objects.all().order_by('-numero')
-    form = BaixarContratoForm(request.POST or None)
+    form = BaixarContratoForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('numero'):
-            contratos = contratos.filter(numero__icontains=form.cleaned_data.get('numero'))
+            contratos = contratos.filter(Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) |Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
 
     return render(request, 'baixar_contratos.html', locals(), RequestContext(request))
 
@@ -11367,7 +11367,7 @@ def portal_transparencia(request):
     return render(request, 'portal_transparencia.html', locals(), RequestContext(request))
 
 
-def baixar_editais_portal(request):
+def baixar_licitacoes_portal(request):
     config = get_config_geral()
     title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
@@ -11391,7 +11391,7 @@ def baixar_editais_portal(request):
             else:
                 pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
     email = get_config_geral().email
-    return render(request, 'baixar_editais_portal.html', locals(), RequestContext(request))
+    return render(request, 'baixar_licitacoes_portal.html', locals(), RequestContext(request))
 
 
 def baixar_atas_portal(request):
@@ -11412,9 +11412,9 @@ def baixar_contratos_portal(request):
     title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
     contratos = Contrato.objects.all().order_by('-numero')
-    form = BaixarContratoForm(request.POST or None)
+    form = BaixarContratoForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('numero'):
-            contratos = contratos.filter(numero__icontains=form.cleaned_data.get('numero'))
+            contratos = contratos.filter(Q(data_inicio__year=form.cleaned_data.get('numero')) | Q(data_fim__year=form.cleaned_data.get('numero')) | Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) | Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
 
     return render(request, 'baixar_contratos_portal.html', locals(), RequestContext(request))

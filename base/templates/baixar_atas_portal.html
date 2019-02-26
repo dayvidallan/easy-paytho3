@@ -1,4 +1,4 @@
-{% extends super_template|default:"admin/base.html" %}
+{% extends super_template|default:"admin/base_portal.html" %}
 {% load staticfiles %}
 {% load bootstrap %}
 {% load pagination_tags %}
@@ -27,53 +27,7 @@
 
 <section class="container">
 
-    <div class="column1 wrapper">
-        <!-- Sidebar -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <h3><i class="fa fa-home"></i><a href="/base/portal_transparencia/"> Início</a></h3>
-            </div>
-            <div class="sidebar-header">
-                <h4><i class="fa fa-dollar"></i> Financeiro, Orçamentário e Gestão de Pessoas</h4>
-            </div>
-            <ul class="list-unstyled components">
-                <li>
-                    <a href="http://guamare.rn.gov.br/portaldatransparencia/" target="_blank"><i class="fa fa-arrow-right"></i> Financeiro, Orçamentário e Gestão de Pessoas</a>
-                </li>
-            </ul>
-            <div class="sidebar-header">
-                <h4><i class="fa fa-gavel"></i> Licitações, Contratos e Convênios</h4>
-            </div>
-
-            <ul class="list-unstyled components">
-                <li>
-                    <a href="/base/baixar_editais_portal/"><i class="fa fa-arrow-right"></i> Editais</a>
-                </li>
-                <li class="active">
-                    <a href="/base/baixar_atas_portal/"><i class="fa fa-arrow-right"></i> Licitações</a>
-                </li>
-                 <li>
-                    <a href="/base/baixar_contratos_portal/"><i class="fa fa-arrow-right"></i> Contratos</a>
-                </li>
-                <!--<li>-->
-                    <!--<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Licitações <i class="fa fa-fw fa-angle-down pull-right"></i></a>-->
-                    <!--<ul class="collapse list-unstyled" id="pageSubmenu">-->
-                        <!--<li>-->
-                            <!--<a href="#">Dispensa</a>-->
-                        <!--</li>-->
-                        <!--<li>-->
-                            <!--<a href="#">Inexigibilidade</a>-->
-                        <!--</li>-->
-                        <!--<li>-->
-                            <!--<a href="#">Pregão</a>-->
-                        <!--</li>-->
-                    <!--</ul>-->
-                <!--</li>-->
-            </ul>
-
-
-        </nav>
-    </div>
+    {% include 'menu_portal.html' %}
     <!-- Page Content -->
     <div id="content" class="column2">
 

@@ -1238,7 +1238,7 @@ class BaixarAtasForm(forms.Form):
     numero = forms.CharField(label=u'Filtrar por Número da Ata', required=False)
 
 class BaixarContratoForm(forms.Form):
-    numero = forms.CharField(label=u'Filtrar por Número do Contrato', required=False)
+    numero = forms.CharField(label=u'Digite o número, nome do fornecedor, ano de vigência ou palavra-chave:', required=False)
 
 class HistoricoPregaoForm(forms.ModelForm):
     obs = forms.CharField(label=u'Descrição da Ocorrência', widget=forms.Textarea, required=True)

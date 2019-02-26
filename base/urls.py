@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^lista_fornecedores/$', views.lista_fornecedores, name='lista_fornecedores'),
     url(r'^relatorio_auditoria/$', views.relatorio_auditoria, name='relatorio_auditoria'),
     url(r'^portal_transparencia/$', views.portal_transparencia, name='portal_transparencia'),
-    url(r'^baixar_editais_portal/$', views.baixar_editais_portal, name='baixar_editais_portal'),
+    url(r'^baixar_licitacoes_portal/$', views.baixar_licitacoes_portal, name='baixar_licitacoes_portal'),
     url(r'^baixar_atas_portal/$', views.baixar_atas_portal, name='baixar_atas_portal'),
     url(r'^baixar_contratos_portal/$', views.baixar_contratos_portal, name='baixar_contratos_portal'),
 
