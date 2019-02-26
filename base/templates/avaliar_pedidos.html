@@ -49,10 +49,9 @@
             <table class="table table-bordered table-condensed table-striped">
             <thead>
                 <tr>
-                    <th>Item</th>
+                    <th width="40%">Item</th>
                     <th>Quantidade</th>
                     <th>Aceito</th>
-                    <th>Avaliado Em</th>
                     <th>Avaliado Por</th>
                     <th>Opções</th>
 
@@ -62,7 +61,7 @@
                 {% for pedido in  pedidos.pedido %}
                    <tr>
 
-                       <td>{{ pedido.item }}</td>
+                       <td>{{ pedido.item }} - {{ pedido.item.material }}</td>
                        <td>{{ pedido.quantidade|format_quantidade  }}</td>
                        <td>
                            {% if pedido.avaliado_em %}
@@ -75,8 +74,7 @@
                             -
                            {% endif %}
                         </td>
-                       <td>{{ pedido.avaliado_em|default_if_none:'-' }}</td>
-                       <td>{{ pedido.avaliado_por|default_if_none:'-' }}</td>
+                       <td>{% if pedido.avaliado_por %}{{ pedido.avaliado_por.pessoafisica.nome|default_if_none:'-' }} (Em {{ pedido.avaliado_em|default_if_none:'-' }}){% else %}-{% endif%}</td>
                        <td>{% if not pedido.avaliado_em and pode_avaliar %}
                                <a class="btn btn-success btn-sm" href="/base/pedido_outro_interessado/{{ pedido.pk }}/1/">Aprovar Pedido</a>
                                <a class="btn btn-danger btn-sm" href="/base/pedido_outro_interessado/{{ pedido.pk }}/2/">Rejeitar Pedido</a>

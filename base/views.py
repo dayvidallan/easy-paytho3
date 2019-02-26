@@ -969,7 +969,7 @@ def solicitacoes_do_setor(request):
     outras = False
     setor = request.user.pessoafisica.setor
     movimentacoes_setor = MovimentoSolicitacao.objects.filter(Q(setor_origem=setor) | Q(setor_destino=setor))
-    solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor, situacao=SolicitacaoLicitacao.CADASTRADO)  | Q(setor_atual=setor, situacao__in=[SolicitacaoLicitacao.RECEBIDO, SolicitacaoLicitacao.EM_LICITACAO])).order_by('-data_cadastro')
+    solicitacoes = SolicitacaoLicitacao.objects.filter(Q(setor_origem=setor) | Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True))  | Q(setor_atual=setor, situacao__in=[SolicitacaoLicitacao.RECEBIDO, SolicitacaoLicitacao.EM_LICITACAO])).order_by('-data_cadastro')
     # outras = SolicitacaoLicitacao.objects.filter(Q(id__in=movimentacoes_setor.values_list('solicitacao', flat=True)) | Q(interessados=setor.secretaria)).distinct().order_by('-data_cadastro')
     # aba1 = u''
     # aba2 = u'in active'
@@ -6343,11 +6343,13 @@ def termo_referencia(request, solicitacao_id):
         '#DATA#': datetime.date.today(),
         '#OBJETIVO#': solicitacao.objetivo,
         '#OBJETO#': solicitacao.objeto,
+        '#TIPOAQUISICAO#': solicitacao.tipo_aquisicao,
         '#JUST#': solicitacao.justificativa,
         '#IT#': libreoffice_new_line(itens or '-'),
         '#QUANT#': libreoffice_new_line(quantidades or '-'),
         '#UN#': libreoffice_new_line(unidades or '-'),
         '#DES#': libreoffice_new_line(descricoes or '-'),
+        '#CIDADE#': municipio
 
     }
     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/termo_referencia.docx'))
