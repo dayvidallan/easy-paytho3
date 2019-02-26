@@ -25,6 +25,7 @@
 });
     </script>
 
+{%  if contratos.exists %}
 <div class="pull-right">
     {% if buscou %}
         <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
@@ -34,6 +35,7 @@
         <a class="btn btn-success btn-sm" href="{{ request.get_full_path}}?xls=true" target="_blank" >Imprimir em XLS</a>
     {% endif %}
 </div>
+{% endif %}
 <section class="container">
 
     {% include 'menu_portal.html' with contratos=True %}
