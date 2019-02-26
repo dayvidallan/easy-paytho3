@@ -40,35 +40,40 @@
         <h3>Atas de Registro de Preços</h3>
     <form action="." method="GET" class="form-horizontal">
         {% csrf_token %}
-         <div class="miolo">
-             <div class="row-fluid">
-                 <div class="col-xs-6">
-                 <table cellspacing="10" cellpadding="10" width="100%">
-                     <tr>
 
-                         <td> {{ form.numero|bootstrap }}</td>
-                         <td width="5%">&nbsp;</td>
-                        <td>
-                            <div class="col-xs-6">
-                                <br>
-                                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
-
-                            </div>
-                        </td>
-                     </tr>
-
-                 </table>
-                <div>
+        <div class="row-fluid">
+            <div class="row-fluid">
+                <div class="col-xs-6">
+                    <div class="controls">{{ form.numero|bootstrap }}
+                        {% if form.numero.help_text %}
+                            <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.ano|bootstrap }}
+                    {% if form.ano.help_text %}
+                        <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                    {% endif %}
+                </div>
              </div>
 
 
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.situacao|bootstrap }}
+                    {% if form.situacao.help_text %}
+                        <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
 
-
+            <div class="col-xs-1 col-md-1">
+                <br>
+                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
             </div>
+        </div>
 
-
-            </div>
-         </div>
     </form>
     {%  if atas.exists %}
         <h3>{{ atas.count }} Atas de Registro de Preço encontradas.</h3>
@@ -97,11 +102,11 @@
                         <th><b>Arquivos</b></th>
                         <td>
                             {% for arquivo in ata.get_arquivos_publicos %}
-                                <a  href="/media/{{arquivo.arquivo }}/">{{ arquivo.nome }}</a><br>
+                                <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
                             {% endfor %}
                             {% if ata.get_contrato %}
                                 {% for arquivo in ata.get_contrato.get_arquivos_publicos %}
-                                    <a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>
+                                    <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
                                 {% endfor %}
                             {% endif %}
                         </td>

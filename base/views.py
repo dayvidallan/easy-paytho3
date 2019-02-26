@@ -11435,6 +11435,21 @@ def baixar_atas_portal(request):
 
     if form.is_valid():
         buscou = True
+        situacao = form.cleaned_data.get('situacao')
+        ano = form.cleaned_data.get('ano')
+        hoje = datetime.date.today()
+        total = 0
+        if ano:
+            atas = atas.filter(data_inicio__year=ano)
+
+        if situacao:
+            descricao_situacao = u'Todos'
+            if situacao == u'2':
+                atas = atas.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                descricao_situacao = u'Vigentes'
+            elif situacao == u'3':
+                atas = atas.filter(Q(concluido=True) | Q(suspenso=True) | Q(cancelado=True))
+                descricao_situacao = u'Concluídos'
         if form.cleaned_data.get('numero'):
             atas = atas.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) |Q(numero__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
     email = get_config_geral().email
@@ -11478,6 +11493,22 @@ def baixar_contratos_portal(request):
     buscou = False
     if form.is_valid():
         buscou = True
+        situacao = form.cleaned_data.get('situacao')
+        ano = form.cleaned_data.get('ano')
+        hoje = datetime.date.today()
+        total = 0
+        if ano:
+            contratos = contratos.filter(data_inicio__year=ano)
+
+        if situacao:
+            descricao_situacao = u'Todos'
+            if situacao == u'2':
+                contratos = contratos.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                descricao_situacao = u'Vigentes'
+            elif situacao == u'3':
+                contratos = contratos.filter(Q(concluido=True) | Q(suspenso=True) | Q(cancelado=True))
+                descricao_situacao = u'Concluídos'
+
         if form.cleaned_data.get('numero'):
             contratos = contratos.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) | Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) | Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
 
