@@ -103,7 +103,7 @@
                         <th><b>Arquivos</b></th>
                         <td>
                             {% for arquivo in ata.get_arquivos_publicos %}
-                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+                                <a  href="/media/{{arquivo.arquivo }}/">{{ arquivo.nome }}</a><br>
                             {% endfor %}
 
                         </td>
@@ -112,6 +112,7 @@
             </table>
 
         {% endfor %}
+        {% paginate %}
     {% else %}
         <p class="alert alert-info">Nenhum contrato encontrado.</p>
     {% endif %}

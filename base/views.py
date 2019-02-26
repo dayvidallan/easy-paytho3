@@ -9320,7 +9320,7 @@ def mudar_credenciamento_fornecedor(request, credenciamento_id, fornecedor_id, o
     else:
         raise PermissionDenied
 
-@login_required()
+
 def relatorio_info_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
@@ -11372,7 +11372,9 @@ def baixar_licitacoes_portal(request):
     hoje = datetime.date.today()
     pregoes = Pregao.objects.all().order_by('-id')
     form = BaixarEditaisForm(request.GET or None)
+    buscou = False
     if form.is_valid():
+        buscou = True
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
         if form.cleaned_data.get('numero'):
@@ -11390,7 +11392,34 @@ def baixar_licitacoes_portal(request):
             else:
                 pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
     email = get_config_geral().email
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
 
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+        total = 0
+        for pregao in pregoes:
+            total += pregao.get_valor_total()
+        data = {'pregoes': pregoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+        template = get_template('relatorio_gerencial_situacao.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
 
 
     return render(request, 'baixar_licitacoes_portal.html', locals(), RequestContext(request))
@@ -11402,10 +11431,40 @@ def baixar_atas_portal(request):
     hoje = datetime.date.today()
     atas = AtaRegistroPreco.objects.all().order_by('-numero')
     form = BaixarAtasForm(request.GET or None)
+    buscou = False
+
     if form.is_valid():
+        buscou = True
         if form.cleaned_data.get('numero'):
             atas = atas.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) |Q(numero__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
     email = get_config_geral().email
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+        data = {'contratos': atas, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+        template = get_template('relatorio_gerencial_situacao_atas.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
 
     return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))
 

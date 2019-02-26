@@ -24,7 +24,13 @@
 
 });
     </script>
-
+<div class="pull-right">
+    {% if buscou %}
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true">Imprimir em PDF</a>
+    {% else %}
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}?pdf=true">Imprimir em PDF</a>
+    {% endif %}
+</div>
 <section class="container">
     {% include 'menu_portal.html' with contratos=True %}
 
@@ -82,7 +88,7 @@
         </form>
 
         {%  if pregoes.exists %}
-            <h4>{{ pregoes.count }} registro(s) encontrado(s).</h4>
+            <h4>{{ pregoes.count }} Licitações encontradas.</h4>
             {% autopaginate pregoes 10 %}
             {% paginate %}
             {%  for pregao in pregoes %}
@@ -138,7 +144,7 @@
                         <th><b>Publicações</b></th>
                         <td>
                             {% for arquivo in pregao.get_arquivos_publicos %}
-                                <a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>
+                                <a  href="/media/{{arquivo.arquivo }}/">{{ arquivo.nome }}</a><br>
                             {% endfor %}
                             {% if pregao.get_contrato %}
                                 {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
@@ -177,6 +183,7 @@
                </fieldset>
 
             {% endfor %}
+            {% paginate %}
         {% else %}
             <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
         {% endif %}
