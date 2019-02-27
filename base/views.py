@@ -11826,7 +11826,7 @@ def baixar_dispensas_portal(request):
             logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
 
 
-        data = {'contratos': solicitacoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+        data = {'solicitacoes': solicitacoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
         template = get_template('relatorio_gerencial_situacao_dispensas.html')
 
 
