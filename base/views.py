@@ -9443,7 +9443,7 @@ def relatorio_qtd_consumida_contrato(request, contrato_id):
 
 
 
-@login_required()
+
 def relatorio_info_arp(request, ata_id):
     ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
 

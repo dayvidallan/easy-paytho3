@@ -3470,22 +3470,36 @@ class ItemAtaRegistroPreco(models.Model):
 
             if self.ata.adesao:
                 total = self.quantidade
-            if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+
+            if usuario.is_active:
+                if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                    total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
 
 
-            pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
-            if pedidos.exists():
-                valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
+                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
+                if pedidos.exists():
+                    valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
 
-            transferencias = TransferenciaItemARP.objects.filter(item=self)
-            if transferencias.exists():
-                if transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).exists():
-                    perdeu_item = transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+                transferencias = TransferenciaItemARP.objects.filter(item=self)
+                if transferencias.exists():
+                    if transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).exists():
+                        perdeu_item = transferencias.filter(secretaria_origem=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
 
-                if transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).exists():
-                    ganhou_item = transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+                    if transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).exists():
+                        ganhou_item = transferencias.filter(secretaria_destino=usuario.pessoafisica.setor.secretaria).aggregate(soma=Sum('quantidade'))['soma']
+            else:
 
+                if ItemQuantidadeSecretaria.objects.filter(item=self.item).exists():
+                    total = ItemQuantidadeSecretaria.objects.filter(item=self.item)[0].quantidade
+
+
+                pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True)
+                if pedidos.exists():
+                    valor_pedidos = pedidos.aggregate(soma=Sum('quantidade'))['soma']
+
+                transferencias = TransferenciaItemARP.objects.filter(item=self)
+
+                perdeu_item = ganhou_item = 0
             return total - valor_pedidos + ganhou_item - perdeu_item
 
         return 0
