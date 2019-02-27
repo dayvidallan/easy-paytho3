@@ -11388,11 +11388,8 @@ def baixar_licitacoes_portal(request):
         if form.cleaned_data.get('numero'):
             pregoes = pregoes.filter(Q(num_pregao__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')))
 
-        if form.cleaned_data.get('data_inicial'):
-            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
-
-        if form.cleaned_data.get('data_final'):
-            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
+        if form.cleaned_data.get('ano'):
+            pregoes = pregoes.filter(data_abertura__year=form.cleaned_data.get('ano'))
 
         if form.cleaned_data.get('situacao'):
             if form.cleaned_data.get('situacao') == Pregao.ADJUDICADO:

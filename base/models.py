@@ -3307,7 +3307,10 @@ class ItemContrato(models.Model):
 
                 pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
             else:
-                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao)[0].quantidade
+                if ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao).exists():
+                    total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao)[0].quantidade
+                else:
+                    return 0
                 pedidos = PedidoContrato.objects.filter(item=self, ativo=True).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
             #if origem:
             if pedidos.exists():

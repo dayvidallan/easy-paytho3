@@ -1220,20 +1220,27 @@ class BaixarEditaisForm(forms.Form):
     METHOD = u'GET'
 
     numero = forms.CharField(label=u'Digite o número da licitação/procedimento', required=False)
-    data_inicial = forms.DateField(label=u'Data Inicial do Certame', required=False)
-    data_final = forms.DateField(label=u'Data Final do Certame', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
     def __init__(self, *args, **kwargs):
         super(BaixarEditaisForm, self).__init__(*args, **kwargs)
-        self.fields['data_inicial'].widget.attrs = {'class': 'vDateField'}
-        self.fields['data_final'].widget.attrs = {'class': 'vDateField'}
+        ano_limite = datetime.date.today().year
+        contratos = Pregao.objects.all().order_by('data_inicio')
+        ANO_CHOICES = []
+        if contratos.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = contratos[0].data_inicio.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhuma licitação cadastrada'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
 
-    def clean(self):
-
-         if self.cleaned_data.get('data_final') and self.cleaned_data.get('data_inicial') and self.cleaned_data.get('data_final') < self.cleaned_data.get('data_inicial'):
-             self.add_error('data_final', u'A data final não pode ser menor do que a data inicial.')
 
 class BaixarAtasForm(forms.Form):
     numero = forms.CharField(label=u'Digite o número, ano de vigência ou palavra-chave:', required=False)
