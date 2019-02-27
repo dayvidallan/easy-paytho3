@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^baixar_licitacoes_portal/$', views.baixar_licitacoes_portal, name='baixar_licitacoes_portal'),
     url(r'^baixar_atas_portal/$', views.baixar_atas_portal, name='baixar_atas_portal'),
     url(r'^baixar_contratos_portal/$', views.baixar_contratos_portal, name='baixar_contratos_portal'),
+    url(r'^baixar_dispensas_portal/$', views.baixar_dispensas_portal, name='baixar_dispensas_portal'),
+    url(r'^baixar_adesao_atas_portal/$', views.baixar_adesao_atas_portal, name='baixar_adesao_atas_portal'),
 
 
     url(r'^modelos_atas/(?P<pregao_id>\d+)/$', views.modelos_atas, name='modelos_atas'),

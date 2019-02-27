@@ -1223,7 +1223,7 @@ class BaixarEditaisForm(forms.Form):
     data_final = forms.DateField(label=u'Data Final do Certame', required=False)
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
-
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
     def __init__(self, *args, **kwargs):
         super(BaixarEditaisForm, self).__init__(*args, **kwargs)
         self.fields['data_inicial'].widget.attrs = {'class': 'vDateField'}
@@ -1280,6 +1280,32 @@ class BaixarContratoForm(forms.Form):
         if contratos.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = contratos[0].data_inicio.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
+
+class BaixarDispensaForm(forms.Form):
+    numero = forms.CharField(label=u'Digite o número, ano de vigência ou palavra-chave:', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+
+    #situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Vigentes'), (3, u'Concluídos')) )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    #fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Filtrar por Fornecedor', required=False)
+
+
+    def __init__(self, *args, **kwargs):
+        super(BaixarDispensaForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        contratos = SolicitacaoLicitacao.objects.filter(tipo_aquisicao__in=[SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE])
+        ANO_CHOICES = []
+        if contratos.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = contratos[0].data_cadastro.year-1
             ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])

@@ -41,7 +41,7 @@
     <!-- Page Content -->
     <div id="content" class="column2">
 
-        <h3>Atas de Registro de Preços</h3>
+        <h3>{{ title }}</h3>
     <form action="." method="GET" class="form-horizontal">
         {% csrf_token %}
 
@@ -71,6 +71,13 @@
                     {% endif %}
                 </div>
              </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.secretaria|bootstrap }}
+                    {% if form.secretaria.help_text %}
+                        <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
 
             <div class="col-xs-1 col-md-1">
                 <br>
@@ -80,13 +87,13 @@
 
     </form>
     {%  if atas.exists %}
-        <h3>{{ atas.count }} Atas de Registro de Preço encontradas.</h3>
+        <h3>{{ atas.count }} {{ title }} encontradas.</h3>
         {% autopaginate atas 20 %}
         {% paginate %}
         {%  for ata in atas %}
 
             <hr class="new4">
-            <h3>Ata de Registro de Preço N° {{ ata.numero }}</h3>
+            <h3>{{ nome }} Ata de Registro de Preço N° {{ ata.numero }}</h3>
             <table class="table table-bordered table-condensed table-striped">
                {% if ata.solicitacao.processo %}
                     <tr>
@@ -108,14 +115,46 @@
                         <td><a href="/base/baixar_licitacoes_portal/?numero={{ ata.pregao.num_pregao }}&modalidade={{ata.pregao.modalidade.id}}" target="_blank">{{ ata.pregao }}</a></td>
                     </tr>
                {% endif %}
+               {% if ata.orgao_origem %}
+                    <tr>
+                        <th><b>Unidade Fiscalizadora</b></th>
+                        <td>{{ ata.orgao_origem }}</td>
+                   </tr>
+               {% endif %}
+               {% if ata.get_contrato %}
+                    <tr>
+                        <th><b>Contrato</b></th>
+                        <td><a href="/base/baixar_contratos_portal/?numero={{ ata.get_contrato.numero }}" target="_blank">{{ ata.get_contrato }}</a></td>
+                   </tr>
+                    <tr>
+                        <th><b>Data da Assinatura</b></th>
+                        <td>{{ ata.get_contrato.data_inicio }}</td>
+                   </tr>
+               {% endif %}
                <tr>
                     <th><b>Objeto</b></th>
                     <td>{{ ata.solicitacao.objeto }}</td>
                </tr>
-               <tr>
-                    <th width="30%"><b>Período de Vigência</b></th>
-                    <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
-               </tr>
+               {% if ata.adesao %}
+                    <tr>
+                        <th width="30%"><b>Período de Vigência</b></th>
+                        <td>{{ ata.get_contrato.data_inicio }} à {{ ata.get_contrato.data_fim }}</td>
+                   </tr>
+
+               {% else %}
+                   <tr>
+                        <th width="30%"><b>Período de Vigência</b></th>
+                        <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
+                   </tr>
+               {% endif %}
+               {% if ata.num_oficio %}
+                    <tr>
+                        <th width="30%"><b>Licitação</b></th>
+                        <td>{{ ata.num_oficio }}</td>
+                   </tr>
+               {% endif %}
+
+
 
                {% if ata.get_arquivos_publicos %}
                    <tr>
