@@ -102,6 +102,12 @@
                     <th width="20%"><b>Secretaria Solicitante</b></th>
                     <td>{{ ata.solicitacao.setor_origem.secretaria }}</td>
                </tr>
+               {% if ata.pregao %}
+                    <tr>
+                        <th><b>Licitação/Procedimento</b></th>
+                        <td><a href="/base/baixar_licitacoes_portal/?numero={{ ata.pregao.num_pregao }}&modalidade={{ata.pregao.modalidade.id}}" target="_blank">{{ ata.pregao }}</a></td>
+                    </tr>
+               {% endif %}
                <tr>
                     <th><b>Objeto</b></th>
                     <td>{{ ata.solicitacao.objeto }}</td>
