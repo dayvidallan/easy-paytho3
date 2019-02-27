@@ -711,6 +711,20 @@ class SolicitacaoLicitacao(models.Model):
         return total
 
 
+    def get_fornecedor_dispensa(self):
+        lista = list()
+        dicionario = {}
+        for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=self):
+            total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+            if total:
+                lista.append([pesquisa.id, total])
+                dicionario[pesquisa.id] = total
+        resultado = sorted(dicionario.items(), key=lambda x: x[1])
+        if resultado:
+            fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
+            return fornecedor
+        return None
+
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
     DESERTO = u'Deserto'
