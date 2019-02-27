@@ -651,7 +651,9 @@ class SolicitacaoLicitacao(models.Model):
         return OrdemCompra.objects.filter(solicitacao=self).exists()
 
     def get_ordem_compra(self):
-        return OrdemCompra.objects.filter(solicitacao=self)[0]
+        if OrdemCompra.objects.filter(solicitacao=self).exists():
+            return OrdemCompra.objects.filter(solicitacao=self)[0]
+        return None
 
     def tem_itens_lote_com_valores(self):
         return PropostaItemPregao.objects.filter(item__solicitacao=self, valor_item_lote__isnull=False).exists()
@@ -722,7 +724,7 @@ class SolicitacaoLicitacao(models.Model):
         resultado = sorted(dicionario.items(), key=lambda x: x[1])
         if resultado:
             fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
-            return fornecedor
+            return '%s (%s)' % (fornecedor.razao_social, fornecedor.cnpj)
         return None
 
 class ItemSolicitacaoLicitacao(models.Model):

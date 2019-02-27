@@ -103,10 +103,18 @@
                     <th width="20%"><b>Secretaria Solicitante</b></th>
                     <td>{{ ata.setor_origem.secretaria }}</td>
                </tr>
-                <tr>
-                    <th width="20%"><b>Fornecedor</b></th>
-                    <td>{{ ata.get_fornecedor_dispensa }}</td>
-               </tr>
+               {% if ata.get_ordem_compra %}
+                   <tr>
+                        <th width="20%"><b>Data da Ordem</b></th>
+                        <td>{{ ata.get_ordem_compra.data }}</td>
+                   </tr>
+               {% endif %}
+               {% if ata.get_fornecedor_dispensa %}
+                   <tr>
+                        <th width="20%"><b>Fornecedor</b></th>
+                        <td>{{ ata.get_fornecedor_dispensa }}</td>
+                   </tr>
+               {% endif %}
                {% if ata.get_pregao %}
                     <tr>
                         <th><b>Licitação/Procedimento</b></th>
