@@ -11766,6 +11766,7 @@ def baixar_contratos_portal(request):
             w_sheet.write(row_index, 6, format_money(item.get_saldo_disponivel()))
             data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
             w_sheet.write(row_index, 7, data)
+            w_sheet.write(row_index, 8, item.get_fornecedor())
             contador += 1
             conta_item += 1
 
