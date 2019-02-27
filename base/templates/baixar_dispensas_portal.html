@@ -72,6 +72,13 @@
                     {% endif %}
                 </div>
              </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.tipo|bootstrap }}
+                    {% if form.tipo.help_text %}
+                        <p class="help-inline"><small>{{ form.tipo.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
 
             <div class="col-xs-1 col-md-1">
                 <br>

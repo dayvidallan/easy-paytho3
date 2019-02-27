@@ -11810,6 +11810,8 @@ def baixar_dispensas_portal(request):
         if form.cleaned_data.get('secretaria'):
             solicitacoes = solicitacoes.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
 
+        if form.cleaned_data.get('tipo'):
+            solicitacoes = solicitacoes.filter(tipo_aquisicao=form.cleaned_data.get('tipo'))
     email = get_config_geral().email
     if 'pdf' in request.GET:
         destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()

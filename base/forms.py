@@ -1297,7 +1297,7 @@ class BaixarDispensaForm(forms.Form):
     #situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Vigentes'), (3, u'Concluídos')) )
     secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
     #fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Filtrar por Fornecedor', required=False)
-
+    tipo = forms.ChoiceField(label=u'Modalidade', choices=[(u'', u'-------------'),(SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA), (SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE)], required=False)
 
     def __init__(self, *args, **kwargs):
         super(BaixarDispensaForm, self).__init__(*args, **kwargs)
