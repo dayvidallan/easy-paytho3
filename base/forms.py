@@ -1169,9 +1169,10 @@ class DefinirVigenciaContratoForm(forms.ModelForm):
 
 class DocumentoSolicitacaoForm(forms.ModelForm):
     documento = forms.FileField(label=u'Arquivo', required=True)
+    enviar_email = forms.BooleanField(label=u'Enviar email para fornecedores informando que um novo arquivo foi anexado?', help_text=u'O email só será enviado se o documento também for marcado como público', required=False)
     class Meta:
         model = DocumentoSolicitacao
-        fields = ('nome', 'documento')
+        fields = ('nome', 'documento', 'publico')
 
 
 class FornecedorForm(forms.ModelForm):

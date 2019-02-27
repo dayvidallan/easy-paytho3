@@ -724,8 +724,11 @@ class SolicitacaoLicitacao(models.Model):
         resultado = sorted(dicionario.items(), key=lambda x: x[1])
         if resultado:
             fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
-            return '%s (%s)' % (fornecedor.razao_social, fornecedor.cnpj)
+            return fornecedor
         return None
+
+    def get_arquivos_publicos(self):
+        return DocumentoSolicitacao.objects.filter(solicitacao=self, publico=True)
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -2578,6 +2581,7 @@ class DocumentoSolicitacao(models.Model):
     cadastrado_em = models.DateTimeField(u'Cadastrado Em', null=True, blank=True)
     cadastrado_por = models.ForeignKey(User, related_name=u'documento_cadastrado_por', null=True)
     documento = models.FileField(u'Documento', null=True, blank=True, upload_to=upload_path_documento)
+    publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
     class Meta:
         verbose_name = u'Documento da Solicitação'

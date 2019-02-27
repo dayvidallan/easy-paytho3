@@ -1224,6 +1224,14 @@ def cadastrar_documento(request, solicitacao_id):
         o.cadastrado_por = request.user
         o.cadastrado_em = datetime.datetime.now()
         o.save()
+        if form.cleaned_data.get('publico') and form.cleaned_data.get('enviar_email'):
+            config = get_config_geral()
+            arquivo_nome = u'\'%s\' - %s' % (o.nome, solicitacao)
+            link = config.url + u'/media/%s' % o.documento
+            registro = solicitacao.get_fornecedor_dispensa()
+            if solicitacao.get_fornecedor_dispensa():
+                texto = u'Olá, %s. O arquivo %s foi adicionado no portal da transparência da %s. Endereço para visualização: %s ' % (registro.razao_social, arquivo_nome, config.nome, link)
+                send_mail('Easy Gestão Pública - Novo Arquivo Cadastrado', texto, settings.EMAIL_HOST_USER, [registro.email], fail_silently=True)
         messages.success(request, u'Documento cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao_id)
 
