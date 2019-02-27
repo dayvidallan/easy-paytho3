@@ -3181,6 +3181,13 @@ class Contrato(models.Model):
     def eh_adesao(self):
         return AtaRegistroPreco.objects.filter(adesao=True, solicitacao=self.solicitacao).exists()
 
+    def get_valor(self):
+        total = 0
+        itens = self.get_itens()
+        for item in itens:
+            total += item.get_valor_total()
+        return total
+
 class Aditivo(models.Model):
 
     ACRESCIMO_QUANTITATIVOS = u'Acréscimo de Quantitativos'

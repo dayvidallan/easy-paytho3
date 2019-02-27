@@ -78,7 +78,7 @@ ul{
 
                 <td>{{ contrato.data_inicio }}</td>
                 <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
-                <td>{{ contrato.get_valor_aditivado|format_money }}</td>
+                <td>{{ contrato.get_valor|format_money }}</td>
                 <td>{{ contrato.get_situacao }}</td>
             </tr>
         </tbody>
