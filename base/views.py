@@ -11687,7 +11687,7 @@ def baixar_contratos_portal(request):
     config = get_config_geral()
     title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
-    contratos = Contrato.objects.all().order_by('-numero')
+    contratos = Contrato.objects.exclude(solicitacao__id__in=AtaRegistroPreco.objects.filter(adesao=True).values_list('solicitacao_id', flat=True)).order_by('-numero')
     form = BaixarContratoForm(request.GET or None)
     buscou = False
     if form.is_valid():

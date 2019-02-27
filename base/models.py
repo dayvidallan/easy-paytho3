@@ -2829,6 +2829,8 @@ class AtaRegistroPreco(models.Model):
         valor_inicial = self.get_valor_total()
         for item in self.pedidoataregistropreco_set.all():
             valor_inicial = valor_inicial - (item.valor*item.quantidade)
+        if valor_inicial < 0:
+            return 0
         return valor_inicial
 
     def get_data_fim(self):
@@ -2898,6 +2900,8 @@ class Credenciamento(models.Model):
         valor_inicial = self.get_valor_total()
         for item in self.pedidocredenciamento_set.all():
             valor_inicial = valor_inicial - (item.valor*item.quantidade)
+        if valor_inicial < 0:
+            return 0
         return valor_inicial
 
     def get_data_fim(self):
@@ -3169,6 +3173,9 @@ class Contrato(models.Model):
         valor_inicial = self.get_valor_total_com_aditivos()
         for item in self.pedidocontrato_set.all():
             valor_inicial = valor_inicial - (item.valor*item.quantidade)
+
+        if valor_inicial < 0:
+            return 0
         return valor_inicial
 
     def eh_adesao(self):
@@ -3290,14 +3297,17 @@ class ItemContrato(models.Model):
         else:
             total = self.quantidade
             origem = False
-            if (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=self.contrato.solicitacao.setor_origem.secretaria)[0].quantidade
-                origem = True
-            if not (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
-                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
+            if usuario:
+                if (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                    total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=self.contrato.solicitacao.setor_origem.secretaria)[0].quantidade
+                    origem = True
+                if not (usuario.pessoafisica.setor.secretaria == self.contrato.solicitacao.setor_origem.secretaria) and ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria).exists():
+                    total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
 
-            pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
-
+                pedidos = PedidoContrato.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
+            else:
+                total = ItemQuantidadeSecretaria.objects.filter(item=self.item, item__solicitacao=self.contrato.solicitacao)[0].quantidade
+                pedidos = PedidoContrato.objects.filter(item=self, ativo=True).exclude(item__contrato__aplicacao_artigo_57=Contrato.INCISO_II)
             #if origem:
             if pedidos.exists():
                 return total - pedidos.aggregate(soma=Sum('quantidade'))['soma'] + quantidade_aditivo
