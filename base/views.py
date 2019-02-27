@@ -8317,7 +8317,7 @@ def excluir_visitante(request, visitante_id):
 
 def localizar_processo(request):
     title = u'Localizar Processo'
-    form = LocalizarProcessoForm(request.POST or None)
+    form = LocalizarProcessoForm(request.GET or None)
     if form.is_valid():
         if Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero')).exists():
             processos = Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero'))

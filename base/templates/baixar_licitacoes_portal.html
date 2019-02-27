@@ -102,10 +102,12 @@
 
 
                 <table class="table table-bordered table-condensed table-striped">
-                    <tr>
-                        <th><b>Número do Processo</b></th>
-                        <td>{{ pregao.solicitacao.processo|default_if_none:"-" }}</td>
-                    </tr>
+                    {% if pregao.solicitacao.processo %}
+                        <tr>
+                            <th><b>Nº do Processo</b></th>
+                            <td><a href="/base/localizar_processo/?numero={{ pregao.solicitacao.processo.numero }}" target="_blank">{{ pregao.solicitacao.processo }}</a></td>
+                        </tr>
+                    {% endif %}
                      <tr>
                         <th><b>Situação</b></th>
                         <td>{{ pregao.get_situacao }}</td>

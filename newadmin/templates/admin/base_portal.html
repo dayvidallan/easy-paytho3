@@ -344,6 +344,17 @@
 	display: none;
 }
 
+			.column1 {
+        float: left;
+        width: 10%;
+
+
+    }
+    .column2 {
+        float: left;
+        width: 80%;
+    }
+
         </style>
 
     {% endblock %}
@@ -395,15 +406,16 @@
   {% block navbar %}
 
       <header id="header">
-
+		<div class="logo column1 pull-left" ><a href="/" title="Prefeitura de Guamaré"><img src="/static/base/imagens/logo2.png" width="50%" height="20%"></a></div>
 		<div class="inner-wrap">
-			<div class="logo">
 
+			<div class="logo column2">
 				<h1>
-						<a href="https://guamare.rn.gov.br" title="Prefeitura de Guamaré">
-							<img src="http://guamare.rn.gov.br/wp-content/uploads/2016/06/toponovo.jpg" alt="Prefeitura de Guamaré" />						</a>					</h1>
-
-		  </div>
+					<a href="https://guamare.rn.gov.br" title="Prefeitura de Guamaré">
+						<img src="http://guamare.rn.gov.br/wp-content/uploads/2016/06/toponovo.jpg" alt="Prefeitura de Guamaré" />
+					</a>
+				</h1>
+		  	</div>
 
 			<div class="top-menu">
 

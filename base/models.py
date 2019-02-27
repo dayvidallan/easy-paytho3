@@ -1926,7 +1926,7 @@ class Fornecedor(models.Model):
         verbose_name_plural = u'Fornecedores'
 
     def __unicode__(self):
-        return u'%s - %s' % (self.razao_social, self.cnpj)
+        return u'%s (%s)' % (self.razao_social, self.cnpj)
 
     def get_dados_bancarios(self):
         if self.banco:
@@ -3113,7 +3113,7 @@ class Contrato(models.Model):
 
     def get_fornecedor(self):
         if ItemContrato.objects.filter(contrato=self).exists() and ItemContrato.objects.filter(contrato=self)[0].participante:
-            return ItemContrato.objects.filter(contrato=self)[0].participante
+            return ItemContrato.objects.filter(contrato=self)[0].participante.fornecedor
         return ItemContrato.objects.filter(contrato=self)[0].fornecedor
 
 

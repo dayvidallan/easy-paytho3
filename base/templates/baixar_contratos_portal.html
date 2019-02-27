@@ -83,36 +83,52 @@
         <h3>{{ contratos.count }} Contratos Encontrados.</h3>
         {% autopaginate contratos 20 %}
         {% paginate %}
-        {%  for ata in contratos %}
+        {%  for contrato in contratos %}
             <hr class="new4">
-            <h3>Contrato N°{{ ata.numero }}</h3>
+            <h3>Contrato N°{{ contrato.numero }}</h3>
             <table class="table table-bordered table-condensed table-striped">
+                {% if contrato.solicitacao.processo %}
+                    <tr>
+                        <th><b>Nº do Processo</b></th>
+                        <td><a href="/base/localizar_processo/?numero={{ contrato.solicitacao.processo.numero }}" target="_blank">{{ contrato.solicitacao.processo }}</a></td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th><b>Situação</b></th>
+                    <td>{{ contrato.get_situacao }}</td>
+                </tr>
+                <tr>
+                    <th><b>Secretaria Solicitante</b></th>
+                    <td>{{ contrato.solicitacao.setor_origem.secretaria|default_if_none:"-" }}</td>
+                </tr>
+                {% if contrato.pregao %}
+                    <tr>
+                        <th><b>Licitação/Procedimento</b></th>
+                        <td><a href="/base/baixar_licitacoes_portal/?numero={{ contrato.pregao.num_pregao }}&modalidade={{contrato.pregao.modalidade.id}}" target="_blank">{{ contrato.pregao }}</a></td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <th><b>Objeto</b></th>
-                    <td>{{ ata.solicitacao.objeto }}</td>
+                    <td>{{ contrato.solicitacao.objeto }}</td>
                 </tr>
                 <tr>
                     <th width="30%"><b>Período de Vigência</b></th>
-                    <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
-                </tr>
-                <tr>
-                    <th><b>Situação</b></th>
-                    <td>{{ ata.get_situacao }}</td>
+                    <td>{{ contrato.data_inicio }} à {{ contrato.data_fim }}</td>
                 </tr>
                 <tr>
                     <th><b>Fornecedor</b></th>
-                    <td>{{ ata.get_fornecedor }}</td>
+                    <td>{{ contrato.get_fornecedor }}</td>
                 </tr>
                 <tr>
                     <th><b>Dados do Contrato</b></th>
-                    <td><a href="/base/relatorio_info_contrato/{{ ata.pk }}/" target="_blank">Informações do Contrato</a></td>
+                    <td><a href="/base/relatorio_info_contrato/{{ contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
                 </tr>
 
-                {% if ata.get_arquivos_publicos %}
+                {% if contrato.get_arquivos_publicos %}
                     <tr>
                         <th><b>Arquivos</b></th>
                         <td>
-                            {% for arquivo in ata.get_arquivos_publicos %}
+                            {% for arquivo in contrato.get_arquivos_publicos %}
                                 <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
                             {% endfor %}
 

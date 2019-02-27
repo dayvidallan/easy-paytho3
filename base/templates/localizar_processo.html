@@ -44,7 +44,7 @@
     <p class="alert alert-info">Qualquer dúvida ou sugestão, entrar em contato pelo email: <b>{{ email|default_if_none:"-" }}</b></p>
 
    <fieldset>
-            <form action="." method="POST" class="form-horizontal">
+            <form action="." method="GET" class="form-horizontal">
                 {% csrf_token %}
                  <div class="miolo">
                     <div class="row-fluid">

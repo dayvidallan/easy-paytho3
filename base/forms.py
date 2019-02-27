@@ -1402,6 +1402,7 @@ class BuscaFornecedorForm(forms.Form):
     nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:')
 
 class LocalizarProcessoForm(forms.Form):
+    METHOD = u'GET'
     numero = forms.CharField(label=u'Informe o Número do Processo', required=False)
 
 class RelatoriosGerenciaisForm(forms.Form):
