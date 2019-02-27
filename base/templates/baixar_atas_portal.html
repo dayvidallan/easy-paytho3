@@ -93,7 +93,13 @@
         {%  for ata in atas %}
 
             <hr class="new4">
-            <h3>{{ nome }} Ata de Registro de Preço N° {{ ata.numero }}</h3>
+
+
+            {% if ata.adesao %}
+                <h3>Contrato N° {{ ata.get_contrato.numero }}</h3>
+            {% else %}
+                <h3>Ata de Registro de Preço N° {{ ata.numero }}</h3>
+            {% endif %}
             <table class="table table-bordered table-condensed table-striped">
                {% if ata.solicitacao.processo %}
                     <tr>
@@ -123,8 +129,8 @@
                {% endif %}
                {% if ata.get_contrato %}
                     <tr>
-                        <th><b>Contrato</b></th>
-                        <td><a href="/base/baixar_contratos_portal/?numero={{ ata.get_contrato.numero }}" target="_blank">{{ ata.get_contrato }}</a></td>
+                        <th><b>Ata de Origem</b></th>
+                        <td>Nº {{ ata.numero }}</td>
                    </tr>
                     <tr>
                         <th><b>Data da Assinatura</b></th>
@@ -149,8 +155,8 @@
                {% endif %}
                {% if ata.num_oficio %}
                     <tr>
-                        <th width="30%"><b>Licitação</b></th>
-                        <td>{{ ata.num_oficio }}</td>
+                        <th width="30%"><b>Licitação de Origem</b></th>
+                        <td>Nº {{ ata.num_oficio }}</td>
                    </tr>
                {% endif %}
 
