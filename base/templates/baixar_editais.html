@@ -19,19 +19,13 @@
             </div>
         </div>
         <div class="col-xs-2 col-md-2">
-            <div class="controls">{{ form.data_inicial|bootstrap }}
-                {% if form.data_inicial.help_text %}
-                    <p class="help-inline"><small>{{ form.data_inicial.help_text }}</small></p>
+            <div class="controls">{{ form.ano|bootstrap }}
+                {% if form.ano.help_text %}
+                    <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
                 {% endif %}
             </div>
         </div>
-        <div class="col-xs-2 col-md-2">
-            <div class="controls">{{ form.data_final|bootstrap }}
-                {% if form.data_final.help_text %}
-                    <p class="help-inline"><small>{{ form.data_final.help_text }}</small></p>
-                {% endif %}
-            </div>
-        </div>
+       
         <div class="col-xs-2 col-md-2">
             <div class="controls">{{ form.modalidade|bootstrap }}
                 {% if form.modalidade.help_text %}
