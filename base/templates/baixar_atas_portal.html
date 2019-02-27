@@ -159,6 +159,10 @@
                         <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
                    </tr>
                {% endif %}
+                <tr>
+                    <th><b>Dados da Ata de Registro de Preço</b></th>
+                    <td><a href="/base/relatorio_info_arp/{{ ata.pk }}/" target="_blank">Informações da ARP</a></td>
+                </tr>
                {% if ata.num_oficio %}
                     <tr>
                         <th width="30%"><b>Licitação de Origem</b></th>
