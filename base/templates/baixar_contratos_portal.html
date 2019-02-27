@@ -1,0 +1,181 @@
+{% extends super_template|default:"admin/base_portal.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load pagination_tags %}
+
+
+{% block content %}
+    <script>
+        $(document).ready(function () {
+
+    $("#sidebar").mCustomScrollbar({
+         theme: "minimal"
+    });
+
+    $('#sidebarCollapse').on('click', function () {
+        // open or close navbar
+        $('#sidebar').toggleClass('active');
+        // close dropdowns
+        $('.collapse.in').toggleClass('in');
+        // and also adjust aria-expanded attributes we use for the open/closed arrows
+        // in our CSS
+        $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+    });
+
+});
+    </script>
+
+{%  if contratos.exists %}
+<div class="pull-right">
+    {% if buscou %}
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
+        <a class="btn btn-success btn-sm" href="{{ request.get_full_path}}&xls=true" target="_blank" >Imprimir em XLS</a>
+    {% else %}
+        <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}?pdf=true" target="_blank">Imprimir em PDF</a>
+        <a class="btn btn-success btn-sm" href="{{ request.get_full_path}}?xls=true" target="_blank" >Imprimir em XLS</a>
+    {% endif %}
+</div>
+{% endif %}
+<section class="container">
+
+    {% include 'menu_portal.html' with contratos=True %}
+    <!-- Page Content -->
+    <div id="content" class="column2">
+    <h3>Contratos</h3>
+    <form action="." method="GET" class="form-horizontal">
+        {% csrf_token %}
+
+        <div class="row-fluid">
+            <div class="row-fluid">
+                <div class="col-xs-6">
+                    <div class="controls">{{ form.numero|bootstrap }}
+                        {% if form.numero.help_text %}
+                            <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.ano|bootstrap }}
+                    {% if form.ano.help_text %}
+                        <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
+
+
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.situacao|bootstrap }}
+                    {% if form.situacao.help_text %}
+                        <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.secretaria|bootstrap }}
+                    {% if form.secretaria.help_text %}
+                        <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
+
+            <div class="col-xs-1 col-md-1">
+                <br>
+                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+            </div>
+        </div>
+
+    </form>
+    {%  if contratos.exists %}
+        <h3>{{ contratos.count }} Contratos Encontrados.</h3>
+        {% autopaginate contratos 20 %}
+        {% paginate %}
+        {%  for contrato in contratos %}
+            <hr class="new4">
+            <h3>Contrato N°{{ contrato.numero }}</h3>
+            <table class="table table-bordered table-condensed table-striped">
+                {% if contrato.solicitacao.processo %}
+                    <tr>
+                        <th><b>Nº do Processo</b></th>
+                        <td><a href="/base/localizar_processo/?numero={{ contrato.solicitacao.processo.numero }}" target="_blank">{{ contrato.solicitacao.processo }}</a></td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th><b>Situação</b></th>
+                    <td>{{ contrato.get_situacao }}</td>
+                </tr>
+                <tr>
+                    <th><b>Secretaria Solicitante</b></th>
+                    <td>{{ contrato.solicitacao.setor_origem.secretaria|default_if_none:"-" }}</td>
+                </tr>
+                {% if contrato.pregao %}
+                    <tr>
+                        <th><b>Licitação/Procedimento</b></th>
+                        <td><a href="/base/baixar_licitacoes_portal/?numero={{ contrato.pregao.num_pregao }}&modalidade={{contrato.pregao.modalidade.id}}" target="_blank">{{ contrato.pregao }}</a></td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th><b>Objeto</b></th>
+                    <td>{{ contrato.solicitacao.objeto }}</td>
+                </tr>
+                <tr>
+                    <th width="30%"><b>Período de Vigência</b></th>
+                    <td>{{ contrato.data_inicio }} à {{ contrato.data_fim }}</td>
+                </tr>
+                <tr>
+                    <th><b>Fornecedor</b></th>
+                    <td>{{ contrato.get_fornecedor }}</td>
+                </tr>
+                <tr>
+                    <th><b>Dados do Contrato</b></th>
+                    <td><a href="/base/relatorio_info_contrato/{{ contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
+                </tr>
+
+                {% if contrato.get_arquivos_publicos %}
+                    <tr>
+                        <th><b>Arquivos</b></th>
+                        <td>
+                            {% for arquivo in contrato.get_arquivos_publicos %}
+                                <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
+                            {% endfor %}
+
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+
+        {% endfor %}
+        {% paginate %}
+    {% else %}
+        <p class="alert alert-info">Nenhum contrato encontrado.</p>
+    {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+</section>
+
+
+
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <!-- jQuery Custom Scroller CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/base/css/portal.css" />
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}
+

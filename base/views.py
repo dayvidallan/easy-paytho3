@@ -925,10 +925,10 @@ def baixar_atas(request):
 def baixar_contratos(request):
     hoje = datetime.date.today()
     contratos = Contrato.objects.all().order_by('-numero')
-    form = BaixarContratoForm(request.POST or None)
+    form = BaixarContratoForm(request.GET or None)
     if form.is_valid():
         if form.cleaned_data.get('numero'):
-            contratos = contratos.filter(numero__icontains=form.cleaned_data.get('numero'))
+            contratos = contratos.filter(Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) |Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
 
     return render(request, 'baixar_contratos.html', locals(), RequestContext(request))
 
@@ -1224,6 +1224,14 @@ def cadastrar_documento(request, solicitacao_id):
         o.cadastrado_por = request.user
         o.cadastrado_em = datetime.datetime.now()
         o.save()
+        if form.cleaned_data.get('publico') and form.cleaned_data.get('enviar_email'):
+            config = get_config_geral()
+            arquivo_nome = u'\'%s\' - %s' % (o.nome, solicitacao)
+            link = config.url + u'/media/%s' % o.documento
+            registro = solicitacao.get_fornecedor_dispensa()
+            if solicitacao.get_fornecedor_dispensa():
+                texto = u'Olá, %s. O arquivo %s foi adicionado no portal da transparência da %s. Endereço para visualização: %s ' % (registro.razao_social, arquivo_nome, config.nome, link)
+                send_mail('Easy Gestão Pública - Novo Arquivo Cadastrado', texto, settings.EMAIL_HOST_USER, [registro.email], fail_silently=True)
         messages.success(request, u'Documento cadastrado com sucesso.')
         return HttpResponseRedirect(u'/base/lista_documentos/%s/' % solicitacao_id)
 
@@ -8317,7 +8325,7 @@ def excluir_visitante(request, visitante_id):
 
 def localizar_processo(request):
     title = u'Localizar Processo'
-    form = LocalizarProcessoForm(request.POST or None)
+    form = LocalizarProcessoForm(request.GET or None)
     if form.is_valid():
         if Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero')).exists():
             processos = Processo.objects.filter(numero__icontains=form.cleaned_data.get('numero'))
@@ -8574,7 +8582,7 @@ def ver_relatorios_gerenciais_credenciamentos(request):
             secretaria = form.cleaned_data.get('secretaria')
             ano = form.cleaned_data.get('ano')
             hoje = datetime.date.today()
-            total = 0
+
             if ano:
                 contratos = contratos.filter(data_inicio__year=ano)
 
@@ -8605,7 +8613,7 @@ def ver_relatorios_gerenciais_credenciamentos(request):
 
 
 
-                data = {'contratos': contratos, 'titulo': 'Credenciamentos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+                data = {'contratos': contratos, 'titulo': 'Credenciamentos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
                 template = get_template('relatorio_gerencial_situacao_contratos.html')
 
 
@@ -8643,7 +8651,6 @@ def liberar_pedidos_solicitacao(request, solicitacao_id):
         raise PermissionDenied
 
 
-@login_required()
 def relatorio_dados_licitacao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
 
@@ -9321,7 +9328,7 @@ def mudar_credenciamento_fornecedor(request, credenciamento_id, fornecedor_id, o
     else:
         raise PermissionDenied
 
-@login_required()
+
 def relatorio_info_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, pk=contrato_id)
 
@@ -11358,4 +11365,521 @@ def enviar_convites(request, solicitacao_id):
         return render(request, 'enviar_convites.html', locals(), RequestContext(request))
     else:
         raise PermissionDenied
+
+
+
+def portal_transparencia(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
+    return render(request, 'portal_transparencia.html', locals(), RequestContext(request))
+
+
+def baixar_licitacoes_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
+    hoje = datetime.date.today()
+    pregoes = Pregao.objects.all().order_by('-id')
+    form = BaixarEditaisForm(request.GET or None)
+    buscou = False
+    if form.is_valid():
+        buscou = True
+        if form.cleaned_data.get('modalidade'):
+            pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
+        if form.cleaned_data.get('numero'):
+            pregoes = pregoes.filter(Q(num_pregao__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')))
+
+        if form.cleaned_data.get('data_inicial'):
+            pregoes = pregoes.filter(data_abertura__gte=form.cleaned_data.get('data_inicial'))
+
+        if form.cleaned_data.get('data_final'):
+            pregoes = pregoes.filter(data_abertura__lte=form.cleaned_data.get('data_final'))
+
+        if form.cleaned_data.get('situacao'):
+            if form.cleaned_data.get('situacao') == Pregao.ADJUDICADO:
+                pregoes = pregoes.filter(Q(situacao=form.cleaned_data.get('situacao')) | Q(pode_homologar=True))
+            else:
+                pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
+        if form.cleaned_data.get('secretaria'):
+            pregoes = pregoes.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+    email = get_config_geral().email
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+        total = 0
+        for pregao in pregoes:
+            total += pregao.get_valor_total()
+        data = {'pregoes': pregoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
+        template = get_template('relatorio_gerencial_situacao.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_licitacoes')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_licitacoes.xls')
+        rb = open_workbook(file_path,formatting_info=True)
+
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        contador = 4
+        conta_item = 1
+
+        for item in pregoes:
+            row_index = contador + 1
+            w_sheet.write(row_index, 0, conta_item)
+            w_sheet.write(row_index, 1, item.num_pregao)
+            w_sheet.write(row_index, 2, item.solicitacao.num_memorando )
+            w_sheet.write(row_index, 3, item.objeto)
+            w_sheet.write(row_index, 4, item.modalidade.nome)
+            w_sheet.write(row_index, 5, item.get_situacao())
+            data = u'%s às %s ' % (item.data_abertura.strftime('%d/%m/%Y'), item.hora_abertura.strftime('%H:%M'))
+            w_sheet.write(row_index, 6, data)
+            w_sheet.write(row_index, 7, format_money(item.get_valor_total()))
+
+            contador += 1
+            conta_item += 1
+
+        salvou = nome + u'_%s' % datetime.datetime.now() + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+
+    return render(request, 'baixar_licitacoes_portal.html', locals(), RequestContext(request))
+
+
+def baixar_atas_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
+    hoje = datetime.date.today()
+    atas = AtaRegistroPreco.objects.filter(adesao=False).order_by('-numero')
+    form = BaixarAtasForm(request.GET or None)
+    buscou = False
+    title = u'Atas de Registro de Preços'
+    nome = u''
+    if form.is_valid():
+        buscou = True
+        situacao = form.cleaned_data.get('situacao')
+        ano = form.cleaned_data.get('ano')
+        hoje = datetime.date.today()
+        total = 0
+        if ano:
+            atas = atas.filter(data_inicio__year=ano)
+
+        if situacao:
+            descricao_situacao = u'Todos'
+            if situacao == u'2':
+                atas = atas.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                descricao_situacao = u'Vigentes'
+            elif situacao == u'3':
+                atas = atas.filter(Q(concluido=True) | Q(suspenso=True) | Q(cancelado=True))
+                descricao_situacao = u'Concluídos'
+        if form.cleaned_data.get('numero'):
+            atas = atas.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) |Q(numero__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
+        if form.cleaned_data.get('secretaria'):
+            atas = atas.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
+    email = get_config_geral().email
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+        data = {'contratos': atas, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+        template = get_template('relatorio_gerencial_situacao_atas.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos.xls')
+        rb = open_workbook(file_path,formatting_info=True)
+
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        contador = 4
+        conta_item = 1
+
+        for item in atas:
+            row_index = contador + 1
+            w_sheet.write(row_index, 0, conta_item)
+            w_sheet.write(row_index, 1, item.numero)
+            w_sheet.write(row_index, 2, item.solicitacao.num_memorando )
+            w_sheet.write(row_index, 3, item.solicitacao.objeto)
+            w_sheet.write(row_index, 4, item.get_situacao())
+            w_sheet.write(row_index, 5, format_money(item.get_valor_total()))
+            w_sheet.write(row_index, 6, format_money(item.get_saldo_disponivel()))
+            data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
+            w_sheet.write(row_index, 7, data)
+            contador += 1
+            conta_item += 1
+
+        salvou = nome + u'_%s' % datetime.datetime.now() + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+
+    return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))
+
+def baixar_adesao_atas_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
+    hoje = datetime.date.today()
+    atas = AtaRegistroPreco.objects.filter(adesao=True).order_by('-numero')
+    form = BaixarAtasForm(request.GET or None)
+    buscou = False
+    title = u'Adesões à Atas de Registro de Preços'
+    nome = u'Adesão à '
+    if form.is_valid():
+        buscou = True
+        situacao = form.cleaned_data.get('situacao')
+        ano = form.cleaned_data.get('ano')
+        hoje = datetime.date.today()
+        total = 0
+        if ano:
+            atas = atas.filter(data_inicio__year=ano)
+
+        if situacao:
+            descricao_situacao = u'Todos'
+            if situacao == u'2':
+                atas = atas.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                descricao_situacao = u'Vigentes'
+            elif situacao == u'3':
+                atas = atas.filter(Q(concluido=True) | Q(suspenso=True) | Q(cancelado=True))
+                descricao_situacao = u'Concluídos'
+        if form.cleaned_data.get('numero'):
+            atas = atas.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) |Q(numero__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
+        if form.cleaned_data.get('secretaria'):
+            atas = atas.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
+    email = get_config_geral().email
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+        data = {'contratos': atas, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+        template = get_template('relatorio_gerencial_situacao_atas.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos.xls')
+        rb = open_workbook(file_path,formatting_info=True)
+
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        contador = 4
+        conta_item = 1
+
+        for item in atas:
+            row_index = contador + 1
+            w_sheet.write(row_index, 0, conta_item)
+            w_sheet.write(row_index, 1, item.numero)
+            w_sheet.write(row_index, 2, item.solicitacao.num_memorando )
+            w_sheet.write(row_index, 3, item.solicitacao.objeto)
+            w_sheet.write(row_index, 4, item.get_situacao())
+            w_sheet.write(row_index, 5, format_money(item.get_valor_total()))
+            w_sheet.write(row_index, 6, format_money(item.get_saldo_disponivel()))
+            data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
+            w_sheet.write(row_index, 7, data)
+            contador += 1
+            conta_item += 1
+
+        salvou = nome + u'_%s' % datetime.datetime.now() + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+
+    return render(request, 'baixar_atas_portal.html', locals(), RequestContext(request))
+
+
+def baixar_contratos_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
+    hoje = datetime.date.today()
+    contratos = Contrato.objects.all().order_by('-numero')
+    form = BaixarContratoForm(request.GET or None)
+    buscou = False
+    if form.is_valid():
+        buscou = True
+        situacao = form.cleaned_data.get('situacao')
+        ano = form.cleaned_data.get('ano')
+        hoje = datetime.date.today()
+        total = 0
+        if ano:
+            contratos = contratos.filter(data_inicio__year=ano)
+
+        if situacao:
+            descricao_situacao = u'Todos'
+            if situacao == u'2':
+                contratos = contratos.filter(concluido=False, suspenso=False, cancelado=False, data_inicio__lte=hoje, data_fim__gte=hoje)
+                descricao_situacao = u'Vigentes'
+            elif situacao == u'3':
+                contratos = contratos.filter(Q(concluido=True) | Q(suspenso=True) | Q(cancelado=True))
+                descricao_situacao = u'Concluídos'
+
+        if form.cleaned_data.get('numero'):
+            contratos = contratos.filter(Q(data_inicio__year__icontains=form.cleaned_data.get('numero')) | Q(data_fim__year__icontains=form.cleaned_data.get('numero')) | Q(solicitacao__objeto__icontains=form.cleaned_data.get('numero')) | Q(numero__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__razao_social__icontains=form.cleaned_data.get('numero')) | Q(itemcontrato__fornecedor__cnpj__icontains=form.cleaned_data.get('numero')))
+        if form.cleaned_data.get('secretaria'):
+            contratos = contratos.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_contratos_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+
+        data = {'contratos': contratos, 'titulo': 'Contratos', 'situacao': '', 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+        template = get_template('relatorio_gerencial_situacao_contratos.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos.xls')
+        rb = open_workbook(file_path,formatting_info=True)
+
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        contador = 4
+        conta_item = 1
+
+        for item in contratos:
+            row_index = contador + 1
+            w_sheet.write(row_index, 0, conta_item)
+            w_sheet.write(row_index, 1, item.numero)
+            w_sheet.write(row_index, 2, item.solicitacao.num_memorando )
+            w_sheet.write(row_index, 3, item.solicitacao.objeto)
+            w_sheet.write(row_index, 4, item.get_situacao())
+            w_sheet.write(row_index, 5, format_money(item.get_valor_total()))
+            w_sheet.write(row_index, 6, format_money(item.get_saldo_disponivel()))
+            data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
+            w_sheet.write(row_index, 7, data)
+            contador += 1
+            conta_item += 1
+
+        salvou = nome + u'_%s' % datetime.datetime.now() + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+
+    return render(request, 'baixar_contratos_portal.html', locals(), RequestContext(request))
+
+
+def baixar_dispensas_portal(request):
+    config = get_config_geral()
+    title = u'Portal da Transparência - %s' % config.nome
+    hoje = datetime.date.today()
+    solicitacoes = SolicitacaoLicitacao.objects.filter(tipo_aquisicao__in=[SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]).order_by('-num_memorando')
+    form = BaixarDispensaForm(request.GET or None)
+    buscou = False
+
+    if form.is_valid():
+        buscou = True
+
+        ano = form.cleaned_data.get('ano')
+        hoje = datetime.date.today()
+        total = 0
+        if ano:
+            solicitacoes = solicitacoes.filter(data_cadastro__year=ano)
+
+
+        if form.cleaned_data.get('numero'):
+            solicitacoes = solicitacoes.filter(Q(data_cadastro__year__icontains=form.cleaned_data.get('numero'))  | Q(num_memorando__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) )
+
+        if form.cleaned_data.get('secretaria'):
+            solicitacoes = solicitacoes.filter(setor_origem__secretaria=form.cleaned_data.get('secretaria'))
+
+        if form.cleaned_data.get('tipo'):
+            solicitacoes = solicitacoes.filter(tipo_aquisicao=form.cleaned_data.get('tipo'))
+    email = get_config_geral().email
+    if 'pdf' in request.GET:
+        destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
+        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+        caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+        data_emissao = datetime.date.today()
+
+        configuracao = config
+        logo = None
+        if configuracao.logo:
+            logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+        data = {'solicitacoes': solicitacoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+        template = get_template('relatorio_gerencial_situacao_dispensas.html')
+
+
+        html  = template.render(Context(data))
+
+        pdf_file = open(caminho_arquivo, "w+b")
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+                encoding='utf-8')
+        pdf_file.close()
+        file = open(caminho_arquivo, "r")
+        pdf = file.read()
+        file.close()
+        return HttpResponse(pdf, 'application/pdf')
+
+    if 'xls' in request.GET:
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos.xls')
+        rb = open_workbook(file_path,formatting_info=True)
+
+        wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
+        w_sheet = wb.get_sheet(0) # the sheet to write to within the writable copy
+
+        sheet = rb.sheet_by_name("Sheet1")
+
+        contador = 4
+        conta_item = 1
+
+        for item in solicitacoes:
+            row_index = contador + 1
+            w_sheet.write(row_index, 0, conta_item)
+            w_sheet.write(row_index, 1, item.num_memorando)
+            w_sheet.write(row_index, 3, item.objeto)
+            w_sheet.write(row_index, 4, item.get_situacao())
+            w_sheet.write(row_index, 5, format_money(item.get_valor_total()))
+            w_sheet.write(row_index, 6, format_money(item.get_saldo_disponivel()))
+            data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
+            w_sheet.write(row_index, 7, data)
+            contador += 1
+            conta_item += 1
+
+        salvou = nome + u'_%s' % datetime.datetime.now() + '.xls'
+        wb.save(salvou)
+
+        arquivo = open(salvou, "rb")
+
+
+        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(arquivo.read(), content_type=content_type)
+        nome_arquivo = salvou.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s' % nome_arquivo
+        arquivo.close()
+        os.unlink(salvou)
+        return response
+
+    return render(request, 'baixar_dispensas_portal.html', locals(), RequestContext(request))
 

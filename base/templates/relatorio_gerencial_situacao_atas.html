@@ -50,7 +50,7 @@ ul{
     <br>
   <h1 class="page-header">
     {% include "cabecalho.html" %}
-    <center><font size="4">Relatório Gerencial - {{ titulo }} {% if situacao %}- {{ situacao }}{% endif %}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+    <center><font size="4">Relatório Gerencial - Atas de Registro de Preço</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
 
 
@@ -78,7 +78,7 @@ ul{
                    <tr>
                        <td>{{ contrato.numero }}</td>
                        <td>{{ contrato.solicitacao.num_memorando }}</td>
-                       <td>{{ contrato.solicitacao.objeto }}<br><b>Fornecedor:</b> {{ contrato.get_fornecedor}}</td>
+                       <td>{{ contrato.solicitacao.objeto }}</td>
                        <td>{{ contrato.get_situacao }}</td>
                        <td>{{ contrato.get_valor_total|format_money }}</td>
                        <td>{{ contrato.get_saldo_disponivel|format_money }}</td>

@@ -1169,9 +1169,10 @@ class DefinirVigenciaContratoForm(forms.ModelForm):
 
 class DocumentoSolicitacaoForm(forms.ModelForm):
     documento = forms.FileField(label=u'Arquivo', required=True)
+    enviar_email = forms.BooleanField(label=u'Enviar email para fornecedores informando que um novo arquivo foi anexado?', help_text=u'O email só será enviado se o documento também for marcado como público', required=False)
     class Meta:
         model = DocumentoSolicitacao
-        fields = ('nome', 'documento')
+        fields = ('nome', 'documento', 'publico')
 
 
 class FornecedorForm(forms.ModelForm):
@@ -1223,7 +1224,7 @@ class BaixarEditaisForm(forms.Form):
     data_final = forms.DateField(label=u'Data Final do Certame', required=False)
     modalidade = forms.ModelChoiceField(queryset=ModalidadePregao.objects, label=u'Filtrar por Modalidade', required=False)
     situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=(('', '---------'),) + Pregao.SITUACAO_CHOICES)
-
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
     def __init__(self, *args, **kwargs):
         super(BaixarEditaisForm, self).__init__(*args, **kwargs)
         self.fields['data_inicial'].widget.attrs = {'class': 'vDateField'}
@@ -1235,10 +1236,82 @@ class BaixarEditaisForm(forms.Form):
              self.add_error('data_final', u'A data final não pode ser menor do que a data inicial.')
 
 class BaixarAtasForm(forms.Form):
-    numero = forms.CharField(label=u'Filtrar por Número da Ata', required=False)
+    numero = forms.CharField(label=u'Digite o número, ano de vigência ou palavra-chave:', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Vigentes'), (3, u'Concluídos')) )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Filtrar por Fornecedor', required=False)
+
+
+    def __init__(self, *args, **kwargs):
+        super(BaixarAtasForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        contratos = Contrato.objects.all().order_by('data_inicio')
+        ANO_CHOICES = []
+        if contratos.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = contratos[0].data_inicio.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
 
 class BaixarContratoForm(forms.Form):
-    numero = forms.CharField(label=u'Filtrar por Número do Contrato', required=False)
+    numero = forms.CharField(label=u'Digite o número, nome do fornecedor, ano de vigência ou palavra-chave:', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+
+    situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Vigentes'), (3, u'Concluídos')) )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Filtrar por Fornecedor', required=False)
+
+
+    def __init__(self, *args, **kwargs):
+        super(BaixarContratoForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        contratos = Contrato.objects.all().order_by('data_inicio')
+        ANO_CHOICES = []
+        if contratos.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = contratos[0].data_inicio.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
+
+class BaixarDispensaForm(forms.Form):
+    numero = forms.CharField(label=u'Digite o número, ano de vigência ou palavra-chave:', required=False)
+    ano = forms.ChoiceField([],
+                required = False,
+                label    = u'Filtrar por Ano:',
+            )
+
+    #situacao = forms.ChoiceField(label=u'Filtrar por situação', required=False, choices=((1, 'Todos'), (2, u'Vigentes'), (3, u'Concluídos')) )
+    secretaria = forms.ModelChoiceField(queryset=Secretaria.objects, label=u'Filtrar por Secretaria', required=False)
+    #fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Filtrar por Fornecedor', required=False)
+    tipo = forms.ChoiceField(label=u'Modalidade', choices=[(u'', u'-------------'),(SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA), (SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE)], required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(BaixarDispensaForm, self).__init__(*args, **kwargs)
+        ano_limite = datetime.date.today().year
+        contratos = SolicitacaoLicitacao.objects.filter(tipo_aquisicao__in=[SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE])
+        ANO_CHOICES = []
+        if contratos.exists():
+            ANO_CHOICES.append([u'', u'--------'])
+            ano_inicio = contratos[0].data_cadastro.year-1
+            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        else:
+            ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
+        self.fields['ano'].choices = ANO_CHOICES
+        self.fields['ano'].initial = ano_limite
 
 class HistoricoPregaoForm(forms.ModelForm):
     obs = forms.CharField(label=u'Descrição da Ocorrência', widget=forms.Textarea, required=True)
@@ -1356,6 +1429,7 @@ class BuscaFornecedorForm(forms.Form):
     nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:')
 
 class LocalizarProcessoForm(forms.Form):
+    METHOD = u'GET'
     numero = forms.CharField(label=u'Informe o Número do Processo', required=False)
 
 class RelatoriosGerenciaisForm(forms.Form):

@@ -1,0 +1,516 @@
+{% load admin_static %}{% load i18n %}{% load newadmin %}{% load compress %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}E@sy Gestão Pública{% endblock %}</title>
+  {% compress css %}
+    <link rel="shortcut icon" href="/static/base/css/{% block favicon %}favicon{% endblock %}" />
+
+    <link rel="stylesheet" type="text/css" href="{% static "base/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "base/css/bootstrap-theme.min.css" %}" />
+
+    <link rel="stylesheet" type="text/css" href="{% static "base/fontawesome/css/font-awesome.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "base/fontawesome/css/font-awesome.css" %}" />
+
+    <link rel="stylesheet" type="text/css" href="{% static "base/css/sistema.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "base/css/jquery-ui.css" %}" />
+
+    <link href="/static/newadmin.css" rel="stylesheet"/>
+
+
+    {% block extrastyle %}
+        <style>
+          #header{
+	background: #0d497f;
+
+
+	overflow: hidden;
+	padding: 5px 0;
+}
+
+#header .inner-wrap{
+	width: 1210px;
+	margin: 0 auto;
+}
+
+#header .logo{
+	margin-top: 7px;
+	max-width: 821px;
+	max-height: 136px;
+	float: left;
+	overflow: hidden;
+	margin-right: 40px;
+}
+
+#header .logo h1{
+	margin-bottom: 0;
+	line-height: 1;
+}
+
+#header .top-menu{
+	float: left;
+	margin-right: 30px;
+}
+
+#header .top-menu .menu{
+	width: 400px;
+	height: 28px;
+	overflow: hidden;
+	margin-top: 18px;
+}
+
+#header .top-menu  ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#header .top-menu ul li {
+	float: left;
+}
+
+#header .top-menu ul li a {
+	text-align: center;
+	font-weight: 700;
+	font-size: 14px;
+	text-transform: uppercase;
+	color: #8B8B8B;
+}
+
+#header .top-menu ul li span{
+	margin: 0 10px;
+}
+
+#header .top-menu ul li ul.sub-menu{
+	display: none;
+}
+
+#header .top-menu ul li:first-child span{
+	display: none;
+}
+
+#header .search{
+	width: 285px;
+	float: right;
+	margin-right: 5px;
+	margin-top: 35px;
+}
+
+#header #searchform .searchfield{
+	width: 183px;
+	height: 19px;
+	border: none;
+	font: inherit;
+	color: #999999;
+	background: #ffffff;
+	padding: 7px 10px 8px;
+}
+
+#header #searchform .submit{
+	padding: 6px 10px 7px;
+	height: 34px;
+}
+
+/*-- Social links --*/
+.social-links {
+	width: 265px;
+	background: #0c3a63;
+	float: right;
+	padding: 5px 6px 5px 8px;
+	margin-top: 10px;
+	margin-right: 11px;
+}
+
+.social-links .title{
+	float: left;
+	 margin-top: 2px;
+	 font-weight: 600;
+}
+
+.social-links ul{
+	float: right;
+	overflow: hidden;
+	max-width: 155px;
+}
+
+.social-links ul li{
+	float:left;
+	margin-left:5px;
+}
+
+.social-links ul li:first-child{
+	padding-left: 0;
+}
+
+.social-links ul li a{
+	display: block;
+	float: left;
+	height: 26px;
+	width: 26px;
+	text-indent: -999em;
+    opacity: 0.7;
+	transition: all 0.2s ease 0s;
+}
+
+.social-links ul li a:hover{
+	opacity: 1;
+}
+
+.social-links a.twitter{
+  background: url("images/twitter24.png") no-repeat left center;
+}
+
+.social-links a.fb{
+  background: url("images/fb24.png") no-repeat left center;
+}
+
+.social-links a.gplus{
+  background: url("images/gplus24.png") no-repeat left center;
+}
+
+.social-links a.pinterest{
+  background: url("images/pinterest24.png") no-repeat left center;
+}
+
+.social-links a.dribbble{
+  background: url("images/dribbble24.png") no-repeat left center;
+}
+
+/*-- Search form --*/
+#searchform{
+	overflow: hidden;
+}
+
+#searchform .searchfield{
+	font-size: 14px !important;
+	padding: 7px 10px;
+	width: 290px;
+	height: 20px;
+	border: 1px solid #EEEEEE;
+	border-right: none;
+	font: inherit;
+	color: #999999;
+	border: none;
+    display: block;
+    float: left;
+	margin-right: 0;
+}
+
+#searchform .submit{
+	cursor: pointer;
+    border: none;
+    display: block;
+    float: left;
+	margin-left: 0;
+}
+
+/* 3. NAVIGATION MENU LINHA SOBRE O MENU
+=========================== */
+#main-menu {
+    border-top: 6px solid #ffffff;
+	background: #20C1EA;
+
+	display: none;
+	width: 100%;
+	position: relative;
+	z-index: 30;
+	height: 46px;
+	margin-bottom: 30px;
+}
+
+#main-menu .inner-wrap{
+	width: 1210px;
+	margin: 0 auto;
+}
+
+#main-menu select {
+    display: none;
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #EEEEEE;
+    height: 34px;
+	color: #555555;
+	font-family: inherit;
+}
+
+#main-menu .menu li a span {
+	display: block;
+	font-size: 13px;
+	line-height: 13px;
+	color: #999999;
+	margin-top: 4px;
+}
+
+#main-menu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	z-index: 99;
+}
+
+#main-menu ul li {
+	float:left;
+	position: relative;
+}
+
+#main-menu ul li a {
+	display: block;
+	padding: 8px 15px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 30px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	transition: all 0.3s ease 0s;
+	height: 34px;
+}
+
+#main-menu .current-menu-item ,
+#main-menu .current_page_item,
+#main-menu ul li a:hover{
+	background: #1FB6DC;
+}
+
+#main-menu ul li ul {
+	position:absolute;
+	padding: 0;
+	margin-top: 0;
+}
+
+#main-menu ul li ul li {
+	float: none;
+	padding: 0px;
+}
+
+#main-menu ul li ul li a,
+#main-menu ul li:hover ul li a,
+#main-menu ul li.over ul li a {
+	padding: 6px 12px;
+	display: block;
+	width: 142px;
+	text-align: left;
+	height: auto;
+	background: #1FB6DC;
+	font-size: 14px;
+	font-weight: 600;
+	color: #FFFFFF;
+	text-transform: none;
+}
+
+#main-menu ul li ul li:hover a,
+#main-menu ul li ul li.over a {
+	color: #FFFFFF;
+	background: #2BBFF6;
+}
+
+#main-menu ul li ul li ul {
+	display: none;
+	position: absolute;
+	left: 165px;
+	top: -1px;
+}
+
+#main-menu ul li ul li:hover ul,
+#main-menu ul li ul li.sfHover ul {
+	display: block;
+	position: absolute;
+	left: 165px;
+	top: 0px;
+}
+
+#main-menu ul li ul li:hover ul li a,
+#main-menu ul li ul li.over ul li a {
+	color: #FFFFFF;
+	background: #1FB6DC;
+}
+
+#main-menu ul li ul li ul li a:hover {
+	color: #FFFFFF;
+	background: #2BBFF6;
+}
+
+#main-menu a.sf-with-ul {
+	padding-right:25px;
+	min-width:1px;
+}
+
+#main-menu .sf-sub-indicator {
+	display: none;
+}
+
+#main-menu a.menu-link {
+	display: none;
+}
+
+			.column1 {
+        float: left;
+        width: 10%;
+
+
+    }
+    .column2 {
+        float: left;
+        width: 80%;
+    }
+
+        </style>
+
+    {% endblock %}
+  {% endcompress %}
+  {% compress js %}
+        <script src="/static/jquery-2.1.1.min.js"></script>
+
+        <script src="/static/jquery.mask.min.js"></script>
+        <script src="/static/base/js/jquery-ui.js"></script>
+        <script src="/static/highcharts.js"></script>
+        <script src="/static/jquery.formset.js"></script>
+        <script src="/static/jquery.growl.js"></script>
+        <script src="{% static "base/js/jquery.form.js" %}"></script>
+        <script src="/static/themes/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+        <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
+
+        <script src="/static/newadmin.js"></script>
+        <script src="/static/bootstrap-transfer.js"></script>
+
+  {% block extrajs %}
+
+     <script>
+
+        $(function() {
+            $( ".vDateField" ).datepicker({
+             dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+
+             });
+        });
+
+	</script>
+
+  {% endblock %}
+  {% endcompress %}
+  {% block extrahead %}{% endblock %}
+  {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% if debug %}debug {% endif %}{% block bodyclass %}{% endblock %}">
+
+  {% block navbar %}
+
+      <header id="header">
+		<div class="logo column1 pull-left" ><a href="/" title="Prefeitura de Guamaré"><img src="/static/base/imagens/logo2.png" width="50%" height="20%"></a></div>
+		<div class="inner-wrap">
+
+			<div class="logo column2">
+				<h1>
+					<a href="https://guamare.rn.gov.br" title="Prefeitura de Guamaré">
+						<img src="http://guamare.rn.gov.br/wp-content/uploads/2016/06/toponovo.jpg" alt="Prefeitura de Guamaré" />
+					</a>
+				</h1>
+		  	</div>
+
+			<div class="top-menu">
+
+    			</div>
+
+
+
+
+
+		</div> <!-- /wrap -->
+	</header>
+
+
+  {% endblock %}
+
+
+  <div id="content-stage">
+      <div class="container-fluid">
+
+      </div>
+
+  {% if request.user.is_authenticated %}
+      {% block breadcrumbs_container %}
+          <section id="migalhas" class="{% block breadcrumbs_class %}administracao{% endblock %}">
+              <div class="container-fluid">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12">
+                          {% block breadcrumbs %}
+                            <a href="/">Início</a>
+                          {% endblock %}
+                      </div>
+                  </div>
+              </div>
+          </section>
+      {% endblock %}
+  {% endif %}
+
+  <section id="conteudo">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          {% block messages %}
+            {% if messages %}
+              {% for message in messages %}
+                <div {% if message.tags %}class="alert alert-{{ message.tags }}"{% endif %} contenteditable="">{{ message|safe }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endblock %}
+
+          {% block pretitle %}{% endblock %}
+
+          {% if not is_popup %}
+            <div class="row">
+              <div class="col-md-10 col-sm-8 col-xs-6">
+                {% block content_title %}{% if title %}<h1 class="page-header">{{ title|upper }}</h1>{% endif %}{% endblock %}
+              </div>
+              <div class="col-md-2 col-sm-4 col-xs-6">
+                <div class="btn-group pull-right">
+                  {% block object-tools %}{% endblock %}
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">{{ title }}</h4>
+            </div>
+          {% endif %}
+
+          {% if is_popup %}<div class="modal-body">{% endif %}
+          {% block content %}
+            {{ content }}
+          {% endblock %}
+          {% if is_popup %}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% block footer %}
+
+      <footer>
+          <center>
+              <section id="content-footer">
+                  <div class="container">
+                      <div class="row">
+                          <p>E@sy 2019 - Todos os Direitos Reservados.</p>
+                      </div>
+                  </div>
+              </section>
+          </center>
+      </footer>
+
+  {% endblock %}
+
+
+  </body>
+</html>

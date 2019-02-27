@@ -16,6 +16,12 @@ urlpatterns = [
     url(r'^busca_tipo_pregao/$', views.busca_tipo_pregao, name='busca_tipo_pregao'),
     url(r'^lista_fornecedores/$', views.lista_fornecedores, name='lista_fornecedores'),
     url(r'^relatorio_auditoria/$', views.relatorio_auditoria, name='relatorio_auditoria'),
+    url(r'^portal_transparencia/$', views.portal_transparencia, name='portal_transparencia'),
+    url(r'^baixar_licitacoes_portal/$', views.baixar_licitacoes_portal, name='baixar_licitacoes_portal'),
+    url(r'^baixar_atas_portal/$', views.baixar_atas_portal, name='baixar_atas_portal'),
+    url(r'^baixar_contratos_portal/$', views.baixar_contratos_portal, name='baixar_contratos_portal'),
+    url(r'^baixar_dispensas_portal/$', views.baixar_dispensas_portal, name='baixar_dispensas_portal'),
+    url(r'^baixar_adesao_atas_portal/$', views.baixar_adesao_atas_portal, name='baixar_adesao_atas_portal'),
 
 
     url(r'^modelos_atas/(?P<pregao_id>\d+)/$', views.modelos_atas, name='modelos_atas'),

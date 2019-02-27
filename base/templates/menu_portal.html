@@ -1,0 +1,68 @@
+<div class="column1 wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h4><i class="fa fa-home"></i><a href="/base/portal_transparencia/" style="text-decoration:none; color:black;"> Início</a></h4>
+            </div>
+            <div class="sidebar-header">
+                <h4><a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration:none; color:black;"> Financeiro, Orçamentário e Gestão de Pessoas <i class="fa fa-fw fa-angle-down pull-right"></i></a></h4>
+            </div>
+            <ul class="collapse list-unstyled" id="pageSubmenu">
+                <li>
+                    <a href="http://guamare.rn.gov.br/portaldatransparencia/" target="_blank"><i class="fa fa-arrow-right"></i> Financeiro, Orçamentário e Gestão de Pessoas</a>
+                </li>
+            </ul>
+            <div class="sidebar-header">
+                <h4><a href="#pageSubmenu2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration:none; color:black;"> Licitações, Contratos e Convênios <i class="fa fa-fw fa-angle-down pull-right"></i></a></h4>
+            </div>
+
+            <ul class="{% if not contratos %}collapse{% endif%} list-unstyled" id="pageSubmenu2">
+                <li>
+                    <a href="https://certidoes-apf.apps.tcu.gov.br/" target="_blank"><i class="fa fa-arrow-right"></i> Consulta Consolidada de Pessoa Jurídica</a>
+                </li>
+                <li class="active">
+                    <a href="/base/baixar_licitacoes_portal/"><i class="fa fa-arrow-right"></i> Licitações</a>
+                </li>
+                <li>
+                    <a href="/base/baixar_atas_portal/"><i class="fa fa-arrow-right"></i> Atas de Registro de Preços</a>
+                </li>
+                <li>
+                    <a href="/base/baixar_contratos_portal/"><i class="fa fa-arrow-right"></i> Contratos</a>
+                </li>
+                 <li>
+                    <a href="/base/baixar_adesao_atas_portal/"><i class="fa fa-arrow-right"></i> Adesão à Atas de Registro de Preços</a>
+                </li>
+                 <li>
+                    <a href="/base/baixar_dispensas_portal/"><i class="fa fa-arrow-right"></i> Dispensas e Inexigibilidades</a>
+                </li>
+
+                <!--<li>-->
+                    <!--<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Licitações <i class="fa fa-fw fa-angle-down pull-right"></i></a>-->
+                    <!--<ul class="collapse list-unstyled" id="pageSubmenu">-->
+                        <!--<li>-->
+                            <!--<a href="#">Dispensa</a>-->
+                        <!--</li>-->
+                        <!--<li>-->
+                            <!--<a href="#">Inexigibilidade</a>-->
+                        <!--</li>-->
+                        <!--<li>-->
+                            <!--<a href="#">Pregão</a>-->
+                        <!--</li>-->
+                    <!--</ul>-->
+                <!--</li>-->
+            </ul>
+            <div class="sidebar-header">
+                <h4><a href="#pageSubmenu3" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration:none; color:black;">Portarias e Leis<i class="fa fa-fw fa-angle-down pull-right"></i></a></h4>
+            </div>
+            <ul class="collapse list-unstyled" id="pageSubmenu3">
+                <li>
+                    <a href="/base/portal_transparencia/"><i class="fa fa-arrow-right"></i> Portarias</a>
+                </li>
+                <li>
+                    <a href="/base/portal_transparencia/"><i class="fa fa-arrow-right"></i> Leis</a>
+                </li>
+            </ul>
+
+
+        </nav>
+    </div>

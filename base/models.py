@@ -651,7 +651,9 @@ class SolicitacaoLicitacao(models.Model):
         return OrdemCompra.objects.filter(solicitacao=self).exists()
 
     def get_ordem_compra(self):
-        return OrdemCompra.objects.filter(solicitacao=self)[0]
+        if OrdemCompra.objects.filter(solicitacao=self).exists():
+            return OrdemCompra.objects.filter(solicitacao=self)[0]
+        return None
 
     def tem_itens_lote_com_valores(self):
         return PropostaItemPregao.objects.filter(item__solicitacao=self, valor_item_lote__isnull=False).exists()
@@ -710,6 +712,23 @@ class SolicitacaoLicitacao(models.Model):
             total += proposta.valor_medio * proposta.quantidade
         return total
 
+
+    def get_fornecedor_dispensa(self):
+        lista = list()
+        dicionario = {}
+        for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=self):
+            total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+            if total:
+                lista.append([pesquisa.id, total])
+                dicionario[pesquisa.id] = total
+        resultado = sorted(dicionario.items(), key=lambda x: x[1])
+        if resultado:
+            fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
+            return fornecedor
+        return None
+
+    def get_arquivos_publicos(self):
+        return DocumentoSolicitacao.objects.filter(solicitacao=self, publico=True)
 
 class ItemSolicitacaoLicitacao(models.Model):
     CADASTRADO = u'Cadastrado'
@@ -1926,7 +1945,7 @@ class Fornecedor(models.Model):
         verbose_name_plural = u'Fornecedores'
 
     def __unicode__(self):
-        return u'%s - %s' % (self.razao_social, self.cnpj)
+        return u'%s (%s)' % (self.razao_social, self.cnpj)
 
     def get_dados_bancarios(self):
         if self.banco:
@@ -2562,6 +2581,7 @@ class DocumentoSolicitacao(models.Model):
     cadastrado_em = models.DateTimeField(u'Cadastrado Em', null=True, blank=True)
     cadastrado_por = models.ForeignKey(User, related_name=u'documento_cadastrado_por', null=True)
     documento = models.FileField(u'Documento', null=True, blank=True, upload_to=upload_path_documento)
+    publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
     class Meta:
         verbose_name = u'Documento da Solicitação'
@@ -2759,13 +2779,13 @@ class AtaRegistroPreco(models.Model):
 
     def get_situacao(self):
         if self.concluido:
-            return u'Concluído'
+            return u'Encerrado'
         elif self.suspenso:
             return u'Suspenso'
         elif self.cancelado:
             return u'Cancelado'
         else:
-            return u'Ativo'
+            return u'Vigente'
 
     def get_data_esgotamento(self):
         if self.data_esgotamento:
@@ -2847,13 +2867,13 @@ class Credenciamento(models.Model):
 
     def get_situacao(self):
         if self.concluido:
-            return u'Concluído'
+            return u'Encerrado'
         elif self.suspenso:
             return u'Suspenso'
         elif self.cancelado:
             return u'Cancelado'
         else:
-            return u'Ativo'
+            return u'Vigente'
 
     def get_ordem(self):
         if ItemCredenciamento.objects.filter(credenciamento=self).exists():
@@ -3039,13 +3059,13 @@ class Contrato(models.Model):
 
     def get_situacao(self):
         if self.concluido:
-            return u'Concluído'
+            return u'Encerrado'
         elif self.suspenso:
             return u'Suspenso'
         elif self.cancelado:
             return u'Cancelado'
         else:
-            return u'Ativo'
+            return u'Vigente'
 
     def eh_ativo(self):
         return not self.cancelado
@@ -3113,7 +3133,7 @@ class Contrato(models.Model):
 
     def get_fornecedor(self):
         if ItemContrato.objects.filter(contrato=self).exists() and ItemContrato.objects.filter(contrato=self)[0].participante:
-            return ItemContrato.objects.filter(contrato=self)[0].participante
+            return ItemContrato.objects.filter(contrato=self)[0].participante.fornecedor
         return ItemContrato.objects.filter(contrato=self)[0].fornecedor
 
 

@@ -1,0 +1,188 @@
+{% extends super_template|default:"admin/base_portal.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+{% load pagination_tags %}
+
+
+{% block content %}
+    <script>
+        $(document).ready(function () {
+
+    $("#sidebar").mCustomScrollbar({
+         theme: "minimal"
+    });
+
+    $('#sidebarCollapse').on('click', function () {
+        // open or close navbar
+        $('#sidebar').toggleClass('active');
+        // close dropdowns
+        $('.collapse.in').toggleClass('in');
+        // and also adjust aria-expanded attributes we use for the open/closed arrows
+        // in our CSS
+        $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+    });
+
+});
+    </script>
+{%  if solicitacoes.exists %}
+    <div class="pull-right">
+        {% if buscou %}
+            <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
+            <a class="btn btn-success btn-sm" href="{{ request.get_full_path}}&xls=true" target="_blank" >Imprimir em XLS</a>
+        {% else %}
+            <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}?pdf=true" target="_blank">Imprimir em PDF</a>
+            <a class="btn btn-success btn-sm" href="{{ request.get_full_path}}?xls=true" target="_blank" >Imprimir em XLS</a>
+        {% endif %}
+    </div>
+{% endif %}
+<section class="container">
+
+    {% include 'menu_portal.html' with contratos=True %}
+    <!-- Page Content -->
+    <div id="content" class="column2">
+
+        <h3>Dispensas e Inexigibilidades</h3>
+    <form action="." method="GET" class="form-horizontal">
+        {% csrf_token %}
+
+        <div class="row-fluid">
+            <div class="row-fluid">
+                <div class="col-xs-6">
+                    <div class="controls">{{ form.numero|bootstrap }}
+                        {% if form.numero.help_text %}
+                            <p class="help-inline"><small>{{ form.numero.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.ano|bootstrap }}
+                    {% if form.ano.help_text %}
+                        <p class="help-inline"><small>{{ form.ano.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
+
+
+
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.secretaria|bootstrap }}
+                    {% if form.secretaria.help_text %}
+                        <p class="help-inline"><small>{{ form.secretaria.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.tipo|bootstrap }}
+                    {% if form.tipo.help_text %}
+                        <p class="help-inline"><small>{{ form.tipo.help_text }}</small></p>
+                    {% endif %}
+                </div>
+             </div>
+
+            <div class="col-xs-1 col-md-1">
+                <br>
+                <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+            </div>
+        </div>
+
+    </form>
+    {%  if solicitacoes.exists %}
+        <h3>{{ solicitacoes.count }} registros encontrados.</h3>
+        {% autopaginate solicitacoes 20 %}
+        {% paginate %}
+        {%  for ata in solicitacoes %}
+
+            <hr class="new4">
+            <h3> {{ ata.tipo_aquisicao }} N° {{ ata.num_memorando }}</h3>
+            <table class="table table-bordered table-condensed table-striped">
+               {% if ata.processo %}
+                    <tr>
+                        <th><b>Nº do Processo</b></th>
+                        <td><a href="/base/localizar_processo/?numero={{ ata.processo.numero }}" target="_blank">{{ ata.processo }}</a></td>
+                    </tr>
+               {% endif %}
+               <tr>
+                    <th><b>Situação</b></th>
+                    <td>{{ ata.get_situacao }}</td>
+               </tr>
+               <tr>
+                    <th width="20%"><b>Secretaria Solicitante</b></th>
+                    <td>{{ ata.setor_origem.secretaria }}</td>
+               </tr>
+               {% if ata.get_ordem_compra %}
+                   <tr>
+                        <th width="20%"><b>Data da Ordem</b></th>
+                        <td>{{ ata.get_ordem_compra.data }}</td>
+                   </tr>
+               {% endif %}
+               {% if ata.get_fornecedor_dispensa %}
+                   <tr>
+                        <th width="20%"><b>Fornecedor</b></th>
+                        <td>{{ ata.get_fornecedor_dispensa.razao_social }} ({{ ata.get_fornecedor_dispensa.cnpj }})</td>
+                   </tr>
+               {% endif %}
+               {% if ata.get_pregao %}
+                    <tr>
+                        <th><b>Licitação/Procedimento</b></th>
+                        <td><a href="/base/baixar_licitacoes_portal/?numero={{ ata.pregao.num_pregao }}&modalidade={{ata.pregao.modalidade.id}}" target="_blank">{{ ata.pregao }}</a></td>
+                    </tr>
+               {% endif %}
+               <tr>
+                    <th><b>Objeto</b></th>
+                    <td>{{ ata.objeto }}</td>
+               </tr>
+                {% if ata.get_contrato %}
+                    <tr>
+                        <th><b>Dados do Contrato</b></th>
+                        <td><a href="/base/relatorio_info_contrato/{{ ata.get_contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
+                    </tr>
+                {% endif %}
+                {% if ata.get_arquivos_publicos %}
+                    <tr>
+                        <th><b>Arquivos</b></th>
+                        <td>
+                            {% for arquivo in ata.get_arquivos_publicos %}
+                                <a  href="/media/{{arquivo.documento }}" target="_blank">{{ arquivo.nome }}</a><br>
+                            {% endfor %}
+
+                        </td>
+                    </tr>
+                {% endif %}
+
+            </table>
+        {% endfor %}
+        {% paginate %}
+    {% else %}
+        <p class="alert alert-info">Nenhum registro encontrado.</p>
+    {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Content will be loaded here from "remote.php" file -->
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+</section>
+
+
+
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <!-- jQuery Custom Scroller CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/base/css/portal.css" />
+{% endblock %}
+{% block footer %}
+    {{ form.media }}
+
+    {{ block.super }}
+{% endblock %}
+
