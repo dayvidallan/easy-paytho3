@@ -40,6 +40,7 @@
                             <td>{{ pesquisa.origem }}</td>
 
                             <td>
+                                <a href="/base/imprimir_pesquisa/{{ pesquisa.id }}/" target="_blank" class="btn btn-success">Ver Pesquisa</a>
                                 {% if pesquisa.arquivo %}
                                     <a href="/media/{{ pesquisa.arquivo }}" class="btn btn-default btn-sm" target="_blank">Visualizar</a>
 

@@ -11841,8 +11841,8 @@ def baixar_dispensas_portal(request):
         return HttpResponse(pdf, 'application/pdf')
 
     if 'xls' in request.GET:
-        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
-        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos.xls')
+        nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_dispensas')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_dispensas.xls')
         rb = open_workbook(file_path,formatting_info=True)
 
         wb = copy(rb) # a writable copy (I can't read values out of this, only write to it)
@@ -11857,12 +11857,14 @@ def baixar_dispensas_portal(request):
             row_index = contador + 1
             w_sheet.write(row_index, 0, conta_item)
             w_sheet.write(row_index, 1, item.num_memorando)
+            if item.processo:
+                w_sheet.write(row_index, 2, item.processo.numero)
             w_sheet.write(row_index, 3, item.objeto)
             w_sheet.write(row_index, 4, item.get_situacao())
-            w_sheet.write(row_index, 5, format_money(item.get_valor_total()))
-            w_sheet.write(row_index, 6, format_money(item.get_saldo_disponivel()))
-            data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
-            w_sheet.write(row_index, 7, data)
+            if item.get_ordem_compra():
+                w_sheet.write(row_index, 5,  item.get_ordem_compra().data.strftime('%d/%m/%Y'))
+
+
             contador += 1
             conta_item += 1
 
