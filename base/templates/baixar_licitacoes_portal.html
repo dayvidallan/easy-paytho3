@@ -53,19 +53,20 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="col-xs-2 col-md-2">
-                    <div class="controls">{{ form.modalidade|bootstrap }}
-                        {% if form.modalidade.help_text %}
-                            <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
-                        {% endif %}
-                    </div>
+
+            </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.modalidade|bootstrap }}
+                    {% if form.modalidade.help_text %}
+                        <p class="help-inline"><small>{{ form.modalidade.help_text }}</small></p>
+                    {% endif %}
                 </div>
-                <div class="col-xs-2 col-md-2">
-                    <div class="controls">{{ form.situacao|bootstrap }}
-                        {% if form.situacao.help_text %}
-                            <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
-                        {% endif %}
-                    </div>
+            </div>
+            <div class="col-xs-2 col-md-2">
+                <div class="controls">{{ form.situacao|bootstrap }}
+                    {% if form.situacao.help_text %}
+                        <p class="help-inline"><small>{{ form.situacao.help_text }}</small></p>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-xs-2 col-md-2">
