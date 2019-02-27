@@ -11483,7 +11483,7 @@ def baixar_atas_portal(request):
     atas = AtaRegistroPreco.objects.filter(adesao=False).order_by('-numero')
     form = BaixarAtasForm(request.GET or None)
     buscou = False
-    title = u'Atas de Registro de Preços'
+    titulo = u'Atas de Registro de Preços'
     nome = u''
     if form.is_valid():
         buscou = True
@@ -11586,7 +11586,7 @@ def baixar_adesao_atas_portal(request):
     atas = AtaRegistroPreco.objects.filter(adesao=True).order_by('-numero')
     form = BaixarAtasForm(request.GET or None)
     buscou = False
-    title = u'Adesões à Atas de Registro de Preços'
+    titulo = u'Adesões à Atas de Registro de Preços'
     nome = u'Adesão à '
     if form.is_valid():
         buscou = True
@@ -11663,6 +11663,8 @@ def baixar_adesao_atas_portal(request):
             w_sheet.write(row_index, 6, format_money(item.get_saldo_disponivel()))
             data = u'%s a %s ' % (item.data_inicio.strftime('%d/%m/%Y'), item.data_fim.strftime('%d/%m/%Y'))
             w_sheet.write(row_index, 7, data)
+            fornecedor = u'%s (%s)' % (item.fornecedor_adesao_arp.razao_social, item.fornecedor_adesao_arp.cnpj)
+            w_sheet.write(row_index, 8, fornecedor)
             contador += 1
             conta_item += 1
 

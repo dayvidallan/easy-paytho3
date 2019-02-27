@@ -41,7 +41,7 @@
     <!-- Page Content -->
     <div id="content" class="column2">
 
-        <h3>{{ title }}</h3>
+        <h3>{{ titulo }}</h3>
     <form action="." method="GET" class="form-horizontal">
         {% csrf_token %}
 
@@ -125,6 +125,12 @@
                     <tr>
                         <th><b>Unidade Fiscalizadora</b></th>
                         <td>{{ ata.orgao_origem }}</td>
+                   </tr>
+               {% endif %}
+               {% if ata.fornecedor_adesao_arp %}
+                     <tr>
+                        <th><b>Fornecedor</b></th>
+                        <td>{{ ata.fornecedor_adesao_arp }}</td>
                    </tr>
                {% endif %}
                {% if ata.get_contrato %}
