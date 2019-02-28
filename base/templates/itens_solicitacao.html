@@ -132,7 +132,7 @@
                 {% if solicitacao.arquivo_minuta %}
                     <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Aprovar Minuta</a>
                     <a class="btn btn-danger" href="/base/avalia_minuta/{{ solicitacao.pk }}/2/">Reprovar Minuta</a>
-                {% elif not solicitacao.eh_pregao %}
+                {% elif solicitacao.pode_gerar_ordem %}
                     <a class="btn btn-success" href="/base/avalia_minuta/{{ solicitacao.pk }}/1/">Emitir Termo</a>
                 {% endif %}
              {% endif %}
