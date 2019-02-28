@@ -58,7 +58,7 @@
                 {% if solicitacao.get_pregao.eh_ata_registro_preco and not solicitacao.get_ata %}
                     <a href="/base/cadastrar_ata_registro_preco/{{solicitacao.id}}/" class="btn btn-success">Criar Ata de Registro de Preço</a>
 
-                {% elif not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists and not solicitacao.eh_credenciamento %}
+                {% elif not solicitacao.contrato_set.exists and not solicitacao.ataregistropreco_set.exists and not solicitacao.eh_credenciamento and not solicitacao.get_pregao.eh_ata_registro_preco %}
                     <a href="/base/cadastrar_contrato/{{solicitacao.id}}/" class="btn btn-success">Criar Contrato</a>
                 {% elif not solicitacao.credenciamento_set.exists and solicitacao.eh_credenciamento %}
                     <a href="/base/cadastrar_credenciamento/{{solicitacao.id}}/" class="btn btn-success">Criar Credenciamento</a>
