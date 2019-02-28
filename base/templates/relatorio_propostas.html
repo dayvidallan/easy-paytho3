@@ -59,48 +59,81 @@ ul{
 
 
                 {% endblock %}
-    {% for key, lances in resultado.items %}
-
-
-
-                <h2>Item {{ key }}</h2>
-
-                <table border="1" width="95%" cellpadding="5" cellspacing="5">
-                    <thead>
-                        <th>Origem</th>
-                        <th>Marca</th>
-                        <th>Valor Máximo</th>
-                    </thead>
-                    <tbody>
-                        {% for item in lances.lance %}
-                            <tr>
-                                <td>
-                                    {% if item.pesquisa.origem %}
-                                        {{ item.pesquisa.origem }}:
-                                    {% endif %}
-                                    {% if item.pesquisa.origem == item.pesquisa.ATA_PRECO %}
-                                        <b>N° {{ item.pesquisa.numero_ata}} (Vigência: {{ item.pesquisa.vigencia_ata|date:'d/m/Y' }})</b> - <b>Órgão Gerenciador:</b> {{ pesquisa.pesquisa.orgao_gerenciador_ata }}
-                                    {% else %}
-                                        <b>{{ item.pesquisa.razao_social }}</b>
-                                    {% endif %}
-                                </td>
-                                <td>{{ item.marca|default_if_none:"-" }}</td>
-                                <td>{{ item.valor_maximo|format_money }}</td>
-
-
-
-                            </tr>
-                        {% endfor %}
+    {% if solicitacao.pode_gerar_ordem %}
+         <table border="1" width="95%" cellpadding="5" cellspacing="5">
+                <thead>
+                    <th>Origem</th>
+                    <th>Valor Total</th>
+                </thead>
+                <tbody>
+                    {% for pesquisa in solicitacao.pesquisamercadologica_set.all %}
                         <tr>
-                            <td colspan="2">Valor Médio</td>
-                            <td>{{ lances.total|format_money }} ({{ lances.total|format_numero_extenso }})</td>
+                            <td>
+                                {% if pesquisa.origem %}
+                                    {{ pesquisa.origem }}:
+                                {% endif %}
+                                {% if pesquisa.origem == pesquisa.ATA_PRECO %}
+                                    <b>N° {{ pesquisa.numero_ata }} (Vigência: {{ pesquisa.vigencia_ata|date:'d/m/Y' }})</b> - <b>Órgão Gerenciador:</b> {{ pesquisa.orgao_gerenciador_ata }}
+                                {% else %}
+                                    <b>{{ pesquisa.razao_social }}</b>
+                                {% endif %}
+                            </td>
+                            <td>{{ pesquisa.get_total|format_money|default_if_none:"-" }}</td>
+
+
+
+
                         </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h3>Empresa ganhadora: {{ solicitacao.get_fornecedor_dispensa.razao_social }} ({{ solicitacao.get_fornecedor_dispensa.cnpj }}) - Valor Total: R$ {{ solicitacao.get_fornecedor_dispensa.get_total|format_money }} ({{ solicitacao.get_fornecedor_dispensa.get_total|format_numero_extenso }})</h3>
+    {% else %}
+        {% for key, lances in resultado.items %}
 
-                    </tbody>
-                </table>
+                    <h2>Item {{ key }}</h2>
 
 
-    {% endfor %}
+
+
+                        <table border="1" width="95%" cellpadding="5" cellspacing="5">
+                            <thead>
+                                <th>Origem</th>
+                                <th>Marca</th>
+                                <th>Valor Máximo</th>
+                            </thead>
+                            <tbody>
+                                {% for item in lances.lance %}
+                                    <tr>
+                                        <td>
+                                            {% if item.pesquisa.origem %}
+                                                {{ item.pesquisa.origem }}:
+                                            {% endif %}
+                                            {% if item.pesquisa.origem == item.pesquisa.ATA_PRECO %}
+                                                <b>N° {{ item.pesquisa.numero_ata}} (Vigência: {{ item.pesquisa.vigencia_ata|date:'d/m/Y' }})</b> - <b>Órgão Gerenciador:</b> {{ pesquisa.pesquisa.orgao_gerenciador_ata }}
+                                            {% else %}
+                                                <b>{{ item.pesquisa.razao_social }}</b>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ item.marca|default_if_none:"-" }}</td>
+                                        <td>{{ item.valor_maximo|format_money }}</td>
+
+
+
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="2">Valor Médio</td>
+                                    <td>{{ lances.total|format_money }} ({{ lances.total|format_numero_extenso }})</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+
+
+        {% endfor %}
+    {% endif %}
 </center>
 
 
