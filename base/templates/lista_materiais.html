@@ -86,7 +86,11 @@ ul{
                         <td width="40%">{{ item.material }}</td>
                         <td width="12%">{{ item.unidade }}</td>
                         <td width="10%">{{ item.quantidade|format_quantidade  }}</td>
-                        <td align="right" width="15%">{{ item.valor_medio|format_money }}</td>
+                        {% if solicitacao.pode_gerar_ordem %}
+                            <td align="right" width="15%">{{ item.get_melhor_proposta|format_money }}</td>
+                        {% else %}
+                            <td align="right" width="15%">{{ item.valor_medio|format_money }}</td>
+                        {% endif %}
                         <td align="right" width="15%">{{ item.get_total|format_money }}</td>
                     {% if eh_global %}
                         <td align="right" width="15%">{{ item.get_total_contratacao_global|format_money }}</td>
