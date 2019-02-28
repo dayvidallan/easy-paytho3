@@ -6611,7 +6611,10 @@ def lista_materiais(request, solicitacao_id):
     if pode_ver_preco:
         for item in itens:
             if item.valor_medio:
-                total += item.quantidade * item.valor_medio
+                if item.solicitacao.pode_gerar_ordem():
+                    total += item.quantidade * item.get_melhor_proposta()
+                else:
+                    total += item.quantidade * item.valor_medio
                 if eh_global:
                     total_global += item.get_total_contratacao_global()
 
