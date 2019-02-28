@@ -98,6 +98,7 @@ class Setor(models.Model):
 
 
 class ModalidadePregao(models.Model):
+    PREGAO_ELETRONICO = 12
     PREGAO_SRP = 10
     PREGAO_ELETRONICO_SRP = 13
     CONCORRENCIA_SRP = 11
@@ -1732,7 +1733,7 @@ class Pregao(models.Model):
         return self.situacao in [Pregao.SUSPENSO]
 
     def eh_pregao(self):
-        return self.modalidade.id  in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.PREGAO]
+        return self.modalidade.id  in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.PREGAO, ModalidadePregao.PREGAO_ELETRONICO_SRP, ModalidadePregao.PREGAO_ELETRONICO]
 
     def eh_lote(self):
         return self.criterio.id == CriterioPregao.LOTE
