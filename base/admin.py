@@ -235,13 +235,13 @@ class SetorAdmin(NewModelAdmin):
 
 admin.site.register(Setor, SetorAdmin)
 
-class ModalidadePregaoAdmin(NewModelAdmin):
-    list_display = ('nome',)
-    ordering = ('nome',)
-    list_filter = ('nome',)
-
-
-admin.site.register(ModalidadePregao, ModalidadePregaoAdmin)
+# class ModalidadePregaoAdmin(NewModelAdmin):
+#     list_display = ('nome',)
+#     ordering = ('nome',)
+#     list_filter = ('nome',)
+#
+#
+# admin.site.register(ModalidadePregao, ModalidadePregaoAdmin)
 
 # class TipoPregaoAdmin(NewModelAdmin):
 #     list_display = ('nome',)

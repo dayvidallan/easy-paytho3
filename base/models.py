@@ -99,6 +99,7 @@ class Setor(models.Model):
 
 class ModalidadePregao(models.Model):
     PREGAO_SRP = 10
+    PREGAO_ELETRONICO_SRP = 13
     CONCORRENCIA_SRP = 11
     CARTA_CONVITE = 1
     CONCORRENCIA = 2
@@ -1599,7 +1600,7 @@ class Pregao(models.Model):
 
     def save(self):
 
-        if self.modalidade.id in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.CONCORRENCIA_SRP]:
+        if self.modalidade.id in [ModalidadePregao.PREGAO_SRP, ModalidadePregao.CONCORRENCIA_SRP, ModalidadePregao.PREGAO_ELETRONICO_SRP]:
             self.eh_ata_registro_preco = True
         else:
             self.eh_ata_registro_preco = False

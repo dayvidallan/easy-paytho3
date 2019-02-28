@@ -136,7 +136,7 @@
         "model": "base.modalidadepregao",
         "pk": 9,
         "fields": {
-            "nome": "Chamada Pública – PRONATER "
+            "nome": "Chamada Pública – PRONATER"
         }
     },
     {
@@ -151,6 +151,20 @@
         "pk": 11,
         "fields": {
             "nome": "Concorrência - Sistema de Registro de Preços (SRP)"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 12,
+        "fields": {
+            "nome": "Pregão Eletrônico"
+        }
+    },
+    {
+        "model": "base.modalidadepregao",
+        "pk": 13,
+        "fields": {
+            "nome": "Pregão Eletrônico - Sistema de Registro de Preços (SRP)"
         }
     },
     {
