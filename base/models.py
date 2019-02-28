@@ -612,6 +612,9 @@ class SolicitacaoLicitacao(models.Model):
             return self.get_pregao().criterio.id == CriterioPregao.LOTE
         return False
 
+    def eh_pregao(self):
+        return self.tipo_aquisicao == self.TIPO_AQUISICAO_LICITACAO
+
     def tem_pregao_cadastrado(self):
         return Pregao.objects.filter(solicitacao=self).exists()
 
