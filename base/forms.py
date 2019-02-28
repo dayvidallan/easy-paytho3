@@ -902,10 +902,23 @@ class MaterialConsumoForm(forms.ModelForm):
         model = MaterialConsumo
         fields = ('nome', 'observacao',)
 
+from django.db.models.functions import Lower
+
 class TipoUnidadeForm(forms.ModelForm):
     class Meta:
         model = TipoUnidade
         fields = ('nome', )
+
+
+    def clean(self):
+     if self.cleaned_data.get('nome'):
+         nome = self.cleaned_data.get('nome').lower()
+         if not self.instance.pk:
+            if TipoUnidade.objects.annotate(minusculo=Lower('nome')).filter(minusculo=nome).exists():
+                self.add_error('nome', u'Esta unidade já existe.')
+         else:
+             if TipoUnidade.objects.annotate(minusculo=Lower('nome')).filter(minusculo=nome).exclude(id=self.instance.pk).exists():
+                self.add_error('nome', u'Esta unidade já existe.')
 
 class CriarLoteForm(forms.Form):
     solicitacoes = forms.ModelMultipleChoiceField(queryset=ItemSolicitacaoLicitacao.objects, label=u'Selecione os Itens', widget=forms.CheckboxSelectMultiple())

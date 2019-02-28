@@ -268,6 +268,7 @@ class ParticipantePregaoAdmin(NewModelAdmin):
 admin.site.register(ParticipantePregao, ParticipantePregaoAdmin)
 
 class TipoUnidadeAdmin(NewModelAdmin):
+    form = TipoUnidadeForm
     list_display = ('nome',)
     ordering = ('nome',)
     list_filter = ('nome',)
