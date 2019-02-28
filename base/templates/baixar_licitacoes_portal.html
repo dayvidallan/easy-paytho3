@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load bootstrap %}
 {% load pagination_tags %}
-
+{% load app_filters %}
 
 {% block content %}
     <script>
@@ -120,6 +120,14 @@
                         <th><b>Objeto</b></th>
                         <td>{{ pregao.objeto }}</td>
                     </tr>
+                     <tr>
+                        <th width="20%"><b>Valor Orçado</b></th>
+                        <td>R$ {{ pregao.valor_total }}</td>
+                   </tr>
+                     <tr>
+                        <th width="20%"><b>Valor Adjudicado</b></th>
+                        <td>R$ {{ pregao.get_total_adjudicado|format_money }}</td>
+                   </tr>
                     <tr>
                         <th><b>Critério de Julgamento / Adjudicação</b></th>
                         <td>{{ pregao.tipo }} / {{ pregao.criterio }}</td>

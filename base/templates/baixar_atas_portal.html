@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load bootstrap %}
 {% load pagination_tags %}
-
+{% load app_filters %}
 
 {% block content %}
     <script>
@@ -115,6 +115,14 @@
                     <th width="20%"><b>Secretaria Solicitante</b></th>
                     <td>{{ ata.solicitacao.setor_origem.secretaria }}</td>
                </tr>
+               <tr>
+                    <th><b>Objeto</b></th>
+                    <td>{{ ata.solicitacao.objeto }}</td>
+               </tr>
+               <tr>
+                    <th width="20%"><b>Valor</b></th>
+                    <td>R$ {{ ata.get_valor_total|format_money }}</td>
+               </tr>
                {% if ata.pregao %}
                     <tr>
                         <th><b>Licitação/Procedimento</b></th>
@@ -143,10 +151,7 @@
                         <td>{{ ata.get_contrato.data_inicio }}</td>
                    </tr>
                {% endif %}
-               <tr>
-                    <th><b>Objeto</b></th>
-                    <td>{{ ata.solicitacao.objeto }}</td>
-               </tr>
+
                {% if ata.adesao %}
                     <tr>
                         <th width="30%"><b>Período de Vigência</b></th>

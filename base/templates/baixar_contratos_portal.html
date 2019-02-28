@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load bootstrap %}
 {% load pagination_tags %}
-
+{% load app_filters %}
 
 {% block content %}
     <script>
@@ -118,6 +118,10 @@
                     <th><b>Objeto</b></th>
                     <td>{{ contrato.solicitacao.objeto }}</td>
                 </tr>
+                <tr>
+                    <th width="20%"><b>Valor</b></th>
+                    <td>R$ {{ contrato.get_valor|format_money }}</td>
+               </tr>
                 <tr>
                     <th width="30%"><b>Período de Vigência</b></th>
                     <td>{{ contrato.data_inicio }} à {{ contrato.data_fim }}</td>
