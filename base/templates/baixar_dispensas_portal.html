@@ -24,7 +24,7 @@
 
 });
     </script>
-{%  if solicitacoes.exists %}
+{%  if form.is_bound and solicitacoes.exists %}
     <div class="pull-right">
         {% if buscou %}
             <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
@@ -87,81 +87,84 @@
         </div>
 
     </form>
-    {%  if solicitacoes.exists %}
-        <h3>{{ solicitacoes.count }} registros encontrados.</h3>
-        {% autopaginate solicitacoes 20 %}
-        {% paginate %}
-        {%  for ata in solicitacoes %}
+    {%  if form.is_bound %}
+        {%  if solicitacoes.exists %}
+            <h3>{{ solicitacoes.count }} registros encontrados.</h3>
+            {% autopaginate solicitacoes 20 %}
+            {% paginate %}
+            {%  for ata in solicitacoes %}
 
-            <hr class="new4">
-            <h3> {{ ata.tipo_aquisicao }} N° {{ ata.num_memorando }}</h3>
-            <table class="table table-bordered table-condensed table-striped">
-               {% if ata.processo %}
-                    <tr>
-                        <th><b>Nº do Processo</b></th>
-                        <td><a href="/base/localizar_processo/?numero={{ ata.processo.numero }}" target="_blank">{{ ata.processo }}</a></td>
-                    </tr>
-               {% endif %}
-               <tr>
-                    <th><b>Situação</b></th>
-                    <td>{{ ata.get_situacao }}</td>
-               </tr>
-               <tr>
-                    <th width="20%"><b>Secretaria Solicitante</b></th>
-                    <td>{{ ata.setor_origem.secretaria }}</td>
-               </tr>
-               <tr>
-                    <th><b>Objeto</b></th>
-                    <td>{{ ata.objeto }}</td>
-               </tr>
-                 <tr>
-                    <th width="20%"><b>Valor</b></th>
-                    <td>{% if ata.get_valor_da_solicitacao_dispensa != 10000000000000000 %}R$ {{ ata.get_valor_da_solicitacao_dispensa|format_money }}{% else %}-{% endif %}</td>
-               </tr>
-               {% if ata.get_ordem_compra %}
+                <hr class="new4">
+                <h3> {{ ata.tipo_aquisicao }} N° {{ ata.num_memorando }}</h3>
+                <table class="table table-bordered table-condensed table-striped">
+                   {% if ata.processo %}
+                        <tr>
+                            <th><b>Nº do Processo</b></th>
+                            <td><a href="/base/localizar_processo/?numero={{ ata.processo.numero }}" target="_blank">{{ ata.processo }}</a></td>
+                        </tr>
+                   {% endif %}
                    <tr>
-                        <th width="20%"><b>Data da Ordem</b></th>
-                        <td>{{ ata.get_ordem_compra.data }}</td>
+                        <th><b>Situação</b></th>
+                        <td>{{ ata.get_situacao }}</td>
                    </tr>
-               {% endif %}
-               {% if ata.get_fornecedor_dispensa %}
                    <tr>
-                        <th width="20%"><b>Fornecedor</b></th>
-                        <td>{{ ata.get_fornecedor_dispensa.razao_social }} ({{ ata.get_fornecedor_dispensa.cnpj }})</td>
+                        <th width="20%"><b>Secretaria Solicitante</b></th>
+                        <td>{{ ata.setor_origem.secretaria }}</td>
                    </tr>
-               {% endif %}
-               {% if ata.get_pregao %}
-                    <tr>
-                        <th><b>Licitação/Procedimento</b></th>
-                        <td><a href="/base/baixar_licitacoes_portal/?numero={{ ata.pregao.num_pregao }}&modalidade={{ata.pregao.modalidade.id}}" target="_blank">{{ ata.pregao }}</a></td>
-                    </tr>
-               {% endif %}
+                   <tr>
+                        <th><b>Objeto</b></th>
+                        <td>{{ ata.objeto }}</td>
+                   </tr>
+                     <tr>
+                        <th width="20%"><b>Valor</b></th>
+                        <td>{% if ata.get_valor_da_solicitacao_dispensa != 10000000000000000 %}R$ {{ ata.get_valor_da_solicitacao_dispensa|format_money }}{% else %}-{% endif %}</td>
+                   </tr>
+                   {% if ata.get_ordem_compra %}
+                       <tr>
+                            <th width="20%"><b>Data da Ordem</b></th>
+                            <td>{{ ata.get_ordem_compra.data }}</td>
+                       </tr>
+                   {% endif %}
+                   {% if ata.get_fornecedor_dispensa %}
+                       <tr>
+                            <th width="20%"><b>Fornecedor</b></th>
+                            <td>{{ ata.get_fornecedor_dispensa.razao_social }} ({{ ata.get_fornecedor_dispensa.cnpj }})</td>
+                       </tr>
+                   {% endif %}
+                   {% if ata.get_pregao %}
+                        <tr>
+                            <th><b>Licitação/Procedimento</b></th>
+                            <td><a href="/base/baixar_licitacoes_portal/?numero={{ ata.pregao.num_pregao }}&modalidade={{ata.pregao.modalidade.id}}" target="_blank">{{ ata.pregao }}</a></td>
+                        </tr>
+                   {% endif %}
 
-                {% if ata.get_contrato %}
-                    <tr>
-                        <th><b>Dados do Contrato</b></th>
-                        <td><a href="/base/relatorio_info_contrato/{{ ata.get_contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
-                    </tr>
-                {% endif %}
-                {% if ata.get_arquivos_publicos %}
-                    <tr>
-                        <th><b>Arquivos</b></th>
-                        <td>
-                            {% for arquivo in ata.get_arquivos_publicos %}
-                                <a  href="/media/{{arquivo.documento }}" target="_blank">{{ arquivo.nome }}</a><br>
-                            {% endfor %}
+                    {% if ata.get_contrato %}
+                        <tr>
+                            <th><b>Dados do Contrato</b></th>
+                            <td><a href="/base/relatorio_info_contrato/{{ ata.get_contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
+                        </tr>
+                    {% endif %}
+                    {% if ata.get_arquivos_publicos %}
+                        <tr>
+                            <th><b>Arquivos</b></th>
+                            <td>
+                                {% for arquivo in ata.get_arquivos_publicos %}
+                                    <a  href="/media/{{arquivo.documento }}" target="_blank">{{ arquivo.nome }}</a><br>
+                                {% endfor %}
 
-                        </td>
-                    </tr>
-                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
 
-            </table>
-        {% endfor %}
-        {% paginate %}
+                </table>
+            {% endfor %}
+            {% paginate %}
+        {% else %}
+            <p class="alert alert-info">Nenhum registro encontrado.</p>
+        {% endif %}
     {% else %}
-        <p class="alert alert-info">Nenhum registro encontrado.</p>
+        <p class="alert alert-info">Utilize os filtros para buscar as dispensas e inexigibilidades.</p>
     {% endif %}
-
     <div id="myModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">

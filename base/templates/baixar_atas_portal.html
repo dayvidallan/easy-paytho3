@@ -24,7 +24,7 @@
 
 });
     </script>
-{%  if atas.exists %}
+{% if form.is_bound and atas.exists %}
     <div class="pull-right">
         {% if buscou %}
             <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
@@ -86,121 +86,125 @@
         </div>
 
     </form>
-    {%  if atas.exists %}
-        <h3>{{ atas.count }} {{ title }} encontradas.</h3>
-        {% autopaginate atas 20 %}
-        {% paginate %}
-        {%  for ata in atas %}
+    {% if form.is_bound %}
+        {%  if atas.exists %}
+            <h3>{{ atas.count }} {{ title }} encontradas.</h3>
+            {% autopaginate atas 20 %}
+            {% paginate %}
+            {%  for ata in atas %}
 
-            <hr class="new4">
+                <hr class="new4">
 
 
-            {% if ata.adesao %}
-                <h3>Contrato N° {{ ata.get_contrato.numero }}</h3>
-            {% else %}
-                <h3>Ata de Registro de Preço N° {{ ata.numero }}</h3>
-            {% endif %}
-            <table class="table table-bordered table-condensed table-striped">
-               {% if ata.solicitacao.processo %}
-                    <tr>
-                        <th><b>Nº do Processo</b></th>
-                        <td><a href="/base/localizar_processo/?numero={{ ata.solicitacao.processo.numero }}" target="_blank">{{ ata.solicitacao.processo }}</a></td>
-                    </tr>
-               {% endif %}
-               <tr>
-                    <th><b>Situação</b></th>
-                    <td>{{ ata.get_situacao }}</td>
-               </tr>
-               <tr>
-                    <th width="20%"><b>Secretaria Solicitante</b></th>
-                    <td>{{ ata.solicitacao.setor_origem.secretaria }}</td>
-               </tr>
-               <tr>
-                    <th><b>Objeto</b></th>
-                    <td>{{ ata.solicitacao.objeto }}</td>
-               </tr>
-               <tr>
-                    <th width="20%"><b>Valor</b></th>
-                    <td>R$ {{ ata.get_valor_total|format_money }}</td>
-               </tr>
-               {% if ata.pregao %}
-                    <tr>
-                        <th><b>Licitação/Procedimento</b></th>
-                        <td><a href="/base/baixar_licitacoes_portal/?numero={{ ata.pregao.num_pregao }}&modalidade={{ata.pregao.modalidade.id}}" target="_blank">{{ ata.pregao }}</a></td>
-                    </tr>
-               {% endif %}
-               {% if ata.orgao_origem %}
-                    <tr>
-                        <th><b>Unidade Fiscalizadora</b></th>
-                        <td>{{ ata.orgao_origem }}</td>
-                   </tr>
-               {% endif %}
-               {% if ata.fornecedor_adesao_arp %}
-                     <tr>
-                        <th><b>Fornecedor</b></th>
-                        <td>{{ ata.fornecedor_adesao_arp }}</td>
-                   </tr>
-               {% endif %}
-               {% if ata.get_contrato %}
-                    <tr>
-                        <th><b>Ata de Origem</b></th>
-                        <td>Nº {{ ata.numero }}</td>
-                   </tr>
-                    <tr>
-                        <th><b>Data da Assinatura</b></th>
-                        <td>{{ ata.get_contrato.data_inicio }}</td>
-                   </tr>
-               {% endif %}
-
-               {% if ata.adesao %}
-                    <tr>
-                        <th width="30%"><b>Período de Vigência</b></th>
-                        <td>{{ ata.get_contrato.data_inicio }} à {{ ata.get_contrato.data_fim }}</td>
-                   </tr>
-
-               {% else %}
+                {% if ata.adesao %}
+                    <h3>Contrato N° {{ ata.get_contrato.numero }}</h3>
+                {% else %}
+                    <h3>Ata de Registro de Preço N° {{ ata.numero }}</h3>
+                {% endif %}
+                <table class="table table-bordered table-condensed table-striped">
+                   {% if ata.solicitacao.processo %}
+                        <tr>
+                            <th><b>Nº do Processo</b></th>
+                            <td><a href="/base/localizar_processo/?numero={{ ata.solicitacao.processo.numero }}" target="_blank">{{ ata.solicitacao.processo }}</a></td>
+                        </tr>
+                   {% endif %}
                    <tr>
-                        <th width="30%"><b>Período de Vigência</b></th>
-                        <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
+                        <th><b>Situação</b></th>
+                        <td>{{ ata.get_situacao }}</td>
                    </tr>
-               {% endif %}
-                <tr>
-                    <th><b>Dados da Ata de Registro de Preço</b></th>
-                    <td><a href="/base/relatorio_info_arp/{{ ata.pk }}/" target="_blank">Informações da ARP</a></td>
-                </tr>
-               {% if ata.num_oficio %}
-                    <tr>
-                        <th width="30%"><b>Licitação de Origem</b></th>
-                        <td>Nº {{ ata.num_oficio }}</td>
-                   </tr>
-                    <tr>
-                        <th><b>Dados do Contrato</b></th>
-                        <td><a href="/base/relatorio_info_contrato/{{ ata.get_contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
-                    </tr>
-               {% endif %}
-
-
-
-               {% if ata.get_arquivos_publicos %}
                    <tr>
-                        <th><b>Arquivos</b></th>
-                        <td>
-                            {% for arquivo in ata.get_arquivos_publicos %}
-                                <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
-                            {% endfor %}
-                            {% if ata.get_contrato %}
-                                {% for arquivo in ata.get_contrato.get_arquivos_publicos %}
+                        <th width="20%"><b>Secretaria Solicitante</b></th>
+                        <td>{{ ata.solicitacao.setor_origem.secretaria }}</td>
+                   </tr>
+                   <tr>
+                        <th><b>Objeto</b></th>
+                        <td>{{ ata.solicitacao.objeto }}</td>
+                   </tr>
+                   <tr>
+                        <th width="20%"><b>Valor</b></th>
+                        <td>R$ {{ ata.get_valor_total|format_money }}</td>
+                   </tr>
+                   {% if ata.pregao %}
+                        <tr>
+                            <th><b>Licitação/Procedimento</b></th>
+                            <td><a href="/base/baixar_licitacoes_portal/?numero={{ ata.pregao.num_pregao }}&modalidade={{ata.pregao.modalidade.id}}" target="_blank">{{ ata.pregao }}</a></td>
+                        </tr>
+                   {% endif %}
+                   {% if ata.orgao_origem %}
+                        <tr>
+                            <th><b>Unidade Fiscalizadora</b></th>
+                            <td>{{ ata.orgao_origem }}</td>
+                       </tr>
+                   {% endif %}
+                   {% if ata.fornecedor_adesao_arp %}
+                         <tr>
+                            <th><b>Fornecedor</b></th>
+                            <td>{{ ata.fornecedor_adesao_arp }}</td>
+                       </tr>
+                   {% endif %}
+                   {% if ata.get_contrato %}
+                        <tr>
+                            <th><b>Ata de Origem</b></th>
+                            <td>Nº {{ ata.numero }}</td>
+                       </tr>
+                        <tr>
+                            <th><b>Data da Assinatura</b></th>
+                            <td>{{ ata.get_contrato.data_inicio }}</td>
+                       </tr>
+                   {% endif %}
+
+                   {% if ata.adesao %}
+                        <tr>
+                            <th width="30%"><b>Período de Vigência</b></th>
+                            <td>{{ ata.get_contrato.data_inicio }} à {{ ata.get_contrato.data_fim }}</td>
+                       </tr>
+
+                   {% else %}
+                       <tr>
+                            <th width="30%"><b>Período de Vigência</b></th>
+                            <td>{{ ata.data_inicio }} à {{ ata.data_fim }}</td>
+                       </tr>
+                   {% endif %}
+                    <tr>
+                        <th><b>Dados da Ata de Registro de Preço</b></th>
+                        <td><a href="/base/relatorio_info_arp/{{ ata.pk }}/" target="_blank">Informações da ARP</a></td>
+                    </tr>
+                   {% if ata.num_oficio %}
+                        <tr>
+                            <th width="30%"><b>Licitação de Origem</b></th>
+                            <td>Nº {{ ata.num_oficio }}</td>
+                       </tr>
+                        <tr>
+                            <th><b>Dados do Contrato</b></th>
+                            <td><a href="/base/relatorio_info_contrato/{{ ata.get_contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
+                        </tr>
+                   {% endif %}
+
+
+
+                   {% if ata.get_arquivos_publicos %}
+                       <tr>
+                            <th><b>Arquivos</b></th>
+                            <td>
+                                {% for arquivo in ata.get_arquivos_publicos %}
                                     <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
                                 {% endfor %}
-                            {% endif %}
-                        </td>
-                   </tr>
-               {% endif %}
-            </table>
-        {% endfor %}
-        {% paginate %}
+                                {% if ata.get_contrato %}
+                                    {% for arquivo in ata.get_contrato.get_arquivos_publicos %}
+                                        <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                       </tr>
+                   {% endif %}
+                </table>
+            {% endfor %}
+            {% paginate %}
+        {% else %}
+            <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
+        {% endif %}
     {% else %}
-        <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
+        <p class="alert alert-info">Utilize os filtros para buscar as atas.</p>
     {% endif %}
 
     <div id="myModal" class="modal fade" role="dialog">

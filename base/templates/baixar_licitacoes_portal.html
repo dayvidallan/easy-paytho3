@@ -24,7 +24,7 @@
 
 });
     </script>
-{%  if pregoes.exists %}
+{% if form.is_bound and pregoes.exists %}
     <div class="pull-right">
         {% if buscou %}
             <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
@@ -90,120 +90,122 @@
             </div>
 
         </form>
+        {% if form.is_bound %}
+            {%  if pregoes.exists %}
+                <h4>{{ pregoes.count }} Licitações encontradas.</h4>
+                {% autopaginate pregoes 10 %}
+                {% paginate %}
+                {%  for pregao in pregoes %}
+                    <hr class="new4">
+                    <fieldset>
+                        <legend><h3>{{ pregao.modalidade }} N° {{ pregao.num_pregao }}</h3></legend>
 
-        {%  if pregoes.exists %}
-            <h4>{{ pregoes.count }} Licitações encontradas.</h4>
-            {% autopaginate pregoes 10 %}
-            {% paginate %}
-            {%  for pregao in pregoes %}
-                <hr class="new4">
-                <fieldset>
-                    <legend><h3>{{ pregao.modalidade }} N° {{ pregao.num_pregao }}</h3></legend>
 
-
-                <table class="table table-bordered table-condensed table-striped">
-                    {% if pregao.solicitacao.processo %}
-                        <tr>
-                            <th><b>Nº do Processo</b></th>
-                            <td><a href="/base/localizar_processo/?numero={{ pregao.solicitacao.processo.numero }}" target="_blank">{{ pregao.solicitacao.processo }}</a></td>
+                    <table class="table table-bordered table-condensed table-striped">
+                        {% if pregao.solicitacao.processo %}
+                            <tr>
+                                <th><b>Nº do Processo</b></th>
+                                <td><a href="/base/localizar_processo/?numero={{ pregao.solicitacao.processo.numero }}" target="_blank">{{ pregao.solicitacao.processo }}</a></td>
+                            </tr>
+                        {% endif %}
+                         <tr>
+                            <th><b>Situação</b></th>
+                            <td>{{ pregao.get_situacao }}</td>
                         </tr>
-                    {% endif %}
-                     <tr>
-                        <th><b>Situação</b></th>
-                        <td>{{ pregao.get_situacao }}</td>
-                    </tr>
-                     <tr>
-                        <th width="20%"><b>Secretaria Solicitante</b></th>
-                        <td>{{ pregao.solicitacao.setor_origem.secretaria }}</td>
-                    </tr>
-                    <tr>
-                        <th><b>Objeto</b></th>
-                        <td>{{ pregao.objeto }}</td>
-                    </tr>
-                     <tr>
-                        <th width="20%"><b>Valor Orçado</b></th>
-                        <td>R$ {{ pregao.valor_total }}</td>
-                   </tr>
-                     <tr>
-                        <th width="20%"><b>Valor Adjudicado</b></th>
-                        <td>R$ {{ pregao.get_total_adjudicado|format_money }}</td>
-                   </tr>
-                    <tr>
-                        <th><b>Critério de Julgamento / Adjudicação</b></th>
-                        <td>{{ pregao.tipo }} / {{ pregao.criterio }}</td>
-                    </tr>
-                    <tr>
-                    <tr>
-                        <th><b>Data de Retirada do Edital</b></th>
-                        <td>{{ pregao.data_inicio }} a {{ pregao.data_termino }}</td>
-                    </tr>
-                    <tr>
-                        <th><b>Data da Abertura</b></th>
-                        <td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura }}<br> Local: {{ pregao.local }}</td>
-                    </tr>
+                         <tr>
+                            <th width="20%"><b>Secretaria Solicitante</b></th>
+                            <td>{{ pregao.solicitacao.setor_origem.secretaria }}</td>
+                        </tr>
+                        <tr>
+                            <th><b>Objeto</b></th>
+                            <td>{{ pregao.objeto }}</td>
+                        </tr>
+                         <tr>
+                            <th width="20%"><b>Valor Orçado</b></th>
+                            <td>R$ {{ pregao.valor_total }}</td>
+                       </tr>
+                         <tr>
+                            <th width="20%"><b>Valor Adjudicado</b></th>
+                            <td>R$ {{ pregao.get_total_adjudicado|format_money }}</td>
+                       </tr>
+                        <tr>
+                            <th><b>Critério de Julgamento / Adjudicação</b></th>
+                            <td>{{ pregao.tipo }} / {{ pregao.criterio }}</td>
+                        </tr>
+                        <tr>
+                        <tr>
+                            <th><b>Data de Retirada do Edital</b></th>
+                            <td>{{ pregao.data_inicio }} a {{ pregao.data_termino }}</td>
+                        </tr>
+                        <tr>
+                            <th><b>Data da Abertura</b></th>
+                            <td>{{ pregao.data_abertura }} às {{ pregao.hora_abertura }}<br> Local: {{ pregao.local }}</td>
+                        </tr>
 
-                    {% if pregao.data_adjudicacao %}
-                        <tr>
-                            <th><b>Data de Adjudicação</b></th>
-                            <td>{{ pregao.data_adjudicacao }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if pregao.data_homologacao %}
-                        <tr>
-                            <th><b>Data de Homologação</b></th>
-                            <td>{{ pregao.data_homologacao }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if pregao.situacao != pregao.CADASTRADO %}
-                        <tr>
-                            <th><b>Publicações</b></th>
-                            <td>
-                                {% for arquivo in pregao.get_arquivos_publicos %}
-                                    <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
-                                {% endfor %}
-                                {% if pregao.get_contrato %}
-                                    {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
+                        {% if pregao.data_adjudicacao %}
+                            <tr>
+                                <th><b>Data de Adjudicação</b></th>
+                                <td>{{ pregao.data_adjudicacao }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if pregao.data_homologacao %}
+                            <tr>
+                                <th><b>Data de Homologação</b></th>
+                                <td>{{ pregao.data_homologacao }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if pregao.situacao != pregao.CADASTRADO %}
+                            <tr>
+                                <th><b>Publicações</b></th>
+                                <td>
+                                    {% for arquivo in pregao.get_arquivos_publicos %}
                                         <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
                                     {% endfor %}
-                                {% endif %}
-                                {% if pregao.get_arp %}
-                                    {% for arquivo in pregao.get_arp.get_arquivos_publicos %}
-                                        <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
+                                    {% if pregao.get_contrato %}
+                                        {% for arquivo in pregao.get_contrato.get_arquivos_publicos %}
+                                            <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if pregao.get_arp %}
+                                        {% for arquivo in pregao.get_arp.get_arquivos_publicos %}
+                                            <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <th><b>Participantes</b></th>
+                            <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" class=link" target="_blank">Lista de Participantes</a></td>
                         </tr>
-                    {% endif %}
-                    <tr>
-                        <th><b>Participantes</b></th>
-                        <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" class=link" target="_blank">Lista de Participantes</a></td>
-                    </tr>
-                    <tr>
-                        <th><b>Dados da Licitação</b></th>
-                        <td><a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" class=link" target="_blank">Ver Dados</a></td>
-                    </tr>
-                     <!--{%  if pregao.tem_resultado %}-->
+                        <tr>
+                            <th><b>Dados da Licitação</b></th>
+                            <td><a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" class=link" target="_blank">Ver Dados</a></td>
+                        </tr>
+                         <!--{%  if pregao.tem_resultado %}-->
 
-                        <!--<tr><th><b>Resultados</b></th>-->
-                            <!--<td>-->
-                                <!--<a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a>-->
-                                <!--{% if pregao.eh_pregao %}-->
-                                    <!--<br><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a>-->
-                                <!--{% endif %}-->
-                                <!--<br><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                    <!--{% endif %}-->
+                            <!--<tr><th><b>Resultados</b></th>-->
+                                <!--<td>-->
+                                    <!--<a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a>-->
+                                    <!--{% if pregao.eh_pregao %}-->
+                                        <!--<br><a href="/base/relatorio_resultado_final_por_vencedor/{{ pregao.id }}/" target="_blank">Resultado Final - Por Vencedor</a>-->
+                                    <!--{% endif %}-->
+                                    <!--<br><a href="/base/relatorio_classificacao_por_item/{{ pregao.id }}/" target="_blank">Resultado Final - Classificação por Item</a>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                        <!--{% endif %}-->
 
-                </table>
-               </fieldset>
+                    </table>
+                   </fieldset>
 
-            {% endfor %}
-            {% paginate %}
+                {% endfor %}
+                {% paginate %}
+            {% else %}
+                <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
+            {% endif %}
         {% else %}
-            <p class="alert alert-info">Nenhuma licitação cadastrada.</p>
+            <p class="alert alert-info">Utilize os filtros para buscar as licitações.</p>
         {% endif %}
-
         <div id="myModal" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">

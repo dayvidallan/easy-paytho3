@@ -25,7 +25,7 @@
 });
     </script>
 
-{%  if contratos.exists %}
+{%  if form.is_bound and contratos.exists %}
 <div class="pull-right">
     {% if buscou %}
         <a class="btn btn-info btn-sm" href="{{ request.get_full_path}}&pdf=true" target="_blank" >Imprimir em PDF</a>
@@ -86,72 +86,76 @@
         </div>
 
     </form>
-    {%  if contratos.exists %}
-        <h3>{{ contratos.count }} Contratos Encontrados.</h3>
-        {% autopaginate contratos 20 %}
-        {% paginate %}
-        {%  for contrato in contratos %}
-            <hr class="new4">
-            <h3>Contrato N°{{ contrato.numero }}</h3>
-            <table class="table table-bordered table-condensed table-striped">
-                {% if contrato.solicitacao.processo %}
+    {%  if form.is_bound %}
+        {%  if contratos.exists %}
+            <h3>{{ contratos.count }} Contratos Encontrados.</h3>
+            {% autopaginate contratos 20 %}
+            {% paginate %}
+            {%  for contrato in contratos %}
+                <hr class="new4">
+                <h3>Contrato N°{{ contrato.numero }}</h3>
+                <table class="table table-bordered table-condensed table-striped">
+                    {% if contrato.solicitacao.processo %}
+                        <tr>
+                            <th><b>Nº do Processo</b></th>
+                            <td><a href="/base/localizar_processo/?numero={{ contrato.solicitacao.processo.numero }}" target="_blank">{{ contrato.solicitacao.processo }}</a></td>
+                        </tr>
+                    {% endif %}
                     <tr>
-                        <th><b>Nº do Processo</b></th>
-                        <td><a href="/base/localizar_processo/?numero={{ contrato.solicitacao.processo.numero }}" target="_blank">{{ contrato.solicitacao.processo }}</a></td>
+                        <th><b>Situação</b></th>
+                        <td>{{ contrato.get_situacao }}</td>
                     </tr>
-                {% endif %}
-                <tr>
-                    <th><b>Situação</b></th>
-                    <td>{{ contrato.get_situacao }}</td>
-                </tr>
-                <tr>
-                    <th><b>Secretaria Solicitante</b></th>
-                    <td>{{ contrato.solicitacao.setor_origem.secretaria|default_if_none:"-" }}</td>
-                </tr>
-                {% if contrato.pregao %}
                     <tr>
-                        <th><b>Licitação/Procedimento</b></th>
-                        <td><a href="/base/baixar_licitacoes_portal/?numero={{ contrato.pregao.num_pregao }}&modalidade={{contrato.pregao.modalidade.id}}" target="_blank">{{ contrato.pregao }}</a></td>
+                        <th><b>Secretaria Solicitante</b></th>
+                        <td>{{ contrato.solicitacao.setor_origem.secretaria|default_if_none:"-" }}</td>
                     </tr>
-                {% endif %}
-                <tr>
-                    <th><b>Objeto</b></th>
-                    <td>{{ contrato.solicitacao.objeto }}</td>
-                </tr>
-                <tr>
-                    <th width="20%"><b>Valor</b></th>
-                    <td>R$ {{ contrato.get_valor|format_money }}</td>
-               </tr>
-                <tr>
-                    <th width="30%"><b>Período de Vigência</b></th>
-                    <td>{{ contrato.data_inicio }} à {{ contrato.data_fim }}</td>
-                </tr>
-                <tr>
-                    <th><b>Fornecedor</b></th>
-                    <td>{{ contrato.get_fornecedor }}</td>
-                </tr>
-                <tr>
-                    <th><b>Dados do Contrato</b></th>
-                    <td><a href="/base/relatorio_info_contrato/{{ contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
-                </tr>
-
-                {% if contrato.get_arquivos_publicos %}
+                    {% if contrato.pregao %}
+                        <tr>
+                            <th><b>Licitação/Procedimento</b></th>
+                            <td><a href="/base/baixar_licitacoes_portal/?numero={{ contrato.pregao.num_pregao }}&modalidade={{contrato.pregao.modalidade.id}}" target="_blank">{{ contrato.pregao }}</a></td>
+                        </tr>
+                    {% endif %}
                     <tr>
-                        <th><b>Arquivos</b></th>
-                        <td>
-                            {% for arquivo in contrato.get_arquivos_publicos %}
-                                <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
-                            {% endfor %}
-
-                        </td>
+                        <th><b>Objeto</b></th>
+                        <td>{{ contrato.solicitacao.objeto }}</td>
                     </tr>
-                {% endif %}
-            </table>
+                    <tr>
+                        <th width="20%"><b>Valor</b></th>
+                        <td>R$ {{ contrato.get_valor|format_money }}</td>
+                   </tr>
+                    <tr>
+                        <th width="30%"><b>Período de Vigência</b></th>
+                        <td>{{ contrato.data_inicio }} à {{ contrato.data_fim }}</td>
+                    </tr>
+                    <tr>
+                        <th><b>Fornecedor</b></th>
+                        <td>{{ contrato.get_fornecedor }}</td>
+                    </tr>
+                    <tr>
+                        <th><b>Dados do Contrato</b></th>
+                        <td><a href="/base/relatorio_info_contrato/{{ contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
+                    </tr>
 
-        {% endfor %}
-        {% paginate %}
+                    {% if contrato.get_arquivos_publicos %}
+                        <tr>
+                            <th><b>Arquivos</b></th>
+                            <td>
+                                {% for arquivo in contrato.get_arquivos_publicos %}
+                                    <a  href="/media/{{arquivo.arquivo }}" target="_blank">{{ arquivo.nome }}</a><br>
+                                {% endfor %}
+
+                            </td>
+                        </tr>
+                    {% endif %}
+                </table>
+
+            {% endfor %}
+            {% paginate %}
+        {% else %}
+            <p class="alert alert-info">Nenhum contrato encontrado.</p>
+        {% endif %}
     {% else %}
-        <p class="alert alert-info">Nenhum contrato encontrado.</p>
+        <p class="alert alert-info">Utilize os filtros para buscar os contratos.</p>
     {% endif %}
 
     <div id="myModal" class="modal fade" role="dialog">
