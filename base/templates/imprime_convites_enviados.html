@@ -1,0 +1,87 @@
+{% load bootstrap %}
+{% block extrastyle %}
+ <style>
+     #rectangle{
+        border:5px solid black;
+    }
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+
+     }
+
+     @page {
+            size: a4 landscape;
+            margin: 0.5cm;
+
+
+
+     }
+
+ </style>
+{% endblock %}
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center><font size="4">Convites Enviados - {{ solicitacao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
+  </h1>
+
+{% endblock %}
+
+
+{% block content %}
+<center>
+
+        {%  for email in emails %}
+            <table border="1" width="95%" cellpadding="5" cellspacing="5">
+            <tbody>
+                    <tr>
+                        <td width="20%">Título</td>
+                        <td>{{ email.titulo }}</td>
+                    </tr>
+                    <tr>
+                        <td>Destinatários</td>
+                        <td>{{ email.destinatarios }}</td>
+                    </tr>
+                    <tr>
+                        <td>Mensagem</td>
+                        <td>{{ email.mensagem }}</td>
+                    </tr>
+                    <tr>
+                        <td>Enviado em</td>
+                        <td>{{ email.enviado_em }} por {{ email.enviado_por.pessoafisica }}</td>
+                    </tr>
+            </tbody>
+         </table>
+         <br>
+        {% endfor %}
+
+        </center>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+

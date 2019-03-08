@@ -450,6 +450,9 @@ class SolicitacaoLicitacao(models.Model):
         else:
             return True
 
+    def tem_email_enviado(self):
+        return EmailEnviado.objects.filter(solicitacao=self).exists()
+
     def eh_credenciamento(self):
         return self.tipo_aquisicao in [self.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.CHAMADA_PUBLICA_OUTROS, self.CHAMADA_PUBLICA_PRONATER, self.CREDENCIAMENTO]
 
@@ -3876,3 +3879,16 @@ class Feriado(models.Model):
     class Meta:
         verbose_name = u'Feriado'
         verbose_name_plural = u'Feriados'
+
+
+class EmailEnviado(models.Model):
+    titulo = models.CharField(u'Título do Email', max_length=100)
+    destinatarios = models.CharField(u'Emails dos Destinatários', max_length=10000)
+    mensagem = models.CharField(u'Mensagem do Email', max_length=10000)
+    enviado_por = models.ForeignKey(User)
+    enviado_em = models.DateTimeField(u'Data de Cadastro', auto_now_add=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+
+    class Meta:
+        verbose_name = u'Email Enviado'
+        verbose_name_plural = u'Emails Enviados'

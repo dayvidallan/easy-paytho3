@@ -174,5 +174,3 @@ except ImportError, e:
     pass
 
 SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br'
-
-

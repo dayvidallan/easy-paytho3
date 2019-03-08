@@ -11354,12 +11354,20 @@ def enviar_convites(request, solicitacao_id):
     if config:
         url = config.url
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
-    if solicitacao.prazo_aberto and solicitacao.recebida_setor(request.user.pessoafisica.setor) and request.user.has_perm('base.pode_cadastrar_pesquisa_mercadologica'):
+    if True:
         form = EnviarConviteForm(request.POST or None)
         if form.is_valid():
             send_mail(form.cleaned_data.get('titulo'), form.cleaned_data.get('mensagem'), settings.EMAIL_HOST_USER,
              [form.cleaned_data.get('destinatarios')], fail_silently=False)
 
+            email = EmailEnviado()
+            email.titulo = form.cleaned_data.get('titulo')
+            email.mensagem = form.cleaned_data.get('mensagem')
+            email.destinatarios = form.cleaned_data.get('destinatarios')
+            email.solicitacao = solicitacao
+            email.enviado_em = datetime.datetime.now()
+            email.enviado_por = request.user
+            email.save()
             messages.success(request, u'Convites enviados com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % solicitacao.id)
 
@@ -11886,4 +11894,37 @@ def baixar_dispensas_portal(request):
         return response
 
     return render(request, 'baixar_dispensas_portal.html', locals(), RequestContext(request))
+
+@login_required()
+def imprime_convites_enviados(request, solicitacao_id):
+    config = get_config_geral()
+    solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
+    data_emissao = datetime.date.today()
+    emails = EmailEnviado.objects.filter(solicitacao_id=solicitacao_id)
+    destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+    configuracao = config
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT, configuracao.logo.name)
+
+
+    data = {'emails': emails, 'solicitacao': solicitacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
+    template = get_template('imprime_convites_enviados.html')
+
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
 
