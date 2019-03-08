@@ -1189,7 +1189,7 @@ class DocumentoSolicitacaoForm(forms.ModelForm):
 
 
 class FornecedorForm(forms.ModelForm):
-    cnpj = BRCNPJField(label=u'CNPJ', help_text=u'Utilize pontos e traços, no formato: XX.XXX.XXX/XXXX-XX')
+    cnpj = forms.CharField(label=u'CNPJ/CPF', help_text=u'Utilize pontos e traços, no formato: XX.XXX.XXX/XXXX-XX ou XXX.XXX.XXX-XX')
     class Meta:
         model = Fornecedor
         fields = ('__all__')
@@ -1205,17 +1205,72 @@ class FornecedorForm(forms.ModelForm):
 
 
     def clean(self):
-        if self.cleaned_data.get('cnpj') and len(self.cleaned_data.get('cnpj')) != 18:
-            self.add_error('cnpj', u'Formato inválido.')
+
         if not self.instance.pk:
             if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exists():
-                self.add_error('cnpj', u'Já existe um fornecedor cadastrado com esse CNPJ.')
+                self.add_error('cnpj', u'Já existe um fornecedor cadastrado com esse CNPJ/CPF.')
         else:
             if Fornecedor.objects.filter(cnpj=self.cleaned_data.get('cnpj')).exclude(id=self.instance.pk).exists():
-                self.add_error('cnpj', u'Já existe um fornecedor cadastrado com esse CNPJ.')
+                self.add_error('cnpj', u'Já existe um fornecedor cadastrado com esse CNPJ/CPF.')
 
         if self.cleaned_data.get('suspenso') and not self.cleaned_data.get('suspenso_ate'):
             self.add_error('suspenso_ate', u'Informe até qual data o fornecedor ficará suspenso')
+
+
+        if self.cleaned_data.get('cnpj'):
+            cpf = self.cleaned_data.get('cnpj')
+            cpf_valido = True
+            import re
+
+            if cpf_valido:
+               cpf = ''.join(re.findall('\d', str(cpf)))
+
+               if (not cpf) or (len(cpf) < 11):
+                   return False
+
+               # Pega apenas os 9 primeiros dígitos do CPF e gera os 2 dígitos que faltam
+               inteiros = map(int, cpf)
+               novo = inteiros[:9]
+
+               while len(novo) < 11:
+                   r = sum([(len(novo)+1-i)*v for i,v in enumerate(novo)]) % 11
+
+                   if r > 1:
+                       f = 11 - r
+                   else:
+                       f = 0
+                   novo.append(f)
+
+               # Se o número gerado coincidir com o número original, é válido
+               if novo != inteiros:
+                   cpf_valido = False
+
+
+            if not cpf_valido:
+                cnpj = ''.join(re.findall('\d', str(self.cleaned_data.get('cnpj'))))
+
+                if (not cnpj) or (len(cnpj) < 14):
+                   self.add_error('cnpj', u'Valor Inválido.')
+
+              # Pega apenas os 12 primeiros dígitos do CNPJ e gera os 2 dígitos que faltam
+                inteiros = map(int, cnpj)
+                novo = inteiros[:12]
+
+                prod = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+                while len(novo) < 14:
+                    r = sum([x*y for (x, y) in zip(novo, prod)]) % 11
+                    if r > 1:
+                        f = 11 - r
+                    else:
+                        f = 0
+                    novo.append(f)
+                    prod.insert(0, 6)
+
+                # Se o número gerado coincidir com o número original, é válido
+                if novo != inteiros:
+                    self.add_error('cnpj', u'CNPJ Inválido.')
+
+
 
 class UploadTermoHomologacaoForm(forms.ModelForm):
     class Meta:

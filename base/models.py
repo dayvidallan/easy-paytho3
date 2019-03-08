@@ -1935,7 +1935,7 @@ class ItemPregao(models.Model):
 
 class Fornecedor(models.Model):
     cnpj = models.CharField(u'CNPJ/CPF', max_length=255, help_text=u'Utilize pontos e traços.', unique=True)
-    razao_social = models.CharField(u'Razão Social', max_length=255)
+    razao_social = models.CharField(u'Razão Social/Nome', max_length=255)
     endereco = models.CharField(u'Endereço', max_length=255)
     telefones = models.CharField(u'Telefones', max_length=300)
     email = models.EmailField(u'Email')
