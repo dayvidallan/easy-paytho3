@@ -359,14 +359,15 @@ urlpatterns = [
     url(r'^gerar_xml_comprasnet/(?P<pregao_id>\d+)/$', views.gerar_xml_comprasnet, name='gerar_xml_comprasnet'),
     url(r'^comprasnet/(?P<pregao_id>\d+)/$', views.comprasnet, name='comprasnet'),
 
-     url(r'^pregoes/$', PregaoView.as_view({'get': 'list'}), name="pregoes"),
-     url(r'^pregoes/(?P<pk>\d+)/$', PregaoView.as_view({'get': 'retrieve'}), name="pregoes_get"),
-     url(r'^atas/$', ARPView.as_view({'get': 'list'}), name="atas"),
-     url(r'^atas/(?P<pk>\d+)/$', ARPView.as_view({'get': 'retrieve'}), name="atas_get"),
-     url(r'^anexo_10/$', views.anexo_10, name='anexo_10'),
-     url(r'^anexo_11/$', views.anexo_11, name='anexo_11'),
-     url(r'^relatorios_tce/$', views.relatorios_tce, name='relatorios_tce'),
-     url(r'^imprime_convites_enviados/(?P<solicitacao_id>\d+)/$', views.imprime_convites_enviados, name='imprime_convites_enviados'),
+    url(r'^pregoes/$', PregaoView.as_view({'get': 'list'}), name="pregoes"),
+    url(r'^pregoes/(?P<pk>\d+)/$', PregaoView.as_view({'get': 'retrieve'}), name="pregoes_get"),
+    url(r'^atas/$', ARPView.as_view({'get': 'list'}), name="atas"),
+    url(r'^atas/(?P<pk>\d+)/$', ARPView.as_view({'get': 'retrieve'}), name="atas_get"),
+    url(r'^anexo_10/$', views.anexo_10, name='anexo_10'),
+    url(r'^anexo_11/$', views.anexo_11, name='anexo_11'),
+    url(r'^relatorios_tce/$', views.relatorios_tce, name='relatorios_tce'),
+    url(r'^imprime_convites_enviados/(?P<solicitacao_id>\d+)/$', views.imprime_convites_enviados, name='imprime_convites_enviados'),
+    url(r'^pedidos_arp_secretarias/(?P<ata_id>\d+)/$', views.pedidos_arp_secretarias, name='pedidos_arp_secretarias'),
 
 
 ]

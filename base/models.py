@@ -2846,6 +2846,9 @@ class AtaRegistroPreco(models.Model):
         return False
 
 
+    def tem_pedido(self):
+        return PedidoAtaRegistroPreco.objects.filter(ata=self).exists()
+
 class Credenciamento(models.Model):
     numero = models.CharField(max_length=100, help_text=u'No formato: 99999/9999', verbose_name=u'Número', unique=False)
     valor = models.DecimalField(decimal_places=2,max_digits=20, null=True)

@@ -605,6 +605,11 @@
                     <tr>
                         <td><a href="/base/relatorio_info_arp/{{ ata.pk }}/" target="_blank">Informações da Ata de Registro de Preço</a></td>
                     </tr>
+                    {% if ata.tem_pedido %}
+                        <tr>
+                            <td><a href="/base/pedidos_arp_secretarias/{{ ata.pk }}/" target="_blank">Secretarias que Realizaram Pedidos</a></td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td><a href="/base/relatorio_qtd_disponivel_ata/{{ ata.pk }}/0/" target="_blank">Quantidades Disponíveis</a></td>
                     </tr>

@@ -689,10 +689,15 @@ class LogDownloadArquivoForm(forms.ModelForm):
         self.fields['email'].help_text = u'Digite um email válido. O link para download do arquivo será enviado para este email.'
 
 class UploadPesquisaForm(forms.ModelForm):
-    arquivo = forms.FileField(label=u'Importar Planilha Preenchida', required=False)
+    arquivo = forms.FileField(label=u'Importar Planilha Preenchida', required=False, help_text=u'O formato do arquivo deve ser XLS ou XLSX.')
     class Meta:
         model = PesquisaMercadologica
         fields = ['arquivo']
+
+    def clean(self):
+        if self.cleaned_data.get('arquivo') and (not self.cleaned_data.get('arquivo').name.lower().endswith('.xls') and not self.cleaned_data.get('arquivo').name.lower().endswith('.xlsx')):
+            self.add_error(u'arquivo', u'Formato de arquivo não aceito (utilize somente arquivos XLS ou XLSX).')
+        return self.clean
 
 class AlteraLanceForm(forms.ModelForm):
     class Meta:
