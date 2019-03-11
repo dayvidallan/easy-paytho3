@@ -41,6 +41,21 @@ function exibir_esconder_campo() {
 
     }
 
+    $('input[type=radio][name=optionsRadios]').change(function() {
+    if (this.value == 'preencher') {
+         $("#preencher_manualmente").show();
+         $("#validade").prop('required',true);
+          $("#upload").hide();
+        $("#id_arquivo").prop('required',false);
+    }
+    else if (this.value == 'enviar_planilha') {
+        $("#upload").show();
+        $("#id_arquivo").prop('required',true);
+         $("#preencher_manualmente").hide();
+         $("#validade").prop('required',false);
+    }
+});
+
  }
 
 
@@ -93,8 +108,10 @@ function exibir_esconder_campo() {
     <fieldset>
         <legend>Dados da Pesquisa</legend>
         <div id="mensagem_erro" class="alert alert-warning">Para sua comodidade, baixe a planilha de itens, preencha os dados e importe o arquivo no campo abaixo ou preencha manualmente a proposta clicando na opção abaixo.</div>
-        <input type="checkbox" name="preencher" id="preencher"><font size="4"> Preencher a Proposta Manualmente</font></input><br>
-        <input type="checkbox" name="enviar_planilha" id="enviar_planilha"><font size="4"> Preencher Planilha e Enviar Proposta</font></input>
+        <!--<input type="checkbox" name="preencher" id="preencher"><font size="4"> Preencher a Proposta Manualmente</font></input><br>-->
+        <!--<input type="checkbox" name="enviar_planilha" id="enviar_planilha"><font size="4"> Preencher Planilha e Enviar Proposta</font></input>-->
+        <input type="radio" name="optionsRadios" value="preencher" /><font size="4"> Preencher a Proposta Manualmente</font></input><br>
+        <input type="radio" name="optionsRadios" value="enviar_planilha" /><font size="4"> Preencher Planilha e Enviar Proposta</font></input>
         <br><br>
         <div id="upload">
 
