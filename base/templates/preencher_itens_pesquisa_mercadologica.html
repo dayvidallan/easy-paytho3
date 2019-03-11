@@ -13,20 +13,29 @@
 {% endif %}
 {% block extrajs %}
 <script>
+
 function exibir_esconder_campo() {
     if ($('#preencher').is(':checked')) {
         $("#preencher_manualmente").show();
-        $("#upload").hide();
         $("#validade").prop('required',true);
-        $("#id_arquivo").prop('required',false);
 
 
 
     } else {
         $("#preencher_manualmente").hide();
-        $("#upload").show();
         $("#validade").prop('required',false);
+
+
+
+
+    }
+    if ($('#enviar_planilha').is(':checked')) {
+        $("#upload").show();
         $("#id_arquivo").prop('required',true);
+
+    } else {
+        $("#upload").hide();
+        $("#id_arquivo").prop('required',false);
 
 
 
@@ -50,6 +59,9 @@ function exibir_esconder_campo() {
      exibir_esconder_campo();
 
      $('#preencher').on('change', function(){
+        exibir_esconder_campo();
+    });
+     $('#enviar_planilha').on('change', function(){
         exibir_esconder_campo();
     });
 });
@@ -81,11 +93,12 @@ function exibir_esconder_campo() {
     <fieldset>
         <legend>Dados da Pesquisa</legend>
         <div id="mensagem_erro" class="alert alert-warning">Para sua comodidade, baixe a planilha de itens, preencha os dados e importe o arquivo no campo abaixo ou preencha manualmente a proposta clicando na opção abaixo.</div>
-        <input type="checkbox" name="preencher" id="preencher"><font size="4"> Preencher Manualmente</font></input>
+        <input type="checkbox" name="preencher" id="preencher"><font size="4"> Preencher a Proposta Manualmente</font></input><br>
+        <input type="checkbox" name="enviar_planilha" id="enviar_planilha"><font size="4"> Preencher Planilha e Enviar Proposta</font></input>
         <br><br>
         <div id="upload">
 
-            <a href="/base/planilha_propostas_solicitacao/{{ solicitacao.id }}/" class="btn btn-success">Baixar Planilha</a>
+            <a href="/base/planilha_propostas_solicitacao/{{ solicitacao.id }}/">Clique aqui para baixar a planilha</a>, preencha o arquivo e envie no formulário abaixo.
             <div class="miolo">
                 <div class="row-fluid">
                     <div class="col-xs-12">
