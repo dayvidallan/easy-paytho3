@@ -1442,6 +1442,7 @@ class AderirARPForm(forms.ModelForm):
     objetivo = forms.CharField(label=u'Objetivo', widget=forms.Textarea(), required=True)
     justificativa = forms.CharField(label=u'Justificativa', widget=forms.Textarea(), required=True)
     numero = forms.CharField(label=u'Número da ARP',required=True)
+    fornecedor_adesao_arp = forms.ModelChoiceField(queryset=Fornecedor.objects, label=u'Fornecedor', required=False, widget=autocomplete.ModelSelect2(url='fornecedor-autocomplete'))
 
     class Meta:
         model = AtaRegistroPreco

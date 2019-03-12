@@ -2,7 +2,8 @@
 
 from django.conf.urls import url
 from base import views
-from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete, PregaoView, ARPView
+from base.views import SecretariaAutocomplete, ParticipantePregaoAutocomplete, PessoaFisicaAutocomplete, MaterialConsumoAutocomplete, PregaoView, ARPView, \
+    FornecedorAutocomplete
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -345,6 +346,7 @@ urlpatterns = [
     url(r'^participantepregao-autocomplete/$', ParticipantePregaoAutocomplete.as_view(), name='participantepregao-autocomplete'),
     url(r'^pessoafisica-autocomplete/$', PessoaFisicaAutocomplete.as_view(), name='pessoafisica-autocomplete'),
     url(r'^materialconsumo-autocomplete/$', MaterialConsumoAutocomplete.as_view(), name='materialconsumo-autocomplete'),
+    url(r'^fornecedor-autocomplete/$', FornecedorAutocomplete.as_view(), name='fornecedor-autocomplete'),
 
 
     url(r'^ativar_item_pregao/(?P<item_id>\d+)/$', views.ativar_item_pregao, name='ativar_item_pregao'),

@@ -110,6 +110,20 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
+class FornecedorAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+
+        # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated():
+            return Fornecedor.objects.none()
+
+        qs = Fornecedor.objects.all()
+
+        if self.q:
+            qs = qs.filter(Q(cnpj__icontains=self.q) | Q(razao_social__icontains=self.q))
+
+        return qs
+
 def imprimir_cabecalho(document, configuracao, logo, municipio):
 
     table = document.add_table(rows=1, cols=2)
