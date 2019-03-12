@@ -6272,12 +6272,14 @@ def memorando(request, solicitacao_id):
         '#NUM#' : solicitacao.num_memorando,
         '#MUNICIPIO#' : municipio or u'-',
         '#DATA#': datetime.date.today(),
-        # '#OBJETIVO#': solicitacao.objetivo,
-        # '#OBJETO#': solicitacao.objeto,
+        '#ORIGEM#': solicitacao.setor_origem.secretaria.nome,
+        '#OBJETO#': solicitacao.objeto,
+        '#OBJETIVO#': solicitacao.objetivo,
         # '#IT#': libreoffice_new_line(itens or '-'),
         # '#QUANT#': libreoffice_new_line(quantidades or '-'),
         # '#UN#': libreoffice_new_line(unidades or '-'),
-        # '#DES#': libreoffice_new_line(descricoes or '-'),
+        '#RESPONSAVEL#': request.user.pessoafisica.nome,
+        '#MATRICULA#': libreoffice_new_line(request.user.pessoafisica.matricula or ''),
 
     }
     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/memorando.docx'))
