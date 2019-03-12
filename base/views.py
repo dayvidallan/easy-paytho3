@@ -8020,7 +8020,9 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                         sheet = workbook.sheet_by_index(0)
 
                 except XLRDError:
-                    raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    messages.error(request, u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    return HttpResponseRedirect(u'/base/carregar_planilha_itens_adesao_arp/%s/' % ata.id)
+
 
                 for row in range(3, sheet.nrows):
 
@@ -8032,7 +8034,9 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                     valor = unicode(sheet.cell_value(row, 4)).strip()
                     if row == 3:
                         if especificacao != u'MATERIAL' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
-                            raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
+                            messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
+                            return HttpResponseRedirect(u'/base/carregar_planilha_itens_adesao_arp/%s/' % ata.id)
+
                     else:
                         if especificacao and unidade and qtd:
                             if TipoUnidade.objects.filter(nome=unidade).exists():
