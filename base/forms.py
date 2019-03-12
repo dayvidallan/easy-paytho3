@@ -1292,7 +1292,7 @@ class UploadTermoHomologacaoForm(forms.ModelForm):
 class BaixarEditaisForm(forms.Form):
     METHOD = u'GET'
 
-    numero = forms.CharField(label=u'Digite o número da licitação/procedimento', required=False)
+    numero = forms.CharField(label=u'Digite o termo da busca (número do procedimento, por exemplo):', required=False)
     ano = forms.ChoiceField([],
                 required = False,
                 label    = u'Filtrar por Ano:',
