@@ -894,7 +894,7 @@ def baixar_editais(request):
         if form.cleaned_data.get('modalidade'):
             pregoes = pregoes.filter(modalidade=form.cleaned_data.get('modalidade'))
         if form.cleaned_data.get('numero'):
-            pregoes = pregoes.filter(Q(num_pregao__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) |)
+            pregoes = pregoes.filter(Q(num_pregao__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')) | Q(objeto__icontains=form.cleaned_data.get('numero')))
 
         if form.cleaned_data.get('ano'):
             pregoes = pregoes.filter(data_abertura__year=form.cleaned_data.get('ano'))
