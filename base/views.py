@@ -385,7 +385,8 @@ def cadastra_proposta_pregao(request, pregao_id):
                         workbook = xlrd.open_workbook(file_contents=arquivo_up.read())
                         sheet = workbook.sheet_by_index(0)
                 except XLRDError:
-                    raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    messages.error(request, u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/' % pregao_id)
                 PropostaItemPregao.objects.filter(pregao=pregao, participante=fornecedor).delete()
                 for row in range(9, sheet.nrows):
                     try:
@@ -396,7 +397,8 @@ def cadastra_proposta_pregao(request, pregao_id):
                             valor = unicode(sheet.cell_value(row, 7)).strip()
                             if row == 0:
                                 if item != u'Item' or valor != u'VALOR UNITÁRIO':
-                                    raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
+                                    messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
+                                    return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/' % pregao_id)
                             else:
                                 if item and valor:
                                     item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
@@ -429,7 +431,8 @@ def cadastra_proposta_pregao(request, pregao_id):
 
 
                     except ValueError:
-                        raise Exception(u'Alguma coluna da planilha possui o valor incorreto.')
+                        messages.error(request, u'Alguma coluna da planilha possui o valor incorreto.')
+                        return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/' % pregao_id)
             if not edicao and not arquivo_up:
                 for idx, item in enumerate(request.POST.getlist('itens'), 1):
                     if item:
@@ -2800,7 +2803,8 @@ def importar_itens(request, solicitacao_id):
                         sheet = workbook.sheet_by_index(0)
                         ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao).delete()
                 except XLRDError:
-                    raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    messages.error(request, u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                    return HttpResponseRedirect(u'/base/importar_itens/%s/' % solicitacao_id)
 
                 for row in range(1, sheet.nrows):
 
@@ -2810,7 +2814,8 @@ def importar_itens(request, solicitacao_id):
                     qtd = unicode(sheet.cell_value(row, 3)).strip()
                     if row == 1:
                         if especificacao != u'ESPECIFICAÇÃO DO PRODUTO' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
-                            raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
+                            messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
+                            return HttpResponseRedirect(u'/base/importar_itens/%s/' % solicitacao_id)
                     else:
                         if especificacao and unidade and qtd:
                             try:
@@ -2880,7 +2885,8 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                     sheet = workbook.sheet_by_index(0)
                     ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa).delete()
             except XLRDError:
-                raise Exception(u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                messages.error(request, u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
+                return HttpResponseRedirect(u'/base/upload_itens_pesquisa_mercadologica/%s/' % pesquisa_id)
 
             for row in range(0, sheet.nrows):
                 item = unicode(sheet.cell_value(row, 0)).strip()
@@ -2890,7 +2896,9 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                 valor = unicode(sheet.cell_value(row, 4)).strip()
                 if row == 0:
                     if item!= u'ITEM' or especificacao != u'MATERIAL' or unidade != u'UNIDADE' or marca != u'MARCA' or valor!=u'VALOR UNITÁRIO':
-                        raise Exception(u'Não foi possível processar a planilha. As colunas devem ter Item, Material, Unidade e Marca e Valor Unitario.')
+                        messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Item, Material, Unidade e Marca e Valor Unitario.')
+                        return HttpResponseRedirect(u'/base/upload_itens_pesquisa_mercadologica/%s/' % pesquisa_id)
+
                 else:
                     if item and especificacao and unidade and valor:
                         item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=pesquisa.solicitacao, item=int(sheet.cell_value(row, 0)))
