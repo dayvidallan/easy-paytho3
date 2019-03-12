@@ -697,7 +697,7 @@ class UploadPesquisaForm(forms.ModelForm):
     def clean(self):
         if self.cleaned_data.get('arquivo') and (not self.cleaned_data.get('arquivo').name.lower().endswith('.xls') and not self.cleaned_data.get('arquivo').name.lower().endswith('.xlsx')):
             self.add_error(u'arquivo', u'Formato de arquivo não aceito (utilize somente arquivos XLS ou XLSX).')
-        return self.clean
+        return self.cleaned_data
 
 class AlteraLanceForm(forms.ModelForm):
     class Meta:
