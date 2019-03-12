@@ -6278,8 +6278,9 @@ def memorando(request, solicitacao_id):
         # '#IT#': libreoffice_new_line(itens or '-'),
         # '#QUANT#': libreoffice_new_line(quantidades or '-'),
         # '#UN#': libreoffice_new_line(unidades or '-'),
+        '#ORDENADOR#': solicitacao.setor_origem.secretaria.ordenador_despesa.nome,
         '#RESPONSAVEL#': request.user.pessoafisica.nome,
-        '#MATRICULA#': libreoffice_new_line(request.user.pessoafisica.matricula or ''),
+        '#MATRICULA#': request.user.pessoafisica.matricula or '',
 
     }
     template_docx = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'upload/modelos/memorando.docx'))
