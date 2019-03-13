@@ -148,8 +148,12 @@ class PessoaFisicaForm(forms.ModelForm):
 
     def clean(self):
 
-        if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf').replace('-','').replace('.','')).exists() and not self.edicao:
-            self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
+        if self.instance.pk:
+            if PessoaFisica.objects.exclude(id=self.instance.pk).filter(cpf=self.cleaned_data.get('cpf').replace('-','').replace('.','')).exists():
+                self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
+        else:
+            if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf').replace('-','').replace('.','')).exists():
+                self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
 
 
 class CadastrarItemSolicitacaoForm(forms.ModelForm):
