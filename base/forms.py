@@ -413,6 +413,115 @@ class PregaoForm(forms.ModelForm):
             self.add_error('data_abertura', u'A data de abertura deve ser maior do que a data de término.')
 
 
+
+class EditarPregaoForm(forms.ModelForm):
+    num_processo = forms.CharField(label=u'Número do Processo', required=True)
+
+    fieldsets = (
+        (u'Dados Gerais', {
+            'fields': ('solicitacao', 'num_processo', 'num_pregao', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo')
+        }),
+        (u'Valores da Licitação', {
+            'fields': ('valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', )
+        }),
+        (u'Cronograma', {
+            'fields': ('data_inicio', 'data_termino', 'data_abertura_original', 'hora_abertura_original', 'data_abertura', 'hora_abertura', 'local', 'responsavel')
+        }),
+    )
+    class Meta:
+        model = Pregao
+        fields = ['solicitacao', 'num_processo', 'data_abertura_original', 'hora_abertura_original', 'num_pregao', 'objeto', 'comissao', 'modalidade', 'fundamento_legal', 'tipo', 'tipo_desconto', 'criterio', 'aplicacao_lcn_123_06', 'objeto_tipo', 'valor_total', 'recurso_proprio', 'recurso_federal', 'recurso_estadual', 'recurso_municipal', 'data_inicio', 'data_termino', 'data_abertura', 'hora_abertura', 'local', 'responsavel', 'situacao']
+
+
+    class Media:
+            js = ['/static/base/js/pregao.js']
+
+
+    def __init__(self, *args, **kwargs):
+        self.solicitacao = kwargs.pop('solicitacao', None)
+        self.request = kwargs.pop('request', None)
+        super(PregaoForm, self).__init__(*args, **kwargs)
+        self.fields['aplicacao_lcn_123_06'].label = u'MPE – Aplicação Da LCN 123/06'
+        self.fields['aplicacao_lcn_123_06'].help_text = u'<a href="http://www.planalto.gov.br/ccivil_03/leis/LCP/Lcp123.htm" target="_blank">De acordo com a Lei 123/06</a>'
+        if self.solicitacao and self.solicitacao.numero_meses_contratacao_global:
+
+            self.initial['valor_total'] = format_money(self.solicitacao.get_valor_da_solicitacao()*self.solicitacao.numero_meses_contratacao_global)
+        else:
+            self.initial['valor_total'] = format_money(self.solicitacao.get_valor_da_solicitacao())
+        self.fields['valor_total'].widget.attrs = {'readonly': 'True'}
+        self.fields['objeto'].initial = self.solicitacao.objeto
+        self.fields['num_pregao'].label = u'Número da Licitação/Procedimento'
+
+        if not self.request.user.is_superuser:
+            del self.fields['situacao']
+        if not self.instance.id:
+            self.fields['solicitacao'] = forms.ModelChoiceField(label=u'Solicitação', queryset=SolicitacaoLicitacao.objects.filter(id=self.solicitacao.id), initial=0)
+            self.fields['solicitacao'].widget.attrs = {'readonly': 'True'}
+
+        else:
+            del self.fields['solicitacao']
+        self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_termino'].widget.attrs = {'class': 'vDateField'}
+        self.fields['data_abertura'].widget.attrs = {'class': 'vDateField'}
+
+        if not self.instance.pk:
+            self.fields['num_pregao'].initial = self.solicitacao.get_proximo_pregao()
+
+        if self.solicitacao.processo:
+            self.fields['num_processo'].initial = self.solicitacao.processo
+            self.fields['num_processo'].widget.attrs = {'readonly': 'True'}
+        if self.solicitacao.tipo_aquisicao == self.solicitacao.CREDENCIAMENTO:
+            self.fields['num_pregao'].label = u'Número do Credenciamento'
+            self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CREDENCIAMENTO)
+            self.fields['modalidade'].initial = ModalidadePregao.CREDENCIAMENTO
+
+        elif self.solicitacao.tipo_aquisicao in [self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, self.solicitacao.CHAMADA_PUBLICA_OUTROS, self.solicitacao.CHAMADA_PUBLICA_PRONATER]:
+            self.fields['num_pregao'].label = u'Número da Chamada Pública'
+            if self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR
+            elif self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_OUTROS:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_OUTROS)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_OUTROS
+            elif self.solicitacao.tipo_aquisicao == self.solicitacao.CHAMADA_PUBLICA_PRONATER:
+                self.fields['modalidade'].queryset = ModalidadePregao.objects.filter(id=ModalidadePregao.CHAMADA_PUBLICA_PRONATER)
+                self.fields['modalidade'].initial = ModalidadePregao.CHAMADA_PUBLICA_PRONATER
+
+        if self.solicitacao.eh_credenciamento():
+
+            del self.fields['tipo']
+            del self.fields['aplicacao_lcn_123_06']
+
+
+
+    def clean(self):
+        if not self.instance.pk and Pregao.objects.filter(solicitacao=self.solicitacao).exists():
+            self.add_error('solicitacao', u'Já existe um pregão para esta solicitação.')
+
+        if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_termino') < self.cleaned_data.get('data_inicio'):
+            self.add_error('data_termino', u'A data de término não pode ser menor do que a data de início.')
+
+        if not self.cleaned_data.get('objeto_tipo'):
+            self.add_error('objeto_tipo', u'Informe o tipo do objeto.')
+
+        if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_termino'):
+            teste = self.cleaned_data.get('data_termino')- self.cleaned_data.get('data_inicio')
+            if self.cleaned_data.get('modalidade').nome in [u'Pregão Presencial', u'Pregão Presencial - Sistema de Registro de Preços (SRP)'] and teste.days < 8:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 8 dias úteis de acordo com a legislação atual.')
+            elif self.cleaned_data.get('modalidade').nome == u'Carta Convite' and teste.days < 5:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 5 dias corridos de acordo com a legislação atual.')
+            elif self.cleaned_data.get('modalidade').nome == u'Tomada de Preço' and teste.days < 15:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 15 dias corridos de acordo com a legislação atual.')
+            elif self.cleaned_data.get('modalidade').nome == u'Concorrência Pública' and teste.days < 30:
+                self.add_error('data_termino', u'A data de término deve ser de pelo menos 30 dias corridos de acordo com a legislação atual.')
+
+
+
+
+        if self.cleaned_data.get('data_abertura') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_abertura') < self.cleaned_data.get('data_termino'):
+            self.add_error('data_abertura', u'A data de abertura deve ser maior do que a data de término.')
+
+
 class SolicitacaoForm(forms.ModelForm):
     objeto = forms.CharField(label=u'Descrição do Objeto', widget=forms.Textarea(), required=True)
     objetivo = forms.CharField(label=u'Objetivo', widget=forms.Textarea(), required=True)

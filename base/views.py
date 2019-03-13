@@ -6486,12 +6486,10 @@ def editar_pregao(request, pregao_id):
     solicitacao = pregao.solicitacao
     if (request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor)) or request.user.is_superuser:
         title = u'Editar %s' % pregao.modalidade
-        form = PregaoForm(request.POST or None, instance=pregao, solicitacao=pregao.solicitacao, request=request)
+        form = EditarPregaoForm(request.POST or None, instance=pregao, solicitacao=pregao.solicitacao, request=request)
         if form.is_valid():
-            o = form.save(False)
-            o.data_abertura_original = form.cleaned_data.get('data_abertura')
-            o.hora_abertura_original = form.cleaned_data.get('hora_abertura')
-            o.save()
+            form.save()
+
             if not solicitacao.processo and form.cleaned_data.get('num_processo'):
                 novo_processo = Processo()
                 novo_processo.pessoa_cadastro = request.user
