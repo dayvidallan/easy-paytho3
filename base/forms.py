@@ -440,7 +440,7 @@ class EditarPregaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.solicitacao = kwargs.pop('solicitacao', None)
         self.request = kwargs.pop('request', None)
-        super(PregaoForm, self).__init__(*args, **kwargs)
+        super(EditarPregaoForm, self).__init__(*args, **kwargs)
         self.fields['aplicacao_lcn_123_06'].label = u'MPE – Aplicação Da LCN 123/06'
         self.fields['aplicacao_lcn_123_06'].help_text = u'<a href="http://www.planalto.gov.br/ccivil_03/leis/LCP/Lcp123.htm" target="_blank">De acordo com a Lei 123/06</a>'
         if self.solicitacao and self.solicitacao.numero_meses_contratacao_global:
