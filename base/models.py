@@ -1565,6 +1565,8 @@ class Pregao(models.Model):
     data_termino = models.DateField(u'Data de Término da Retirada do Edial', null=True, blank=True)
     data_abertura = models.DateField(u'Data de Abertura do Certame', null=True, blank=True)
     hora_abertura = models.TimeField(u'Hora de Abertura do Certame', null=True, blank=True)
+    data_abertura_original = models.DateField(u'Data Inicial de Abertura do Certame', null=True, blank=True)
+    hora_abertura_original = models.TimeField(u'Hora Inicial de Abertura do Certame', null=True, blank=True)
     local = models.CharField(u'Local', max_length=1500)
     responsavel = models.CharField(u'Responsável', max_length=255)
     situacao = models.CharField(u'Situação', max_length=50, choices=SITUACAO_CHOICES, default=CADASTRADO)

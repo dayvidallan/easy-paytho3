@@ -1131,7 +1131,10 @@ def cadastrar_pregao(request, solicitacao_id):
     if request.user.has_perm('base.pode_cadastrar_pregao') and solicitacao.recebida_setor(request.user.pessoafisica.setor):
         form = PregaoForm(request.POST or None, solicitacao=solicitacao, request=request)
         if form.is_valid():
-            form.save()
+            o = form.save(False)
+            o.data_abertura_original = form.cleaned_data.get('data_abertura')
+            o.hora_abertura_original = form.cleaned_data.get('hora_abertura')
+            o.save()
             solicitacao.situacao = SolicitacaoLicitacao.EM_LICITACAO
             if not solicitacao.processo and form.cleaned_data.get('num_processo'):
                 novo_processo = Processo()
@@ -6485,7 +6488,10 @@ def editar_pregao(request, pregao_id):
         title = u'Editar %s' % pregao.modalidade
         form = PregaoForm(request.POST or None, instance=pregao, solicitacao=pregao.solicitacao, request=request)
         if form.is_valid():
-            form.save()
+            o = form.save(False)
+            o.data_abertura_original = form.cleaned_data.get('data_abertura')
+            o.hora_abertura_original = form.cleaned_data.get('hora_abertura')
+            o.save()
             if not solicitacao.processo and form.cleaned_data.get('num_processo'):
                 novo_processo = Processo()
                 novo_processo.pessoa_cadastro = request.user
