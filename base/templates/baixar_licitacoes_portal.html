@@ -199,7 +199,12 @@
                         </tr>
                         <tr>
                             <th><b>Dados da Licitação</b></th>
-                            <td><a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" class=link" target="_blank">Ver Dados</a></td>
+                            <td>
+                                <a href="/base/relatorio_dados_licitacao/{{ pregao.pk }}/" class=link" target="_blank">Ver Dados</a>
+                                {%  if pregao.tem_resultado %}
+                                    <br><a href="/base/relatorio_resultado_final/{{ pregao.id }}/" target="_blank">Resultado Final - Geral</a>
+                                {% endif %}
+                            </td>
                         </tr>
                          <!--{%  if pregao.tem_resultado %}-->
 

@@ -403,7 +403,7 @@
                             {%  for item in pregao.participantepregao_set.all %}
                                 <tr>
 
-                                    <td>{{ item.fornecedor.razao_social }} - {{ item.fornecedor.cnpj }} {% if item.fornecedor.suspenso %}<a href='/base/imprimir_fornecedor/{{item.fornecedor.id}}/' target="_blank"><span class="label label-danger">Suspenso</span></a>{% endif %}</td>
+                                    <td><a href="/base/editar_fornecedor/{{ item.fornecedor.id }}/" target="_blank">{{ item.fornecedor.razao_social }} - {{ item.fornecedor.cnpj }}</a>{% if item.fornecedor.suspenso %}<a href='/base/imprimir_fornecedor/{{item.fornecedor.id}}/' target="_blank"><span class="label label-danger">Suspenso</span></a>{% endif %}</td>
                                     <td>
                                         {% if item.me_epp %}
                                             <font color="green">Sim</font></span>
