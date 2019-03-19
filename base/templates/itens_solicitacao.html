@@ -113,7 +113,6 @@
                     <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
                 {% elif solicitacao.pode_abrir_para_compra %}
                     <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
-
                 {% endif %}
 
              {% endif %}
@@ -523,6 +522,21 @@
             {% if solicitacao.get_ata.itemataregistropreco_set.exists and not solicitacao.contrato_set.exists and eh_gerente %}
                 <a href="/base/criar_contrato_adesao_ata/{{ solicitacao.get_ata.id }}/" class="btn btn-success">Criar Contrato</a>
             {% endif %}
+            {% if perms.base.pode_cadastrar_pesquisa_mercadologica and recebida_no_setor and not solicitacao.get_contrato %}
+                {% if solicitacao.prazo_aberto and not solicitacao.tem_ordem_compra %}
+                    <!-- <a class="btn btn-primary" href="/base/pesquisa_mercadologica/{{ solicitacao.id }}/">Gerar Planilha de Itens</a> -->
+                    {% if solicitacao.pode_cadastrar_pesquisa %}
+                        <a href="/base/enviar_convites/{{solicitacao.id}}/" class="btn btn-success" target="_blank">Enviar Convites</a>
+                        <a class="btn btn-warning" href="/base/preencher_pesquisa_mercadologica/{{ solicitacao.id }}/">Preencher Pesquisa</a>
+                    {% endif %}
+                    <a class="btn btn-info" href="/base/ver_pesquisas/{{ solicitacao.id }}/">Ver Pesquisas</a>
+                    <a class="btn btn-danger" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Fechar para Pesquisa</a>
+                    <a class="btn btn-primary" href="http://paineldeprecos.planejamento.gov.br" target="_blank">Painel de Preços</a>
+                {% elif solicitacao.pode_abrir_para_compra %}
+                    <a class="btn btn-success" href="/base/prazo_pesquisa_mercadologica/{{ solicitacao.id }}/">Abrir para Pesquisa</a>
+                {% endif %}
+
+             {% endif %}
 
             <a class="btn btn-default" href="/base/lista_documentos/{{ solicitacao.pk }}/">Documentos</a>
         </div>
