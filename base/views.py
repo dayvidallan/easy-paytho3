@@ -11833,7 +11833,7 @@ def baixar_dispensas_portal(request):
     config = get_config_geral()
     title = u'Portal da Transparência - %s' % config.nome
     hoje = datetime.date.today()
-    solicitacoes = SolicitacaoLicitacao.objects.filter(tipo_aquisicao__in=[SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]).order_by('-num_memorando')
+    solicitacoes = SolicitacaoLicitacao.objects.filter(ordemcompra__isnull=False, tipo_aquisicao__in=[SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]).order_by('-num_memorando')
     form = BaixarDispensaForm(request.GET or None)
     buscou = False
 
