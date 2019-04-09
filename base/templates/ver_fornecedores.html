@@ -50,6 +50,13 @@
                             {% endif %}
                         </div>
                     </div>
+                    <div class="col-xs-2 col-md-2">
+                        <div class="controls">{{ form.municipio|bootstrap }}
+                            {% if form.municipio.help_text %}
+                                <p class="help-inline"><small>{{ form.municipio.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
 
 
 

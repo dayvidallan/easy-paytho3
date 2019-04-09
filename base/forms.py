@@ -1630,7 +1630,14 @@ class VisitantePregaoForm(forms.ModelForm):
 
 class BuscaFornecedorForm(forms.Form):
     nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:', required=False)
-    estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=False)
+    estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
+    municipio = utils.ChainedModelChoiceField(Municipio.objects,
+      label                = u'Município',
+      empty_label          = u'Selecione o Estado',
+      obj_label            = 'nome',
+      form_filters         = [('estado', 'estado_id')],
+      required=False
+    )
 
 class LocalizarProcessoForm(forms.Form):
     METHOD = u'GET'
