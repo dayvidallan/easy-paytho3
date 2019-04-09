@@ -1308,9 +1308,18 @@ class DocumentoSolicitacaoForm(forms.ModelForm):
 
 class FornecedorForm(forms.ModelForm):
     cnpj = forms.CharField(label=u'CNPJ/CPF', help_text=u'Utilize pontos e traços, no formato: XX.XXX.XXX/XXXX-XX ou XXX.XXX.XXX-XX')
+    estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=True)
+    municipio = utils.ChainedModelChoiceField(Municipio.objects,
+      label                = u'Município',
+      empty_label          = u'Selecione o Estado',
+      obj_label            = 'nome',
+      form_filters         = [('estado', 'estado_id')],
+      required=False
+    )
+
     class Meta:
         model = Fornecedor
-        fields = ('__all__')
+        fields = ('cnpj', 'razao_social', 'endereco', 'estado', 'municipio', 'telefones', 'email', 'suspenso', 'suspenso_ate', 'motivo_suspensao')
 
     class Media:
             js = ['/static/base/js/fornecedor.js']
@@ -1620,7 +1629,8 @@ class VisitantePregaoForm(forms.ModelForm):
         fields = ('nome',  'cpf',)
 
 class BuscaFornecedorForm(forms.Form):
-    nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:')
+    nome = forms.CharField(label=u'Digite a razão social ou o CNPJ:', required=False)
+    estado = forms.ModelChoiceField(Estado.objects, label=u'Estado', required=False)
 
 class LocalizarProcessoForm(forms.Form):
     METHOD = u'GET'

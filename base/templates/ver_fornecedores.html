@@ -33,20 +33,31 @@
 
             <form action="." method="POST" class="form-horizontal">
                 {% csrf_token %}
-                 <div class="miolo">
-                    <div class="row-fluid">
-                        <div class="col-xs-4">
-
-                            {{ form|bootstrap }}
-                        </div>
-
-                        <div class="col-xs-6">
-                            <br>
-                            <p><button type="submit" class="btn btn-primary">Buscar</button></p>
-
+                 <div class="row-fluid">
+                    <div class="col-xs-3">
+                        <div class="controls">{{ form.nome|bootstrap }}
+                            {% if form.nome.help_text %}
+                                <p class="help-inline"><small>{{ form.nome.help_text }}</small></p>
+                            {% endif %}
                         </div>
                     </div>
-                 </div>
+
+
+                    <div class="col-xs-2 col-md-2">
+                        <div class="controls">{{ form.estado|bootstrap }}
+                            {% if form.estado.help_text %}
+                                <p class="help-inline"><small>{{ form.estado.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+
+                <div class="col-xs-1 col-md-1">
+                    <br>
+                    <p><button type="submit" class="btn btn-primary">Buscar</button></p>
+                </div>
+            </div>
             </form>
 
         </fieldset>

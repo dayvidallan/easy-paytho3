@@ -356,6 +356,7 @@ class SolicitacaoLicitacao(models.Model):
         (CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR, CHAMADA_PUBLICA_ALIMENTACAO_ESCOLAR),
         (CHAMADA_PUBLICA_OUTROS, CHAMADA_PUBLICA_OUTROS),
         (CHAMADA_PUBLICA_PRONATER, CHAMADA_PUBLICA_PRONATER),
+        (u'Outros Processos', u'Outros Processos'),
     )
 
     TIPO_AQUISICAO_E_COMPRAS_CHOICES = (
@@ -1942,6 +1943,7 @@ class Fornecedor(models.Model):
     cnpj = models.CharField(u'CNPJ/CPF', max_length=255, help_text=u'Utilize pontos e traços.', unique=True)
     razao_social = models.CharField(u'Razão Social/Nome', max_length=255)
     endereco = models.CharField(u'Endereço', max_length=255)
+    municipio = models.ForeignKey('base.Municipio', null=True, blank=True)
     telefones = models.CharField(u'Telefones', max_length=300)
     email = models.EmailField(u'Email')
     suspenso = models.BooleanField(u'Fornecedor Suspenso', default=False)
