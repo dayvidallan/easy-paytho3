@@ -154,7 +154,7 @@
                                 <td>{{ pregao.data_homologacao }}</td>
                             </tr>
                         {% endif %}
-                        <!--{% if pregao.situacao != pregao.CADASTRADO %}-->
+
                         <tr>
                             <th><b>Publicações</b></th>
                             <td>
@@ -173,26 +173,7 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <!--{% else %}-->
-                            <!--<tr>-->
-                                <!--<th><b>Publicações</b></th>-->
-                                <!--<td>-->
-                                    <!--{% for arquivo in pregao.get_arquivos_publicos %}-->
-                                        <!--<a  href="/base/baixar_arquivo/{{arquivo.id }}/">{{ arquivo.nome }}</a><br>-->
-                                    <!--{% endfor %}-->
-                                    <!--{% if pregao.get_contrato %}-->
-                                        <!--{% for arquivo in pregao.get_contrato.get_arquivos_publicos %}-->
-                                            <!--<a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>-->
-                                        <!--{% endfor %}-->
-                                    <!--{% endif %}-->
-                                    <!--{% if pregao.get_arp %}-->
-                                        <!--{% for arquivo in pregao.get_arp.get_arquivos_publicos %}-->
-                                            <!--<a  href="/media/{{arquivo.arquivo }}">{{ arquivo.nome }}</a><br>-->
-                                        <!--{% endfor %}-->
-                                    <!--{% endif %}-->
-                                <!--</td>-->
-                            <!--</tr>-->
-                        <!--{% endif %}-->
+                       
                         <tr>
                             <th><b>Participantes</b></th>
                             <td><a href="/base/relatorio_lista_participantes/{{ pregao.id }}/" class=link" target="_blank">Lista de Participantes</a></td>
