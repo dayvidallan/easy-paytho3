@@ -793,6 +793,8 @@ def ver_fornecedores(request, fornecedor_id=None):
             fornecedores = fornecedores.filter(Q(razao_social__icontains=form.cleaned_data.get('nome')) | Q(cnpj__icontains=form.cleaned_data.get('nome')))
         if form.cleaned_data.get('estado'):
             fornecedores = fornecedores.filter(municipio__estado=form.cleaned_data.get('estado'))
+        if form.cleaned_data.get('municipio'):
+            fornecedores = fornecedores.filter(municipio=form.cleaned_data.get('municipio'))
     exibe_popup = False
 
     if fornecedor_id:
