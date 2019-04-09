@@ -149,10 +149,10 @@ class PessoaFisicaForm(forms.ModelForm):
     def clean(self):
 
         if self.instance.pk:
-            if PessoaFisica.objects.exclude(id=self.instance.pk).filter(cpf=self.cleaned_data.get('cpf').replace('-','').replace('.','')).exists():
+            if self.cleaned_data.get('cpf') and PessoaFisica.objects.exclude(id=self.instance.pk).filter(cpf=self.cleaned_data.get('cpf').replace('-','').replace('.','')).exists():
                 self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
         else:
-            if PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf').replace('-','').replace('.','')).exists():
+            if self.cleaned_data.get('cpf') and PessoaFisica.objects.filter(cpf=self.cleaned_data.get('cpf').replace('-','').replace('.','')).exists():
                 self.add_error('cpf', u'Já existe um usuário cadastro com este CPF.')
 
 
