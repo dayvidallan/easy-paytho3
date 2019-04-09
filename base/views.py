@@ -789,7 +789,10 @@ def ver_fornecedores(request, fornecedor_id=None):
     fornecedores = Fornecedor.objects.all().order_by('razao_social')
     form = BuscaFornecedorForm(request.POST or None)
     if form.is_valid():
-        fornecedores = fornecedores.filter(Q(razao_social__icontains=form.cleaned_data.get('nome')) | Q(cnpj__icontains=form.cleaned_data.get('nome')))
+        if form.cleaned_data.get('nome'):
+            fornecedores = fornecedores.filter(Q(razao_social__icontains=form.cleaned_data.get('nome')) | Q(cnpj__icontains=form.cleaned_data.get('nome')))
+        if form.cleaned_data.get('estado'):
+            fornecedores = fornecedores.filter(municipio__estado=form.cleaned_data.get('estado'))
     exibe_popup = False
 
     if fornecedor_id:
