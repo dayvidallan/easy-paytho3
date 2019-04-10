@@ -74,6 +74,7 @@ ul{
                         {% else %}
                             <th>Valor</th>
                         {% endif %}
+                        <th>Situação</th>
 
                     </thead>
                     <tbody>
@@ -86,6 +87,7 @@ ul{
                                 {% else %}
                                     <td>{{ item.valor|format_money }}</td>
                                 {% endif %}
+                                <td>{{ item.get_situacao_valor|safe }}</td>
 
                             </tr>
                         {% endfor %}
