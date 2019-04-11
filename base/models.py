@@ -923,6 +923,12 @@ class ItemSolicitacaoLicitacao(models.Model):
             return str(ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self)[0].quantidade).replace('.', ',')
         return 0
 
+    def get_obs_pedido_secretaria(self):
+        usuario = tl.get_user()
+        if ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self).exists():
+            return ItemQuantidadeSecretaria.objects.filter(secretaria=usuario.pessoafisica.setor.secretaria, item=self)[0].observacoes
+        return 0
+
     def get_id_lote(self):
         return ItemLote.objects.filter(item=self)[0].lote.item
 
@@ -2611,6 +2617,7 @@ class ItemQuantidadeSecretaria(models.Model):
     justificativa_reprovacao = models.CharField(u'Motivo da Negação do Pedido', null=True, blank=True, max_length=1000)
     avaliado_em = models.DateTimeField(u'Avaliado Em', null=True, blank=True)
     avaliado_por = models.ForeignKey(User, related_name=u'pedido_avaliado_por', null=True)
+    observacoes = models.CharField(u'Observações', max_length=500, null=True, blank=True)
 
     def get_total(self):
         valor = self.item.valor_medio or 0

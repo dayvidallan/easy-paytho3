@@ -51,6 +51,7 @@
                 <tr>
                     <th width="40%">Item</th>
                     <th>Quantidade</th>
+                    <th>Observações</th>
                     <th>Aceito</th>
                     <th>Avaliado Por</th>
                     <th>Opções</th>
@@ -63,6 +64,7 @@
 
                        <td>{{ pedido.item }} - {{ pedido.item.material }}</td>
                        <td>{{ pedido.quantidade|format_quantidade  }}</td>
+                       <td>{{ pedido.observacoes|default_if_none:"-" }}</td>
                        <td>
                            {% if pedido.avaliado_em %}
                                {% if pedido.aprovado %}
