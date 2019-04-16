@@ -2757,7 +2757,7 @@ def informar_quantidades(request, solicitacao_id):
                     novo_preco.solicitacao = solicitacao
                     novo_preco.item = item_do_pregao
                     novo_preco.secretaria = request.user.pessoafisica.setor.secretaria
-                    novo_preco.observacoes = request.POST.getlist('observacoes')
+                    novo_preco.observacoes = request.POST.getlist('observacoes')[idx-1]
                     try:
                         novo_preco.quantidade = Decimal(request.POST.getlist('quantidade')[idx-1].replace('.','').replace(',','.'))
                     except:
