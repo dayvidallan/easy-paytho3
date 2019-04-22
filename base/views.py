@@ -11366,6 +11366,60 @@ def anexo_11(request):
                 c.value = row[col_num]
 
             contador_total += 1
+        for pregao in SolicitacaoLicitacao.objects.filter(tipo_aquisicao__in=[SolicitacaoLicitacao.TIPO_AQUISICAO_DISPENSA, SolicitacaoLicitacao.TIPO_AQUISICAO_INEXIGIBILIDADE]):
+            row_index = contador_total + 1
+
+            tipo = pregao.tipo_aquisicao
+
+
+            desc_part = ''
+            for participante in PesquisaMercadologica.objects.filter(solicitacao=pregao):
+                desc_part = desc_part + '%s (%s) ' % (participante.razao_social, participante.cnpj)
+
+            vencedores = ''
+            if pregao.get_fornecedor_dispensa():
+                vencedores = '%s (%s) ' % (pregao.get_fornecedor_dispensa().razao_social, pregao.get_fornecedor_dispensa().cnpj)
+
+            tipo_contato = ''
+            data_inicio = ''
+            if OrdemCompra.objects.filter(solicitacao=pregao).exists():
+                tipo_contato = u'%s' % OrdemCompra.objects.filter(solicitacao=pregao)[0].numero
+                data_inicio = OrdemCompra.objects.filter(solicitacao=pregao)[0].data
+            numero = ''
+            if pregao.processo:
+                numero = pregao.processo.numero
+            if pregao.get_fornecedor_dispensa():
+                valor = pregao.get_valor_da_solicitacao_dispensa(),
+                situacao = u'Concluído'
+            else:
+                valor = 0.00
+                situacao = u'Em Andamento'
+            row = [
+                numero,
+                pregao.num_memorando,
+                '-',
+                '-',
+
+                tipo,
+                'Menor Preço',
+                pregao.objeto,
+                format_money(valor),
+                desc_part,
+                vencedores,
+                '',
+                situacao,
+                '',
+                '',
+                tipo_contato,
+                data_inicio,
+
+
+            ]
+            for col_num in xrange(len(row)):
+                c = ws.cell(row=row_index + 1, column=col_num + 1)
+                c.value = row[col_num]
+
+            contador_total += 1
         wb.save(response)
         return response
     return render(request, 'anexo_11.html', locals(), RequestContext(request))
