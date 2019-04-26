@@ -1200,15 +1200,15 @@ def editar_solicitacao(request, solicitacao_id):
             o.data_cadastro = datetime.datetime.now()
             o.cadastrado_por = request.user
 
-            if not form.cleaned_data['interessados'] and not form.cleaned_data['todos_interessados']:
+            if not form.cleaned_data.get('interessados') and not form.cleaned_data.get('todos_interessados'):
                 o.prazo_resposta_interessados = None
             o.save()
 
-            if form.cleaned_data['todos_interessados']:
+            if form.cleaned_data.get('todos_interessados'):
                 for item in Secretaria.objects.all():
                     o.interessados.add(item)
 
-            elif form.cleaned_data['outros_interessados']:
+            elif form.cleaned_data.get('outros_interessados'):
                 form.save_m2m()
             messages.success(request, u'Solicitação cadastrada com sucesso.')
             return HttpResponseRedirect(u'/base/itens_solicitacao/%s/' % form.instance.id)
