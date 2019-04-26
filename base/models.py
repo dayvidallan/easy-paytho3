@@ -478,6 +478,7 @@ class SolicitacaoLicitacao(models.Model):
         return False
 
     def pode_receber_pedidos_secretarias(self):
+
         if self.prazo_resposta_interessados:
             return self.prazo_resposta_interessados >= datetime.now().date()
         return False
