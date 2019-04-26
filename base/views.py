@@ -1200,7 +1200,7 @@ def editar_solicitacao(request, solicitacao_id):
             o.data_cadastro = datetime.datetime.now()
             o.cadastrado_por = request.user
 
-            if not form.cleaned_data['interessados'] and not form.cleaned_data['todos_interessados']:
+            if not form.cleaned_data.get('interessados') and not form.cleaned_data.get('todos_interessados'):
                 o.prazo_resposta_interessados = None
             o.save()
 
