@@ -2757,7 +2757,7 @@ def informar_quantidades(request, solicitacao_id):
         if request.POST:
             ItemQuantidadeSecretaria.objects.filter(secretaria = request.user.pessoafisica.setor.secretaria, solicitacao = solicitacao).delete()
             for idx, item in enumerate(request.POST.getlist('quantidade'), 1):
-                if item and int(request.POST.getlist('quantidade')[idx-1]) > 0:
+                if item and request.POST.getlist('quantidade')[idx-1] != '' and request.POST.getlist('quantidade')[idx-1] != '0,00':
                     item_do_pregao = ItemSolicitacaoLicitacao.objects.get(solicitacao=solicitacao, id=request.POST.getlist('id_item')[idx-1])
                     novo_preco = ItemQuantidadeSecretaria()
                     novo_preco.solicitacao = solicitacao
