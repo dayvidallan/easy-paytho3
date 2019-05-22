@@ -8918,7 +8918,7 @@ def cadastrar_crc(request, fornecedor_id):
         form = CRCForm(request.POST or None, instance=registro)
         if form.is_valid():
             o = form.save(False)
-
+            o.email = fornecedor.email
             o.save()
             messages.success(request, u'CRC cadastrado/editado com sucesso.')
             return HttpResponseRedirect(u'/base/ver_crc/%s/' % fornecedor.id)
