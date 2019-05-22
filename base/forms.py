@@ -1087,13 +1087,13 @@ class AtaRegistroPrecoForm(forms.ModelForm):
     #fornecedor_adesao_arp = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True)
     class Meta:
         model = AtaRegistroPreco
-        fields = ('__all__')
+        exclude = ('dh_cancelamento', )
 
     def __init__(self, *args, **kwargs):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
         self.fields['pregao'].required = False
         self.fields['data_esgotamento'].required = False
-        self.fields['dh_cancelamento'].required = False
+
 
 
 class AtaRegistroPrecoCadastroForm(forms.ModelForm):
