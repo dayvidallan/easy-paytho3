@@ -1093,6 +1093,7 @@ class AtaRegistroPrecoForm(forms.ModelForm):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
         self.fields['pregao'].required = False
         self.fields['data_esgotamento'].required = False
+        self.fields['dh_cancelamento'].required = False
 
 
 class AtaRegistroPrecoCadastroForm(forms.ModelForm):
