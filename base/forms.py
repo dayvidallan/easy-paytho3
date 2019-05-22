@@ -1083,15 +1083,21 @@ class EditarPedidoForm(forms.ModelForm):
         model = ItemQuantidadeSecretaria
         fields = ('quantidade', )
 
-
 class AtaRegistroPrecoForm(forms.ModelForm):
+    #fornecedor_adesao_arp = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True)
+    class Meta:
+        model = AtaRegistroPreco
+        fields = ('__all__')
+
+
+class AtaRegistroPrecoCadastroForm(forms.ModelForm):
     #fornecedor_adesao_arp = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True)
     class Meta:
         model = AtaRegistroPreco
         fields = ('numero', 'data_inicio', 'data_fim', )
 
     def __init__(self, *args, **kwargs):
-        super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
+        super(AtaRegistroPrecoCadastroForm, self).__init__(*args, **kwargs)
         self.fields['data_inicio'].widget.attrs = {'class': 'vDateField'}
         self.fields['data_fim'].widget.attrs = {'class': 'vDateField'}
         if AtaRegistroPreco.objects.exists():

@@ -2006,7 +2006,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
 
         title=u'Cadastrar Ata de Registro de Preço'
 
-        form = AtaRegistroPrecoForm(request.POST or None, request.FILES or None)
+        form = AtaRegistroPrecoCadastroForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             o = form.save(False)
             o.solicitacao = solicitacao
