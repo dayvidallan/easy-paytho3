@@ -182,7 +182,7 @@ class SolicitacaoLicitacaoAdmin(NewModelAdmin):
     list_display = ('num_memorando','objeto', 'objetivo', 'situacao','get_opcoes')
     ordering = ('num_memorando',)
     list_filter = ('num_memorando',)
-    search_fields = ('objeto', 'objetivo', )
+    search_fields = ('objeto', 'objetivo', 'num_memorando')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(SolicitacaoLicitacaoAdmin, self).get_form(request, obj, **kwargs)
