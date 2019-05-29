@@ -594,6 +594,9 @@ class RegistrarPrecoItemForm(forms.ModelForm):
     class Meta:
         model = ItemSolicitacaoLicitacao
         fields = ['valor_medio', 'arquivo_referencia_valor_medio']
+    def __init__(self, *args, **kwargs):
+        super(RegistrarPrecoItemForm, self).__init__(*args, **kwargs)
+        self.fields['valor_medio'].required = True
 
 
 class PesquisaMercadologicaForm(forms.Form):
