@@ -1006,7 +1006,7 @@ def solicitacoes_do_setor(request):
         #outras = SolicitacaoLicitacao.objects.all()
         buscou_ou_nao = u'&imprimir=1'
         if form.cleaned_data.get('info'):
-            solicitacoes = solicitacoes.filter(Q(objeto__icontains=form.cleaned_data.get('info')) | Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')))
+            solicitacoes = solicitacoes.filter(Q(objeto__icontains=form.cleaned_data.get('info')) | Q(processo__numero__icontains=form.cleaned_data.get('info')) | Q(num_memorando__icontains=form.cleaned_data.get('info')) | Q(pregao__num_pregao__icontains=form.cleaned_data.get('info')) | Q(ordemcompra__numero__icontains=form.cleaned_data.get('info')))
         if form.cleaned_data.get('ano'):
            solicitacoes = solicitacoes.filter(data_cadastro__year=form.cleaned_data.get('ano'))
 
@@ -1016,6 +1016,7 @@ def solicitacoes_do_setor(request):
         if form.cleaned_data.get('tipo'):
             if form.cleaned_data.get('tipo') == u'Compra':
                 solicitacoes = solicitacoes.filter(tipo=SolicitacaoLicitacao.COMPRA)
+                solicitacoes = solicitacoes.order_by('-ordemcompra__numero')
             else:
                 solicitacoes = solicitacoes.filter(tipo_aquisicao=form.cleaned_data.get('tipo'))
     else:

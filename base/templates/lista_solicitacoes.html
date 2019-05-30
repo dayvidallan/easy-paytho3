@@ -243,8 +243,9 @@
                                             {{ solicitacao.get_data_recebimento|date:'d/m/Y H:i'|default_if_none:'-'}}
                                        {% endif %}
                                    </td>
-                                   <td>{% if solicitacao.tipo == solicitacao.COMPRA %}
-                                        Compra
+                                   <td>
+                                       {% if solicitacao.tipo == solicitacao.COMPRA %}
+                                           Compra (<a href="/base/ver_ordem_compra/{{ solicitacao.id}}/" target="_blank">{{ solicitacao.ordemcompra_set.first.numero }}</a>)
                                        {% else %}
                                         {{ solicitacao.tipo_aquisicao }}
                                        {% endif %}
