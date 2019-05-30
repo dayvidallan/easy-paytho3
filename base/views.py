@@ -1081,6 +1081,7 @@ def outras_solicitacoes(request):
         if form.cleaned_data.get('tipo'):
             if form.cleaned_data.get('tipo') == u'Compra':
                 solicitacoes = solicitacoes.filter(tipo=SolicitacaoLicitacao.COMPRA)
+                solicitacoes = solicitacoes.order_by('-ordemcompra__numero')
             else:
                 solicitacoes = solicitacoes.filter(tipo_aquisicao=form.cleaned_data.get('tipo'))
 
