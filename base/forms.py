@@ -1164,6 +1164,8 @@ class ContratoForm(forms.ModelForm):
         if self.cleaned_data.get('garantia_execucao_objeto'):
             if self.cleaned_data.get('garantia_execucao_objeto') > 5:
                 raise forms.ValidationError(u'O limite máximo é de 5%.')
+        if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_fim') and self.cleaned_data.get('data_fim') < self.cleaned_data.get('data_inicio'):
+            self.add_error((u'data_fim', u'A data final não pode ser menor do que a data inicial.')
 
 
 class CriarContratoForm(BetterForm):
@@ -1760,6 +1762,11 @@ class CriarContratoAdesaoAtaForm(forms.Form):
         if self.cleaned_data.get(nome_campo):
             if self.cleaned_data.get(nome_campo) > 5:
                 self.add_error('%s' % nome_campo, u'O limite máximo é de 5%.')
+
+        nome_data_inicio = "data_inicial_%d" % i.id
+        nome_data_fim = "data_final_%d" % i.id
+        if self.cleaned_data.get(nome_data_inicio) and self.cleaned_data.get(nome_data_fim) and  self.cleaned_data.get(nome_data_fim) < self.cleaned_data.get(nome_data_inicio):
+            self.add_error(nome_data_fim, u'A data final não pode ser menor do que a data inicial.')
 
 
 class EmpresaCredenciamentoForm(forms.Form):
