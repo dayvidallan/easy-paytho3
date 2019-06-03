@@ -1165,7 +1165,7 @@ class ContratoForm(forms.ModelForm):
             if self.cleaned_data.get('garantia_execucao_objeto') > 5:
                 raise forms.ValidationError(u'O limite máximo é de 5%.')
         if self.cleaned_data.get('data_inicio') and self.cleaned_data.get('data_fim') and self.cleaned_data.get('data_fim') < self.cleaned_data.get('data_inicio'):
-            self.add_error((u'data_fim', u'A data final não pode ser menor do que a data inicial.')
+            self.add_error(u'data_fim', u'A data final não pode ser menor do que a data inicial.')
 
 
 class CriarContratoForm(BetterForm):
