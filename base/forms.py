@@ -409,9 +409,31 @@ class PregaoForm(forms.ModelForm):
                 self.add_error('data_termino', u'A data de término deve ser de pelo menos 15 dias corridos de acordo com a legislação atual.')
             elif self.cleaned_data.get('modalidade').nome == u'Concorrência Pública' and teste.days < 30:
                 self.add_error('data_termino', u'A data de término deve ser de pelo menos 30 dias corridos de acordo com a legislação atual.')
+        numero_repetido = False
+        if self.cleaned_data.get('num_pregao'):
+            if self.cleaned_data.get('modalidade').nome in [u'Pregão Presencial', u'Pregão Presencial - Sistema de Registro de Preços (SRP)']:
+                if self.instance.pk and Pregao.objects.filter(modalidade__nome__in=[u'Pregão Presencial', u'Pregão Presencial - Sistema de Registro de Preços (SRP)'], num_pregao=self.cleaned_data.get('num_pregao')).exclude(id=self.instance.pk).exists():
+                    numero_repetido = True
 
+                elif not self.instance.pk and Pregao.objects.filter(modalidade__nome__in=[u'Pregão Presencial', u'Pregão Presencial - Sistema de Registro de Preços (SRP)'], num_pregao=self.cleaned_data.get('num_pregao')).exists():
+                    numero_repetido = True
 
+            if self.cleaned_data.get('modalidade').nome in [u'Pregão Eletrônico',
+                                                            u'Pregão Eletrônico - Sistema de Registro de Preços (SRP)']:
+                if self.instance.pk and Pregao.objects.filter(modalidade__nome__in=[u'Pregão Eletrônico',
+                                                                                    u'Pregão Eletrônico - Sistema de Registro de Preços (SRP)'],
+                                                              num_pregao=self.cleaned_data.get('num_pregao')).exclude(
+                        id=self.instance.pk).exists():
+                    numero_repetido = True
 
+                elif not self.instance.pk and Pregao.objects.filter(modalidade__nome__in=[u'Pregão Eletrônico',
+                                                                                          u'Pregão Eletrônico - Sistema de Registro de Preços (SRP)'],
+                                                                    num_pregao=self.cleaned_data.get(
+                                                                            'num_pregao')).exists():
+                    numero_repetido = True
+
+        if numero_repetido:
+            self.add_error('num_pregao', u'Já existe um pregão desta modalidade com este número.')
 
         if self.cleaned_data.get('data_abertura') and self.cleaned_data.get('data_termino') and self.cleaned_data.get('data_abertura') < self.cleaned_data.get('data_termino'):
             self.add_error('data_abertura', u'A data de abertura deve ser maior do que a data de término.')
