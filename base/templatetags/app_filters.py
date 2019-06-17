@@ -612,6 +612,7 @@ class NumeroPorExtenso(object):
         #
         # Extenso da parte decimal
         #
+        texto_decimal = None
         if decimal > 0:
             texto_decimal = self._potencia(decimal, genero=self.genero_unidade_decimal_masculino)
 
