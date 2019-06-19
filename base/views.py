@@ -12038,7 +12038,7 @@ def pedidos_arp_secretarias(request, ata_id):
     itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
 
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).values('solicitacao__setor_origem__secretaria__nome').annotate(Count('id', distinct=True))
-    import ipdb; ipdb.set_trace()
+    
     configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
