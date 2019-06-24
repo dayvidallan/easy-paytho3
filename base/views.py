@@ -401,33 +401,34 @@ def cadastra_proposta_pregao(request, pregao_id):
                                     return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/' % pregao_id)
                             else:
                                 if item and valor:
-                                    item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
-                                    if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
-                                        PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
-                                    else:
-                                        novo_preco = PropostaItemPregao()
-                                        novo_preco.item = item_do_pregao
-                                        novo_preco.pregao = pregao
-                                        novo_preco.participante = fornecedor
-                                        try:
-                                            Decimal(valor)
-                                        except:
-                                            messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
-                                            return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
+                                    if ItemSolicitacaoLicitacao.objects.filter(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0))).exists():
+                                        item_do_pregao = ItemSolicitacaoLicitacao.objects.get(eh_lote=False, solicitacao=pregao.solicitacao,item=int(sheet.cell_value(row, 0)))
+                                        if PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).exists():
+                                            PropostaItemPregao.objects.filter(item=item_do_pregao, pregao=pregao, participante=fornecedor).update(marca=marca, valor=valor)
+                                        else:
+                                            novo_preco = PropostaItemPregao()
+                                            novo_preco.item = item_do_pregao
+                                            novo_preco.pregao = pregao
+                                            novo_preco.participante = fornecedor
+                                            try:
+                                                Decimal(valor)
+                                            except:
+                                                messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                                return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
 
-                                        if Decimal(valor) <= 0:
-                                            messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
-                                            return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
+                                            if Decimal(valor) <= 0:
+                                                messages.error(request, u'o valor %s do %s é inválido.' % (valor, item_do_pregao))
+                                                return HttpResponseRedirect(u'/base/cadastra_proposta_pregao/%s/?participante=%s' % (pregao.id, fornecedor.id))
 
 
-                                        novo_preco.valor = valor
-                                        novo_preco.marca = marca
-                                        novo_preco.save()
-                                    if not ParticipanteItemPregao.objects.filter(participante=fornecedor, item=item_do_pregao).exists():
-                                        participante_item = ParticipanteItemPregao()
-                                        participante_item.participante = fornecedor
-                                        participante_item.item = item_do_pregao
-                                        participante_item.save()
+                                            novo_preco.valor = valor
+                                            novo_preco.marca = marca
+                                            novo_preco.save()
+                                        if not ParticipanteItemPregao.objects.filter(participante=fornecedor, item=item_do_pregao).exists():
+                                            participante_item = ParticipanteItemPregao()
+                                            participante_item.participante = fornecedor
+                                            participante_item.item = item_do_pregao
+                                            participante_item.save()
 
 
                     except ValueError:
@@ -12038,7 +12039,7 @@ def pedidos_arp_secretarias(request, ata_id):
     itens = ItemAtaRegistroPreco.objects.filter(ata=ata)
 
     pedidos = PedidoAtaRegistroPreco.objects.filter(ata=ata).values('solicitacao__setor_origem__secretaria__nome').annotate(Count('id', distinct=True))
-    
+
     configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
     logo = None
     if configuracao.logo:
