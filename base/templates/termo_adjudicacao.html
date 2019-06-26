@@ -77,15 +77,15 @@ ul{
         originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.objeto}}</b>,
 
         conforme quantidades e especificações constantes no Anexo I – Termo de Referência do Edital,
-        que ADJUDICA às empresas
+        que ADJUDICA (à)s empresa(s)
 
         {% for empresa, itens in resultado.items %}
             <b>{{ empresa }}</b>,
-            quanto aos
+            quanto ao(s)
             {% if eh_lote %}
-                LOTES <b>{{ itens.itens }}</b>,
+                LOTE(S) <b>{{ itens.itens }}</b>,
             {% else %}
-                ITENS <b>{{itens.itens }}</b>,
+                ITEM(NS) <b>{{itens.itens }}</b>,
             {% endif %}
 
         no valor total
@@ -103,11 +103,11 @@ ul{
         respeitado os valores máximos indicados, tendo em vista que o tipo da licitação é o de <b>{{ pregao.tipo }} {{ pregao.criterio }}</b>.
 
         {% if fracassados %}
-            Registre-se que os ITENS <b>{{ fracassados }}</b>, foram considerados <b>FRACASSADOS</b>,
-            uma vez que não há Propostas de Preços válidas para estes, em razão do julgamento proferido.
+            Registre-se que o(s) ITEM(NS) <b>{{ fracassados }}</b>, foi(ram) considerado(s) <b>FRACASSADO(S)</b>,
+            uma vez que não há Propostas de Preços válidas para este(s), em razão do julgamento proferido.
         {% endif %}
         Comunicamos, ainda, que o processo se encontra com vistas aberta, à disposição dos interessados,
-        dos interessados no Setor de Licitações.
+        no Setor de Licitações.
 
     <center>
         <br><br>

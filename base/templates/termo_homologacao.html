@@ -78,15 +78,15 @@ ul{
         originado pelo Memorando nº <b>{{ pregao.solicitacao.num_memorando }}</b> – <b>{{ pregao.solicitacao.cadastrado_por.pessoafisica.setor.secretaria}}</b> que objetiva a <b>{{pregao.objeto}}</b>,
 
         conforme quantidades, condições e especificações constantes no Anexo I – Termo de Referência do Edital,
-        o qual foi adjudicado as empresas
+        o qual foi adjudicado a(s) empresa(s)
 
         {% for empresa, itens in resultado.items %}
             <b>{{ empresa }}</b>,
-            quanto aos
+            quanto ao(s)
             {% if eh_lote %}
-                LOTES <b>{{itens.itens }}</b>,
+                LOTE(S) <b>{{itens.itens }}</b>,
             {% else %}
-                ITENS <b>{{itens.itens }}</b>,
+                ITEN(S) <b>{{itens.itens }}</b>,
             {% endif %}
             no valor total
             de <b>R$ {{itens.total|format_money }} ({{ itens.total|format_numero_extenso }})</b>,
