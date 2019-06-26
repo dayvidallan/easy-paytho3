@@ -42,7 +42,7 @@
                             <td><a class="btn btn-info btn-sm" href="/termo_referencia/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
                         </tr>
 
-                        {% if perms.base.pode_cadastrar_pesquisa_mercadologica and solicitacao.tem_proposta %}
+                        {% if solicitacao.tem_proposta %}
                             <tr>
                                 <td>Relatório de Propostas</td>
                                 <td><a class="btn btn-info btn-sm" href="/relatorio_propostas/{{solicitacao.id}}/" target="_blank">Ver Documento</a></td>
