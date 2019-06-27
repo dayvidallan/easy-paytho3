@@ -8849,6 +8849,7 @@ def relatorio_propostas(request, solicitacao_id):
         tabela[chave] = dict(lance = list(), total = 0)
 
 
+
     for item in resultado.order_by('item'):
 
         chave = '%s' % str(item.item)

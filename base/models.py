@@ -724,15 +724,18 @@ class SolicitacaoLicitacao(models.Model):
     def get_fornecedor_dispensa(self):
         lista = list()
         dicionario = {}
+
         for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=self):
-            total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+            total = pesquisa.get_total_ativo()
             if total:
                 lista.append([pesquisa.id, total])
                 dicionario[pesquisa.id] = total
         resultado = sorted(dicionario.items(), key=lambda x: x[1])
+
         if resultado:
             fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
             return fornecedor
+
         return None
 
     def get_arquivos_publicos(self):
@@ -2389,6 +2392,12 @@ class PesquisaMercadologica(models.Model):
     def get_total(self):
         total=0
         for item in ItemPesquisaMercadologica.objects.filter(pesquisa=self).order_by('item__item'):
+            total += item.valor_maximo * item.item.quantidade
+        return total
+
+    def get_total_ativo(self):
+        total=0
+        for item in ItemPesquisaMercadologica.objects.filter(pesquisa=self, ativo=True).order_by('item__item'):
             total += item.valor_maximo * item.item.quantidade
         return total
 
