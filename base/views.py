@@ -7012,9 +7012,9 @@ def ata_sessao(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     if pregao.criterio.nome == u'Por Item':
-        nome_tipo = u'Itens'
+        nome_tipo = u'Item(ns)'
     else:
-        nome_tipo = u'Lotes'
+        nome_tipo = u'Lote(s)'
 
     texto = u''
 
@@ -7028,7 +7028,7 @@ def ata_sessao(request, pregao_id):
                     texto += u' (Desconto de %s)' % item.get_vencedor().get_valor()
                 texto += ', '
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s [%s], no valor total de R$ %s (%s), ' % (result[0], nome_tipo, texto[:-2], format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto ao(s) %s [%s], no valor total de R$ %s (%s), ' % (result[0], nome_tipo, texto[:-2], format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
             if pregao.solicitacao.contratacao_global:
                 resultado_pregao = resultado_pregao + u'(contratação global de %s meses: R$: %s (%s)), ' % (pregao.solicitacao.numero_meses_contratacao_global, format_money(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global), format_numero_extenso(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global))
                 total_geral = total_geral + (result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global)
@@ -7392,9 +7392,9 @@ def ata_sessao_credenciamento(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     if pregao.criterio.nome == u'Por Item':
-        nome_tipo = u'Itens'
+        nome_tipo = u'Item(ns)'
     else:
-        nome_tipo = u'Lotes'
+        nome_tipo = u'Lote(s)'
 
     for result in resultado.items():
         if result[1]['total'] != 0:
@@ -7405,7 +7405,7 @@ def ata_sessao_credenciamento(request, pregao_id):
 
 
             #resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, ' % (result[0], nome_tipo, lista)
+            resultado_pregao = resultado_pregao + u'%s, quanto ao(s) %s %s, ' % (result[0], nome_tipo, lista)
             if pregao.solicitacao.contratacao_global:
                 resultado_pregao = resultado_pregao + u'(contratação global de %s meses: R$: %s (%s)), ' % (pregao.solicitacao.numero_meses_contratacao_global, format_money(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global), format_numero_extenso(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global))
                 total_geral = total_geral + (result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global)
@@ -7667,9 +7667,9 @@ def ata_sessao_outras_modalidades(request, pregao_id):
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
     if pregao.criterio.nome == u'Por Item':
-        nome_tipo = u'Itens'
+        nome_tipo = u'Item(ns)'
     else:
-        nome_tipo = u'Lotes'
+        nome_tipo = u'Lote(s)'
 
     for result in resultado.items():
         if result[1]['total'] != 0:
@@ -7680,7 +7680,7 @@ def ata_sessao_outras_modalidades(request, pregao_id):
 
 
 
-            resultado_pregao = resultado_pregao + u'%s, quanto aos %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
+            resultado_pregao = resultado_pregao + u'%s, quanto ao(s) %s %s, no valor total de R$ %s (%s), ' % (result[0], nome_tipo, lista, format_money(result[1]['total']), format_numero_extenso(result[1]['total']))
             if pregao.solicitacao.contratacao_global:
                 resultado_pregao = resultado_pregao + u'(contratação global de %s meses: R$: %s (%s)), ' % (pregao.solicitacao.numero_meses_contratacao_global, format_money(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global), format_numero_extenso(result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global))
                 total_geral = total_geral + (result[1]['total']*pregao.solicitacao.numero_meses_contratacao_global)
