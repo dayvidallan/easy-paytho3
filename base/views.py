@@ -1461,6 +1461,13 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
                     novo_preco.pesquisa = pesquisa
                     novo_preco.item = item_do_pregao
                     novo_preco.valor_maximo = item.replace('.','').replace(',','.')
+                    try:
+                        with transaction.atomic():
+                            Decimal(novo_preco.valor_maximo)
+                    except:
+                        messages.error(request, u'o valor %s do %s é inválido.' % (novo_preco.valor_maximo, item_do_pregao))
+                        return HttpResponseRedirect(
+                            u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
                     novo_preco.marca = request.POST.getlist('marcas')[idx-1]
                     novo_preco.save()
             if request.POST.get('validade'):
