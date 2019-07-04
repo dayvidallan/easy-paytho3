@@ -992,7 +992,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         lance_minimo = self.get_lance_minimo()
         if lance_minimo:
             preco = PropostaItemPregao.objects.filter(participante=lance_minimo.participante, item=self, valor__gt=0)
-            if preco:
+            if preco and preco[0].valor and self.get_lance_minimo_valor():
                 reducao = self.get_lance_minimo_valor() / preco[0].valor
                 ajuste= 1-reducao
 
