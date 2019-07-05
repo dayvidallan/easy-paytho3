@@ -6137,7 +6137,7 @@ def visualizar_ata_registro_preco(request, ata_id):
         participantes = ParticipantePregao.objects.filter(id__in=itens.values_list('participante', flat=True))
 
     materiais  = dict()
-    nomes_secretarias = Secretaria.objects.all()
+    nomes_secretarias = Secretaria.objects.filter(id__in=ItemQuantidadeSecretaria.objects.filter(item__in=ItemAtaRegistroPreco.objects.filter(ata=ata).values_list('item', flat=True)).values_list('secretaria', flat=True))
     secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
