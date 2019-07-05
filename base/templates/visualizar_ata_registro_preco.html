@@ -405,9 +405,8 @@
                                                     <td>{% if opcao.ativo %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
                                                     <td>
                                                         {% if True or ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
-                                                            {% if opcao.tem_varias_secretarias %}
-                                                                <a href="/base/transferir_quantidade_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a>
-                                                            {% endif %}
+
+                                                            <a href="/base/transferir_quantidade_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a>
                                                             {% if request.user == ata.solicitacao.cadastrado_por and ata.adesao and not ata.liberada_compra %}
                                                                 <a href="/base/editar_item_arp/{{ opcao.id }}/" class="btn btn-info btn-sm">Editar</a>
                                                                 <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_arp/{{opcao.id}}/" class="btn btn-danger btn-sm">Apagar</a>
