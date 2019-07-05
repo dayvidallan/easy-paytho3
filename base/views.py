@@ -9686,7 +9686,7 @@ def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
     data_emissao = datetime.date.today()
 
 
-    data = {'ata':ata, 'resultado':resultado, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    data = {'ata':ata, 'resultado':resultado, 'secretaria': secretaria, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
     template = get_template('relatorio_saldo_ata_secretaria.html')
 
