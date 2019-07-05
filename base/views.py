@@ -6138,7 +6138,7 @@ def visualizar_ata_registro_preco(request, ata_id):
         participantes = ParticipantePregao.objects.filter(id__in=itens.values_list('participante', flat=True))
 
     materiais  = dict()
-    nomes_secretarias = Secretaria.objects.filter(id__in=ItemQuantidadeSecretaria.objects.filter(item__in=ItemAtaRegistroPreco.objects.filter(ata=ata).values_list('item', flat=True)).values_list('secretaria', flat=True))
+    nomes_secretarias = Secretaria.objects.filter(Q(id__in=ItemQuantidadeSecretaria.objects.filter(item__in=ItemAtaRegistroPreco.objects.filter(ata=ata).values_list('item', flat=True)).values_list('secretaria', flat=True)) | Q(id__in=TransferenciaItemARP.objects.filter(item__ata=ata, secretaria=secretaria).values_list('secretaria', flat=True)))
     secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
@@ -9657,11 +9657,11 @@ def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
 
         chave = u'%s' % (item.ordem)
         tabela[chave]['material'] = item.material.nome
-        tabela[chave]['qtd_inicial'] = ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria).exists() and ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria)[
-            0].quantidade
-        tabela[chave]['qtd_consumido'] = \
-        PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria, item=item).aggregate(
-            soma=Sum('quantidade'))['soma']
+        if ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria).exists():
+            tabela[chave]['qtd_inicial'] =  ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria)[0].quantidade
+        elif TransferenciaItemARP.objects.filter(secretaria=secretaria, item=item).exists():
+            tabela[chave]['qtd_inicial'] =TransferenciaItemARP.objects.filter(secretaria=secretaria, item=item)[0].quantidade
+        tabela[chave]['qtd_consumido'] = PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria, item=item).aggregate(soma=Sum('quantidade'))['soma']
         tabela[chave]['saldo'] = item.get_saldo_atual_secretaria(secretaria)
 
     from blist import sorteddict
