@@ -333,6 +333,8 @@ urlpatterns = [
     url(r'^relatorio_info_arp/(?P<ata_id>\d+)/$', views.relatorio_info_arp, name='relatorio_info_arp'),
     url(r'^relatorio_qtd_disponivel_ata/(?P<ata_id>\d+)/(?P<fornecedor_id>\d+)/$', views.relatorio_qtd_disponivel_ata, name='relatorio_qtd_disponivel_ata'),
     url(r'^relatorio_qtd_consumida_ata/(?P<ata_id>\d+)/(?P<fornecedor_id>\d+)/$', views.relatorio_qtd_consumida_ata, name='relatorio_qtd_consumida_ata'),
+    url(r'^relatorio_saldo_ata_secretaria/(?P<ata_id>\d+)/(?P<secretaria_id>\d+)/$', views.relatorio_saldo_ata_secretaria, name='relatorio_saldo_ata_secretaria'),
+
 
     url(r'^relatorio_info_credenciamento/(?P<credenciamento_id>\d+)/$', views.relatorio_info_credenciamento, name='relatorio_info_credenciamento'),
     url(r'^relatorio_qtd_disponivel_credenciamento/(?P<credenciamento_id>\d+)/$', views.relatorio_qtd_disponivel_credenciamento, name='relatorio_qtd_disponivel_credenciamento'),

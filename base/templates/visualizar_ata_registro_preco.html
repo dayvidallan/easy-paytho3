@@ -643,6 +643,12 @@
                             </tr>
                         {% endfor %}
                     {% endif %}
+                    {% for secretaria in nomes_secretarias %}
+                        <tr>
+                            <td><a href="/base/relatorio_saldo_ata_secretaria/{{ ata.pk }}/{{ secretaria.pk }}/" target="_blank">Relatório - {{ secretaria }}</a></td>
+                        </tr>
+
+                    {% endfor %}
 
                 </tbody>
             </table>

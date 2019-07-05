@@ -6137,6 +6137,7 @@ def visualizar_ata_registro_preco(request, ata_id):
         participantes = ParticipantePregao.objects.filter(id__in=itens.values_list('participante', flat=True))
 
     materiais  = dict()
+    nomes_secretarias = Secretaria.objects.filter(id__in=pedidos.values('setor__secretaria__id')).distinct()
     secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
@@ -9625,6 +9626,69 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
     data = {'ata':ata, 'fornecedor':fornecedor, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
     template = get_template('relatorio_qtd_consumida_ata.html')
+
+    html  = template.render(Context(data))
+
+    pdf_file = open(caminho_arquivo, "w+b")
+    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
+            encoding='utf-8')
+    pdf_file.close()
+    file = open(caminho_arquivo, "r")
+    pdf = file.read()
+    file.close()
+    return HttpResponse(pdf, 'application/pdf')
+
+
+
+
+@login_required()
+def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
+    ata = get_object_or_404(AtaRegistroPreco, pk=ata_id)
+    secretaria = get_object_or_404(Secretaria, pk=secretaria_id)
+    tabela = {}
+
+    resultado = ItemAtaRegistroPreco.objects.filter(ata=ata, id__in=PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria).values_list('item', flat=True)).order_by('item')
+
+    for num in resultado.order_by('ordem'):
+        chave = u'%s' % (num.ordem)
+        tabela[chave] = dict(item=0, qtd_inicial=0, qtd_consumido=0, saldo=0)
+    for item in resultado.order_by('ordem'):
+
+        chave = u'%s' % (item.ordem)
+        tabela[chave]['material'] = item.material.nome
+        tabela[chave]['qtd_inicial'] = ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria)[
+            0].quantidade
+        tabela[chave]['qtd_consumido'] = \
+        PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria, item=item).aggregate(
+            soma=Sum('quantidade'))['soma']
+        tabela[chave]['saldo'] = item.get_saldo_atual_secretaria(secretaria)
+
+    from blist import sorteddict
+
+    def my_key(dict_key):
+        try:
+            with transaction.atomic():
+                return int(dict_key)
+        except ValueError:
+            return dict_key
+
+    resultado = sorteddict(my_key, **tabela)
+
+    configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % ata.id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+
+
+    data = {'ata':ata, 'resultado':resultado, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
+    template = get_template('relatorio_saldo_ata_secretaria.html')
 
     html  = template.render(Context(data))
 
