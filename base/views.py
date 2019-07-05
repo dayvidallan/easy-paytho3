@@ -9659,8 +9659,8 @@ def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
         tabela[chave]['material'] = item.material.nome
         if ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria).exists():
             tabela[chave]['qtd_inicial'] =  ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria)[0].quantidade
-        elif TransferenciaItemARP.objects.filter(secretaria=secretaria, item=item).exists():
-            tabela[chave]['qtd_inicial'] =TransferenciaItemARP.objects.filter(secretaria=secretaria, item=item)[0].quantidade
+        elif TransferenciaItemARP.objects.filter(secretaria_destino=secretaria, item=item).exists():
+            tabela[chave]['qtd_inicial'] =TransferenciaItemARP.objects.filter(secretaria_destino=secretaria, item=item)[0].quantidade
         tabela[chave]['qtd_consumido'] = PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria, item=item).aggregate(soma=Sum('quantidade'))['soma']
         tabela[chave]['saldo'] = item.get_saldo_atual_secretaria(secretaria)
 
