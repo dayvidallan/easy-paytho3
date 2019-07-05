@@ -2014,8 +2014,8 @@ class TransfereItemARPForm(forms.ModelForm):
         self.item = kwargs.pop('item', None)
         super(TransfereItemARPForm, self).__init__(*args, **kwargs)
         self.fields['id_do_item'].initial = self.item.id
-        self.fields['secretaria_origem'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
-        self.fields['secretaria_destino'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
+        self.fields['secretaria_origem'].queryset = Secretaria.objects.all()
+        self.fields['secretaria_destino'].queryset = Secretaria.objects.all(
         self.fields['quantidade_atual'].widget.attrs = {'readonly': 'True'}
 
     def clean(self):
