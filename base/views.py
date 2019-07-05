@@ -6137,7 +6137,7 @@ def visualizar_ata_registro_preco(request, ata_id):
         participantes = ParticipantePregao.objects.filter(id__in=itens.values_list('participante', flat=True))
 
     materiais  = dict()
-    nomes_secretarias = Secretaria.objects.filter(id__in=pedidos.values('setor__secretaria__id')).distinct()
+    nomes_secretarias = Secretaria.objects.all()
     secretarias =  pedidos.values('setor__secretaria__nome').order_by('setor__secretaria__nome').distinct('setor__secretaria__nome')
 
     tem_transferencias = TransferenciaItemARP.objects.filter(item__ata=ata)
@@ -9647,7 +9647,7 @@ def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
     secretaria = get_object_or_404(Secretaria, pk=secretaria_id)
     tabela = {}
 
-    resultado = ItemAtaRegistroPreco.objects.filter(ata=ata, id__in=PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria).values_list('item', flat=True)).order_by('item')
+    resultado = ItemAtaRegistroPreco.objects.filter(ata=ata).order_by('item')
 
     for num in resultado.order_by('ordem'):
         chave = u'%s' % (num.ordem)
@@ -9656,7 +9656,7 @@ def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
 
         chave = u'%s' % (item.ordem)
         tabela[chave]['material'] = item.material.nome
-        tabela[chave]['qtd_inicial'] = ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria)[
+        tabela[chave]['qtd_inicial'] = ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria).exists() and ItemQuantidadeSecretaria.objects.filter(item=item.item, secretaria=secretaria)[
             0].quantidade
         tabela[chave]['qtd_consumido'] = \
         PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria, item=item).aggregate(
