@@ -5858,7 +5858,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     lista = list()
     dicionario = {}
     for pesquisa in PesquisaMercadologica.objects.filter(solicitacao=solicitacao):
-        total = ItemPesquisaMercadologica.objects.filter(pesquisa=pesquisa, ativo=True).aggregate(soma=Sum('valor_maximo'))['soma']
+        total = pesquisa.get_total_ativo()
         if total:
             lista.append([pesquisa.id, total])
             dicionario[pesquisa.id] = total
