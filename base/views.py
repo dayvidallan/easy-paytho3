@@ -1979,6 +1979,24 @@ def cadastrar_anexo_contrato(request, contrato_id):
             o.cadastrado_por = request.user
             o.cadastrado_em = datetime.datetime.now()
             o.save()
+            
+            if form.cleaned_data.get('publico') and form.cleaned_data.get('enviar_email'):
+                config = get_config_geral()
+                arquivo_nome = u'\'%s\' - %s' % (o.nome, contrato)
+                link = config.url + u'/media/%s' % o.arquivo
+                registros = ItemContrato.objects.filter(contrato=contrato)
+                for registro in registros:
+                    if registro.fornecedor:
+                        nome_responsavel = registro.fornecedor.razao_social
+                    elif registro.participante:
+                        nome_responsavel = registro.participante.fornecedor.razao_social
+                    
+                    texto = u'Olá, %s. O arquivo %s foi adicionado no contrato %s. Endereço para visualização: %s ' % (
+                    nome_responsavel, arquivo_nome, contrato, link)
+                    send_mail('Easy Gestão Pública - Novo Arquivo Cadastrado', texto, settings.EMAIL_HOST_USER,
+                              [registro.email], fail_silently=True)
+                    
+                    
             messages.success(request, u'Anexo cadastrado com sucesso.')
             return HttpResponseRedirect(u'/base/visualizar_contrato/%s/#anexos' % contrato.id)
 
