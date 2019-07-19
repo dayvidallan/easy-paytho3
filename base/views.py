@@ -1980,7 +1980,7 @@ def cadastrar_anexo_contrato(request, contrato_id):
             o.cadastrado_em = datetime.datetime.now()
             o.save()
             
-            if form.cleaned_data.get('publico') and form.cleaned_data.get('enviar_email'):
+            if form.cleaned_data.get('enviar_email'):
                 config = get_config_geral()
                 arquivo_nome = u'\'%s\' - %s' % (o.nome, contrato)
                 link = config.url + u'/media/%s' % o.arquivo
@@ -5414,7 +5414,7 @@ def cadastrar_anexo_arp(request, ata_id):
             o.cadastrado_por = request.user
             o.cadastrado_em = datetime.datetime.now()
             o.save()
-            if form.cleaned_data.get('publico') and form.cleaned_data.get('enviar_email'):
+            if form.cleaned_data.get('enviar_email'):
                 config = get_config_geral()
                 arquivo_nome = u'\'%s\' - %s' % (o.nome, ata)
                 link = config.url + u'/media/%s' % o.arquivo
