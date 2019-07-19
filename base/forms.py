@@ -797,9 +797,12 @@ class AnexoCredenciamentoForm(forms.ModelForm):
             self.fields['arquivo'].required = False
 
 class AnexoARPForm(forms.ModelForm):
+    enviar_email = forms.BooleanField(
+        label=u'Enviar email para fornecedores informando que um novo arquivo foi anexado?',
+        help_text=u'O email só será enviado se o documento também for marcado como público', required=False)
     class Meta:
         model = AnexoAtaRegistroPreco
-        fields = ['nome', 'data', 'arquivo', 'publico']
+        fields = ['nome', 'data', 'arquivo', 'publico', 'enviar_email']
 
     def __init__(self, *args, **kwargs):
         super(AnexoARPForm, self).__init__(*args, **kwargs)
