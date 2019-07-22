@@ -11448,10 +11448,15 @@ def anexo_11(request):
                 tipo_contato = u'Contrato %s' % Contrato.objects.filter(pregao=pregao)[0].numero
                 data_inicio = Contrato.objects.filter(pregao=pregao)[0].data_inicio.strftime('%d/%m/%Y')
 
+
+            if pregao.data_termino:
+                data_fim_pregao = pregao.data_termino.strftime('%d/%m/%Y')
+            else:
+                data_fim_pregao = u''
             row = [
                 pregao.solicitacao.processo.numero,
                 pregao.num_pregao,
-                pregao.data_termino.strftime('%d/%m/%Y'),
+                data_fim_pregao,
                 data_homologacao,
                 pregao.modalidade.nome,
                 tipo,
