@@ -404,14 +404,20 @@
                                                     <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}{% if opcao.get_data_esgotamento %} (Esgotado: {{opcao.get_data_esgotamento }}){% endif %}</td>
                                                     <td>{% if opcao.ativo %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
                                                     <td>
+                                                        <ul class="action-bar">
                                                         {% if True or ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
-
-                                                            <a href="/base/transferir_quantidade_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a>
+                                                            {% if opcao.ativo %}
+                                                                <li><a href="/base/inativar_item_arp/{{ opcao.id }}/" class="btn btn-danger btn-sm">Inativar</a></li>
+                                                            {% else %}
+                                                                <li><a href="/base/inativar_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Ativar</a><l/i>
+                                                            {% endif %}
+                                                            <li><a href="/base/transferir_quantidade_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a></li>
                                                             {% if request.user == ata.solicitacao.cadastrado_por and ata.adesao and not ata.liberada_compra %}
                                                                 <a href="/base/editar_item_arp/{{ opcao.id }}/" class="btn btn-info btn-sm">Editar</a>
                                                                 <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_arp/{{opcao.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                                             {% endif %}
                                                         {% endif %}
+                                                        </ul>
                                                     </td>
 
 

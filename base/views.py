@@ -12169,3 +12169,15 @@ def pedidos_arp_secretarias(request, ata_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+
+@login_required()
+def inativar_item_arp(request, item_id):
+    item = get_object_or_404(ItemAtaRegistroPreco, pk=item_id)
+    if item.ativo:
+        item.ativo = False
+    else:
+        item.ativo = True
+
+    item.save()
+    messages.success(request, u'Situação do item alterada com sucesso.')
+    return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % item.ata.id)

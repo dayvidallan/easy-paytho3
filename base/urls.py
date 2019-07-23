@@ -373,6 +373,8 @@ urlpatterns = [
     url(r'^imprime_convites_enviados/(?P<solicitacao_id>\d+)/$', views.imprime_convites_enviados, name='imprime_convites_enviados'),
     url(r'^pedidos_arp_secretarias/(?P<ata_id>\d+)/$', views.pedidos_arp_secretarias, name='pedidos_arp_secretarias'),
 
+    url(r'^inativar_item_arp/(?P<item_id>\d+)/$', views.inativar_item_arp, name='inativar_item_arp'),
+
 
 ]
 
