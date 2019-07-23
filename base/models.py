@@ -3301,6 +3301,7 @@ class ItemContrato(models.Model):
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     inserido_outro_contrato = models.BooleanField(u'Inserido em Outro Contrato', default=False)
     ordem = models.IntegerField(u'Ordem', null=True)
+    ativo = models.BooleanField(u'Ativo', default=True)
 
     class Meta:
         ordering = ['ordem']

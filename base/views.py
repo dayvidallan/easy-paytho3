@@ -5187,7 +5187,7 @@ def informar_quantidades_do_pedido_contrato(request, contrato_id, solicitacao_id
     setor = request.user.pessoafisica.setor
     solicitacao_atual = get_object_or_404(SolicitacaoLicitacaoTmp, pk=solicitacao_id)
     contrato = get_object_or_404(Contrato, pk=contrato_id)
-    itens_contrato = contrato.itemcontrato_set.all()
+    itens_contrato = contrato.itemcontrato_set.filter(ativo=True)
     solicitacao = contrato.solicitacao
     title=u'Pedido de Compra - %s' % contrato
     origem_pregao = contrato.solicitacao.get_pregao()
@@ -12181,3 +12181,15 @@ def inativar_item_arp(request, item_id):
     item.save()
     messages.success(request, u'Situação do item alterada com sucesso.')
     return HttpResponseRedirect(u'/base/visualizar_ata_registro_preco/%s/' % item.ata.id)
+
+@login_required()
+def inativar_item_contrato(request, item_id):
+    item = get_object_or_404(ItemContrato, pk=item_id)
+    if item.ativo:
+        item.ativo = False
+    else:
+        item.ativo = True
+
+    item.save()
+    messages.success(request, u'Situação do item alterada com sucesso.')
+    return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % item.contrato.id)

@@ -298,6 +298,8 @@
                                             {% endif %}
                                             <th>Quantidade Inicial</th>
                                             <th>Quantidade Disponível</th>
+                                            <th>Situação</th>
+                                            <th>Opções</th>
 
 
                                         </tr>
@@ -324,6 +326,17 @@
                                                 {% endif %}
                                                 <td>{{ opcao.quantidade|format_quantidade }}</td>
                                                 <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                                                <td>{% if opcao.ativo %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
+                                                <td>
+                                                        <ul class="action-bar">
+                                                            {% if opcao.ativo %}
+                                                                <li><a href="/base/inativar_item_contrato/{{ opcao.id }}/" class="btn btn-danger btn-sm">Inativar</a></li>
+                                                            {% else %}
+                                                                <li><a href="/base/inativar_item_contrato/{{ opcao.id }}/" class="btn btn-success btn-sm">Ativar</a><l/i>
+                                                            {% endif %}
+
+                                                        </ul>
+                                                    </td>
 
 
                                             </tr>
