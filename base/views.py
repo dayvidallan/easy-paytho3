@@ -6109,7 +6109,10 @@ def termo_homologacao(request, pregao_id):
 
 
     data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'logo': logo,  'eh_global': eh_global, 'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
-    if pregao.eh_pregao():
+
+    if pregao.solicitacao.eh_credenciamento():
+        template = get_template('termo_credenciamento.html')
+    elif pregao.eh_pregao():
         template = get_template('termo_homologacao.html')
     else:
         template = get_template('termo_homologacao_e_adjudicacao.html')

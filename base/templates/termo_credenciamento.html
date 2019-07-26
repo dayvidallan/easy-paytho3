@@ -1,0 +1,115 @@
+{% load bootstrap %}
+{% load app_filters %}
+{% block extrastyle %}
+ <style>
+body {
+    font-size: 14px;
+}
+   table.dados_paciente td
+{
+
+    border: 0;
+}
+    table.dados_paciente tr
+{
+
+    border: 0;
+}
+ul{
+     list-style:none;
+}
+
+     .page-header {
+        font-size: 14px;
+        width: 100%;
+
+     }
+
+     @page {
+            @frame content_frame {
+				    {% block content_frame %}
+    				top: 20;
+    				left: 20;
+    				right: 20;
+    				bottom: 60;
+    				{% endblock %}
+    			}
+
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.5cm;
+                left: 0.5cm;
+                right: 0.5cm;
+                height: 1.8cm;
+            }
+     }
+
+     div.topo {
+
+       border-bottom-width:1px;
+        border-bottom-style:solid;
+        border-bottom-color:#BEBEBE;
+        height: 1px;
+      }
+
+
+ </style>
+{% endblock %}
+
+{% block content_title %}
+    <br>
+  <h1 class="page-header">
+    {% include "cabecalho.html" %}
+    <center>
+        <font size="4">AVISO DE CREDENCIAMENTO – {{ pregao.modalidade.nome }} N° {{ pregao.num_pregao }}</font><br><br>
+
+    </center>
+  </h1>
+
+{% endblock %}
+
+{% block content %}
+  <p align="justify">
+
+
+
+        A <b>Comissão Permanente de Licitação do(a) {{configuracao.nome}}</b>,
+      torna público aos interessados e participantes do <b>{{ pregao.modalidade.nome }} n° {{ pregao.num_pregao }}</b>, <b>Processo Administrativo nº{{ pregao.solicitacao.processo }}</b>,
+      originado pelo <b>{{ pregao.solicitacao }}</b>, que objetiva <b>{{ pregao.solicitacao.objetivo }}</b>,
+      conforme especificações e condições descritas nos autos, que após criteriosa análise da Documentação de Habilitação apresentada pelas interessadas, decidiu declarar a(s) empresa(s)
+
+
+
+        {% for empresa, itens in resultado.items %}
+            <b>{{ empresa }} <u>CREDENCIADA</u></b>
+            quanto ao(s)
+            {% if eh_lote %}
+                LOTE(S) <b>{{itens.itens }}</b>,
+            {% else %}
+                ITEN(S) <b>{{itens.itens }}</b>,
+            {% endif %}
+            no valor total
+            de <b>R$ {{itens.total|format_money }} ({{ itens.total|format_numero_extenso }})</b>
+        {% endfor %}
+
+        .
+
+
+
+    <center>
+        <br><br>
+        {{ config_geral.municipio }}, {{ pregao.data_homologacao }}
+
+
+        <br><br>
+        <b>A COMISSÃO</b><br>
+    </center>
+
+    </p>
+
+
+    <div id="footerContent">
+
+    </div>
+
+{% endblock %}
