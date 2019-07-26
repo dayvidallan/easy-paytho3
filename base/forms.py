@@ -1423,7 +1423,7 @@ class FornecedorForm(forms.ModelForm):
                 cnpj = ''.join(re.findall('\d', str(self.cleaned_data.get('cnpj'))))
 
                 if (not cnpj) or (len(cnpj) < 14):
-                   self.add_error('cnpj', u'Valor Inválido.')
+                   self.add_error('cnpj', u'CPF/CNPJ Valor Inválido.')
 
               # Pega apenas os 12 primeiros dígitos do CNPJ e gera os 2 dígitos que faltam
                 inteiros = map(int, cnpj)
@@ -1441,7 +1441,7 @@ class FornecedorForm(forms.ModelForm):
 
                 # Se o número gerado coincidir com o número original, é válido
                 if novo != inteiros:
-                    self.add_error('cnpj', u'CNPJ Inválido.')
+                    self.add_error('cnpj', u'CPF/CNPJ Inválido.')
 
 
 
