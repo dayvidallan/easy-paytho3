@@ -3566,9 +3566,10 @@ class ItemAtaRegistroPreco(models.Model):
                 if transferencias.filter(secretaria_origem=secretaria).exists():
                     perdeu_item = transferencias.filter(secretaria_origem=secretaria).aggregate(soma=Sum('quantidade'))['soma']
 
-                if transferencias.filter(secretaria_destino=secretaria).exists():
-                    ganhou_item = transferencias.filter(secretaria_destino=secretaria).aggregate(soma=Sum('quantidade'))['soma']
-        return total - valor_pedidos + ganhou_item - perdeu_item
+                # if transferencias.filter(secretaria_destino=secretaria).exists():
+                #     ganhou_item = transferencias.filter(secretaria_destino=secretaria).aggregate(soma=Sum('quantidade'))['soma']
+        #return total - valor_pedidos + ganhou_item - perdeu_item
+        return total - valor_pedidos - perdeu_item
 
 
     def get_total(self):
