@@ -3551,8 +3551,8 @@ class ItemAtaRegistroPreco(models.Model):
         if not self.ata.adesao:
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=secretaria)[0].quantidade
-            elif TransferenciaItemARP.objects.filter(secretaria_destino=secretaria, item__item=self.item).exists():
-                total = \
+            if TransferenciaItemARP.objects.filter(secretaria_destino=secretaria, item__item=self.item).exists():
+                total = total + \
                 TransferenciaItemARP.objects.filter(secretaria_destino=secretaria, item__item=self.item).aggregate(
                     soma=Sum('quantidade'))['soma']
 
