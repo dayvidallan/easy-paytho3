@@ -300,6 +300,7 @@
 
                                                     <th>Quantidade Inicial</th>
                                                     <th>Quantidade Disponível</th>
+                                                    <th>Opções</th>
 
 
                                                 </tr>
@@ -324,7 +325,11 @@
                                                         <td width="4%">{{ opcao.get_item_arp.valor|format_money }}</td>
                                                         <td width="5%">{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
                                                         <td width="5%">{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }} {% if opcao.get_item_arp.get_data_esgotamento %} (Esgotado: {{opcao.get_item_arp.get_data_esgotamento }}){% endif %}</td>
-
+                                                        <td>
+                                                            <ul class="action-bar">
+                                                                <li><a href="/base/transferir_quantidade_item_arp/{{ opcao.get_item_arp.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a></li>
+                                                            </ul>
+                                                        </td>
 
                                                     </tr>
                                                 {% endfor %}
