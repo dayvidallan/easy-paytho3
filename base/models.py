@@ -1470,7 +1470,8 @@ class ItemSolicitacaoLicitacao(models.Model):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
 
     def get_item_arp(self):
-        return ItemAtaRegistroPreco.objects.filter(item=self)[0]
+        if ItemAtaRegistroPreco.objects.filter(item=self).exists():
+            return ItemAtaRegistroPreco.objects.filter(item=self)[0]
 
     def get_item_contrato(self):
         return ItemContrato.objects.filter(item=self)[0]
