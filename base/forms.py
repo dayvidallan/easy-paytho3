@@ -218,6 +218,10 @@ class GestaoPedidoForm(forms.Form):
                             required=False,
                             label=u'Filtrar por Ano:',
                             )
+    vigentes = forms.ChoiceField([(u'', u'Todos'), (u'Vigentes', u'Vigentes')],
+                            required=False,
+                            label=u'Filtrar por Situação:',
+                            )
 
     def __init__(self, *args, **kwargs):
         super(GestaoPedidoForm, self).__init__(*args, **kwargs)

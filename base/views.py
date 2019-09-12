@@ -4681,6 +4681,7 @@ def gestao_pedidos(request, tipo_id):
         contratos = atas = credenciamentos = sem_registro = nome = None
         if form.cleaned_data.get('info'):
             valor = form.cleaned_data.get('info')
+        vigentes = form.cleaned_data.get('vigentes')
 
         if tipo_id == u'1':
             contratos = Contrato.objects.filter(Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
@@ -4692,7 +4693,10 @@ def gestao_pedidos(request, tipo_id):
             if not contratos.exists():
                 sem_registro = u'Nenhum contrato disponível para pedidos.'
             else:
-                contratos = contratos.order_by('-liberada_compra')
+                if vigentes:
+                    contratos = contratos.filter(liberada_compra=True)
+                else:
+                    contratos = contratos.order_by('-liberada_compra')
         elif tipo_id == u'2':
             atas = AtaRegistroPreco.objects.filter(Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
             if filtrou:
@@ -4702,7 +4706,10 @@ def gestao_pedidos(request, tipo_id):
             if not atas.exists():
                 sem_registro = u'Nenhuma ata disponível para pedidos.'
             else:
-                atas = atas.order_by('-liberada_compra')
+                if vigentes:
+                    atas = atas.filter(liberada_compra=True)
+                else:
+                    atas = atas.order_by('-liberada_compra')
         #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
         elif tipo_id == u'3':
             credenciamentos = Credenciamento.objects.filter(Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
@@ -4713,7 +4720,10 @@ def gestao_pedidos(request, tipo_id):
             if not credenciamentos.exists():
                 sem_registro = u'Nenhum credenciamento disponível para pedidos.'
             else:
-                credenciamentos = credenciamentos.order_by('-liberada_compra')
+                if vigentes:
+                    credenciamentos = credenciamentos.filter(liberada_compra=True)
+                else:
+                    credenciamentos = credenciamentos.order_by('-liberada_compra')
         pode_editar = request.user.groups.filter(name=u'Gerente')
 
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
