@@ -1422,7 +1422,8 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_total_lote(self):
         total = 0
         for item in self.get_itens_do_lote():
-            total += item.get_item_arp().valor * item.quantidade
+            if item.get_item_arp():
+                total += item.get_item_arp().valor * item.quantidade
         return total
 
     def get_valor_total_lote_meses(self):
