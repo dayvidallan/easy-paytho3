@@ -195,6 +195,7 @@ class AlterarItemARPForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AlterarItemARPForm, self).__init__(*args, **kwargs)
+        self.fields['participante'].required = False
         if self.instance.ata.pregao:
             self.fields['participante'].queryset = ParticipantePregao.objects.filter(id__in=self.instance.ata.pregao.participantepregao_set.values_list('id', flat=True))
 
