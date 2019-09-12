@@ -4683,7 +4683,7 @@ def gestao_pedidos(request, tipo_id):
             valor = form.cleaned_data.get('info')
 
         if tipo_id == u'1':
-            contratos = Contrato.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
+            contratos = Contrato.objects.filter(Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
             if filtrou:
                 contratos = contratos.filter(data_inicio__year=form.cleaned_data.get('ano'))
             if valor:
@@ -4691,23 +4691,29 @@ def gestao_pedidos(request, tipo_id):
 
             if not contratos.exists():
                 sem_registro = u'Nenhum contrato disponível para pedidos.'
+            else:
+                contratos = contratos.order_by('-liberada_compra')
         elif tipo_id == u'2':
-            atas = AtaRegistroPreco.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
+            atas = AtaRegistroPreco.objects.filter(Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria)).exclude(adesao=True)
             if filtrou:
                 atas = atas.filter(data_inicio__year=form.cleaned_data.get('ano'))
             if valor:
                 atas = atas.filter(Q(solicitacao__objeto__icontains=valor) | Q(numero__icontains=valor))
             if not atas.exists():
                 sem_registro = u'Nenhuma ata disponível para pedidos.'
+            else:
+                atas = atas.order_by('-liberada_compra')
         #contratos = SolicitacaoLicitacao.objects.filter(liberada_compra=True, id__in=contratos_finalizados.values_list('solicitacao', flat=True))
         elif tipo_id == u'3':
-            credenciamentos = Credenciamento.objects.filter(Q(liberada_compra=True), Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
+            credenciamentos = Credenciamento.objects.filter(Q(solicitacao__in=minhas_transf) | Q(solicitacao__in=meus_pedidos) | Q(solicitacao__setor_origem__secretaria=setor.secretaria))
             if filtrou:
                 credenciamentos = credenciamentos.filter(data_inicio__year=form.cleaned_data.get('ano'))
             if valor:
                 credenciamentos = credenciamentos.filter(Q(solicitacao__objeto__icontains=valor) | Q(numero__icontains=valor))
             if not credenciamentos.exists():
                 sem_registro = u'Nenhum credenciamento disponível para pedidos.'
+            else:
+                credenciamentos = credenciamentos.order_by('-liberada_compra')
         pode_editar = request.user.groups.filter(name=u'Gerente')
 
     return render(request, 'gestao_pedidos.html', locals(), RequestContext(request))
