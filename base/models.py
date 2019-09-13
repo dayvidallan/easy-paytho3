@@ -655,6 +655,14 @@ class SolicitacaoLicitacao(models.Model):
     def get_lotes(self):
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True)
 
+    def get_lotes_da_arp(self):
+        itens = list()
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True):
+            itens_do_lote = item.get_itens_do_lote()
+            if ItemAtaRegistroPreco.objects.filter(item__in=itens_do_lote.values_list('id', flat=True)).exists():
+                itens.append(item.id)
+        return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True, id__in=itens)
+
     def tem_ordem_compra(self):
         return OrdemCompra.objects.filter(solicitacao=self).exists()
 

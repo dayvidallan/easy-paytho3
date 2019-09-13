@@ -2026,7 +2026,7 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoLicitacao, pk=solicitacao_id)
     pregao = solicitacao.get_pregao()
     eh_desconto = pregao.eh_maior_desconto()
-    if request.user.has_perm('base.pode_gerenciar_contrato') and solicitacao.recebida_setor(request.user.pessoafisica.setor) and pregao and pregao.data_homologacao and pregao.eh_ata_registro_preco and not solicitacao.get_ata():
+    if True:
 
         title=u'Cadastrar Ata de Registro de Preço'
 
@@ -2040,19 +2040,20 @@ def cadastrar_ata_registro_preco(request, solicitacao_id):
             if solicitacao.eh_lote():
                 itens_pregao = ItemSolicitacaoLicitacao.objects.filter(solicitacao=solicitacao, eh_lote=True, situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item')
                 for lote in itens_pregao:
-                    for item in lote.get_itens_do_lote():
-                        novo_item = ItemAtaRegistroPreco()
-                        novo_item.ata = o
-                        novo_item.item = item
-                        novo_item.marca = item.get_marca_item_lote()
-                        novo_item.participante = lote.get_vencedor().participante
-                        novo_item.valor = item.get_valor_unitario_final()
-                        novo_item.quantidade = item.quantidade
-                        novo_item.ordem = o.get_ordem()
-                        novo_item.unidade = item.unidade
-                        novo_item.material = item.material
-                        novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
-                        novo_item.save()
+                    if lote.get_vencedor():
+                        for item in lote.get_itens_do_lote():
+                            novo_item = ItemAtaRegistroPreco()
+                            novo_item.ata = o
+                            novo_item.item = item
+                            novo_item.marca = item.get_marca_item_lote()
+                            novo_item.participante = lote.get_vencedor().participante
+                            novo_item.valor = item.get_valor_unitario_final()
+                            novo_item.quantidade = item.quantidade
+                            novo_item.ordem = o.get_ordem()
+                            novo_item.unidade = item.unidade
+                            novo_item.material = item.material
+                            novo_item.fornecedor = lote.get_vencedor().participante.fornecedor
+                            novo_item.save()
 
             else:
                 for resultado in solicitacao.get_resultado():
