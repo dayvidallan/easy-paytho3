@@ -1451,7 +1451,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return total
 
     def get_total_contratacao_global_lote(self):
-        return self.get_valor_total_item_lote() * self.solicitacao.numero_meses_contratacao_global
+        return self.get_valor_unitario_final() * self.solicitacao.numero_meses_contratacao_global
 
     def get_total_contratacao_global_desconto(self):
         return self.get_vencedor().get_valor() * self.solicitacao.numero_meses_contratacao_global
