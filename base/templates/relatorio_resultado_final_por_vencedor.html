@@ -112,9 +112,17 @@ ul{
                                  {% endfor %}
                             {% endfor %}
                             {% if eh_maior_desconto %}
-                                <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                                {% if eh_global %}
+                                    <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td><td><b>R$ {{ lances.total_global|format_money  }} ({{ lances.total_global|format_numero_extenso }})</b></td></tr>
+                                {% else %}
+                                    <tr><td colspan="6" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                                {% endif %}
                             {% else %}
-                                <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                                {% if eh_global %}
+                                    <tr><td colspan="4" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td><td><b>R$ {{ lances.total_global|format_money  }} ({{ lances.total_global|format_numero_extenso }})</b></td></tr>
+                                {% else %}
+                                    <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ lances.total|format_money  }} ({{ lances.total|format_numero_extenso }})</b></td></tr>
+                                {% else %}
                             {% endif %}
 
                         </tbody>
