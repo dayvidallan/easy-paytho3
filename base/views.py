@@ -4998,9 +4998,10 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
         if eh_lote:
             ids = list()
             for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
-                registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
-                if registro.participante == form.cleaned_data.get('vencedor'):
-                    ids.append(registro.item.id)
+                if ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
+                    registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+                    if registro.participante == form.cleaned_data.get('vencedor'):
+                        ids.append(registro.item.id)
             resultados = resultados.filter(id__in=ids)
         else:
             resultados = itens_ata.filter(participante=form.cleaned_data.get('vencedor'))
@@ -5023,10 +5024,11 @@ def informar_quantidades_do_pedido_arp(request, ata_id, solicitacao_id):
                 ids = list()
                 resultados = solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=False)
                 for item in solicitacao.itemsolicitacaolicitacao_set.filter(eh_lote=True):
-                    registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
-                    if registro.participante == participante:
-                        for id_do_item in registro.item.get_itens_do_lote():
-                            ids.append(id_do_item.id)
+                    if ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).exists():
+                        registro = ResultadoItemPregao.objects.filter(item=item, situacao=ResultadoItemPregao.CLASSIFICADO).order_by('ordem')[0]
+                        if registro.participante == participante:
+                            for id_do_item in registro.item.get_itens_do_lote():
+                                ids.append(id_do_item.id)
                 resultados = resultados.filter(id__in=ids)
 
 
