@@ -227,10 +227,10 @@ ul{
         <div style="text-align:center">
             AUTORIZO
             <br><br>
-
+            {% if ordem.exibe_nome_secretario %}
             _______________________________________________________________<br><br>
              Sr(a). {{ ordem.responsavel_secretaria.nome }}<br> CPF: {{ cpf_secretario_formatado }}<br>Secretário(a)
-
+            {% endif %}
             <br><br>
             {% if ordem.exibe_nome_ordenador %}
                 _______________________________________________________________<br><br>

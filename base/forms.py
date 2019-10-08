@@ -1298,7 +1298,7 @@ class CriarOrdemForm(forms.ModelForm):
     dotacao = forms.BooleanField(label=u'Preencher Dotação', initial=False, required=False)
     class Meta:
         model = OrdemCompra
-        fields = ('numero', 'data', 'dotacao', 'projeto_atividade_num', 'projeto_atividade_descricao', 'programa_num', 'programa_descricao', 'fonte_num', 'fonte_descricao', 'elemento_despesa_num', 'elemento_despesa_descricao')
+        fields = ('numero', 'data', 'dotacao', 'projeto_atividade_num', 'projeto_atividade_descricao', 'programa_num', 'programa_descricao', 'fonte_num', 'fonte_descricao', 'elemento_despesa_num', 'elemento_despesa_descricao', 'exibe_nome_secretario')
 
     class Media:
             js = ['/static/base/js/ordem.js']

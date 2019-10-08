@@ -2726,6 +2726,7 @@ class OrdemCompra(models.Model):
     elemento_despesa_descricao = models.CharField(u'Descrição do Elemento de Despesa', max_length=200, null=True, blank=True)
     data_cadastro = models.DateTimeField(u'Cadastrada em', null=True)
     cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    exibe_nome_secretario = models.BooleanField(u'Incluir Assinatura do Secretário', default=True)
     exibe_nome_ordenador = models.BooleanField(u'Incluir Assinatura do Ordenador de Despesa', default=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa_ordem')
     ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria_ordem')
