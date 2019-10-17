@@ -3535,7 +3535,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
     for num in chaves:
         participante = get_object_or_404(ParticipantePregao, pk=num['participante'])
         chave = u'%s' % participante.id
-        tabela[chave] = dict(lance = list(), total = 0)
+        tabela[chave] = dict(lance = list(), total = 0, total_geral_valor=0)
 
     for item in itens_pregao.order_by('item'):
         if item.get_vencedor():
@@ -3544,6 +3544,7 @@ def relatorio_ata_registro_preco(request, pregao_id):
             valor = tabela[chave]['total']
             valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
+            tabela[chave]['total_geral_valor'] = item.get_item_arp().valor
 
 
 
@@ -3679,7 +3680,11 @@ def relatorio_ata_registro_preco(request, pregao_id):
                     p = document.add_paragraph()
                 row_cells = table.add_row().cells
                 row_cells[0].text = u'Total'
-                row_cells[5].text = u'%s (%s)' % (format_money(total_geral), format_numero_extenso(total_geral))
+                if pregao.solicitacao.numero_meses_contratacao_global:
+                    valor = pregao.solicitacao.numero_meses_contratacao_global * total_geral
+                    row_cells[5].text = u'%s (%s)' % (format_money(valor), format_numero_extenso(valor))
+                else:
+                    row_cells[5].text = u'%s (%s)' % (format_money(total_geral), format_numero_extenso(total_geral))
                 row_cells[1].merge(row_cells[5])
                 p = document.add_paragraph()
 
@@ -3753,7 +3758,10 @@ def relatorio_ata_registro_preco(request, pregao_id):
                         contador += 1
                 row_cells = table.add_row().cells
                 row_cells[0].text = u'Total'
-                row_cells[1].text = u'%s (%s)' % (format_money(total_geral), format_numero_extenso(total_geral))
+                if pregao.eh_maior_desconto():
+                    row_cells[1].text = u'Desconto: %s%% / Valor: R$ %s (%s)' % (format_money(total_geral), format_money(item[1]['total_geral_valor']), format_numero_extenso(item[1]['total_geral_valor']))
+                else:
+                    row_cells[1].text = u'%s (%s)' % (format_money(total_geral), format_numero_extenso(total_geral))
                 row_cells[1].merge(row_cells[5])
                 p = document.add_paragraph()
 
