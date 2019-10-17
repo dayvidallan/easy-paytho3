@@ -3544,7 +3544,8 @@ def relatorio_ata_registro_preco(request, pregao_id):
             valor = tabela[chave]['total']
             valor = valor + item.get_total_lance_ganhador()
             tabela[chave]['total'] = valor
-            tabela[chave]['total_geral_valor'] = item.get_item_arp().valor
+            if item.get_item_arp():
+                tabela[chave]['total_geral_valor'] = item.get_item_arp().valor
 
 
 
