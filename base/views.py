@@ -9980,6 +9980,11 @@ def anexo_38(request, pregao_id):
         (u"NomeParticipante", 30),
         (u"TipoDocumento", 15),
         (u"NumeroDocumento", 20),
+        (u"UnidadeMedida", 17),
+        (u"QuantidadeItens", 17),
+        (u"ValorPrecoReferencia", 20),
+        (u"QuantidadeParticipantes", 22),
+        (u"MPE - Aplicação da LCN 123/06 ", 30),
     ]
 
     for col_num in xrange(len(columns)):
@@ -10020,13 +10025,16 @@ def anexo_38(request, pregao_id):
                         valor_do_participante = valor_do_participante * pregao.solicitacao.numero_meses_contratacao_global
                     row = [
                         item.item,
-                        item.material.nome[:100],
+                        item.material.nome,
                         contador,
                         format_money(valor_do_participante),
                         result.participante.fornecedor.razao_social,
                         u'CNPJ',
                         str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
-
+                        item.unidade.nome,
+                        item.quantidade,
+                        item.valor_medio*item.quantidade,
+                        resultado.count(),
 
                     ]
                     for col_num in xrange(len(row)):
@@ -10071,41 +10079,44 @@ def anexo_38(request, pregao_id):
 
             if result[1]:
                 for registro in result[1]:
+                    for item_do_lote in result[1][0].item.get_itens_do_lote():
+                        lote_atual = result[0]
 
-                    lote_atual = result[0]
+                        row_index = contador_total + 1
+                        # style = xlwt.XFStyle()
+                        # style.alignment.wrap = 1
+                        # w_sheet.write(row_index, 0, item.item)
+                        # w_sheet.write(row_index, 1, item.material.nome[:100])
+                        # w_sheet.write(row_index, 2, contador)
+                        # w_sheet.write(row_index, 3, format_money(result.valor))
+                        # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
+                        # w_sheet.write(row_index, 5, u'CNPJ')
+                        # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
+                        valor_do_item = registro.valor
+                        if pregao.eh_maior_desconto():
+                            valor_do_item = registro.item.get_valor_total_lote_por_participante(registro.participante)
+                        if pregao.solicitacao.contratacao_global:
+                            valor_do_item = valor_do_item * pregao.solicitacao.numero_meses_contratacao_global
+                        row = [
+                            result[0],
+                            u'Lote %s - %s' % (result[0], item_do_lote.material.nome),
+                            registro.ordem,
+                            format_money(item_do_lote.get_valor_total_proposto()),
+                            registro.participante.fornecedor.razao_social,
+                            u'CNPJ',
+                            str(registro.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
+                            item_do_lote.unidade.nome,
+                            item_do_lote.quantidade,
+                            item_do_lote.valor_medio*item_do_lote.quantidade,
+                            len(resultado.items()),
 
-                    row_index = contador_total + 1
-                    # style = xlwt.XFStyle()
-                    # style.alignment.wrap = 1
-                    # w_sheet.write(row_index, 0, item.item)
-                    # w_sheet.write(row_index, 1, item.material.nome[:100])
-                    # w_sheet.write(row_index, 2, contador)
-                    # w_sheet.write(row_index, 3, format_money(result.valor))
-                    # w_sheet.write(row_index, 4, result.participante.fornecedor.razao_social)
-                    # w_sheet.write(row_index, 5, u'CNPJ')
-                    # w_sheet.write(row_index, 6, str(result.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''))
-                    valor_do_item = registro.valor
-                    if pregao.eh_maior_desconto():
-                        valor_do_item = registro.item.get_valor_total_lote_por_participante(registro.participante)
-                    if pregao.solicitacao.contratacao_global:
-                        valor_do_item = valor_do_item * pregao.solicitacao.numero_meses_contratacao_global
-                    row = [
-                        result[0],
-                        u'Lote %s' % result[0],
-                        registro.ordem,
-                        format_money(valor_do_item),
-                        registro.participante.fornecedor.razao_social,
-                        u'CNPJ',
-                        str(registro.participante.fornecedor.cnpj).replace('.', '').replace('-', '').replace('/', ''),
-
-
-                    ]
-                    for col_num in xrange(len(row)):
-                        c = ws.cell(row=row_index + 1, column=col_num + 1)
-                        c.value = row[col_num]
-                        #c.style.alignment.wrap_text = True
-                    contador += 1
-                    contador_total += 1
+                        ]
+                        for col_num in xrange(len(row)):
+                            c = ws.cell(row=row_index + 1, column=col_num + 1)
+                            c.value = row[col_num]
+                            #c.style.alignment.wrap_text = True
+                        contador += 1
+                        contador_total += 1
 
 
     wb.save(response)
