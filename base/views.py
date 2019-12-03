@@ -5609,7 +5609,7 @@ def informar_valor_final_itens_lote(request, lote_id, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
         lote =get_object_or_404(ItemSolicitacaoLicitacao, pk=lote_id)
-        itens = ItemLote.objects.filter(lote=lote).order_by('item')
+        itens = ItemLote.objects.filter(lote=lote).order_by('item__item')
         ids_itens_do_lote = ItemLote.objects.filter(lote=lote).values_list('item', flat=True)
         vencedor = lote.get_empresa_vencedora()
         title=u'Informar Valor Unitário Final do %s' % (lote)
