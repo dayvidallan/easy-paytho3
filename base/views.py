@@ -365,7 +365,7 @@ def cadastra_proposta_pregao(request, pregao_id):
         if request.GET.get('participante'):
             selecionou = True
             participante = get_object_or_404(ParticipantePregao, pk=request.GET.get('participante'))
-            itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante, item__eh_lote=False).order_by('item__item')
+            itens = PropostaItemPregao.objects.filter(pregao=pregao, participante=participante, item__eh_lote=False).order_by('item')
             if itens.exists():
                 edicao=True
             else:
