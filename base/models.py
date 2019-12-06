@@ -2981,7 +2981,7 @@ class ItemCredenciamento(models.Model):
 
         else:
 
-
+            total = 0
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
             pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
