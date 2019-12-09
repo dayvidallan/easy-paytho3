@@ -127,6 +127,9 @@ ul{
                                 <th width="15%">Quant.</th>
                                 <th width="20%">Valor Unit.(R$)</th>
                                 <th width="20%">Total(R$)</th>
+                                {% if eh_global %}
+                                    <th>Total Geral (R$)<br><small>contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses</small></th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -138,6 +141,9 @@ ul{
                                     <td>{{ proposta.item.quantidade|format_quantidade  }}</td>
                                     <td>{{ proposta.valor_maximo|format_money  }}</td>
                                     <td>{{ proposta.get_total|format_money  }}</td>
+                                    {% if eh_global %}
+                                    <td align="right" width="15%">{{ proposta.get_total_contratacao_global|format_money }}</td>
+                                {% endif %}
                                 </tr>
                             {% endfor %}
                             <tr><td colspan="4" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>

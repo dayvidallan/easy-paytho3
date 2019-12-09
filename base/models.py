@@ -2428,6 +2428,9 @@ class ItemPesquisaMercadologica(models.Model):
     def get_total(self):
         return self.valor_maximo * self.item.quantidade
 
+    def get_total_contratacao_global(self):
+        return self.get_total() * self.pesquisa.solicitacao.numero_meses_contratacao_global
+
     def save(self):
         super(ItemPesquisaMercadologica, self).save()
         registros = ItemPesquisaMercadologica.objects.filter(item=self.item, rejeitado_por__isnull=True)
@@ -3040,6 +3043,8 @@ class PedidoCredenciamento(models.Model):
     def get_saldo_atual(self):
         return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
+    def get_total_contratacao_global(self):
+        return self.get_total() * self.solicitacao.numero_meses_contratacao_global
 
 class AnexoCredenciamento(models.Model):
     credenciamento = models.ForeignKey('base.Credenciamento')
@@ -3470,7 +3475,8 @@ class PedidoContrato(models.Model):
     def get_total(self):
         return self.quantidade * self.valor
 
-
+    def get_total_contratacao_global(self):
+        return self.get_total() * self.solicitacao.numero_meses_contratacao_global
 
 
 class ItemAtaRegistroPreco(models.Model):
@@ -3638,6 +3644,8 @@ class PedidoAtaRegistroPreco(models.Model):
     def get_saldo_atual(self):
         return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
+    def get_total_contratacao_global(self):
+        return self.get_total() * self.solicitacao.numero_meses_contratacao_global
 
 class FornecedorCRC(models.Model):
 

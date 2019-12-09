@@ -60,7 +60,10 @@ ul{
                                 <th>Unidade</th>
                                 <th>Quantidade</th>
                                 <th>Valor Unit.</th>
-                                <th>Total</th>
+                                <th>Total (R$)</th>
+                                {% if eh_global %}
+                                    <th>Total Geral (R$)<br><small>contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses</small></th>
+                                {% endif %}
 
                             </tr>
                         </thead>
@@ -88,6 +91,9 @@ ul{
 
                                     <td>R$ {{ pedido.item.valor|format_money  }}</td>
                                     <td>R$ {{ pedido.get_total|format_money  }}</td>
+                                    {% if eh_global %}
+                                        <td align="right" width="15%">{{ pedido.get_total_contratacao_global|format_money }}</td>
+                                    {% endif %}
 
 
                                 </tr>

@@ -5516,7 +5516,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
 
 
     tabela = {}
-
+    eh_global = solicitacao.contratacao_global
 
     for pedido in pedidos:
         if solicitacao.credenciamento_origem:
@@ -5546,7 +5546,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
 
 
 
-    data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
+    data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'eh_global': eh_global, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
 
     template = get_template('gerar_pedido_fornecedores.html')
 
@@ -5724,7 +5724,7 @@ def ver_ordem_compra(request, solicitacao_id):
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
 
-
+    eh_global = solicitacao.contratacao_global
     eh_lote = solicitacao.eh_lote()
 
     tabela = {}
@@ -5783,7 +5783,7 @@ def ver_ordem_compra(request, solicitacao_id):
 
     cpf_ordenador = ordem.ordenador_despesa_secretaria.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
-    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'credenciamento': credenciamento, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
+    data = {'config_geral': config_geral, 'eh_global': eh_global, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'credenciamento': credenciamento, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra.html')
 
@@ -5906,7 +5906,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/ordens_compra'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-
+    eh_global = solicitacao.contratacao_global
 
     lista = list()
     dicionario = {}
@@ -5929,7 +5929,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
 
     cpf_ordenador = ordem.ordenador_despesa_secretaria.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
-    data = {'config_geral': config_geral, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
+    data = {'config_geral': config_geral, 'eh_global': eh_global, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
 
