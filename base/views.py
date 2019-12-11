@@ -5526,7 +5526,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
                 chave = u'%s' % pedido.item.participante.fornecedor
             else:
                 chave = u'%s' % pedido.item.fornecedor
-        tabela[chave] = dict(pedidos = list(), total = 0)
+        tabela[chave] = dict(pedidos = list(), total = 0, total_global=0)
 
     for pedido in pedidos:
         if solicitacao.credenciamento_origem:
@@ -5540,13 +5540,16 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
         valor = tabela[chave]['total']
         valor = valor + (pedido.item.valor*pedido.quantidade)
         tabela[chave]['total'] = valor
+        valor_total = tabela[chave]['total_global']
+        valor_total = valor_total + (pedido.get_total_contratacao_global())
+        tabela[chave]['total_global'] = valor_total
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
 
 
 
-    data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'eh_global': eh_global, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
+    data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'solicitacao': solicitacao, 'eh_global': eh_global, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
 
     template = get_template('gerar_pedido_fornecedores.html')
 
@@ -5757,7 +5760,7 @@ def ver_ordem_compra(request, solicitacao_id):
             else:
                 chave = u'%s' % pedido.item.fornecedor
                 fornecedor = pedido.item.fornecedor
-        tabela[chave] = dict(pedidos = list(), total = 0)
+        tabela[chave] = dict(pedidos = list(), total = 0, total_global = 0)
 
     for pedido in pedidos:
         if credenciamento:
@@ -5774,6 +5777,9 @@ def ver_ordem_compra(request, solicitacao_id):
         valor = tabela[chave]['total']
         valor = valor + (pedido.item.valor*pedido.quantidade)
         tabela[chave]['total'] = valor
+        valor_global = tabela[chave]['total_global']
+        valor_global = valor_global + (pedido.get_total_contratacao_global())
+        tabela[chave]['total_global'] = valor_global
 
 
     resultado = collections.OrderedDict(sorted(tabela.items()))
@@ -5919,9 +5925,11 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     fornecedor = PesquisaMercadologica.objects.get(id=resultado[0][0])
     itens = ItemPesquisaMercadologica.objects.filter(pesquisa=resultado[0][0]).order_by('item')
     total = 0
+    total_global = 0
 
     for item in itens:
         total += item.get_total()
+        total_global += item.get_total_contratacao_global()
 
 
     cpf_secretario = ordem.responsavel_secretaria.cpf
@@ -5929,7 +5937,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
 
     cpf_ordenador = ordem.ordenador_despesa_secretaria.cpf
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
-    data = {'config_geral': config_geral, 'eh_global': eh_global, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
+    data = {'config_geral': config_geral, 'eh_global': eh_global, 'total_global': total_global, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
 
     template = get_template('ver_ordem_compra_dispensa.html')
 

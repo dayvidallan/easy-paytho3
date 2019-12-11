@@ -61,10 +61,6 @@ ul{
                                 <th>Quantidade</th>
                                 <th>Valor Unit.</th>
                                 <th>Total (R$)</th>
-                                {% if eh_global %}
-                                    <th>Total Geral (R$)<br><small>contratação global: {{ solicitacao.numero_meses_contratacao_global }} meses</small></th>
-                                {% endif %}
-
                             </tr>
                         </thead>
                         <tbody>
@@ -91,16 +87,14 @@ ul{
 
                                     <td>R$ {{ pedido.item.valor|format_money  }}</td>
                                     <td>R$ {{ pedido.get_total|format_money  }}</td>
-                                    {% if eh_global %}
-                                        <td align="right" width="15%">{{ pedido.get_total_contratacao_global|format_money }}</td>
-                                    {% endif %}
-
-
                                 </tr>
                             {% endfor %}
                             <tr><td colspan="5" align="right"><b>Total</b></td><td><b>R$ {{ pedidos.total|format_money  }}</b></td></tr>
                         </tbody>
                     </table>
+                    {% if eh_global %}
+                        <h3>Valor Total {{ solicitacao.numero_meses_contratacao_global }} meses: {{ pedidos.total_global|format_money  }} </h3>
+                    {% endif %}
 
                 <pdf:nextpage />
 
