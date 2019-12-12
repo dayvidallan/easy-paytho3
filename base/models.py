@@ -2429,7 +2429,9 @@ class ItemPesquisaMercadologica(models.Model):
         return self.valor_maximo * self.item.quantidade
 
     def get_total_contratacao_global(self):
-        return self.get_total() * self.pesquisa.solicitacao.numero_meses_contratacao_global
+        if self.get_total() and self.pesquisa.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.pesquisa.solicitacao.numero_meses_contratacao_global
+        return 0
 
     def save(self):
         super(ItemPesquisaMercadologica, self).save()
@@ -3044,7 +3046,9 @@ class PedidoCredenciamento(models.Model):
         return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
     def get_total_contratacao_global(self):
-        return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        if self.get_total() and self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        reuturn 0
 
 class AnexoCredenciamento(models.Model):
     credenciamento = models.ForeignKey('base.Credenciamento')
@@ -3476,7 +3480,9 @@ class PedidoContrato(models.Model):
         return self.quantidade * self.valor
 
     def get_total_contratacao_global(self):
-        return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        if self.get_total() and self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        return 0
 
 
 class ItemAtaRegistroPreco(models.Model):
@@ -3645,7 +3651,9 @@ class PedidoAtaRegistroPreco(models.Model):
         return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
     def get_total_contratacao_global(self):
-        return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        if self.get_total() and self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        return 0
 
 class FornecedorCRC(models.Model):
 
