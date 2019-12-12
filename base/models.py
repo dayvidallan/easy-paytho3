@@ -3048,7 +3048,7 @@ class PedidoCredenciamento(models.Model):
     def get_total_contratacao_global(self):
         if self.get_total() and self.solicitacao.numero_meses_contratacao_global:
             return self.get_total() * self.solicitacao.numero_meses_contratacao_global
-        reuturn 0
+        return 0
 
 class AnexoCredenciamento(models.Model):
     credenciamento = models.ForeignKey('base.Credenciamento')
