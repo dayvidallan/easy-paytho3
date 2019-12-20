@@ -375,6 +375,8 @@ urlpatterns = [
 
     url(r'^inativar_item_arp/(?P<item_id>\d+)/$', views.inativar_item_arp, name='inativar_item_arp'),
     url(r'^inativar_item_contrato/(?P<item_id>\d+)/$', views.inativar_item_contrato, name='inativar_item_contrato'),
+    url(r'^desliga_users/$', views.desliga_users, name='desliga_users'),
+    url(r'^liga_users/$', views.liga_users, name='liga_users'),
 
 
 ]

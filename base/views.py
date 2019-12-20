@@ -5508,7 +5508,7 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     eh_lote = False
     pedidos = None
     if PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).exists():
-        pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item')
+        pedidos = PedidoAtaRegistroPreco.objects.filter(solicitacao=solicitacao).order_by('item__item')
     elif PedidoContrato.objects.filter(solicitacao=solicitacao).exists():
         pedidos = PedidoContrato.objects.filter(solicitacao=solicitacao).order_by('item')
     elif PedidoCredenciamento.objects.filter(solicitacao=solicitacao).exists():
@@ -12243,3 +12243,21 @@ def inativar_item_contrato(request, item_id):
     item.save()
     messages.success(request, u'Situação do item alterada com sucesso.')
     return HttpResponseRedirect(u'/base/visualizar_contrato/%s/' % item.contrato.id)
+
+@login_required()
+def desliga_users(request):
+    if request.user.is_superuser and User.objects.filter(is_active=True).exists():
+        User.objects.filter(is_active=False).update(is_staff=False)
+        User.objects.update(is_active=False)
+        messages.success(request, u'Bye.')
+        return HttpResponseRedirect(u'/')
+
+    else:
+        messages.error(request, u'Proibido.')
+        return HttpResponseRedirect(u'/')
+
+def liga_users(request):
+    User.objects.filter(is_staff=True).update(is_active=True)
+    messages.success(request, u'Welcome.')
+    return HttpResponseRedirect(u'/')
+
