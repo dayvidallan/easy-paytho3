@@ -12247,8 +12247,8 @@ def inativar_item_contrato(request, item_id):
 @login_required()
 def desliga_users(request):
     if request.user.is_superuser and User.objects.filter(is_active=True).exists():
-        User.objects.filter(is_active=False).update(is_staff=False)
-        User.objects.update(is_active=False)
+        User.objects.exclude(is_superuser=True).filter(is_active=False).update(is_staff=False)
+        User.objects.exclude(is_superuser=True).update(is_active=False)
         messages.success(request, u'Bye.')
         return HttpResponseRedirect(u'/')
 
