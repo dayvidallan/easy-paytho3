@@ -133,7 +133,7 @@ ul{
 
                                 <th width="10%">Qtd.</th>
                                 <th width="20%">Valor Unit.</th>
-                                <th width="20%">Total</th>
+                                <th width="20%">Total (R$)</th>
 
                             </tr>
                         </thead>
@@ -173,7 +173,9 @@ ul{
                             {% endif %}
                         </tbody>
                     </table>
-
+                    {% if eh_global %}
+                        <h3>Valor Total {{ solicitacao.numero_meses_contratacao_global }} meses: {{ pedidos.total_global|format_money  }} </h3>
+                    {% endif %}
 
 
     {% endfor %}
@@ -258,29 +260,28 @@ ul{
 
         2.4 – O objeto adquirido ou o serviço prestado deve ser entregue acompanhado de toda documentação fiscal necessária a liquidação da despesa.<br>
 
-        2.5 – Fica acordado que ao Órgão Contratante fica reservado o direito de recusar o material, obra ou serviço desta ordem, caso não sejam obedecidas as especificações desta Ordem<br>
-
-        <br>
-        <p style="text-align:right">{{ config_geral.municipio }}, {{ ordem.data }}</p>
-
+        2.5 – Fica acordado que ao Órgão Contratante fica reservado o direito de recusar o material, obra ou serviço desta ordem, caso não sejam obedecidas as especificações desta Ordem.<br>
 
         <br>
 
         <div style="text-align:center">
             AUTORIZO
             <br><br>
-
+            {% if ordem.exibe_nome_secretario %}
             _______________________________________________________________<br><br>
             Sr(a). {{ ordem.responsavel_secretaria.nome }}<br> CPF: {{ cpf_secretario_formatado }}<br>Secretário(a)
 
-
+            {% endif %}
                <br><br>
             {% if ordem.exibe_nome_ordenador %}
                 _______________________________________________________________<br><br>
                 Sr(a). {{ ordem.ordenador_despesa_secretaria.nome }}<br> CPF: {{ cpf_ordenador_formatado }}<br>Ordenador(a) de Despesa
             {% endif %}
+
+
         </div>
     </div>
+    <br><br><br><div align="right">{{ config_geral.municipio }}, {{ ordem.data }}</div>
 
 
 </center>

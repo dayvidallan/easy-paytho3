@@ -78,7 +78,7 @@ ul{
                                     <b>{{ pesquisa.razao_social }}</b>
                                 {% endif %}
                             </td>
-                            <td>{{ pesquisa.get_total|format_money|default_if_none:"-" }}</td>
+                            <td>{{ pesquisa.get_total_ativo|format_money|default_if_none:"-" }}</td>
 
 
 

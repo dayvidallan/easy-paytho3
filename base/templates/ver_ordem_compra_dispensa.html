@@ -127,6 +127,7 @@ ul{
                                 <th width="15%">Quant.</th>
                                 <th width="20%">Valor Unit.(R$)</th>
                                 <th width="20%">Total(R$)</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -138,13 +139,16 @@ ul{
                                     <td>{{ proposta.item.quantidade|format_quantidade  }}</td>
                                     <td>{{ proposta.valor_maximo|format_money  }}</td>
                                     <td>{{ proposta.get_total|format_money  }}</td>
+
                                 </tr>
                             {% endfor %}
                             <tr><td colspan="4" align="right"><b>Total</b></td><td><b>R$ {{ total|format_money  }}</b></td></tr>
 
                         </tbody>
                     </table>
-
+                    {% if eh_global %}
+                        <h3>Valor Total {{ solicitacao.numero_meses_contratacao_global }} meses: {{ total_global|format_money  }} </h3>
+                    {% endif %}
 
 
 
@@ -221,16 +225,13 @@ ul{
 
         2.5 – Fica acordado que ao Órgão Contratante fica reservado o direito de recusar o material, obra ou serviço desta ordem, caso não sejam obedecidas as especificações desta Ordem<br>
         <br>
-        <p style="text-align:right">{{ config_geral.municipio }}, {{ ordem.data }}</p>
-        <br>
-
         <div style="text-align:center">
             AUTORIZO
             <br><br>
-
+            {% if ordem.exibe_nome_secretario %}
             _______________________________________________________________<br><br>
              Sr(a). {{ ordem.responsavel_secretaria.nome }}<br> CPF: {{ cpf_secretario_formatado }}<br>Secretário(a)
-
+            {% endif %}
             <br><br>
             {% if ordem.exibe_nome_ordenador %}
                 _______________________________________________________________<br><br>
@@ -238,6 +239,7 @@ ul{
             {% endif %}
         </div>
     </div>
+    <br><br><br><div align="right">{{ config_geral.municipio }}, {{ ordem.data }}</div>
 
 
 </center>

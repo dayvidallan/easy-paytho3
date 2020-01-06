@@ -655,6 +655,14 @@ class SolicitacaoLicitacao(models.Model):
     def get_lotes(self):
         return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True)
 
+    def get_lotes_da_arp(self):
+        itens = list()
+        for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True):
+            itens_do_lote = item.get_itens_do_lote()
+            if ItemAtaRegistroPreco.objects.filter(item__in=itens_do_lote.values_list('id', flat=True)).exists():
+                itens.append(item.id)
+        return ItemSolicitacaoLicitacao.objects.filter(solicitacao=self, eh_lote=True, id__in=itens)
+
     def tem_ordem_compra(self):
         return OrdemCompra.objects.filter(solicitacao=self).exists()
 
@@ -1422,7 +1430,8 @@ class ItemSolicitacaoLicitacao(models.Model):
     def get_valor_total_lote(self):
         total = 0
         for item in self.get_itens_do_lote():
-            total += item.get_item_arp().valor * item.quantidade
+            if item.get_item_arp():
+                total += item.get_item_arp().valor * item.quantidade
         return total
 
     def get_valor_total_lote_meses(self):
@@ -1442,7 +1451,7 @@ class ItemSolicitacaoLicitacao(models.Model):
         return total
 
     def get_total_contratacao_global_lote(self):
-        return self.get_valor_total_item_lote() * self.solicitacao.numero_meses_contratacao_global
+        return self.get_valor_unitario_final() * self.solicitacao.numero_meses_contratacao_global
 
     def get_total_contratacao_global_desconto(self):
         return self.get_vencedor().get_valor() * self.solicitacao.numero_meses_contratacao_global
@@ -1470,7 +1479,8 @@ class ItemSolicitacaoLicitacao(models.Model):
         return ItemPesquisaMercadologica.objects.filter(item=self).exists()
 
     def get_item_arp(self):
-        return ItemAtaRegistroPreco.objects.filter(item=self)[0]
+        if ItemAtaRegistroPreco.objects.filter(item=self).exists():
+            return ItemAtaRegistroPreco.objects.filter(item=self)[0]
 
     def get_item_contrato(self):
         return ItemContrato.objects.filter(item=self)[0]
@@ -2418,6 +2428,11 @@ class ItemPesquisaMercadologica(models.Model):
     def get_total(self):
         return self.valor_maximo * self.item.quantidade
 
+    def get_total_contratacao_global(self):
+        if self.get_total() and self.pesquisa.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.pesquisa.solicitacao.numero_meses_contratacao_global
+        return 0
+
     def save(self):
         super(ItemPesquisaMercadologica, self).save()
         registros = ItemPesquisaMercadologica.objects.filter(item=self.item, rejeitado_por__isnull=True)
@@ -2716,6 +2731,7 @@ class OrdemCompra(models.Model):
     elemento_despesa_descricao = models.CharField(u'Descrição do Elemento de Despesa', max_length=200, null=True, blank=True)
     data_cadastro = models.DateTimeField(u'Cadastrada em', null=True)
     cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    exibe_nome_secretario = models.BooleanField(u'Incluir Assinatura do Secretário', default=True)
     exibe_nome_ordenador = models.BooleanField(u'Incluir Assinatura do Ordenador de Despesa', default=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa_ordem')
     ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria_ordem')
@@ -2970,7 +2986,7 @@ class ItemCredenciamento(models.Model):
 
         else:
 
-
+            total = 0
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=usuario.pessoafisica.setor.secretaria)[0].quantidade
             pedidos = PedidoCredenciamento.objects.filter(item=self, ativo=True, setor__secretaria=usuario.pessoafisica.setor.secretaria)
@@ -3029,6 +3045,10 @@ class PedidoCredenciamento(models.Model):
     def get_saldo_atual(self):
         return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
+    def get_total_contratacao_global(self):
+        if self.get_total() and self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        return 0
 
 class AnexoCredenciamento(models.Model):
     credenciamento = models.ForeignKey('base.Credenciamento')
@@ -3301,6 +3321,7 @@ class ItemContrato(models.Model):
     unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
     inserido_outro_contrato = models.BooleanField(u'Inserido em Outro Contrato', default=False)
     ordem = models.IntegerField(u'Ordem', null=True)
+    ativo = models.BooleanField(u'Ativo', default=True)
 
     class Meta:
         ordering = ['ordem']
@@ -3458,7 +3479,10 @@ class PedidoContrato(models.Model):
     def get_total(self):
         return self.quantidade * self.valor
 
-
+    def get_total_contratacao_global(self):
+        if self.get_total() and self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        return 0
 
 
 class ItemAtaRegistroPreco(models.Model):
@@ -3550,6 +3574,10 @@ class ItemAtaRegistroPreco(models.Model):
         if not self.ata.adesao:
             if ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=secretaria).exists():
                 total = ItemQuantidadeSecretaria.objects.filter(item=self.item, secretaria=secretaria)[0].quantidade
+            if TransferenciaItemARP.objects.filter(secretaria_destino=secretaria, item__item=self.item).exists():
+                total = total + \
+                TransferenciaItemARP.objects.filter(secretaria_destino=secretaria, item__item=self.item).aggregate(
+                    soma=Sum('quantidade'))['soma']
 
         if total:
             pedidos = PedidoAtaRegistroPreco.objects.filter(item=self, ativo=True, setor__secretaria=secretaria)
@@ -3561,9 +3589,10 @@ class ItemAtaRegistroPreco(models.Model):
                 if transferencias.filter(secretaria_origem=secretaria).exists():
                     perdeu_item = transferencias.filter(secretaria_origem=secretaria).aggregate(soma=Sum('quantidade'))['soma']
 
-                if transferencias.filter(secretaria_destino=secretaria).exists():
-                    ganhou_item = transferencias.filter(secretaria_destino=secretaria).aggregate(soma=Sum('quantidade'))['soma']
-        return total - valor_pedidos + ganhou_item - perdeu_item
+                # if transferencias.filter(secretaria_destino=secretaria).exists():
+                #     ganhou_item = transferencias.filter(secretaria_destino=secretaria).aggregate(soma=Sum('quantidade'))['soma']
+        #return total - valor_pedidos + ganhou_item - perdeu_item
+        return total - valor_pedidos - perdeu_item
 
 
     def get_total(self):
@@ -3621,6 +3650,10 @@ class PedidoAtaRegistroPreco(models.Model):
     def get_saldo_atual(self):
         return self.item.get_saldo_atual_secretaria(self.setor.secretaria)
 
+    def get_total_contratacao_global(self):
+        if self.get_total() and self.solicitacao.numero_meses_contratacao_global:
+            return self.get_total() * self.solicitacao.numero_meses_contratacao_global
+        return 0
 
 class FornecedorCRC(models.Model):
 

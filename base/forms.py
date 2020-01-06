@@ -195,6 +195,7 @@ class AlterarItemARPForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AlterarItemARPForm, self).__init__(*args, **kwargs)
+        self.fields['participante'].required = False
         if self.instance.ata.pregao:
             self.fields['participante'].queryset = ParticipantePregao.objects.filter(id__in=self.instance.ata.pregao.participantepregao_set.values_list('id', flat=True))
 
@@ -217,6 +218,10 @@ class GestaoPedidoForm(forms.Form):
     ano = forms.ChoiceField([],
                             required=False,
                             label=u'Filtrar por Ano:',
+                            )
+    vigentes = forms.ChoiceField([(u'', u'Todos'), (u'Vigentes', u'Vigentes')],
+                            required=False,
+                            label=u'Filtrar por Situação:',
                             )
 
     def __init__(self, *args, **kwargs):
@@ -772,9 +777,12 @@ class AnexoPregaoForm(forms.ModelForm):
         self.fields['data'].widget.attrs = {'class': 'vDateField'}
 
 class AnexoContratoForm(forms.ModelForm):
+    enviar_email = forms.BooleanField(
+        label=u'Enviar email para fornecedores informando que um novo arquivo foi anexado?',
+        help_text=u'O email só será enviado se o documento também for marcado como público', required=False)
     class Meta:
         model = AnexoContrato
-        fields = ['nome', 'data', 'arquivo', 'publico']
+        fields = ['nome', 'data', 'arquivo', 'publico', 'enviar_email']
 
     def __init__(self, *args, **kwargs):
         super(AnexoContratoForm, self).__init__(*args, **kwargs)
@@ -794,9 +802,12 @@ class AnexoCredenciamentoForm(forms.ModelForm):
             self.fields['arquivo'].required = False
 
 class AnexoARPForm(forms.ModelForm):
+    enviar_email = forms.BooleanField(
+        label=u'Enviar email para fornecedores informando que um novo arquivo foi anexado?',
+        help_text=u'O email só será enviado se o documento também for marcado como público', required=False)
     class Meta:
         model = AnexoAtaRegistroPreco
-        fields = ['nome', 'data', 'arquivo', 'publico']
+        fields = ['nome', 'data', 'arquivo', 'publico', 'enviar_email']
 
     def __init__(self, *args, **kwargs):
         super(AnexoARPForm, self).__init__(*args, **kwargs)
@@ -815,6 +826,7 @@ class LogDownloadArquivoForm(forms.ModelForm):
     )
     cpf = utils.CpfFormField(label=u'CPF', required=True)
     cnpj = BRCNPJField(label=u'CNPJ')
+    email = forms.EmailField(label=u'Email')
     class Meta:
         model = LogDownloadArquivo
         fields = ['cnpj', 'nome','responsavel', 'cpf', 'email', 'endereco', 'estado', 'municipio', 'telefone', 'interesse']
@@ -1286,7 +1298,7 @@ class CriarOrdemForm(forms.ModelForm):
     dotacao = forms.BooleanField(label=u'Preencher Dotação', initial=False, required=False)
     class Meta:
         model = OrdemCompra
-        fields = ('numero', 'data', 'dotacao', 'projeto_atividade_num', 'projeto_atividade_descricao', 'programa_num', 'programa_descricao', 'fonte_num', 'fonte_descricao', 'elemento_despesa_num', 'elemento_despesa_descricao')
+        fields = ('numero', 'data', 'dotacao', 'projeto_atividade_num', 'projeto_atividade_descricao', 'programa_num', 'programa_descricao', 'fonte_num', 'fonte_descricao', 'elemento_despesa_num', 'elemento_despesa_descricao', 'exibe_nome_secretario')
 
     class Media:
             js = ['/static/base/js/ordem.js']
@@ -1416,7 +1428,7 @@ class FornecedorForm(forms.ModelForm):
                 cnpj = ''.join(re.findall('\d', str(self.cleaned_data.get('cnpj'))))
 
                 if (not cnpj) or (len(cnpj) < 14):
-                   self.add_error('cnpj', u'Valor Inválido.')
+                   self.add_error('cnpj', u'CPF/CNPJ Valor Inválido.')
 
               # Pega apenas os 12 primeiros dígitos do CNPJ e gera os 2 dígitos que faltam
                 inteiros = map(int, cnpj)
@@ -1434,7 +1446,7 @@ class FornecedorForm(forms.ModelForm):
 
                 # Se o número gerado coincidir com o número original, é válido
                 if novo != inteiros:
-                    self.add_error('cnpj', u'CNPJ Inválido.')
+                    self.add_error('cnpj', u'CPF/CNPJ Inválido.')
 
 
 
@@ -2014,8 +2026,8 @@ class TransfereItemARPForm(forms.ModelForm):
         self.item = kwargs.pop('item', None)
         super(TransfereItemARPForm, self).__init__(*args, **kwargs)
         self.fields['id_do_item'].initial = self.item.id
-        self.fields['secretaria_origem'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
-        self.fields['secretaria_destino'].queryset = Secretaria.objects.filter(id__in=self.item.get_secretarias().values_list('id', flat=True))
+        self.fields['secretaria_origem'].queryset = Secretaria.objects.all()
+        self.fields['secretaria_destino'].queryset = Secretaria.objects.all()
         self.fields['quantidade_atual'].widget.attrs = {'readonly': 'True'}
 
     def clean(self):

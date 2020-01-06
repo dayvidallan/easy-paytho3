@@ -192,6 +192,13 @@
                         {% endif %}
                     </div>
                 </div>
+                <div class="col-xs-2 col-md-2">
+                    <div class="controls">{{ form.vigentes|bootstrap }}
+                        {% if form.vigentes.help_text %}
+                            <p class="help-inline"><small>{{ form.vigentes.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
 
                 <div class="col-xs-1 col-md-1">
                     <br>
@@ -224,7 +231,9 @@
                                                 <tr>
                                                     <th colspan="5">{{lote}}</th>
                                                     <th align="right">
-                                                        <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/{{ lote.id }}/">Novo Pedido</a>
+                                                        {% if contrato.liberada_compra %}
+                                                            <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/{{ lote.id }}/">Novo Pedido</a>
+                                                        {% endif %}
                                                         <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
                                                     </th>
                                                 </tr>
@@ -281,7 +290,9 @@
                                         <thead>
                                             <tr>
                                                 <td colspan="7" align="right">
-                                                    <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
+                                                    {% if contrato.liberada_compra %}
+                                                        <a class="btn btn-success" href="/base/novo_pedido_compra_contrato/{{ contrato.pk }}/">Novo Pedido</a>
+                                                    {% endif %}
                                                     <a class="btn btn-default" href="/base/documentos_contratos/{{ contrato.pk }}/">Documentos</a>
                                                 </td>
 
@@ -357,8 +368,12 @@
                         <tr>
                             <td>
                                 <div id="democ{{ata.id}}" class="collapse">
-                                        <a class="btn btn-success"  href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
-                                        <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
+                                        <table width="100%"><tr><td align="right" colspan="100%">
+                                            {% if ata.liberada_compra %}
+                                                <a class="btn btn-success"  href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
+                                            {% endif %}
+                                            <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
+                                        </td></tr></table>
                                         {% for lote in ata.solicitacao.get_lotes %}
 
                                             <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
@@ -431,7 +446,9 @@
                                         <thead>
                                             <tr>
                                                 <td colspan="100%" align="right">
-                                                    <a class="btn btn-success" href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
+                                                    {% if ata.liberada_compra %}
+                                                        <a class="btn btn-success" href="/base/novo_pedido_compra_arp/{{ ata.pk }}/">Novo Pedido</a>
+                                                    {% endif %}
                                                     <a class="btn btn-default" href="/base/documentos_atas/{{ ata.pk }}/">Documentos</a>
                                                 </td>
 
@@ -506,7 +523,9 @@
                                     <thead>
                                         <tr>
                                             <td colspan="6" align="right">
-                                                <a class="btn btn-success" href="/base/novo_pedido_compra_credenciamento/{{ credenciamento.pk }}/">Novo Pedido</a>
+                                                {% if credenciamento.liberada_compra %}
+                                                    <a class="btn btn-success" href="/base/novo_pedido_compra_credenciamento/{{ credenciamento.pk }}/">Novo Pedido</a>
+                                                {% endif %}
                                                 <a class="btn btn-default" href="/base/documentos_credenciamentos/{{ credenciamento.pk }}/">Documentos</a>
 
                                             </td>

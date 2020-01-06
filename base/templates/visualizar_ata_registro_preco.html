@@ -284,7 +284,7 @@
                             <tr>
                                 <td>
 
-                                    {% for lote in ata.solicitacao.get_lotes %}
+                                    {% for lote in ata.solicitacao.get_lotes_da_arp %}
 
                                         <table width="30%" align="right" class="table table-bordered table-condensed table-striped">
                                             <thead>
@@ -300,6 +300,7 @@
 
                                                     <th>Quantidade Inicial</th>
                                                     <th>Quantidade Disponível</th>
+                                                    <th>Opções</th>
 
 
                                                 </tr>
@@ -324,7 +325,11 @@
                                                         <td width="4%">{{ opcao.get_item_arp.valor|format_money }}</td>
                                                         <td width="5%">{{ opcao.get_item_arp.quantidade|format_quantidade }}</td>
                                                         <td width="5%">{{ opcao.get_item_arp.get_quantidade_disponivel|format_quantidade }} {% if opcao.get_item_arp.get_data_esgotamento %} (Esgotado: {{opcao.get_item_arp.get_data_esgotamento }}){% endif %}</td>
-
+                                                        <td>
+                                                            <ul class="action-bar">
+                                                                <li><a href="/base/transferir_quantidade_item_arp/{{ opcao.get_item_arp.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a></li>
+                                                            </ul>
+                                                        </td>
 
                                                     </tr>
                                                 {% endfor %}
@@ -404,15 +409,20 @@
                                                     <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}{% if opcao.get_data_esgotamento %} (Esgotado: {{opcao.get_data_esgotamento }}){% endif %}</td>
                                                     <td>{% if opcao.ativo %}<span class="label label-success">Ativo</span>{% else %}<span class="label label-danger">Inativo</span>{% endif %}</td>
                                                     <td>
+                                                        <ul class="action-bar">
                                                         {% if True or ata.solicitacao.setor_atual == request.user.pessoafisica.setor %}
-                                                            {% if opcao.tem_varias_secretarias %}
-                                                                <a href="/base/transferir_quantidade_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a>
+                                                            {% if opcao.ativo %}
+                                                                <li><a href="/base/inativar_item_arp/{{ opcao.id }}/" class="btn btn-danger btn-sm">Inativar</a></li>
+                                                            {% else %}
+                                                                <li><a href="/base/inativar_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Ativar</a><l/i>
                                                             {% endif %}
+                                                            <li><a href="/base/transferir_quantidade_item_arp/{{ opcao.id }}/" class="btn btn-success btn-sm">Transferir Quantidade</a></li>
                                                             {% if request.user == ata.solicitacao.cadastrado_por and ata.adesao and not ata.liberada_compra %}
                                                                 <a href="/base/editar_item_arp/{{ opcao.id }}/" class="btn btn-info btn-sm">Editar</a>
                                                                 <a onclick="return confirm('Você tem certeza que desejar apagar ?')" href="/base/apagar_item_arp/{{opcao.id}}/" class="btn btn-danger btn-sm">Apagar</a>
                                                             {% endif %}
                                                         {% endif %}
+                                                        </ul>
                                                     </td>
 
 
@@ -643,6 +653,12 @@
                             </tr>
                         {% endfor %}
                     {% endif %}
+                    {% for secretaria in nomes_secretarias %}
+                        <tr>
+                            <td><a href="/base/relatorio_saldo_ata_secretaria/{{ ata.pk }}/{{ secretaria.pk }}/" target="_blank">Relatório - {{ secretaria }}</a></td>
+                        </tr>
+
+                    {% endfor %}
 
                 </tbody>
             </table>
