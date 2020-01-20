@@ -135,6 +135,12 @@
                         <th><b>Dados do Contrato</b></th>
                         <td><a href="/base/relatorio_info_contrato/{{ contrato.pk }}/" target="_blank">Informações do Contrato</a></td>
                     </tr>
+                    {% if contrato.solicitacao.arp_origem %}
+                        <tr>
+                        <th><b>Dados da Ata de Registro de Preço</b></th>
+                        <td><a href="/base/relatorio_info_arp/{{ contrato.solicitacao.arp_origem.pk }}/" target="_blank">Informações da ARP</a></td>
+                    </tr>
+                    {% endif %}
 
                     {% if contrato.get_arquivos_publicos %}
                         <tr>
