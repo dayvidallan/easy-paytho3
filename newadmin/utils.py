@@ -38,11 +38,11 @@ def decimal_to_money(value, precision=2):
 
 
 class MoneyFormWidget(forms.TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         value = value or ''
         if isinstance(value, Decimal):
             value = decimal_to_money(str(value), 2)
-        return super(MoneyFormWidget, self).render(name, value, attrs)
+        return super(MoneyFormWidget, self).render(name, value, attrs, renderer)
 
 
 class MoneyFormField(forms.DecimalField):
@@ -198,7 +198,7 @@ class ReCaptchaWidget(forms.widgets.Widget):
     class Media:
         js = ('https://www.google.com/recaptcha/api.js',)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         return mark_safe(u'<div class="g-recaptcha" data-sitekey="%s"></div>' % settings.RECAPTHA_SITE_KEY)
 
     def value_from_datadict(self, data, files, name):
@@ -235,16 +235,90 @@ class ReCaptchaField(forms.CharField):
         return value
 
 
+# def dumps_qs_query(query):
+#     return base64.b64encode(zlib.compress(pickle.dumps(query)))[::-1]
+#
+#
+# def loads_qs_query(query):
+#     return pickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
+from django.core.signing import TimestampSigner, Signer
+
+def timeless_dump_qs(query):
+    serialized_str = base64.b64encode(zlib.compress(pickle.dumps(query))).decode()
+    signer = Signer()
+    signed_data = signer.sign(serialized_str)
+    payload = {'data': signed_data}
+    return mark_safe(json.dumps(payload))
+
+
+def timeless_load_qs_query(query):
+    payload = json.loads(query)
+    signer = Signer()
+    signed_data = payload['data']
+    data = signer.unsign(signed_data)
+    return pickle.loads(zlib.decompress(base64.b64decode(data)))
+
+
 def dumps_qs_query(query):
-    return base64.b64encode(zlib.compress(pickle.dumps(query)))[::-1]
+    serialized_str = base64.b64encode(zlib.compress(pickle.dumps(query))).decode()
+    signer = TimestampSigner()
+    signed_data = signer.sign(serialized_str)
+    payload = {'data': signed_data}
+    return mark_safe(json.dumps(payload))
 
 
 def loads_qs_query(query):
-    return pickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
+    signer = TimestampSigner()
+    payload = json.loads(query)
+    signed_data = payload['data']
+    data = signer.unsign(signed_data, max_age=settings.SIGNER_MAX_AGE)
+    return pickle.loads(zlib.decompress(base64.b64decode(data)))
 
+
+
+
+
+
+
+
+# class ChainedSelectWidget(forms.Select):
+#     def get_context(self, name, value, attrs=None, choices=()):
+#         id_ = attrs['id']
+#         if not value:
+#             value = self.initial
+#
+#         data = ""
+#         if self.qs_filter:
+#             data += ", qs_filter: '%s'" % self.qs_filter
+#
+#         options = {}
+#         if self.form_filters:
+#             if not isinstance(self.form_filters, (tuple, list)):
+#                 raise ValueError('`form_filters` deve ser lista ou tupla')
+#             options['form_parameter_names'] = ','.join([i[0] for i in self.form_filters])
+#             options['django_filter_names'] = ','.join([i[1] for i in self.form_filters])
+#
+#         return dict(id=id_,
+#                        url=self.url,
+#                        initial=value,
+#                        obj_value='id',
+#                        obj_label=self.obj_label,
+#                        empty_label=self.empty_label,
+#                        data=data,
+#                        options=options,
+#                        qs_filter_params_map=self.qs_filter_params_map,
+#                        #control=dumps_qs_query(self.queryset.all().query))
+#                        control=timeless_dump_qs(self.queryset.all().query))
+#
+#     def render(self, name, value, attrs=None, renderer=None, choices=()):
+#         context = self.get_context(name, value, attrs, choices)
+#         final_attrs = self.build_attrs(attrs)
+#         output = [format_html('<select{0}>', flatatt(final_attrs)), '</select>',
+#                   render_to_string('chainedselect_widget.html', context)]
+#         return mark_safe('\n'.join(output))
 
 class ChainedSelectWidget(forms.Select):
-    def get_context(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, choices=(), renderer=None):
         id_ = attrs['id']
         if not value:
             value = self.initial
@@ -254,31 +328,31 @@ class ChainedSelectWidget(forms.Select):
             data += ", qs_filter: '%s'" % self.qs_filter
 
         options = {}
+        attrs['name'] = name
         if self.form_filters:
             if not isinstance(self.form_filters, (tuple, list)):
                 raise ValueError('`form_filters` deve ser lista ou tupla')
             options['form_parameter_names'] = ','.join([i[0] for i in self.form_filters])
             options['django_filter_names'] = ','.join([i[1] for i in self.form_filters])
 
-        return dict(id=id_,
-                       url=self.url,
-                       initial=value,
-                       obj_value='id',
-                       obj_label=self.obj_label,
-                       empty_label=self.empty_label,
-                       data=data,
-                       options=options,
-                       qs_filter_params_map=self.qs_filter_params_map,
-                       control=dumps_qs_query(self.queryset.all().query))
+        context = dict(
+            id=id_,
+            url=self.url,
+            initial=value,
+            obj_value='id',
+            obj_label=self.obj_label,
+            empty_label=self.empty_label,
+            data=data,
+            options=options,
+            qs_filter_params_map=self.qs_filter_params_map,
+            control=timeless_dump_qs(self.queryset.all().query),
+        )
 
-    def render(self, name, value, attrs=None, choices=()):
-        context = self.get_context(name, value, attrs, choices)
-        final_attrs = self.build_attrs(attrs, name=name)
-        output = [format_html('<select{0}>', flatatt(final_attrs)), '</select>',
-                  render_to_string('chainedselect_widget.html', context)]
+        final_attrs = self.build_attrs(attrs)
+        output = [format_html('<select{0}>', flatatt(final_attrs))]
+        output.append('</select>')
+        output.append(render_to_string('chainedselect_widget.html', context))
         return mark_safe('\n'.join(output))
-
-
 
 class ChainedModelChoiceField(forms.ModelChoiceField):
     """
@@ -373,7 +447,7 @@ class ChainedMultipleSelectWidget(forms.SelectMultiple):
                        qs_filter_params_map=self.qs_filter_params_map,
                        control=dumps_qs_query(self.queryset.all().query))
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         context = self.get_context(name, value, attrs, choices)
         final_attrs = self.build_attrs(attrs, name=name)
         output = [format_html('<select multiple="multiple"{}>', flatatt(final_attrs)), '</select>',

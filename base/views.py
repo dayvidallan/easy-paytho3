@@ -57,7 +57,7 @@ class SecretariaAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
         # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return Secretaria.objects.none()
 
         qs = Secretaria.objects.exclude(id=self.request.user.pessoafisica.setor.secretaria.id)
@@ -71,7 +71,7 @@ class ParticipantePregaoAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
         # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return Fornecedor.objects.none()
 
         qs = Fornecedor.objects.all()
@@ -85,7 +85,7 @@ class PessoaFisicaAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
         # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return PessoaFisica.objects.none()
 
         qs = PessoaFisica.objects.all()
@@ -100,7 +100,7 @@ class MaterialConsumoAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
         # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return MaterialConsumo.objects.none()
 
         qs = MaterialConsumo.objects.all()
@@ -114,7 +114,7 @@ class FornecedorAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
         # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return Fornecedor.objects.none()
 
         qs = Fornecedor.objects.all()
@@ -392,9 +392,9 @@ def cadastra_proposta_pregao(request, pregao_id):
                     try:
                         with transaction.atomic():
 
-                            item = unicode(sheet.cell_value(row, 0)).strip()
-                            marca = unicode(sheet.cell_value(row, 6)).strip() or None
-                            valor = unicode(sheet.cell_value(row, 7)).strip()
+                            item = str(sheet.cell_value(row, 0)).strip()
+                            marca = str(sheet.cell_value(row, 6)).strip() or None
+                            valor = str(sheet.cell_value(row, 7)).strip()
                             if row == 0:
                                 if item != u'Item' or valor != u'VALOR UNITÁRIO':
                                     messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Item e Valor.')
@@ -1412,16 +1412,16 @@ def preencher_itens_pesquisa_mercadologica(request, solicitacao_id, origem):
                     messages.error(request, u'Não foi possível processar a planilha. Verfique se o formato do arquivo é .xls ou .xlsx.')
                     return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
 
-                validade = unicode(sheet.cell_value(7, 1)).strip()
+                validade = str(sheet.cell_value(7, 1)).strip()
                 if not validade:
                     messages.error(request, u'Preencha a validade da proposta na planilha.')
                     return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/%s/' % (solicitacao_id, origem))
 
                 for row in range(10, sheet.nrows):
 
-                    item = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 4)).strip() or None
-                    valor = unicode(sheet.cell_value(row, 5)).strip()
+                    item = str(sheet.cell_value(row, 0)).strip()
+                    marca = str(sheet.cell_value(row, 4)).strip() or None
+                    valor = str(sheet.cell_value(row, 5)).strip()
 
                     if item and valor:
                         tem_algum_valor = True
@@ -2700,7 +2700,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
                 os.unlink(tmp_xml_file.name)
 
                 for key in dicionario.keys():
-                    value = unicode(dicionario.get(key)).encode("utf8")
+                    value = str(dicionario.get(key)).encode("utf8")
                     tempXmlStr = tempXmlStr.replace(key, value)
 
                 tmp_xml_file =  open(tempfile.mktemp(), "w+")
@@ -2849,9 +2849,9 @@ def importar_itens(request, solicitacao_id):
                 for row in range(1, sheet.nrows):
 
 
-                    especificacao = unicode(sheet.cell_value(row, 1)).strip()
-                    unidade = unicode(sheet.cell_value(row, 2)).strip()
-                    qtd = unicode(sheet.cell_value(row, 3)).strip()
+                    especificacao = str(sheet.cell_value(row, 1)).strip()
+                    unidade = str(sheet.cell_value(row, 2)).strip()
+                    qtd = str(sheet.cell_value(row, 3)).strip()
                     if row == 1:
                         if especificacao != u'ESPECIFICAÇÃO DO PRODUTO' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
                             messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
@@ -2929,11 +2929,11 @@ def upload_itens_pesquisa_mercadologica(request, pesquisa_id):
                 return HttpResponseRedirect(u'/base/upload_itens_pesquisa_mercadologica/%s/' % pesquisa_id)
 
             for row in range(0, sheet.nrows):
-                item = unicode(sheet.cell_value(row, 0)).strip()
-                especificacao = unicode(sheet.cell_value(row, 1)).strip()
-                unidade = unicode(sheet.cell_value(row, 2)).strip()
-                marca = unicode(sheet.cell_value(row, 3)).strip()
-                valor = unicode(sheet.cell_value(row, 4)).strip()
+                item = str(sheet.cell_value(row, 0)).strip()
+                especificacao = str(sheet.cell_value(row, 1)).strip()
+                unidade = str(sheet.cell_value(row, 2)).strip()
+                marca = str(sheet.cell_value(row, 3)).strip()
+                valor = str(sheet.cell_value(row, 4)).strip()
                 if row == 0:
                     if item!= u'ITEM' or especificacao != u'MATERIAL' or unidade != u'UNIDADE' or marca != u'MARCA' or valor!=u'VALOR UNITÁRIO':
                         messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Item, Material, Unidade e Marca e Valor Unitario.')
@@ -6405,7 +6405,7 @@ def memorando(request, solicitacao_id):
     os.unlink(tmp_xml_file.name)
 
     for key in dicionario.keys():
-        value = unicode(dicionario.get(key)).encode("utf8")
+        value = str(dicionario.get(key)).encode("utf8")
         tempXmlStr = tempXmlStr.replace(key, value)
 
     tmp_xml_file =  open(tempfile.mktemp(), "w+")
@@ -6483,7 +6483,7 @@ def termo_referencia(request, solicitacao_id):
     os.unlink(tmp_xml_file.name)
     from django.utils.html import strip_tags
     for key in dicionario.keys():
-        value = unicode(strip_tags(dicionario.get(key))).encode("utf-8", "replace")
+        value = str(strip_tags(dicionario.get(key))).encode("utf-8", "replace")
         tempXmlStr = tempXmlStr.replace(key, value)
 
     tmp_xml_file =  open(tempfile.mktemp(), "w+")
@@ -8127,11 +8127,11 @@ def carregar_planilha_itens_adesao_arp(request, ata_id):
                 for row in range(3, sheet.nrows):
 
                     #codigo = unicode(sheet.cell_value(row, 0)).strip()
-                    especificacao = unicode(sheet.cell_value(row, 0)).strip()
-                    marca = unicode(sheet.cell_value(row, 1)).strip()
-                    unidade = unicode(sheet.cell_value(row, 2)).strip()
-                    qtd = unicode(sheet.cell_value(row, 3)).strip()
-                    valor = unicode(sheet.cell_value(row, 4)).strip()
+                    especificacao = str(sheet.cell_value(row, 0)).strip()
+                    marca = str(sheet.cell_value(row, 1)).strip()
+                    unidade = str(sheet.cell_value(row, 2)).strip()
+                    qtd = str(sheet.cell_value(row, 3)).strip()
+                    valor = str(sheet.cell_value(row, 4)).strip()
                     if row == 3:
                         if especificacao != u'MATERIAL' or unidade != u'UNIDADE' or qtd != u'QUANTIDADE':
                             messages.error(request, u'Não foi possível processar a planilha. As colunas devem ter Especificação, Unidade e Quantidade.')
@@ -9587,11 +9587,9 @@ def relatorio_info_arp(request, ata_id):
     data_emissao = datetime.date.today()
 
 
-    data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
-
     template = get_template('relatorio_info_arp.html')
 
-    html  = template.render(Context(data))
+    html  = template.render({'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao})
 
     pdf_file = open(caminho_arquivo, "w+b")
     pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,

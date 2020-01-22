@@ -3,15 +3,13 @@
         options = {};
     }
     options["{{ id }}"] = {{ options|safe }};
-    options["{{ id }}"]["control"] = "{{ control }}";
+    options["{{ id }}"]["control"] = '{{ control }}';
     options["{{ id }}"]["label"] = "{{ obj_label }}";
-    
+
     $(document).ready(function() {
         var selected_value = $('#{{ id }}').val();
         if(!selected_value){
-            {% if initial %}
-                selected_value = {{ initial }};
-            {% endif %}
+            selected_value = '{{ initial }}'
         }
         if(options["{{ id }}"]["form_parameter_names"] != undefined){
             vetor = options["{{ id }}"]["form_parameter_names"].split(",");
@@ -32,14 +30,14 @@
             vetor = options["{{ id }}"]["form_parameter_names"].split(",");
             vetor_pks = [];
             for ( i in vetor ){
-                if($("input[name$="+vetor[i].toString()+"]").size()==2){
-                    vetor_pks[i] = $("#hidden_"+vetor[i].toString()).val(); 
+                if($("input[name="+vetor[i].toString()+"]").length==2){
+                    vetor_pks[i] = $("#hidden_"+vetor[i].toString()).val();
                 }
-                if($("input[name$="+vetor[i].toString()+"]").size()==1){
-                    vetor_pks[i] = $("input[name$="+vetor[i].toString()+"]").val().toString();
+                if($("input[name="+vetor[i].toString()+"]").length==1){
+                    vetor_pks[i] = $("input[name="+vetor[i].toString()+"]").val().toString();
                 }
-                if($("select[name$="+vetor[i].toString()+"]").size()==1){
-                    vetor_pks[i] = $("select[name$="+vetor[i].toString()+"]").val().toString();
+                if($("select[name="+vetor[i].toString()+"]").length==1){
+                    vetor_pks[i] = $("select[name="+vetor[i].toString()+"]").val().toString();
                 }
             }
             options["{{ id }}"]["filter_pks"] = vetor_pks.toString();
@@ -51,39 +49,25 @@
         var id = $(chained_element).val();
         $('#{{ id }}').html("");
         $('#{{ id }}').append($("<option />").attr("value", '').text('{{ empty_label }}'));
-        if(id) {
-            $.ajax({
-                type: "POST",
-                url: "/newadmin{{ url }}",
-                data: options["{{id}}"],
-                async: false,
-            }).done(function (data) {
-                if (data) {
-                    $('#{{ id }}').html("");
-                    if(!$('#{{ id }}').attr('multiple')){
-                        $('#{{ id }}').append($("<option />").attr("value", '').text('---------'));
+        $.ajax({
+            type: "POST",
+            url: "/newadmin{{ url }}",
+            data: options["{{id}}"],
+            async: false,
+        }).done(function(data) {
+            if(data) {
+                $('#{{ id }}').html("");
+                $('#{{ id }}').append($("<option />").attr("value", '').text('---------'));
+                $.each(data, function(key, value) {
+                    if(selected_value==value.{{ obj_value }}){
+                        $('#{{ id }}').append($("<option />").attr("selected", "selected")
+                            .attr("value", value.{{ obj_value }}).text(value.{{ obj_label }}));
+                    } else {
+                        $('#{{ id }}').append($("<option />")
+                            .attr("value", value.{{ obj_value }}).text(value.{{ obj_label }}));
                     }
-                    $.each(data, function (key, value) {
-                        var selecionado = false;
-                        if(selected_value  instanceof Array){
-                            if(selected_value.indexOf(value.{{ obj_value }}) >= 0){
-                                selecionado = true;
-                            }
-                        } else {
-                            if(selected_value == value.{{ obj_value }}){
-                                selecionado = true;
-                            }
-                        }
-                        if (selecionado) {
-                            $('#{{ id }}').append($("<option />").attr("selected", "selected")
-                                    .attr("value", value.{{ obj_value }}).text(value.{{ obj_label }}));
-                        } else {
-                            $('#{{ id }}').append($("<option />")
-                                    .attr("value", value.{{ obj_value }}).text(value.{{ obj_label }}));
-                        }
-                    });
-                }
-            });
-        }
+                });
+            }
+        });
     }
 </script>

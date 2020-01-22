@@ -46,7 +46,7 @@ def media(request):
         return HttpResponseRedirect(request.get_full_path())
     return render_to_response('media.html', locals(), RequestContext(request))
 
-
+from newadmin.utils import timeless_load_qs_query
 @csrf_exempt
 def chained_select_view(request, app_name, class_name):
     """
@@ -61,7 +61,7 @@ def chained_select_view(request, app_name, class_name):
 
     qs = cls.objects.all()
     if control:
-        qs.query = loads_qs_query(control)
+        qs.query = timeless_load_qs_query(control)
 
     if 'django_filter_names' in data and 'filter_pks' in data:
         django_filter_names = data['django_filter_names'].split(',')
@@ -74,8 +74,8 @@ def chained_select_view(request, app_name, class_name):
         filter_pks = None
 
     depends = {}
-    if( django_filter_names and filter_pks ):
-        list_depends = zip(django_filter_names, filter_pks)
+    if django_filter_names and filter_pks:
+        list_depends = list(zip(django_filter_names, filter_pks))
         for item in list_depends:
             if item[0] and item[1]:
                 depends[item[0]] = item[1]
@@ -83,6 +83,7 @@ def chained_select_view(request, app_name, class_name):
             qs = qs.filter(**depends).distinct()
 
     qs_filter = data.get('qs_filter', None)
+
     if qs_filter:
         filters = {}
         qs_filters = qs_filter.split(',')
@@ -95,10 +96,11 @@ def chained_select_view(request, app_name, class_name):
             elif v == 'True':
                 v = True
             else:
-                qs_filter_value = data.get('qs_filter_params_map[%s]'%v, None)
+                qs_filter_value = data.get('qs_filter_params_map[%s]' % v, None)
                 if qs_filter_value:
                     v = qs_filter_value
             filters[k] = v
 
         qs = qs.filter(**filters)
+
     return JsonResponse(list(qs.distinct().values('id', label)))

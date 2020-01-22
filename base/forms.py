@@ -232,7 +232,7 @@ class GestaoPedidoForm(forms.Form):
 
         ANO_CHOICES.append([u'Todos', u'Todos'])
         ano_inicio = 2015
-        ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         self.fields['ano'].choices = ANO_CHOICES
 
 
@@ -251,7 +251,7 @@ class AnoForm(forms.Form):
 
         ANO_CHOICES.append([u'Todos', u'Todos'])
         ano_inicio = 2015
-        ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         self.fields['ano'].choices = ANO_CHOICES
 
 class AnoMesForm(forms.Form):
@@ -273,7 +273,7 @@ class AnoMesForm(forms.Form):
 
 
         ano_inicio = 2015
-        ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+        ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         self.fields['ano'].choices = ANO_CHOICES
 
         MESES = (
@@ -645,7 +645,7 @@ class PesquisaMercadologicaForm(forms.Form):
         self.solicitacao = kwargs.pop('solicitacao', None)
         super(PesquisaMercadologicaForm, self).__init__(*args, **kwargs)
         #self.fields['vigencia_ata'].widget.attrs = {'class': 'vDateField'}
-        if not self.request.user.is_authenticated() or not (self.solicitacao.tipo_aquisicao == self.solicitacao.TIPO_AQUISICAO_LICITACAO):
+        if not self.request.user.is_authenticated or not (self.solicitacao.tipo_aquisicao == self.solicitacao.TIPO_AQUISICAO_LICITACAO):
             self.fields['origem_opcao'] = forms.NullBooleanField(required=False, label=u'Origem da Pesquisa', widget=forms.widgets.RadioSelect(choices=[(True, u'Fornecedor')]), initial=True)
 
     # def clean(self):
@@ -999,7 +999,7 @@ class GestaoContratoForm(forms.Form):
         if pregoes.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = pregoes[0].data_abertura.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhuma solicitação encontrada'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1023,7 +1023,7 @@ class BuscarSolicitacaoForm(forms.Form):
         if pregoes.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = pregoes[0].data_cadastro.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhuma solicitação encontrada'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1481,7 +1481,7 @@ class BaixarEditaisForm(forms.Form):
         if contratos.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = contratos[0].data_inicio.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhuma licitação cadastrada'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1508,7 +1508,7 @@ class BaixarAtasForm(forms.Form):
         if contratos.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = contratos[0].data_inicio.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1534,7 +1534,7 @@ class BaixarContratoForm(forms.Form):
         if contratos.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = contratos[0].data_inicio.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1560,7 +1560,7 @@ class BaixarDispensaForm(forms.Form):
         if contratos.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = contratos[0].data_cadastro.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1715,7 +1715,7 @@ class RelatoriosGerenciaisForm(forms.Form):
         if pregoes.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = pregoes[0].data_abertura.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhum pregão cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1746,7 +1746,7 @@ class RelatoriosGerenciaisContratosForm(forms.Form):
         if contratos.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = contratos[0].data_inicio.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhum contrato cadastrado'])
         self.fields['ano'].choices = ANO_CHOICES
@@ -1995,7 +1995,7 @@ class RelatoriosGerenciaisComprasForm(forms.Form):
         if contratos.exists():
             ANO_CHOICES.append([u'', u'--------'])
             ano_inicio = contratos[0].data.year-1
-            ANO_CHOICES += [(ano, unicode(ano)) for ano in range(ano_limite, ano_inicio, -1)]
+            ANO_CHOICES += [(ano, str(ano)) for ano in range(ano_limite, ano_inicio, -1)]
         else:
             ANO_CHOICES.append([u'', u'Nenhuma ordem cadastrada'])
         self.fields['ano'].choices = ANO_CHOICES

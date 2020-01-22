@@ -24,7 +24,6 @@ pyopenssl
 xlrd
 django-autocomplete-light
 django_select2
-django-ckeditor
 html5lib
 
 -e git+git://github.com/hugotacito/django-pagination.git#egg=django-pagination

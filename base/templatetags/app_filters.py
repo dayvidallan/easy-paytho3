@@ -9,7 +9,7 @@ def split_thousands(value, sep='.'):
     """
     split_thousands('1000000000') -> '1.000.000.000'
     """
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         value = str(value)
     negativo = False
     if '-' in value:
@@ -43,7 +43,7 @@ def format_money(value):
         reais = value
         centavos = '00'
     reais = split_thousands(reais)
-    return unicode(reais + ',' + centavos)
+    return str(reais + ',' + centavos)
 
 
 @register.filter(is_safe=True)
@@ -60,9 +60,9 @@ def format_quantidade(value):
     if '.' in value:
         reais, centavos = value.split('.')
         if centavos != '00':
-            return unicode(reais + ',' + centavos)
+            return str(reais + ',' + centavos)
         else:
-            return unicode(reais)
+            return str(reais)
     return u'-'
 
 

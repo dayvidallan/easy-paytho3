@@ -10,7 +10,6 @@ from decimal import Decimal
 from django.db.models import Sum, Q
 import datetime
 from datetime import datetime, timedelta
-from ckeditor.fields import RichTextField
 from base.templatetags.app_filters import format_money
 TWOPLACES = Decimal(10) ** -2
 import os
@@ -71,7 +70,7 @@ class Secretaria(models.Model):
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True, on_delete=models.CASCADE)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
     class Meta:
@@ -85,7 +84,7 @@ class Setor(models.Model):
     sigla = models.CharField(u'Sigla', max_length=20, null=True, blank=True)
     secretaria = models.ForeignKey(Secretaria, verbose_name=u'Secretaria', on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.sigla and self.secretaria.sigla:
             return u'%s / %s' % (self.sigla, self.secretaria.sigla)
         return u'%s / %s' % (self.nome, self.secretaria)
@@ -114,7 +113,7 @@ class ModalidadePregao(models.Model):
 
     nome = models.CharField(u'Nome', max_length=80)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
     class Meta:
@@ -129,7 +128,7 @@ class CriterioPregao(models.Model):
     GRUPO_ITENS = 3
     nome = models.CharField(u'Nome', max_length=80)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
     class Meta:
@@ -143,7 +142,7 @@ class TipoPregao(models.Model):
 
     nome = models.CharField(u'Nome', max_length=80)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
     class Meta:
@@ -157,7 +156,7 @@ class TipoPregaoDesconto(models.Model):
 
     nome = models.CharField(u'Nome', max_length=80)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
     class Meta:
@@ -167,7 +166,7 @@ class TipoPregaoDesconto(models.Model):
 class TipoUnidade(models.Model):
     nome = models.CharField(u'Unidade', max_length=80)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
     class Meta:
@@ -209,7 +208,7 @@ class Processo(models.Model):
     pessoa_finalizacao = models.ForeignKey(User, related_name='pessoa_finalizacao_set', null=True, on_delete=models.CASCADE)
     observacao_finalizacao = models.TextField(u'Despacho', null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.numero
 
     class Meta:
@@ -293,7 +292,7 @@ class SolicitacaoLicitacaoTmp(models.Model):
     credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao_tmp', on_delete=models.CASCADE)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Solicitação Temp N°: %s' % self.num_memorando
 
     class Meta:
@@ -407,7 +406,7 @@ class SolicitacaoLicitacao(models.Model):
     responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria', on_delete=models.CASCADE)
     termo_referencia = models.FileField(u'Termo de Referência', null=True, blank=True, upload_to=upload_path_termo_referencia)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Solicitação N°: %s' % self.num_memorando
 
     class Meta:
@@ -776,7 +775,7 @@ class ItemSolicitacaoLicitacao(models.Model):
     arquivo_referencia_valor_medio = models.FileField(u'Arquivo com a Referência do Valor Médio', null=True, upload_to=u'upload/referencias_valor_medio/')
     desconto_item = models.DecimalField(u'Desconto', max_digits=20, decimal_places=2, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
 
         if ItemLote.objects.filter(item=self).exists() and not self.eh_lote:
             id_lote = ItemLote.objects.filter(item=self)[0].lote.item
@@ -1508,7 +1507,7 @@ class ItemLote(models.Model):
         verbose_name = u'Item do Lote'
         verbose_name_plural = u'Itens dos Lotes'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Item %s do Lote: %s' % (self.item, self.lote)
 
 class OpcaoLCN(models.Model):
@@ -1518,7 +1517,7 @@ class OpcaoLCN(models.Model):
         verbose_name = u'Opção da LCN'
         verbose_name_plural = u'Opções da LCN'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descricao
 
 
@@ -1620,7 +1619,7 @@ class Pregao(models.Model):
 
 
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s N° %s' % (self.modalidade, self.num_pregao)
 
 
@@ -1955,7 +1954,7 @@ class ItemPregao(models.Model):
         verbose_name_plural = u'Itens do Pregão'
         ordering = ['pregao','id']
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.material, self.pregao)
 
 class Fornecedor(models.Model):
@@ -1973,7 +1972,7 @@ class Fornecedor(models.Model):
         verbose_name = u'Fornecedor'
         verbose_name_plural = u'Fornecedores'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s (%s)' % (self.razao_social, self.cnpj)
 
     def get_dados_bancarios(self):
@@ -2002,7 +2001,7 @@ class ParticipantePregao(models.Model):
         verbose_name_plural = u'Participantes do Pregão'
         ordering = ['desclassificado', 'fornecedor__razao_social']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.fornecedor.razao_social
 
     def pode_remover(self):
@@ -2017,7 +2016,7 @@ class VisitantePregao(models.Model):
         verbose_name = u'Visitante do Pregão'
         verbose_name_plural = u'Visitantes do Pregão'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
 class ParticipanteItemPregao(models.Model):
@@ -2029,7 +2028,7 @@ class ParticipanteItemPregao(models.Model):
         verbose_name = u'Participante do Item do Pregão'
         verbose_name_plural = u'Participantes do Item do Pregão'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.participante.fornecedor.razao_social
 
 class PropostaItemPregao(models.Model):
@@ -2051,7 +2050,7 @@ class PropostaItemPregao(models.Model):
         verbose_name = u'Valor do Item do Pregão'
         verbose_name_plural = u'Valores do Item do Pregão'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.item, self.participante)
 
     def get_situacao_valor(self):
@@ -2083,7 +2082,7 @@ class RodadaPregao(models.Model):
         verbose_name = u'Rodada do Pregão'
         verbose_name_plural = u'Rodadas do Pregão'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Rodada: %s do Pregão: %s' % (self.rodada, self.pregao)
 
     def eh_rodada_atual(self):
@@ -2124,7 +2123,7 @@ class LanceItemRodadaPregao(models.Model):
         verbose_name_plural = u'Lances da Rodada do Pregão'
         ordering = ['-valor']
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Lance %s da Rodada: %s' % (self.id, self.rodada.rodada)
 
     def get_marca(self):
@@ -2211,7 +2210,7 @@ class PessoaFisica(models.Model):
         verbose_name = u'Pessoa'
         verbose_name_plural = u'Pessoas'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s (%s) - %s' % (self.nome, self.cpf, self.setor)
 
     def get_endereco(self):
@@ -2258,7 +2257,7 @@ class Estado(models.Model):
         verbose_name = u'Estado'
         verbose_name_plural = u'Estados'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.sigla
 
 
@@ -2273,7 +2272,7 @@ class Municipio(models.Model):
         verbose_name_plural = u'Municípios'
         ordering = ('nome', )
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s / %s' % (self.nome, self.estado.sigla)
 
     def get_sigla_estado(self):
@@ -2293,7 +2292,7 @@ class ComissaoLicitacao(models.Model):
     tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=CPL)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.nome, self.tipo)
 
     class Meta:
@@ -2321,7 +2320,7 @@ class MembroComissaoLicitacao(models.Model):
     matricula = models.CharField(u'Matrícula', max_length=100)
     funcao = models.CharField(u'Função', max_length=100, choices=FUNCAO_CHOICES, default=APOIO)
 
-    def __unicode__(self):
+    def __str__(self):
         return u' Membros da comissão {}'.format(self.comissao.nome)
 
     class Meta:
@@ -2351,7 +2350,7 @@ class InteressadoEdital(models.Model):
     data_acesso = models.DateTimeField(u'Data de Acesso')
 
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
     class Meta:
@@ -2392,7 +2391,7 @@ class PesquisaMercadologica(models.Model):
         verbose_name = u'Pesquisa Mercadológica'
         verbose_name_plural = u'Pesquisas Mercadológicas'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Pesquisa Mercadológica: %s, Fornecedor: %s' % (self.id, self.razao_social)
 
     def get_itens(self):
@@ -2471,7 +2470,7 @@ class ResultadoItemPregao(models.Model):
         verbose_name = u'Resultado da Licitação'
         verbose_name_plural = u'Resultados da Licitação'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Resultado do Item: %s, Participante: %s' % (self.item, self.participante)
 
     def pode_alterar(self):
@@ -2510,7 +2509,7 @@ class AnexoPregao(models.Model):
         verbose_name = u'Anexo do Pregão'
         verbose_name_plural = u'Anexos do Pregão'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.nome, self.data)
 
 
@@ -2527,7 +2526,7 @@ class AnexoContrato(models.Model):
         verbose_name = u'Anexo do Contrato'
         verbose_name_plural = u'Anexos do Contrato'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.nome, self.contrato)
 
 
@@ -2545,7 +2544,7 @@ class AnexoAtaRegistroPreco(models.Model):
         verbose_name = u'Anexo da ARP'
         verbose_name_plural = u'Anexos da ARP'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.nome, self.ata)
 
 class LogDownloadArquivo(models.Model):
@@ -2573,7 +2572,7 @@ class LogDownloadArquivo(models.Model):
         verbose_name = u'Log de Download de Arquivo'
         verbose_name_plural = u'Logs de Download de Arquivo'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Download por %s do Arquivo: %s' % (self.nome, self.arquivo)
 
     def save(self):
@@ -2593,7 +2592,7 @@ class HistoricoPregao(models.Model):
         ordering = ['data']
 
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Histórico do Pregão: %s' % self.pregao
 
 
@@ -2611,7 +2610,7 @@ class MovimentoSolicitacao(models.Model):
         verbose_name = u'Movimento da Solicitação'
         verbose_name_plural = u'Movimentos da Solicitação'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Movimento %s da Solicitação: %s' % (self.id, self.solicitacao)
 
 
@@ -2627,7 +2626,7 @@ class DocumentoSolicitacao(models.Model):
         verbose_name = u'Documento da Solicitação'
         verbose_name_plural = u'Documentos da Solicitação'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Documento da Solicitação: %s' % self.solicitacao
 
 
@@ -2656,7 +2655,7 @@ class ItemQuantidadeSecretaria(models.Model):
         verbose_name = u'Pedido de Itens da Secretaria'
         verbose_name_plural = u'Pedidos de Itens da Secretaria'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Item %s da Secretaria: %s' % (self.item, self.secretaria)
 
 
@@ -2670,7 +2669,7 @@ class MaterialConsumo(models.Model):
         verbose_name_plural = u'Materiais de Consumo'
 
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (Cód: %s)' % (self.nome, self.codigo)
 
     def save(self):
@@ -2698,7 +2697,7 @@ class Configuracao(models.Model):
     url = models.CharField(u'URL de Acesso', max_length=500, null=True)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Configuração Geral'
 
     class Meta:
@@ -2712,7 +2711,7 @@ class DotacaoOrcamentaria(models.Model):
         verbose_name = u'Dotação Orçamentária'
         verbose_name_plural = u'Dotações Orçamentárias'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Dotação: Programa %s - Elemento de Despesa: %s' % (self.programa_num, self.elemento_despesa_num)
 
 class OrdemCompra(models.Model):
@@ -2813,7 +2812,7 @@ class AtaRegistroPreco(models.Model):
         verbose_name = u'Ata de Registro de Preço'
         verbose_name_plural = u'Atas de Registro de Preço'
 
-    def __unicode__(self):
+    def __str__(self):
         if self.adesao:
             return 'Adesão à ARP N° %s' % (self.numero)
         else:
@@ -2909,7 +2908,7 @@ class Credenciamento(models.Model):
         verbose_name = u'Credenciamento'
         verbose_name_plural = u'Credenciamentos'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Credenciamento: %s' % (self.numero)
 
     def get_situacao(self):
@@ -2971,7 +2970,7 @@ class ItemCredenciamento(models.Model):
         verbose_name_plural = u'Itens do Credenciamento'
 
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Item %s do Credenciamento: %s' % (self.item, self.credenciamento)
 
     def get_quantidade_disponivel(self):
@@ -3034,7 +3033,7 @@ class PedidoCredenciamento(models.Model):
         verbose_name = u'Pedido do Credenciamento'
         verbose_name_plural = u'Pedidos do Credenciamento'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Pedido %s do Credenciamento: %s' % (self.id, self.credenciamento)
 
 
@@ -3062,7 +3061,7 @@ class AnexoCredenciamento(models.Model):
         verbose_name = u'Anexo do Credenciamento'
         verbose_name_plural = u'Anexos do Credenciamento'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.nome, self.credenciamento)
 
 class Contrato(models.Model):
@@ -3107,7 +3106,7 @@ class Contrato(models.Model):
         verbose_name = u'Contrato'
         verbose_name_plural = u'Contratos'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Contrato N° %s' % (self.numero)
 
     def get_situacao(self):
@@ -3269,7 +3268,7 @@ class Aditivo(models.Model):
         verbose_name = u'Aditivo de Contrato'
         verbose_name_plural = u'Aditivos de Contrato'
 
-    def __unicode__(self):
+    def __str__(self):
         tipo = u''
         if self.de_prazo:
             tipo += u'de Prazo, '
@@ -3304,7 +3303,7 @@ class AditivoItemContrato(models.Model):
         verbose_name = u'Aditivo de Item de Contrato'
         verbose_name_plural = u'Aditivos de Itens de Contrato'
 
-    def __unicode__(self):
+    def __str__(self):
 
         return u'Aditivo do Item: (%s - %s)' % (self.item, self.tipo)
 
@@ -3327,7 +3326,7 @@ class ItemContrato(models.Model):
         verbose_name = u'Item do Contrato'
         verbose_name_plural = u'Itens do Contrato'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Item %s do Contrato: %s' % (self.item, self.contrato)
 
     def get_quantidade_disponivel(self):
@@ -3472,7 +3471,7 @@ class PedidoContrato(models.Model):
         verbose_name = u'Pedido do Contrato'
         verbose_name_plural = u'Pedidos do Contrato'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Pedido %s do Contrato: %s' % (self.id, self.contrato)
 
     def get_total(self):
@@ -3504,7 +3503,7 @@ class ItemAtaRegistroPreco(models.Model):
         verbose_name_plural = u'Itens da ARP'
 
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Item %s da ARP: %s' % (self.item, self.ata)
 
     def get_data_esgotamento(self):
@@ -3639,7 +3638,7 @@ class PedidoAtaRegistroPreco(models.Model):
         verbose_name = u'Pedido da ARP'
         verbose_name_plural = u'Pedidos da ARP'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Pedido %s da ARP: %s' % (self.id, self.ata)
 
 
@@ -3694,7 +3693,7 @@ class FornecedorCRC(models.Model):
         verbose_name = u'Certificado de Registro Cadastral'
         verbose_name_plural = u'Certificados de Registros Cadastrais'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - Validade: %s' % (self.fornecedor, self.validade)
 
     def get_proximo_numero(self, ano):
@@ -3730,7 +3729,7 @@ class CnaeSecundario(models.Model):
         verbose_name = u'CNAE Secundário'
         verbose_name_plural = u'CNAES Secundários'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - CNAE Secundário: %s' % (self.crc, self.codigo)
 
 class SocioCRC(models.Model):
@@ -3747,7 +3746,7 @@ class SocioCRC(models.Model):
         verbose_name = u'Sócio'
         verbose_name_plural = u'Sócios'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - Sócio: %s' % (self.crc, self.nome)
 
 
@@ -3772,7 +3771,7 @@ class ModeloAta(models.Model):
         verbose_name = u'Modelo de Ata'
         verbose_name_plural = u'Modelos de Atas'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
 
@@ -3784,7 +3783,7 @@ class TipoModelo(models.Model):
         verbose_name = u'Tipo do Modelo'
         verbose_name_plural = u'Tipos do Modelo'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
 
@@ -3796,7 +3795,7 @@ class TipoObjetoModelo(models.Model):
         verbose_name = u'Tipo de Objeto do Modelo'
         verbose_name_plural = u'Tipos de Objetos do Modelo'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
 
@@ -3808,7 +3807,7 @@ class MotivoSuspensaoPregao(models.Model):
         verbose_name = u'Motivo de Suspensão do Pregão'
         verbose_name_plural = u'Motivos de Suspensão do Pregão'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
 class ModeloDocumento(models.Model):
@@ -3843,7 +3842,7 @@ class ModeloDocumento(models.Model):
         verbose_name = u'Modelo de Documento'
         verbose_name_plural = u'Modelos de Documentos'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
 class TransferenciaItemARP(models.Model):
@@ -3859,7 +3858,7 @@ class TransferenciaItemARP(models.Model):
         verbose_name = u'Transferência de Item de ARP'
         verbose_name_plural = u'Transferências de Itens de ARP'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.quantidade
 
 
@@ -3873,7 +3872,7 @@ class CertidaoCRC(models.Model):
         verbose_name = u'Certidão CRC'
         verbose_name_plural = u'Certidões CRC'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nome
 
 
