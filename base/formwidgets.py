@@ -243,7 +243,7 @@ class AutocompleteWidget(TextInput):
         super(AutocompleteWidget, self).__init__(self.attrs)
 
 
-    def render(self, name, value=None, attrs={}):
+    def render(self, name, value=None, attrs={}, renderer=None):
         model_cls = self.choices.queryset.model
         value = value or ''
         if not isinstance(value, (basestring, int, model_cls)):

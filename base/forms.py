@@ -215,11 +215,11 @@ class AlterarItemContratoForm(forms.ModelForm):
 class GestaoPedidoForm(forms.Form):
     METHOD = 'GET'
     info = forms.CharField(label=u'Digite o número de identificação', required=False)
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                             required=False,
                             label=u'Filtrar por Ano:',
                             )
-    vigentes = forms.ChoiceField([(u'', u'Todos'), (u'Vigentes', u'Vigentes')],
+    vigentes = forms.ChoiceField(choices=[(u'', u'Todos'), (u'Vigentes', u'Vigentes')],
                             required=False,
                             label=u'Filtrar por Situação:',
                             )
@@ -238,7 +238,7 @@ class GestaoPedidoForm(forms.Form):
 
 class AnoForm(forms.Form):
     METHOD = 'GET'
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                             required=False,
                             label=u'Filtrar por Ano:',
                             )
@@ -256,11 +256,11 @@ class AnoForm(forms.Form):
 
 class AnoMesForm(forms.Form):
     METHOD = 'GET'
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                             required=False,
                             label=u'Filtrar por Ano:',
                             )
-    mes = forms.ChoiceField([],
+    mes = forms.ChoiceField(choices=[],
                             required=False,
                             label=u'Filtrar por Mês:',
                             )
@@ -981,7 +981,7 @@ class AbrirProcessoForm(forms.ModelForm):
 class GestaoContratoForm(forms.Form):
     METHOD = u'GET'
     info = forms.CharField(label=u'Digite o número de identificação', required=False)
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
@@ -1008,7 +1008,7 @@ class GestaoContratoForm(forms.Form):
 class BuscarSolicitacaoForm(forms.Form):
     METHOD = u'GET'
     info = forms.CharField(label=u'Número', required=False, help_text='Digite o número da licitação/procedimento, processo ou do memorando')
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Ano',
             )
@@ -1466,7 +1466,7 @@ class BaixarEditaisForm(forms.Form):
     METHOD = u'GET'
 
     numero = forms.CharField(label=u'Digite o termo da busca (número do procedimento, por exemplo):', required=False)
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
@@ -1490,7 +1490,7 @@ class BaixarEditaisForm(forms.Form):
 
 class BaixarAtasForm(forms.Form):
     numero = forms.CharField(label=u'Digite o número, ano de vigência ou palavra-chave:', required=False)
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
@@ -1516,7 +1516,7 @@ class BaixarAtasForm(forms.Form):
 
 class BaixarContratoForm(forms.Form):
     numero = forms.CharField(label=u'Digite o número, nome do fornecedor, ano de vigência ou palavra-chave:', required=False)
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
@@ -1542,7 +1542,7 @@ class BaixarContratoForm(forms.Form):
 
 class BaixarDispensaForm(forms.Form):
     numero = forms.CharField(label=u'Digite o número, ano de vigência ou palavra-chave:', required=False)
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
@@ -1695,7 +1695,7 @@ class LocalizarProcessoForm(forms.Form):
     numero = forms.CharField(label=u'Informe o Número do Processo', required=False)
 
 class RelatoriosGerenciaisForm(forms.Form):
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
@@ -1722,7 +1722,7 @@ class RelatoriosGerenciaisForm(forms.Form):
         self.fields['ano'].initial = ano_limite
 
 class RelatoriosGerenciaisContratosForm(forms.Form):
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )
@@ -1975,7 +1975,7 @@ class ModeloDocumentoForm(forms.ModelForm):
 
 
 class RelatoriosGerenciaisComprasForm(forms.Form):
-    ano = forms.ChoiceField([],
+    ano = forms.ChoiceField(choices=[],
                 required = False,
                 label    = u'Filtrar por Ano:',
             )

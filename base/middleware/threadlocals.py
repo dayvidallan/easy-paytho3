@@ -9,7 +9,7 @@ from <project_name>.djtools.middelware import threadlocals as tl
 """
 
 from threading import local
-
+from django.utils.deprecation import MiddlewareMixin
 def get_client_ip(request):
     for attr in ('HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'):
         if request.META.get(attr):
@@ -36,7 +36,7 @@ def get_remote_addr():
         return get_client_ip(request)
     return None
 
-class ThreadLocals(object):
+class ThreadLocals(MiddlewareMixin):
     def process_request(self, request):
         tl.user = getattr(request, 'user', None)
         tl.request = request

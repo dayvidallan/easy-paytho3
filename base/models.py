@@ -17,7 +17,7 @@ import os
 import hashlib
 from django.conf import settings
 from django.core.mail import send_mail
-import cStringIO as StringIO
+from io import StringIO
 import qrcode
 import base64
 
@@ -38,8 +38,7 @@ def get_tl():
     """
     Retorna threadlocals.
     """
-    tl = None
-    exec 'from base.middleware import threadlocals as tl'
+    from base.middleware import threadlocals as tl
     return tl
 
 tl = get_tl()
@@ -63,13 +62,13 @@ class Secretaria(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
     sigla = models.CharField(u'Sigla', max_length=20, null=True, blank=True)
     cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
-    responsavel = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável', null=True, blank=True, related_name=u'secretaria_responsavel')
+    responsavel = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável', null=True, blank=True, related_name=u'secretaria_responsavel', on_delete=models.CASCADE)
     endereco = models.CharField(u'Endereço', max_length=2000, null=True)
     email = models.CharField(u'Email', max_length=200, null=True)
     telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
     logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
     eh_ordenadora_despesa = models.BooleanField(u'O responsável pela Secretaria é o Ordenador de Despesa?', default=True)
-    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True)
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True, on_delete=models.CASCADE)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
 
     def __unicode__(self):
@@ -84,7 +83,7 @@ class Secretaria(models.Model):
 class Setor(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
     sigla = models.CharField(u'Sigla', max_length=20, null=True, blank=True)
-    secretaria = models.ForeignKey(Secretaria, verbose_name=u'Secretaria')
+    secretaria = models.ForeignKey(Secretaria, verbose_name=u'Secretaria', on_delete=models.CASCADE)
 
     def __unicode__(self):
         if self.sigla and self.secretaria.sigla:
@@ -199,15 +198,15 @@ class Processo(models.Model):
     ]
 
     data_cadastro = models.DateTimeField(auto_now_add=True)
-    pessoa_cadastro = models.ForeignKey(User, related_name='pessoa_cadastro_set')
+    pessoa_cadastro = models.ForeignKey(User, related_name='pessoa_cadastro_set', on_delete=models.CASCADE)
     numero = models.CharField(u'Número do Processo', max_length=25, unique=True)
     objeto = models.CharField(max_length=1500)
     tipo = models.PositiveIntegerField(choices=PROCESSO_TIPO)
     status = models.PositiveIntegerField(u'Situação', choices=PROCESSO_STATUS, default=STATUS_EM_TRAMITE)
-    setor_origem = models.ForeignKey(Setor, verbose_name=u"Setor de Origem")
+    setor_origem = models.ForeignKey(Setor, verbose_name=u"Setor de Origem", on_delete=models.CASCADE)
     palavras_chave = models.TextField(u'Palavras-chave', null=True)
     data_finalizacao = models.DateTimeField(editable=False, null=True)
-    pessoa_finalizacao = models.ForeignKey(User, related_name='pessoa_finalizacao_set', null=True)
+    pessoa_finalizacao = models.ForeignKey(User, related_name='pessoa_finalizacao_set', null=True, on_delete=models.CASCADE)
     observacao_finalizacao = models.TextField(u'Despacho', null=True, blank=True)
 
     def __unicode__(self):
@@ -286,12 +285,12 @@ class SolicitacaoLicitacaoTmp(models.Model):
     tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=LICITACAO)
     tipo_aquisicao = models.CharField(u'Tipo de Aquisição', max_length=50, choices=TIPO_AQUISICAO_CHOICES, default=TIPO_AQUISICAO_LICITACAO)
     data_cadastro = models.DateTimeField(u'Cadastrada em')
-    cadastrado_por = models.ForeignKey(User, null=True, blank=True)
-    setor_origem = models.ForeignKey(Setor, verbose_name=u'Setor de Origem', related_name='setor_origem_tmp', null=True, blank=True)
-    setor_atual = models.ForeignKey(Setor, verbose_name=u'Setor Atual', related_name='setor_atual_tmp', null=True, blank=True)
-    arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao_tmp')
-    contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao_tmp')
-    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao_tmp')
+    cadastrado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    setor_origem = models.ForeignKey(Setor, verbose_name=u'Setor de Origem', related_name='setor_origem_tmp', null=True, blank=True, on_delete=models.CASCADE)
+    setor_atual = models.ForeignKey(Setor, verbose_name=u'Setor Atual', related_name='setor_atual_tmp', null=True, blank=True, on_delete=models.CASCADE)
+    arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao_tmp', on_delete=models.CASCADE)
+    contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao_tmp', on_delete=models.CASCADE)
+    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao_tmp', on_delete=models.CASCADE)
 
 
     def __unicode__(self):
@@ -380,32 +379,32 @@ class SolicitacaoLicitacao(models.Model):
     tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=LICITACAO)
     tipo_aquisicao = models.CharField(u'Tipo de Aquisição', max_length=50, choices=TIPO_AQUISICAO_CHOICES, default=TIPO_AQUISICAO_LICITACAO)
     data_cadastro = models.DateTimeField(u'Cadastrada em')
-    cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    cadastrado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     obs_negacao = models.CharField(u'Justificativa da Negação', max_length=1500, null=True, blank=True)
     data_inicio_pesquisa = models.DateField(u'Início das Pesquisas', null=True, blank=True)
     data_fim_pesquisa = models.DateField(u'Fim das Pesquisas', null=True, blank=True)
     interessados = models.ManyToManyField(Secretaria)
     prazo_resposta_interessados = models.DateField(u'Prazo para retorno dos interessados', null=True, blank=True)
-    setor_origem = models.ForeignKey(Setor, verbose_name=u'Setor de Origem', related_name='setor_origem', null=True, blank=True)
-    setor_atual = models.ForeignKey(Setor, verbose_name=u'Setor Atual', related_name='setor_atual', null=True, blank=True)
+    setor_origem = models.ForeignKey(Setor, verbose_name=u'Setor de Origem', related_name='setor_origem', null=True, blank=True, on_delete=models.CASCADE)
+    setor_atual = models.ForeignKey(Setor, verbose_name=u'Setor Atual', related_name='setor_atual', null=True, blank=True, on_delete=models.CASCADE)
     arquivo_minuta = models.FileField(u'Arquivo da Minuta', null=True, blank=True, upload_to=u'upload/minutas/')
     minuta_aprovada = models.BooleanField(u'Minuta Aprovada', default=False)
     data_avaliacao_minuta = models.DateTimeField(u'Minuta Aprovada em', null=True, blank=True)
-    minuta_avaliada_por = models.ForeignKey(User, verbose_name=u'Minuta Aprovada Por', related_name=u'aprova_minuta', null=True, blank=True)
+    minuta_avaliada_por = models.ForeignKey(User, verbose_name=u'Minuta Aprovada Por', related_name=u'aprova_minuta', null=True, blank=True, on_delete=models.CASCADE)
     obs_avaliacao_minuta = models.CharField(u'Observação - Minuta', max_length=1500, null=True, blank=True)
     arquivo_parecer_minuta = models.FileField(u'Arquivo com o Parecer', null=True, blank=True, upload_to=u'upload/minutas/')
     prazo_aberto = models.NullBooleanField(u'Aberto para Recebimento de Pesquisa', default=False)
-    processo = models.ForeignKey(Processo, null=True)
+    processo = models.ForeignKey(Processo, null=True, on_delete=models.CASCADE)
     liberada_para_pedido = models.BooleanField(u'Liberada para Pedido', default=False)
-    arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao')
-    contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao')
-    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao')
+    arp_origem = models.ForeignKey('base.AtaRegistroPreco', null=True, related_name=u'arp_da_solicitacao', on_delete=models.CASCADE)
+    contrato_origem = models.ForeignKey('base.Contrato', null=True, related_name=u'contrato_da_solicitacao', on_delete=models.CASCADE)
+    credenciamento_origem = models.ForeignKey('base.Credenciamento', null=True, related_name=u'credenciamento_da_solicitacao', on_delete=models.CASCADE)
     termo_inexigibilidade = models.FileField(u'Termo de Inexigibilidade', null=True, blank=True, upload_to=u'upload/minutas/')
     contratacao_global = models.BooleanField(u'Contratação Global (Com pagamentos mensais fixos)', default=False)
     numero_meses_contratacao_global = models.IntegerField(u'Informe o Número de Meses do Contrato', null=True)
-    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa')
-    ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria')
-    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria')
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa', on_delete=models.CASCADE)
+    ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria', on_delete=models.CASCADE)
+    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria', on_delete=models.CASCADE)
     termo_referencia = models.FileField(u'Termo de Referência', null=True, blank=True, upload_to=upload_path_termo_referencia)
 
     def __unicode__(self):
@@ -763,10 +762,10 @@ class ItemSolicitacaoLicitacao(models.Model):
         (CONCLUIDO, CONCLUIDO),
     )
 
-    solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação')
+    solicitacao = models.ForeignKey('base.SolicitacaoLicitacao', verbose_name=u'Solicitação', on_delete=models.CASCADE)
     item = models.IntegerField(u'Item')
-    material = models.ForeignKey('base.MaterialConsumo', null=True)
-    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+    material = models.ForeignKey('base.MaterialConsumo', null=True, on_delete=models.CASCADE)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True, on_delete=models.CASCADE)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     valor_medio = models.DecimalField(u'Valor Médio', max_digits=20, decimal_places=2, null=True, blank=True)
     total = models.DecimalField(u'Total', decimal_places=2, max_digits=20, null=True, blank=True)
@@ -1501,8 +1500,8 @@ class ItemSolicitacaoLicitacao(models.Model):
         return 0
 
 class ItemLote(models.Model):
-    lote = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'lote')
-    item = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'item_do_lote')
+    lote = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'lote', on_delete=models.CASCADE)
+    item = models.ForeignKey('base.ItemSolicitacaoLicitacao', related_name=u'item_do_lote', on_delete=models.CASCADE)
     numero_item = models.IntegerField(u'Número do Item')
 
     class Meta:
@@ -1573,15 +1572,15 @@ class Pregao(models.Model):
         (u'Proposta Final', u'Proposta Final'),
         (u'Revisão do Processo', u'Revisão do Processo'),
     )
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação', on_delete=models.CASCADE)
     num_pregao = models.CharField(u'Número do Pregão', max_length=255)
-    modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade / Procedimento')
+    modalidade = models.ForeignKey(ModalidadePregao, verbose_name=u'Modalidade / Procedimento', on_delete=models.CASCADE)
     objeto = models.TextField(u'Objeto', null=True)
     fundamento_legal = models.CharField(u'Fundamento Legal', max_length=5000, null=True, blank=True)
-    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento', null=True, blank=True)
-    tipo_desconto = models.ForeignKey(TipoPregaoDesconto, verbose_name=u'Tipo de Desconto', null=True, blank=True)
-    criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação')
-    aplicacao_lcn_123_06 = models.ForeignKey(OpcaoLCN, verbose_name=u'MPE – Aplicação Da LCN 123/06 (Lei 123/06)', null=True, blank=True)
+    tipo = models.ForeignKey(TipoPregao, verbose_name=u'Critério de Julgamento', null=True, blank=True, on_delete=models.CASCADE)
+    tipo_desconto = models.ForeignKey(TipoPregaoDesconto, verbose_name=u'Tipo de Desconto', null=True, blank=True, on_delete=models.CASCADE)
+    criterio = models.ForeignKey(CriterioPregao, verbose_name=u'Critério de Adjudicação', on_delete=models.CASCADE)
+    aplicacao_lcn_123_06 = models.ForeignKey(OpcaoLCN, verbose_name=u'MPE – Aplicação Da LCN 123/06 (Lei 123/06)', null=True, blank=True, on_delete=models.CASCADE)
     data_inicio = models.DateField(u'Data de Início da Retirada do Edital', null=True, blank=True)
     data_termino = models.DateField(u'Data de Término da Retirada do Edial', null=True, blank=True)
     data_abertura = models.DateField(u'Data de Abertura do Certame', null=True, blank=True)
@@ -1597,11 +1596,11 @@ class Pregao(models.Model):
     data_homologacao = models.DateField(u'Data da Homologação', null=True, blank=True)
     data_revogacao = models.DateField(u'Data da Revogação', null=True, blank=True)
     data_suspensao = models.DateField(u'Data da Suspensão', null=True, blank=True)
-    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True)
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, on_delete=models.CASCADE)
     eh_ata_registro_preco = models.BooleanField(u'Ata de Registro de Preço?', default=True)
     arquivo_homologacao = models.FileField(u'Termo de Homologação', null=True, blank=True, upload_to=upload_path_termo_homologacao)
     pode_homologar = models.BooleanField(u'Pode Homologar', default=False)
-    comissao = models.ForeignKey('base.ComissaoLicitacao', verbose_name=u'Comissão de Licitação', null=True, blank=True)
+    comissao = models.ForeignKey('base.ComissaoLicitacao', verbose_name=u'Comissão de Licitação', null=True, blank=True, on_delete=models.CASCADE)
     data_retorno = models.DateField(u'Data do Retorno', null=True, blank=True)
     sine_die = models.NullBooleanField(u'Sine Die', null=True, blank=True)
     republicado = models.BooleanField(u'Republicado', default=False)
@@ -1944,8 +1943,8 @@ class Pregao(models.Model):
 
 #TODO usar esta estrutura para pregão por lote
 class ItemPregao(models.Model):
-    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
-    material = models.ForeignKey('base.MaterialConsumo')
+    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão', on_delete=models.CASCADE)
+    material = models.ForeignKey('base.MaterialConsumo', on_delete=models.CASCADE)
     unidade = models.CharField(u'Unidade de Medida', max_length=500)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     valor_medio = models.DecimalField(u'Valor Médio', max_digits=20, decimal_places=2)
@@ -1963,7 +1962,7 @@ class Fornecedor(models.Model):
     cnpj = models.CharField(u'CNPJ/CPF', max_length=255, help_text=u'Utilize pontos e traços.', unique=True)
     razao_social = models.CharField(u'Razão Social/Nome', max_length=255)
     endereco = models.CharField(u'Endereço', max_length=255)
-    municipio = models.ForeignKey('base.Municipio', null=True, blank=True)
+    municipio = models.ForeignKey('base.Municipio', null=True, blank=True, on_delete=models.CASCADE)
     telefones = models.CharField(u'Telefones', max_length=300)
     email = models.EmailField(u'Email')
     suspenso = models.BooleanField(u'Fornecedor Suspenso', default=False)
@@ -1985,8 +1984,8 @@ class Fornecedor(models.Model):
 
 
 class ParticipantePregao(models.Model):
-    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
-    fornecedor = models.ForeignKey(Fornecedor, verbose_name=u'Fornecedor')
+    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão', on_delete=models.CASCADE)
+    fornecedor = models.ForeignKey(Fornecedor, verbose_name=u'Fornecedor', on_delete=models.CASCADE)
     nome_representante = models.CharField(u'Nome do Representante', max_length=255, null=True, blank=True)
     rg_representante = models.CharField(u'RG do Representante', max_length=255, null=True, blank=True)
     cpf_representante = models.CharField(u'CPF do Representante', max_length=255, null=True, blank=True)
@@ -2010,7 +2009,7 @@ class ParticipantePregao(models.Model):
         return not ParticipanteItemPregao.objects.filter(participante=self).exists() and  not PropostaItemPregao.objects.filter(participante=self).exists()
 
 class VisitantePregao(models.Model):
-    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
+    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão', on_delete=models.CASCADE)
     nome = models.CharField(u'Nome', max_length=255, null=True, blank=True)
     cpf = models.CharField(u'CPF', max_length=255, null=True, blank=True)
 
@@ -2022,8 +2021,8 @@ class VisitantePregao(models.Model):
         return self.nome
 
 class ParticipanteItemPregao(models.Model):
-    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item')
-    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
+    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item', on_delete=models.CASCADE)
+    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante', on_delete=models.CASCADE)
 
 
     class Meta:
@@ -2034,9 +2033,9 @@ class ParticipanteItemPregao(models.Model):
         return self.participante.fornecedor.razao_social
 
 class PropostaItemPregao(models.Model):
-    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação')
-    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
-    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
+    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação', on_delete=models.CASCADE)
+    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão', on_delete=models.CASCADE)
+    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante', on_delete=models.CASCADE)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     desclassificado = models.BooleanField(u'Desclassificado', default=False)
@@ -2076,8 +2075,8 @@ class PropostaItemPregao(models.Model):
 
 class RodadaPregao(models.Model):
     rodada = models.IntegerField(verbose_name=u'Rodada de Lances')
-    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão')
-    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item da Solicitação')
+    pregao = models.ForeignKey(Pregao,verbose_name=u'Pregão', on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item da Solicitação', on_delete=models.CASCADE)
     atual = models.BooleanField(u'Rodada Atual', default=False)
 
     class Meta:
@@ -2109,9 +2108,9 @@ class AtivosManager(models.Manager):
         return qs.filter(declinio=False)
 
 class LanceItemRodadaPregao(models.Model):
-    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item da Solicitação')
-    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
-    rodada = models.ForeignKey(RodadaPregao,verbose_name=u'Rodada')
+    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Item da Solicitação', on_delete=models.CASCADE)
+    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante', on_delete=models.CASCADE)
+    rodada = models.ForeignKey(RodadaPregao,verbose_name=u'Rodada', on_delete=models.CASCADE)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
     declinio = models.BooleanField(u'Declínio', default=False)
     ordem_lance = models.IntegerField(u'Ordem')
@@ -2189,7 +2188,7 @@ class PessoaFisica(models.Model):
         (TERCEIRO, TERCEIRO),
     )
 
-    user = models.OneToOneField(User, null=True, blank=True)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     nome = models.CharField(max_length=80)
     matricula = models.CharField(u'Matrícula', max_length=50, null=True)
     vinculo = models.CharField(u'Vínculo', max_length=200, choices=VINCULO_CHOICES, default=SERVIDOR_EFETIVO)
@@ -2204,9 +2203,9 @@ class PessoaFisica(models.Model):
     numero = models.CharField(u'Número', max_length=10, null=True, blank=True)
     complemento = models.CharField(u'Complemento', max_length=80, null=True, blank=True)
     bairro = models.CharField(u'Bairro', max_length=80, null=True, blank=True)
-    municipio = models.ForeignKey('base.Municipio', null=True, blank=True)
+    municipio = models.ForeignKey('base.Municipio', null=True, blank=True, on_delete=models.CASCADE)
 
-    setor = models.ForeignKey(Setor,verbose_name=u'Setor')
+    setor = models.ForeignKey(Setor,verbose_name=u'Setor', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = u'Pessoa'
@@ -2266,7 +2265,7 @@ class Estado(models.Model):
 class Municipio(models.Model):
     codigo = models.CharField(u'Código IBGE', max_length=7)
     nome = models.CharField(u'Nome', max_length=80)
-    estado = models.ForeignKey(Estado)
+    estado = models.ForeignKey(Estado, on_delete=models.CASCADE)
 
 
     class Meta:
@@ -2290,7 +2289,7 @@ class ComissaoLicitacao(models.Model):
     )
     nome = models.CharField(u'Portaria', max_length=80)
     data_designacao = models.DateField(u'Data de Designação', null=True)
-    secretaria = models.ForeignKey('base.Secretaria', null=True)
+    secretaria = models.ForeignKey('base.Secretaria', null=True, on_delete=models.CASCADE)
     tipo = models.CharField(u'Tipo', max_length=50, choices=TIPO_CHOICES, default=CPL)
 
 
@@ -2317,8 +2316,8 @@ class MembroComissaoLicitacao(models.Model):
         (PREGOEIRO, PREGOEIRO),
         (PRESIDENTE, PRESIDENTE),
     )
-    comissao = models.ForeignKey(ComissaoLicitacao)
-    membro = models.ForeignKey(PessoaFisica)
+    comissao = models.ForeignKey(ComissaoLicitacao, on_delete=models.CASCADE)
+    membro = models.ForeignKey(PessoaFisica, on_delete=models.CASCADE)
     matricula = models.CharField(u'Matrícula', max_length=100)
     funcao = models.CharField(u'Função', max_length=100, choices=FUNCAO_CHOICES, default=APOIO)
 
@@ -2339,13 +2338,13 @@ class InteressadoEdital(models.Model):
         (INTERESSADO, u'Apenas Consulta'),
     )
 
-    pregao = models.ForeignKey(Pregao)
+    pregao = models.ForeignKey(Pregao, on_delete=models.CASCADE)
     responsavel = models.CharField(u'Responsável', max_length=200)
     nome_empresarial = models.CharField(u'Nome Empresarial', max_length=200)
     cpf = models.CharField(u'CPF', max_length=80)
     cnpj = models.CharField(u'CNPK', max_length=80)
     endereco = models.CharField(u'Endereço', max_length=80)
-    municipio = models.ForeignKey(Municipio, verbose_name=u'Município')
+    municipio = models.ForeignKey(Municipio, verbose_name=u'Município', on_delete=models.CASCADE)
     telefone = models.CharField(u'Telefone', max_length=80)
     email = models.CharField(u'Email', max_length=80)
     interesse = models.CharField(u'Interesse', choices=INTERESSE_CHOICES, max_length=80)
@@ -2370,7 +2369,7 @@ class PesquisaMercadologica(models.Model):
         (FORNECEDOR, FORNECEDOR),
     )
 
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, on_delete=models.CASCADE)
     razao_social = models.CharField(u'Razão Social', max_length=255, null=True,blank=True)
     cnpj = models.CharField(u'CNPJ', max_length=255, null=True,blank=True)
     endereco = models.CharField(u'Endereço', max_length=255, null=True,blank=True)
@@ -2415,13 +2414,13 @@ class PesquisaMercadologica(models.Model):
         return ItemPesquisaMercadologica.objects.filter(pesquisa=self).count() == ItemSolicitacaoLicitacao.objects.filter(solicitacao=self.solicitacao).count()
 
 class ItemPesquisaMercadologica(models.Model):
-    pesquisa = models.ForeignKey(PesquisaMercadologica, verbose_name=u'Pesquisa')
-    item = models.ForeignKey(ItemSolicitacaoLicitacao)
+    pesquisa = models.ForeignKey(PesquisaMercadologica, verbose_name=u'Pesquisa', on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, on_delete=models.CASCADE)
     marca = models.CharField(u'Marca', max_length=255, null=True, blank=True)
     valor_maximo = models.DecimalField(u'Valor Máximo', max_digits=20, decimal_places=2, null=True, blank=True)
     ativo = models.BooleanField(u'Ativo', default=True)
     motivo_rejeicao = models.CharField(u'Motivo da Rejeição', max_length=1000, null=True, blank=True)
-    rejeitado_por = models.ForeignKey(User, null=True)
+    rejeitado_por = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     rejeitado_em = models.DateTimeField(u'Rejeitado em', null=True)
 
 
@@ -2459,8 +2458,8 @@ class ResultadoItemPregao(models.Model):
         (DESCLASSIFICADO, DESCLASSIFICADO),
     )
 
-    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação')
-    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante')
+    item = models.ForeignKey(ItemSolicitacaoLicitacao,verbose_name=u'Solicitação', on_delete=models.CASCADE)
+    participante = models.ForeignKey(ParticipantePregao,verbose_name=u'Participante', on_delete=models.CASCADE)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     ordem = models.IntegerField(u'Classificação')
@@ -2499,11 +2498,11 @@ class ResultadoItemPregao(models.Model):
 
 
 class AnexoPregao(models.Model):
-    pregao = models.ForeignKey('base.Pregao')
+    pregao = models.ForeignKey('base.Pregao', on_delete=models.CASCADE)
     nome = models.CharField(u'Nome', max_length=500)
     data = models.DateField(u'Data')
     arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
-    cadastrado_por = models.ForeignKey(User)
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE)
     cadastrado_em = models.DateTimeField(u'Cadastrado em')
     publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
@@ -2516,11 +2515,11 @@ class AnexoPregao(models.Model):
 
 
 class AnexoContrato(models.Model):
-    contrato = models.ForeignKey('base.Contrato')
+    contrato = models.ForeignKey('base.Contrato', on_delete=models.CASCADE)
     nome = models.CharField(u'Nome', max_length=500)
     data = models.DateField(u'Data')
     arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
-    cadastrado_por = models.ForeignKey(User)
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE)
     cadastrado_em = models.DateTimeField(u'Cadastrado em')
     publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
@@ -2534,11 +2533,11 @@ class AnexoContrato(models.Model):
 
 
 class AnexoAtaRegistroPreco(models.Model):
-    ata = models.ForeignKey('base.AtaRegistroPreco')
+    ata = models.ForeignKey('base.AtaRegistroPreco', on_delete=models.CASCADE)
     nome = models.CharField(u'Nome', max_length=500)
     data = models.DateField(u'Data')
     arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
-    cadastrado_por = models.ForeignKey(User)
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE)
     cadastrado_em = models.DateTimeField(u'Cadastrado em')
     publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
@@ -2562,12 +2561,12 @@ class LogDownloadArquivo(models.Model):
     cpf = models.CharField(u'CPF', max_length=500)
     cnpj = models.CharField(u'CNPJ Empresarial', max_length=500)
     endereco = models.CharField(u'Endereço', max_length=500)
-    municipio = models.ForeignKey(Municipio, verbose_name=u'Cidade')
-    estado = models.ForeignKey(Estado, verbose_name=u'Estado', null=True)
+    municipio = models.ForeignKey(Municipio, verbose_name=u'Cidade', on_delete=models.CASCADE)
+    estado = models.ForeignKey(Estado, verbose_name=u'Estado', null=True, on_delete=models.CASCADE)
     telefone = models.CharField(u'Telefone', max_length=500)
     email =models.CharField(u'Email', max_length=500)
     interesse = models.CharField(u'Interesse', max_length=100, choices=INTERESSE_CHOICES)
-    arquivo = models.ForeignKey(AnexoPregao)
+    arquivo = models.ForeignKey(AnexoPregao, on_delete=models.CASCADE)
     baixado_em = models.DateTimeField(u'Baixado em', auto_now_add=True, null=True)
 
     class Meta:
@@ -2584,7 +2583,7 @@ class LogDownloadArquivo(models.Model):
 
 
 class HistoricoPregao(models.Model):
-    pregao = models.ForeignKey(Pregao)
+    pregao = models.ForeignKey(Pregao, on_delete=models.CASCADE)
     data = models.DateTimeField(u'Data')
     obs = models.CharField(u'Observação', max_length=10000, null=True, blank=True)
 
@@ -2599,13 +2598,13 @@ class HistoricoPregao(models.Model):
 
 
 class MovimentoSolicitacao(models.Model):
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, on_delete=models.CASCADE)
     data_envio = models.DateTimeField(u'Enviado Em', null=True, blank=True)
-    enviado_por = models.ForeignKey(User, related_name=u'movimentacao_enviado_por')
+    enviado_por = models.ForeignKey(User, related_name=u'movimentacao_enviado_por', on_delete=models.CASCADE)
     data_recebimento= models.DateTimeField(u'Recebido Em', null=True, blank=True)
-    recebido_por = models.ForeignKey(User, related_name=u'movimentacao_recebido_por', null=True)
-    setor_origem = models.ForeignKey(Setor, related_name=u'movimentacao_setor_origem')
-    setor_destino = models.ForeignKey(Setor, related_name=u'movimentacao_setor_destino', null=True)
+    recebido_por = models.ForeignKey(User, related_name=u'movimentacao_recebido_por', null=True, on_delete=models.CASCADE)
+    setor_origem = models.ForeignKey(Setor, related_name=u'movimentacao_setor_origem', on_delete=models.CASCADE)
+    setor_destino = models.ForeignKey(Setor, related_name=u'movimentacao_setor_destino', null=True, on_delete=models.CASCADE)
     obs = models.CharField(u'Observação', max_length=5000, null=True, blank=True)
 
     class Meta:
@@ -2617,10 +2616,10 @@ class MovimentoSolicitacao(models.Model):
 
 
 class DocumentoSolicitacao(models.Model):
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação', on_delete=models.CASCADE)
     nome = models.CharField(u'Nome do Arquivo', max_length=500)
     cadastrado_em = models.DateTimeField(u'Cadastrado Em', null=True, blank=True)
-    cadastrado_por = models.ForeignKey(User, related_name=u'documento_cadastrado_por', null=True)
+    cadastrado_por = models.ForeignKey(User, related_name=u'documento_cadastrado_por', null=True, on_delete=models.CASCADE)
     documento = models.FileField(u'Documento', null=True, blank=True, upload_to=upload_path_documento)
     publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
@@ -2634,14 +2633,14 @@ class DocumentoSolicitacao(models.Model):
 
 
 class ItemQuantidadeSecretaria(models.Model):
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
-    item = models.ForeignKey(ItemSolicitacaoLicitacao)
-    secretaria = models.ForeignKey(Secretaria)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação', on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, on_delete=models.CASCADE)
+    secretaria = models.ForeignKey(Secretaria, on_delete=models.CASCADE)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     aprovado = models.BooleanField(u'Aprovado', default=False)
     justificativa_reprovacao = models.CharField(u'Motivo da Negação do Pedido', null=True, blank=True, max_length=1000)
     avaliado_em = models.DateTimeField(u'Avaliado Em', null=True, blank=True)
-    avaliado_por = models.ForeignKey(User, related_name=u'pedido_avaliado_por', null=True)
+    avaliado_por = models.ForeignKey(User, related_name=u'pedido_avaliado_por', null=True, on_delete=models.CASCADE)
     observacoes = models.CharField(u'Observações', max_length=500, null=True, blank=True)
 
     def get_total(self):
@@ -2689,11 +2688,11 @@ class MaterialConsumo(models.Model):
 class Configuracao(models.Model):
     nome = models.CharField(u'Nome', max_length=200, null=True)
     endereco = models.CharField(u'Endereço', max_length=2000, null=True)
-    municipio = models.ForeignKey('base.Municipio', null=True)
+    municipio = models.ForeignKey('base.Municipio', null=True, on_delete=models.CASCADE)
     email = models.CharField(u'Email', max_length=200, null=True)
     telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
     logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
-    ordenador_despesa = models.ForeignKey(PessoaFisica, verbose_name=u'Ordenador de Despesa', null=True)
+    ordenador_despesa = models.ForeignKey(PessoaFisica, verbose_name=u'Ordenador de Despesa', null=True, on_delete=models.CASCADE)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
     cnpj = models.CharField(u'CNPJ', max_length=200, null=True)
     url = models.CharField(u'URL de Acesso', max_length=500, null=True)
@@ -2717,7 +2716,7 @@ class DotacaoOrcamentaria(models.Model):
         return 'Dotação: Programa %s - Elemento de Despesa: %s' % (self.programa_num, self.elemento_despesa_num)
 
 class OrdemCompra(models.Model):
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação')
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, verbose_name=u'Solicitação', on_delete=models.CASCADE)
     numero = models.CharField(u'Número da Ordem', max_length=200)
     data = models.DateField(u'Data')
     tipo = models.CharField(u'Tipo da Ordem', max_length=100, choices=((u'Compras', u'Compras'),(u'Serviços', u'Serviços'),), default=u'Compras')
@@ -2730,12 +2729,12 @@ class OrdemCompra(models.Model):
     elemento_despesa_num = models.CharField(u'Número do Elemento de Despesa', max_length=200, null=True, blank=True)
     elemento_despesa_descricao = models.CharField(u'Descrição do Elemento de Despesa', max_length=200, null=True, blank=True)
     data_cadastro = models.DateTimeField(u'Cadastrada em', null=True)
-    cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    cadastrado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     exibe_nome_secretario = models.BooleanField(u'Incluir Assinatura do Secretário', default=True)
     exibe_nome_ordenador = models.BooleanField(u'Incluir Assinatura do Ordenador de Despesa', default=True)
-    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa_ordem')
-    ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria_ordem')
-    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria_ordem')
+    ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa_ordem', on_delete=models.CASCADE)
+    ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', on_delete=models.CASCADE, verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria_ordem')
+    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', on_delete=models.CASCADE, verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria_ordem')
 
     class Meta:
         verbose_name = u'Ordem de Compra'
@@ -2793,21 +2792,21 @@ class AtaRegistroPreco(models.Model):
     valor = models.DecimalField(decimal_places=2,max_digits=20, null=True)
     data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
     data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True)
-    pregao = models.ForeignKey(Pregao, null=True)
-    secretaria = models.ForeignKey(Secretaria, null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True, on_delete=models.CASCADE)
+    pregao = models.ForeignKey(Pregao, null=True, on_delete=models.CASCADE)
+    secretaria = models.ForeignKey(Secretaria, null=True, on_delete=models.CASCADE)
     adesao = models.BooleanField(u'Adesão', default=False)
     concluido = models.BooleanField(default=False)
     suspenso = models.BooleanField(default=False)
     cancelado = models.BooleanField(default=False)
     motivo_cancelamento = models.TextField(blank=True)
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
-    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True, on_delete=models.CASCADE)
     orgao_origem = models.CharField(u'Órgão de Origem', null=True, max_length=100)
     num_oficio = models.CharField(u'Número do Ofício', null=True, max_length=100)
     objeto = models.TextField(u'Objeto', null=True)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
-    fornecedor_adesao_arp = models.ForeignKey('base.Fornecedor', null=True, related_name=u'fornecedor_contrato_adesao', verbose_name=u'Fornecedor')
+    fornecedor_adesao_arp = models.ForeignKey('base.Fornecedor', null=True, related_name=u'fornecedor_contrato_adesao', verbose_name=u'Fornecedor', on_delete=models.CASCADE)
     data_esgotamento = models.DateField(u'Data de Esgotamento da Ata', null=True)
 
     class Meta:
@@ -2891,15 +2890,15 @@ class Credenciamento(models.Model):
     valor = models.DecimalField(decimal_places=2,max_digits=20, null=True)
     data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
     data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True)
-    pregao = models.ForeignKey(Pregao, null=True)
-    secretaria = models.ForeignKey(Secretaria, null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, null=True, on_delete=models.CASCADE)
+    pregao = models.ForeignKey(Pregao, null=True, on_delete=models.CASCADE)
+    secretaria = models.ForeignKey(Secretaria, null=True, on_delete=models.CASCADE)
     concluido = models.BooleanField(default=False)
     suspenso = models.BooleanField(default=False)
     cancelado = models.BooleanField(default=False)
     motivo_cancelamento = models.TextField(blank=True)
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
-    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True, on_delete=models.CASCADE)
     orgao_origem = models.CharField(u'Órgão de Origem', null=True, max_length=100)
     num_oficio = models.CharField(u'Número do Ofício', null=True, max_length=100)
     objeto = models.TextField(u'Objeto', null=True)
@@ -2957,13 +2956,13 @@ class Credenciamento(models.Model):
         return False
 
 class ItemCredenciamento(models.Model):
-    credenciamento = models.ForeignKey(Credenciamento)
-    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
+    credenciamento = models.ForeignKey(Credenciamento, on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True, on_delete=models.CASCADE)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
-    material = models.ForeignKey('base.MaterialConsumo', null=True)
-    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+    material = models.ForeignKey('base.MaterialConsumo', null=True, on_delete=models.CASCADE)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True, on_delete=models.CASCADE)
     ordem = models.IntegerField(u'Ordem', null=True)
 
     class Meta:
@@ -3019,14 +3018,14 @@ class ItemCredenciamento(models.Model):
         return self.get_quantidade_consumida() * Decimal(self.valor)
 
 class PedidoCredenciamento(models.Model):
-    credenciamento = models.ForeignKey(Credenciamento)
-    item = models.ForeignKey(ItemCredenciamento)
-    fornecedor = models.ForeignKey(Fornecedor, null=True)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    credenciamento = models.ForeignKey(Credenciamento, on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemCredenciamento, on_delete=models.CASCADE)
+    fornecedor = models.ForeignKey(Fornecedor, null=True, on_delete=models.CASCADE)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, on_delete=models.CASCADE)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
-    setor = models.ForeignKey(Setor)
-    pedido_por = models.ForeignKey(User)
+    setor = models.ForeignKey(Setor, on_delete=models.CASCADE)
+    pedido_por = models.ForeignKey(User, on_delete=models.CASCADE)
     pedido_em = models.DateTimeField(u'Pedido em')
     ativo = models.BooleanField(u'Ativo', default=True)
 
@@ -3051,11 +3050,11 @@ class PedidoCredenciamento(models.Model):
         return 0
 
 class AnexoCredenciamento(models.Model):
-    credenciamento = models.ForeignKey('base.Credenciamento')
+    credenciamento = models.ForeignKey('base.Credenciamento', on_delete=models.CASCADE)
     nome = models.CharField(u'Nome', max_length=500)
     data = models.DateField(u'Data')
     arquivo = models.FileField(max_length=255, upload_to='upload/pregao/editais/anexos/')
-    cadastrado_por = models.ForeignKey(User)
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE)
     cadastrado_em = models.DateTimeField(u'Cadastrado em')
     publico = models.BooleanField(u'Documento Público', help_text=u'Se sim, este documento será exibido publicamente', default=False)
 
@@ -3091,14 +3090,14 @@ class Contrato(models.Model):
     data_inicio = models.DateField(verbose_name=u'Data de Início', null=True)
     data_fim = models.DateField(verbose_name=u'Data de Vencimento', null=True)
     continuado = models.BooleanField(default=False)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
-    pregao = models.ForeignKey(Pregao, null=True)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, on_delete=models.CASCADE)
+    pregao = models.ForeignKey(Pregao, null=True, on_delete=models.CASCADE)
     concluido = models.BooleanField(default=False)
     suspenso = models.BooleanField(default=False)
     cancelado = models.BooleanField(default=False)
     motivo_cancelamento = models.TextField(blank=True)
     dh_cancelamento = models.DateTimeField(blank=True, null=True)
-    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True)
+    usuario_cancelamento = models.ForeignKey('base.User', null=True, blank=True, on_delete=models.CASCADE)
     liberada_compra = models.BooleanField(u'Liberada para Compra', default=False)
     aplicacao_artigo_57 = models.CharField(u'Aplicação do Art. 57 da Lei 8666/93(Art. 57. - A duração dos contratos regidos por esta Lei ficará adstrita à vigência dos respectivos créditos orçamentários, exceto quanto aos relativos:)', max_length=200, null=True, blank=True, choices=INCISOS_ARTIGO_57_CHOICES, default=NAO_SE_APLICA)
     garantia_execucao_objeto = models.CharField(u'Garantia de Execução do Objeto (%)', null=True, blank=True, max_length=50, help_text=u'Limitado a 5%. Deixar em branco caso não se aplique.')
@@ -3310,15 +3309,15 @@ class AditivoItemContrato(models.Model):
         return u'Aditivo do Item: (%s - %s)' % (self.item, self.tipo)
 
 class ItemContrato(models.Model):
-    contrato = models.ForeignKey(Contrato)
-    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
-    participante = models.ForeignKey(ParticipantePregao, null=True)
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True, on_delete=models.CASCADE)
+    participante = models.ForeignKey(ParticipantePregao, null=True, on_delete=models.CASCADE)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
-    fornecedor = models.ForeignKey(Fornecedor, null=True)
-    material = models.ForeignKey('base.MaterialConsumo', null=True)
-    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+    fornecedor = models.ForeignKey(Fornecedor, null=True, on_delete=models.CASCADE)
+    material = models.ForeignKey('base.MaterialConsumo', null=True, on_delete=models.CASCADE)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True, on_delete=models.CASCADE)
     inserido_outro_contrato = models.BooleanField(u'Inserido em Outro Contrato', default=False)
     ordem = models.IntegerField(u'Ordem', null=True)
     ativo = models.BooleanField(u'Ativo', default=True)
@@ -3459,13 +3458,13 @@ class ItemContrato(models.Model):
 
 
 class PedidoContrato(models.Model):
-    contrato = models.ForeignKey(Contrato)
-    item = models.ForeignKey(ItemContrato)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemContrato, on_delete=models.CASCADE)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, on_delete=models.CASCADE)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
-    setor = models.ForeignKey(Setor)
-    pedido_por = models.ForeignKey(User)
+    setor = models.ForeignKey(Setor, on_delete=models.CASCADE)
+    pedido_por = models.ForeignKey(User, on_delete=models.CASCADE)
     pedido_em = models.DateTimeField(u'Pedido em')
     ativo = models.BooleanField(u'Ativo', default=True)
 
@@ -3486,15 +3485,15 @@ class PedidoContrato(models.Model):
 
 
 class ItemAtaRegistroPreco(models.Model):
-    ata = models.ForeignKey(AtaRegistroPreco)
-    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True)
-    participante = models.ForeignKey(ParticipantePregao, null=True)
-    fornecedor = models.ForeignKey(Fornecedor, null=True)
+    ata = models.ForeignKey(AtaRegistroPreco, on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemSolicitacaoLicitacao, null=True, on_delete=models.CASCADE)
+    participante = models.ForeignKey(ParticipantePregao, null=True, on_delete=models.CASCADE)
+    fornecedor = models.ForeignKey(Fornecedor, null=True, on_delete=models.CASCADE)
     marca = models.CharField(u'Marca', max_length=200, null=True)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
-    material = models.ForeignKey('base.MaterialConsumo', null=True)
-    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True)
+    material = models.ForeignKey('base.MaterialConsumo', null=True, on_delete=models.CASCADE)
+    unidade = models.ForeignKey(TipoUnidade, verbose_name=u'Unidade', null=True, on_delete=models.CASCADE)
     ordem = models.IntegerField(u'Ordem', null=True)
     ativo = models.BooleanField(u'Ativo', default=True)
     data_esgotamento = models.DateField(u'Data de Esgotamento do Item', null=True)
@@ -3625,13 +3624,13 @@ class ItemAtaRegistroPreco(models.Model):
         return Secretaria.objects.filter(id__in=ItemQuantidadeSecretaria.objects.filter(item=self.item).values_list('secretaria', flat=True))
 
 class PedidoAtaRegistroPreco(models.Model):
-    ata = models.ForeignKey(AtaRegistroPreco)
-    item = models.ForeignKey(ItemAtaRegistroPreco)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    ata = models.ForeignKey(AtaRegistroPreco, on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemAtaRegistroPreco, on_delete=models.CASCADE)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, on_delete=models.CASCADE)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     valor = models.DecimalField(u'Valor', max_digits=20, decimal_places=2, null=True, blank=True)
-    setor = models.ForeignKey(Setor)
-    pedido_por = models.ForeignKey(User)
+    setor = models.ForeignKey(Setor, on_delete=models.CASCADE)
+    pedido_por = models.ForeignKey(User, on_delete=models.CASCADE)
     pedido_em = models.DateTimeField(u'Pedido em')
     ativo = models.BooleanField(u'Ativo', default=True)
 
@@ -3664,7 +3663,7 @@ class FornecedorCRC(models.Model):
         (u'Média-grande empresa', u'Média-grande empresa'),
         (u'Grande empresa', u'Grande empresa'),
     )
-    fornecedor = models.ForeignKey(Fornecedor, verbose_name=u'Fornecedor')
+    fornecedor = models.ForeignKey(Fornecedor, verbose_name=u'Fornecedor', on_delete=models.CASCADE)
     porte_empresa = models.CharField(u'Porte da Empresa', max_length=100, choices=PORTE_EMPRESA_CHOICES)
     data_abertura = models.DateField(u'Data de Abertura da Empresa')
     inscricao_estadual = models.CharField(u'Inscrição Estadual', max_length=100, null=True, blank=True)
@@ -3723,7 +3722,7 @@ class FornecedorCRC(models.Model):
         return "data:image/png;base64," + qrcode_data
 
 class CnaeSecundario(models.Model):
-    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC')
+    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC', on_delete=models.CASCADE)
     codigo = models.CharField(u'Código', max_length=30)
     descricao = models.CharField(u'Descrição', max_length=500)
 
@@ -3735,7 +3734,7 @@ class CnaeSecundario(models.Model):
         return u'%s - CNAE Secundário: %s' % (self.crc, self.codigo)
 
 class SocioCRC(models.Model):
-    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC')
+    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC', on_delete=models.CASCADE)
     cpf = models.CharField(u'CPF', max_length=20)
     nome = models.CharField(u'Nome', max_length=500)
     rg = models.CharField(u'Carteira de Identidade', max_length=20)
@@ -3766,7 +3765,7 @@ class ModeloAta(models.Model):
     tipo = models.CharField(u'Tipo da Ata', max_length=100, choices=TIPO_ATA_CHOICES)
     palavras_chaves = models.CharField(u'Palavras-Chave', max_length=4000, null=True, blank=True)
     cadastrado_em = models.DateTimeField(u'Cadastrado Em')
-    cadastrado_por = models.ForeignKey(PessoaFisica)
+    cadastrado_por = models.ForeignKey(PessoaFisica, on_delete=models.CASCADE)
     arquivo = models.FileField(u'Arquivo', null=True, blank=True, upload_to=u'upload/minutas/')
 
     class Meta:
@@ -3833,11 +3832,11 @@ class ModeloDocumento(models.Model):
         (u'Serviços - Outros', u'Serviços - Outros'),
     )
     nome = models.CharField(u'Nome do Documento', max_length=1000)
-    tipo = models.ForeignKey(TipoModelo, null=True)
-    tipo_objeto = models.ForeignKey(TipoObjetoModelo, null=True)
+    tipo = models.ForeignKey(TipoModelo, null=True, on_delete=models.CASCADE)
+    tipo_objeto = models.ForeignKey(TipoObjetoModelo, null=True, on_delete=models.CASCADE)
     palavras_chaves = models.CharField(u'Palavras-Chave', max_length=4000, null=True, blank=True)
     cadastrado_em = models.DateTimeField(u'Cadastrado Em')
-    cadastrado_por = models.ForeignKey(PessoaFisica)
+    cadastrado_por = models.ForeignKey(PessoaFisica, on_delete=models.CASCADE)
     arquivo = models.FileField(u'Arquivo', null=True, blank=True, upload_to=u'upload/modelos_documentos/')
 
     class Meta:
@@ -3848,13 +3847,13 @@ class ModeloDocumento(models.Model):
         return self.nome
 
 class TransferenciaItemARP(models.Model):
-    secretaria_origem = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Origem', related_name='sec_origem')
-    secretaria_destino = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Destino', related_name='sec_destino')
-    item = models.ForeignKey(ItemAtaRegistroPreco, verbose_name=u'Item da ARP')
+    secretaria_origem = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Origem', related_name='sec_origem', on_delete=models.CASCADE)
+    secretaria_destino = models.ForeignKey(Secretaria, verbose_name=u'Secretaria de Destino', related_name='sec_destino', on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemAtaRegistroPreco, verbose_name=u'Item da ARP', on_delete=models.CASCADE)
     quantidade = models.DecimalField(u'Quantidade', max_digits=20, decimal_places=2)
     justificativa = models.CharField(u'Justificativa', max_length=5000)
     cadastrado_em = models.DateTimeField(u'Cadastrado em')
-    cadastrado_por = models.ForeignKey(PessoaFisica)
+    cadastrado_por = models.ForeignKey(PessoaFisica, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = u'Transferência de Item de ARP'
@@ -3865,7 +3864,7 @@ class TransferenciaItemARP(models.Model):
 
 
 class CertidaoCRC(models.Model):
-    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC')
+    crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC', on_delete=models.CASCADE)
     nome = models.CharField(u'Nome', max_length=1000)
     validade = models.DateField(u'Validade')
     arquivo = models.FileField(u'Arquivo', null=True, blank=True, upload_to=u'upload/crc/')
@@ -3930,7 +3929,7 @@ class Feriado(models.Model):
     descricao = models.CharField(u'Descrição', max_length=300, null=True)
     recorrente = models.BooleanField(default=False,
                                      help_text=u'Selecione para as datas que serão abonadas todos os anos, como feriados nacionais.')
-    cadastrado_por = models.ForeignKey(User, null=True, blank=True)
+    cadastrado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     cadastrado_em = models.DateTimeField(u'Data de Cadastro', auto_now_add=True, null=True, blank=True)
 
     class Meta:
@@ -3942,9 +3941,9 @@ class EmailEnviado(models.Model):
     titulo = models.CharField(u'Título do Email', max_length=100)
     destinatarios = models.CharField(u'Emails dos Destinatários', max_length=10000)
     mensagem = models.CharField(u'Mensagem do Email', max_length=10000)
-    enviado_por = models.ForeignKey(User)
+    enviado_por = models.ForeignKey(User, on_delete=models.CASCADE)
     enviado_em = models.DateTimeField(u'Data de Cadastro', auto_now_add=True)
-    solicitacao = models.ForeignKey(SolicitacaoLicitacao)
+    solicitacao = models.ForeignKey(SolicitacaoLicitacao, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = u'Email Enviado'

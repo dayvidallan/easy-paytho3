@@ -6,7 +6,7 @@ from django.contrib import admin, messages
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.admin import UserAdmin, GroupAdmin, csrf_protect_m
 from django.contrib.auth.models import User, Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect

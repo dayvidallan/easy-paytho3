@@ -3,7 +3,7 @@
 import base64
 import json
 import re
-import cPickle
+import pickle
 from decimal import Decimal
 import zlib
 import sys
@@ -19,7 +19,7 @@ from django.forms.utils import flatatt
 from django.http import HttpResponse
 from django.template.defaultfilters import floatformat
 from django.template.loader import render_to_string
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from localflavor.br.forms import BRCPFField
@@ -31,7 +31,7 @@ phone_digits_re = re.compile(r'^(\d{2})[-\.]?(\d{4,5})[-\.]?(\d{4})$')
 
 def decimal_to_money(value, precision=2):
     value = floatformat(value, precision)
-    value, decimal = force_unicode(value).split('.')
+    value, decimal = force_text(value).split('.')
     value = intcomma(value)
     value = value.replace(',', '.') + ',' + decimal
     return value
@@ -236,11 +236,11 @@ class ReCaptchaField(forms.CharField):
 
 
 def dumps_qs_query(query):
-    return base64.b64encode(zlib.compress(cPickle.dumps(query)))[::-1]
+    return base64.b64encode(zlib.compress(pickle.dumps(query)))[::-1]
 
 
 def loads_qs_query(query):
-    return cPickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
+    return pickle.loads(zlib.decompress(base64.b64decode(query[::-1])))
 
 
 class ChainedSelectWidget(forms.Select):
@@ -306,20 +306,19 @@ class ChainedModelChoiceField(forms.ModelChoiceField):
                                               qs_filter            = 'estado__pais=pais'
                                               qs_filter_params_map = {'pais':1})
     """
+
     widget = ChainedSelectWidget
 
-    def __init__(self, queryset, empty_label=u"---------",
-                 required=True, widget=None, label=None, initial=None,
-                 help_text=None, to_field_name=None, *args, **kwargs):
+    def __init__(self, queryset, empty_label="---------", required=True, widget=None, label=None, initial=None, help_text=None, to_field_name=None, *args, **kwargs):
         try:
             obj_label = kwargs.pop('obj_label')
         except KeyError:
-            raise KeyError(u'Parameter obj_label is required.')
+            raise KeyError('Parameter obj_label is required.')
 
         try:
             form_filters = kwargs.pop('form_filters')
         except KeyError:
-            raise KeyError(u'Parameter form_filters is required.')
+            raise KeyError('Parameter form_filters is required.')
 
         qs_filter = kwargs.pop('qs_filter', None)
         qs_filter_params_map = kwargs.pop('qs_filter_params_map', {})
@@ -329,9 +328,9 @@ class ChainedModelChoiceField(forms.ModelChoiceField):
             class_module = queryset.model.__module__.split('.')[0]
             url = '/chained_select/%s/%s/' % (class_module, class_name)
 
-        super(ChainedModelChoiceField, self).__init__(
-            queryset, empty_label, required, widget, label, initial,
-            help_text, to_field_name, *args, **kwargs)
+        super().__init__(
+            queryset, empty_label=empty_label, required=required, widget=widget, label=label, initial=initial, help_text=help_text, to_field_name=to_field_name, *args, **kwargs
+        )
 
         self.widget.initial = initial
         self.widget.empty_label = empty_label

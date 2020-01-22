@@ -41,8 +41,8 @@ INSTALLED_APPS = (
 
 )
 
-MIDDLEWARE_CLASSES = (
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+MIDDLEWARE = (
+    #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -56,6 +56,7 @@ MIDDLEWARE_CLASSES = (
     'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
 
 ROOT_URLCONF = 'licita.urls'
 
@@ -170,7 +171,7 @@ REST_FRAMEWORK = {
 
 try:
     from settings_base import *
-except ImportError, e:
+except ImportError as e:
     pass
 
 SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br'

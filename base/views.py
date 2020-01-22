@@ -17,7 +17,7 @@ from xhtml2pdf import pisa
 from django.db.models import Q, F, Count
 from dal import autocomplete
 from django.contrib.auth.models import Group
-from templatetags.app_filters import format_money, format_quantidade, format_numero_extenso, format_numero
+from newadmin.templatetags.app_filters import format_money, format_quantidade, format_numero_extenso, format_numero
 from django.db.transaction import atomic
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
@@ -9117,7 +9117,6 @@ def imprimir_crc(request, fornecedor_id):
     membro = None
     if ComissaoLicitacao.objects.filter(tipo=ComissaoLicitacao.CPL, data_designacao__isnull=False).order_by('-data_designacao').exists():
         comissao = ComissaoLicitacao.objects.filter(tipo=ComissaoLicitacao.CPL, data_designacao__isnull=False).order_by('-data_designacao')[0]
-        print comissao
         if MembroComissaoLicitacao.objects.filter(comissao=comissao, funcao=MembroComissaoLicitacao.PRESIDENTE).exists():
             membro = MembroComissaoLicitacao.objects.filter(comissao=comissao, funcao=MembroComissaoLicitacao.PRESIDENTE)[0]
 
