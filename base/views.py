@@ -9599,6 +9599,22 @@ def relatorio_info_arp(request, ata_id):
     pdf = file.read()
     file.close()
     return HttpResponse(pdf, 'application/pdf')
+    # from weasyprint import HTML
+    # from weasyprint.fonts import FontConfiguration
+    # from django.utils.text import slugify
+    # from django.template.loader import render_to_string
+    # response = HttpResponse(content_type="application/pdf")
+    # response['Content-Disposition'] = "inline; filename={date}-{name}-donation-receipt.pdf".format(
+    #     date=ata.data_inicio.strftime('%Y-%m-%d'),
+    #     name=slugify(ata.id),
+    # )
+    # html = render_to_string("relatorio_info_arp.html", {
+    #     'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao
+    # })
+    #
+    # font_config = FontConfiguration()
+    # HTML(string=html).write_pdf(response, font_config=font_config)
+    # return response
 
 
 
