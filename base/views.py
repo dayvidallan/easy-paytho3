@@ -2804,7 +2804,7 @@ def informar_quantidades(request, solicitacao_id):
 def ver_pedidos_secretaria(request, item_id):
     item = get_object_or_404(ItemSolicitacaoLicitacao, pk=item_id)
     solicitacao = item.solicitacao
-    title = u'Pedidos das Secretarias - %s' % item
+    title = u'Pedidos dos Órgãos - %s' % item
     pedidos = ItemQuantidadeSecretaria.objects.filter(item=item)
 
     tem_pendente = pedidos.filter(avaliado_em__isnull=True).exists()
@@ -8195,7 +8195,7 @@ def solicitar_pedidos_novamente(request, solicitacao_id, secretaria_id):
 def revogar_pregao(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     if request.user.has_perm('base.pode_cadastrar_pregao') and pregao.solicitacao.recebida_setor(request.user.pessoafisica.setor):
-        title = u'Revogar pregão - %s' % pregao
+        title = u'Revogar Licitação - %s' % pregao
         form = RevogarPregaoForm(request.POST or None, instance=pregao)
         if form.is_valid():
             o = form.save(False)
@@ -8348,7 +8348,7 @@ def apagar_item_pedido(request, pedido_id, tipo):
 
 @login_required()
 def gerenciar_visitantes(request, pregao_id):
-    title = u'Lista de Visitantes do Pregão'
+    title = u'Lista de Visitantes da Licitação'
     pregao = get_object_or_404(Pregao, pk=pregao_id)
     visitantes = VisitantePregao.objects.filter(pregao=pregao)
 
@@ -10751,7 +10751,7 @@ def imprimir_aditivo(request, aditivo_id):
 @login_required()
 def transferir_quantidade_item_arp(request, itemarp_id):
     item = get_object_or_404(ItemAtaRegistroPreco, pk=itemarp_id)
-    title = u'Transferir Item entre Secretarias'
+    title = u'Transferir Item entre Órgãos'
     ata = item.ata
     if ata.solicitacao.setor_atual == request.user.pessoafisica.setor or True:
         form = TransfereItemARPForm(request.POST or None, item=item)

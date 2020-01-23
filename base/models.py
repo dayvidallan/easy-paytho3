@@ -66,7 +66,7 @@ class Secretaria(models.Model):
     email = models.CharField(u'Email', max_length=200, null=True)
     telefones = models.CharField(u'Telefones', max_length=1000, null=True, help_text=u'Separar os telefones usando /')
     logo = models.ImageField(u'Logo', null=True, blank=True, upload_to=u'upload/logo/')
-    eh_ordenadora_despesa = models.BooleanField(u'O responsável pela Secretaria é o Ordenador de Despesa?', default=True)
+    eh_ordenadora_despesa = models.BooleanField(u'O responsável pelo Órgão é o Ordenador de Despesa?', default=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', related_name=u'secretaria_ordenador', null=True, on_delete=models.CASCADE)
     cpf_ordenador_despesa = models.CharField(u'CPF do Ordenador de Despesa', max_length=200, null=True)
 
@@ -75,14 +75,14 @@ class Secretaria(models.Model):
 
     class Meta:
         ordering = ['nome']
-        verbose_name = u'Secretaria'
-        verbose_name_plural = u'Secretarias'
+        verbose_name = u'Órgão'
+        verbose_name_plural = u'Órgãos'
 
 
 class Setor(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
     sigla = models.CharField(u'Sigla', max_length=20, null=True, blank=True)
-    secretaria = models.ForeignKey(Secretaria, verbose_name=u'Secretaria', on_delete=models.CASCADE)
+    secretaria = models.ForeignKey(Secretaria, verbose_name=u'Órgão', on_delete=models.CASCADE)
 
     def __str__(self):
         if self.sigla and self.secretaria.sigla:
@@ -403,7 +403,7 @@ class SolicitacaoLicitacao(models.Model):
     numero_meses_contratacao_global = models.IntegerField(u'Informe o Número de Meses do Contrato', null=True)
     ordenador_despesa = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa', null=True, blank=True, related_name='ordenador_despesa', on_delete=models.CASCADE)
     ordenador_despesa_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Ordenador de Despesa da Secretaria', null=True, blank=True, related_name=u'ordenador_despesa_secretaria', on_delete=models.CASCADE)
-    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável da Secretaria', null=True, blank=True, related_name=u'responsavel_secretaria', on_delete=models.CASCADE)
+    responsavel_secretaria = models.ForeignKey('base.PessoaFisica', verbose_name=u'Responsável do Órgão', null=True, blank=True, related_name=u'responsavel_secretaria', on_delete=models.CASCADE)
     termo_referencia = models.FileField(u'Termo de Referência', null=True, blank=True, upload_to=upload_path_termo_referencia)
 
     def __str__(self):

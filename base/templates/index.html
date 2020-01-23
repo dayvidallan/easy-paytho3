@@ -3,7 +3,7 @@
 {% block content %}
     <br>
     {% if tem_solicitacao %}
-        <a href="/base/itens_solicitacao/{{ tem_solicitacao.solicitacao.id }}/"><p class="alert alert-warning">Existe uma solicitação pendente de recebimento pela sua secretaria.</p></a>
+        <a href="/base/itens_solicitacao/{{ tem_solicitacao.solicitacao.id }}/"><p class="alert alert-warning">Existe uma solicitação pendente de recebimento pela seu órgão.</p></a>
     {% endif %}
     {% if tem_preencher_itens %}
         <fieldset><legend>Alertas</legend></fieldset>

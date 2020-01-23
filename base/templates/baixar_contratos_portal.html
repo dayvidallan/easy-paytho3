@@ -106,7 +106,7 @@
                         <td>{{ contrato.get_situacao }}</td>
                     </tr>
                     <tr>
-                        <th><b>Secretaria Solicitante</b></th>
+                        <th><b>Órgão Solicitante</b></th>
                         <td>{{ contrato.solicitacao.setor_origem.secretaria|default_if_none:"-" }}</td>
                     </tr>
                     {% if contrato.pregao %}
