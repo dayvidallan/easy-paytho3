@@ -7,7 +7,7 @@ import os
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import termcolors
-from django.conf import settings
+
 
 def print_and_call_command(command, *args, **kwargs):
     kwargs.setdefault('interactive', True)

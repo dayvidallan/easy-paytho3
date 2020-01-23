@@ -8,6 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0001_initial'),
+        ('easyaudit', '0013_auto_20190723_0126'),
     ]
 
     operations = [

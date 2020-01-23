@@ -40,13 +40,13 @@ def preenche_base(apps, schema_editor):
     pessoa.user = root
     pessoa.save()
 
-        #PessoaFisica.objects.create(nome=u'Administrador', cpf=u'12345678900',sexo=PessoaFisica.SEXO_MASCULINO, setor=setor_licitacao, user=root)
-
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0002_popula_estado_e_municipio'),
+
+
     ]
 
     operations = [
