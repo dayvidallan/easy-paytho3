@@ -1,50 +1,4 @@
-{% load bootstrap %}
 {% load app_filters %}
-{% block extrastyle %}
- <style>
-     #rectangle{
-        border:5px solid black;
-    }
-body {
-    font-size: 14px;
-}
-   table.dados_paciente td
-{
-
-    border: 0;
-}
-    table.dados_paciente tr
-{
-
-    border: 0;
-}
-ul{
-     list-style:none;
-}
-
-     .page-header {
-        font-size: 14px;
-
-     }
-
-     @page {
-            size: a4 landscape;
-            margin: 0.3cm;
-            margin-bottom: 0.7cm;
-            margin-top: 0.3cm;
-            @frame footer {
-    		    -pdf-frame-content: footerblock;
-    		    bottom: 1cm;
-    		    margin-left: 1cm;
-    		    margin-right: 1cm;
-                margin-top: 1cm;
-    		    height: 1cm;
-		    }
-
-     }
-
- </style>
-{% endblock %}
 
 {% block content_title %}
     <br>
@@ -53,103 +7,91 @@ ul{
     <center><font size="4">Dados do {{ contrato }} - Quantidades Disponíveis</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
 
-
-
 {% endblock %}
 
 {% block content %}
-<center>
-    <table width="100%" border="1" align="right" cellpadding="5" cellspacing="5">
-        <thead>
-            <tr>
-                <th>Nº da Solicitação</th>
-                <th>Nº Processo</th>
-                <th>Data da Assinatura do Contrato</th>
-                <th>Vigência</th>
-                <th>Valor Global</th>
-                <th>Situação</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            <tr>
-                <td>{{ contrato.solicitacao.num_memorando }}</td>
-                <td>{{ contrato.solicitacao.processo|default_if_none:"-" }}</td>
-
-                <td>{{ contrato.data_inicio }}</td>
-                <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
-                <td>{{ contrato.get_valor_aditivado|format_money }}</td>
-                <td>{{ contrato.get_situacao }}</td>
-            </tr>
-        </tbody>
-   </table>
-   <br>
-
-
-
-   <table border="1" width="100%" cellpadding="5" cellspacing="5">
-       <tr>
-           <td width="15%"><b>Objeto:</b></td><td align="left">{{ contrato.solicitacao.objeto }}</td>
-       </tr>
-       <tr>
-           <td width="15%"><b>Aplicação do Art. 57 da Lei 8666/93: </b></td><td align="left">{{ contrato.get_aplicacao_artigo_57_display|default_if_none:"-" }}</td>
-       </tr>
-   </table>
-
-    <br>
-
-        <h3>Itens do Contrato</h3>
-        <table border="1" width="100%" cellpadding="5" cellspacing="5">
-
+    <center>
+        <table width="100%" border="1" align="right" cellpadding="5" cellspacing="5">
             <thead>
-
                 <tr>
-                    <th width="5%">Item</th>
-                    <th width="65%">Material/Serviço</th>
-                    <th width="10%">Unidade</th>
-                    <th width="10%">Valor Unitário</th>
-                    <th width="10%">Quantidade Disponível</th>
-                    <th width="10%">Total</th>
-
-
+                    <th>Nº da Solicitação</th>
+                    <th>Nº Processo</th>
+                    <th>Data da Assinatura do Contrato</th>
+                    <th>Vigência</th>
+                    <th>Valor Global</th>
+                    <th>Situação</th>
                 </tr>
             </thead>
             <tbody>
-                {% for opcao in itens %}
-                    <tr>
-                        {% if opcao.item %}
-                            <td>{{ opcao.item.item }}</td>
-                            <td>{{ opcao.item.material|truncatechars:500 }} - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
-                        {% else %}
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ opcao.material|truncatechars:500 }}  - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
 
-                        {% endif %}
-                        <td>{{ opcao.unidade|default_if_none:"-" }}</td>
-                        <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
-                        <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
-                        <td>{{ opcao.get_valor_total_disponivel|format_money }}</td>
-                    </tr>
-                {% endfor %}
-                 <tr>
-                     <td colspan="5">Total</td>
-                     <td>{{ total|format_money }}</td>
-                 </tr>
+                <tr>
+                    <td>{{ contrato.solicitacao.num_memorando }}</td>
+                    <td>{{ contrato.solicitacao.processo|default_if_none:"-" }}</td>
+
+                    <td>{{ contrato.data_inicio }}</td>
+                    <td>{{ contrato.get_data_fim|default_if_none:"-" }}</td>
+                    <td>{{ contrato.get_valor_aditivado|format_money }}</td>
+                    <td>{{ contrato.get_situacao }}</td>
+                </tr>
             </tbody>
-        </table>
+       </table>
+       <br>
 
 
 
+       <table border="1" width="100%" cellpadding="5" cellspacing="5">
+           <tr>
+               <td width="15%"><b>Objeto:</b></td><td align="left">{{ contrato.solicitacao.objeto }}</td>
+           </tr>
+           <tr>
+               <td width="15%"><b>Aplicação do Art. 57 da Lei 8666/93: </b></td><td align="left">{{ contrato.get_aplicacao_artigo_57_display|default_if_none:"-" }}</td>
+           </tr>
+       </table>
 
-</center>
+        <br>
 
+            <h3>Itens do Contrato</h3>
+            <table border="1" width="100%" cellpadding="5" cellspacing="5">
 
+                <thead>
 
+                    <tr>
+                        <th width="5%">Item</th>
+                        <th width="65%">Material/Serviço</th>
+                        <th width="10%">Unidade</th>
+                        <th width="10%">Valor Unitário</th>
+                        <th width="10%">Quantidade Disponível</th>
+                        <th width="10%">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for opcao in itens %}
+                        <tr>
+                            {% if opcao.item %}
+                                <td>{{ opcao.item.item }}</td>
+                                <td>{{ opcao.item.material|truncatechars:500 }} - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
+                            {% else %}
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ opcao.material|truncatechars:500 }}  - MARCA: {{ opcao.marca|default_if_none:"-" }}</td>
 
+                            {% endif %}
+                            <td>{{ opcao.unidade|default_if_none:"-" }}</td>
+                            <td>{{ opcao.get_valor_item_contrato|format_money }}</td>
+                            <td>{{ opcao.get_quantidade_disponivel|format_quantidade }}</td>
+                            <td>{{ opcao.get_valor_total_disponivel|format_money }}</td>
+                        </tr>
+                    {% endfor %}
+                     <tr>
+                         <td colspan="5">Total</td>
+                         <td>{{ total|format_money }}</td>
+                     </tr>
+                </tbody>
+            </table>
+    </center>
 
-<div id="footerblock" align="right">
-   Página <pdf:pagenumber> de <pdf:pagecount>
-</div>
+    <div id="footerblock" align="right">
+        Página <pdf:pagenumber></pdf:pagenumber> de <pdf:pagecount></pdf:pagecount>
+    </div>
 
 {% endblock %}
 

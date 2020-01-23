@@ -1,50 +1,5 @@
-{% load bootstrap %}
 {% load app_filters %}
-{% block extrastyle %}
- <style>
-     #rectangle{
-        border:5px solid black;
-    }
-body {
-    font-size: 14px;
-}
-   table.dados_paciente td
-{
 
-    border: 0;
-}
-    table.dados_paciente tr
-{
-
-    border: 0;
-}
-ul{
-     list-style:none;
-}
-
-     .page-header {
-        font-size: 14px;
-
-     }
-
-     @page {
-            size: a4 landscape;
-            margin: 0.3cm;
-            @frame footer {
-    		    -pdf-frame-content: footerblock;
-    		    bottom: 1cm;
-    		    margin-left: 1cm;
-    		    margin-right: 1cm;
-             margin-top: 1cm;
-    		    height: 1cm;
-		    }
-
-
-
-     }
-
- </style>
-{% endblock %}
 
 {% block content_title %}
     <br>
@@ -52,8 +7,6 @@ ul{
     {% include "cabecalho.html" %}
     <center><font size="4">Relatório Gerencial de Economia Alcançada</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
-
-
 
 {% endblock %}
 
@@ -95,8 +48,5 @@ ul{
 
         </tbody>
     </table>
-
+</center>
 {% endblock %}
-
-
-

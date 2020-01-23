@@ -1,40 +1,32 @@
 <style>
-     #rectangle{
-        border:5px solid black;
-    }
-body {
-    font-size: 14px;
-}
 
-
-
-     .page-header {
+    body {
         font-size: 14px;
-
+    }
+   .page-header {
+        font-size: 14px;
      }
+   @page {
+        size: a4 landscape;
+        margin: 0.3cm;
+        margin-bottom: 0.7cm;
+        margin-top: 0.3cm;
+        @frame footer {
+            -pdf-frame-content: footerblock;
+            bottom: 1cm;
+            margin-left: 1cm;
+            margin-right: 1cm;
+            margin-top: 1cm;
+            height: 1cm;
+        }
 
-     @page {
-            size: a4 landscape;
-            margin: 0.3cm;
-            margin-bottom: 0.7cm;
-            margin-top: 0.3cm;
-            @frame footer {
-    		    -pdf-frame-content: footerblock;
-    		    bottom: 1cm;
-    		    margin-left: 1cm;
-    		    margin-right: 1cm;
-                margin-top: 1cm;
-    		    height: 1cm;
-		    }
-
-     }
+   }
 
  </style>
 <table border="0" width="100%">
-      <tr>
+    <tr>
         <td width="10%">&nbsp;</td>
         <td  width="50%" cellspacing="10" cellpadding="10"><img src="{{ logo }}"  width="150" height="90"></td>
-
         <td>
             <table>
                 <tr>
@@ -51,6 +43,5 @@ body {
                 </tr>
             </table>
         </td>
-
-      </tr>
+    </tr>
 </table>

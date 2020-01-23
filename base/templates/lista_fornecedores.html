@@ -1,50 +1,4 @@
-{% load bootstrap %}
 {% load app_filters %}
-{% block extrastyle %}
- <style>
-     #rectangle{
-        border:5px solid black;
-    }
-body {
-    font-size: 14px;
-}
-   table.dados_paciente td
-{
-
-    border: 0;
-}
-    table.dados_paciente tr
-{
-
-    border: 0;
-}
-ul{
-     list-style:none;
-}
-
-     .page-header {
-        font-size: 14px;
-
-     }
-
-     @page {
-            size: a4;
-            margin: 0.3cm;
-            margin-bottom: 0.7cm;
-            margin-top: 0.3cm;
-            @frame footer {
-    		    -pdf-frame-content: footerblock;
-    		    bottom: 1cm;
-    		    margin-left: 1cm;
-    		    margin-right: 1cm;
-                margin-top: 1cm;
-    		    height: 1cm;
-		    }
-
-     }
-
- </style>
-{% endblock %}
 
 {% block content_title %}
     <br>
@@ -58,13 +12,8 @@ ul{
 {% endblock %}
 
 {% block content %}
-<center>
-
-
-
-
-
-            <table border="1" width="100%" cellpadding="5" cellspacing="5">
+    <center>
+         <table border="1" width="100%" cellpadding="5" cellspacing="5">
                 <thead>
                     <tr>
                         <th>Razão Social</th>
@@ -85,19 +34,10 @@ ul{
                 </tbody>
             </table>
 
-
-
-
-
-
-</center>
-
-
-
-
+    </center>
 
 <div id="footerblock" align="right">
-   Página <pdf:pagenumber> de <pdf:pagecount>
+    Página <pdf:pagenumber></pdf:pagenumber> de <pdf:pagecount></pdf:pagecount>
 </div>
 
 {% endblock %}

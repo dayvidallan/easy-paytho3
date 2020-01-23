@@ -1035,22 +1035,21 @@ def solicitacoes_do_setor(request):
         if configuracao.logo:
             logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        template = get_template('solicitacoes_do_setor.html')
         destino_arquivo = u'upload/resultados/solicitacoes.pdf'
         if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
             os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
         caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
         data_emissao = datetime.date.today()
-        html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+
+        template = get_template('solicitacoes_do_setor.html')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
     return render(request, 'lista_solicitacoes.html', locals(), RequestContext(request))
 
 
@@ -1099,22 +1098,20 @@ def outras_solicitacoes(request):
         if configuracao.logo:
             logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        template = get_template('solicitacoes_do_setor.html')
         destino_arquivo = u'upload/resultados/solicitacoes.pdf'
         if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
             os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
         caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
         data_emissao = datetime.date.today()
-        html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        template = get_template('solicitacoes_do_setor.html')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
     return render(request, 'lista_solicitacoes.html', locals(), RequestContext(request))
 
 
@@ -1519,22 +1516,16 @@ def imprimir_pesquisa(request, pesquisa_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/pesquisas/rascunhos'))
     caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
     data_emissao = datetime.date.today()
-
-
     data = {'pesquisa': pesquisa, 'data_emissao':data_emissao}
 
     template = get_template('imprimir_pesquisa.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -3004,17 +2995,13 @@ def relatorio_resultado_final(request, pregao_id):
     data = {'eh_lote':eh_lote, 'observacao': observacao, 'solicitacao': solicitacao, 'eh_global': eh_global,  'total_global': total_global, 'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'total': total}
 
     template = get_template('relatorio_resultado_final.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -3116,17 +3103,13 @@ def relatorio_economia(request, pregao_id):
     data = {'mostrou': mostrou, 'total_previsto_geral':total_previsto_geral, 'eh_global': eh_global, 'total_final_geral': total_final_geral, 'total_desconto_geral':total_desconto_geral, 'total_economizado_geral':total_economizado_geral, 'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_economia.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 def relatorio_resultado_final_por_vencedor(request, pregao_id):
@@ -3180,17 +3163,13 @@ def relatorio_resultado_final_por_vencedor(request, pregao_id):
     data = {'eh_lote':eh_lote, 'eh_maior_desconto':eh_maior_desconto, 'eh_global': eh_global, 'configuracao':configuracao, 'logo':logo, 'itens_pregao': itens_pregao, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_resultado_final_por_vencedor.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 def relatorio_lista_participantes(request, pregao_id):
@@ -3213,17 +3192,13 @@ def relatorio_lista_participantes(request, pregao_id):
     data = {'participantes': participantes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
     template = get_template('relatorio_lista_participantes.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def relatorio_lista_visitantes(request, pregao_id):
@@ -3246,18 +3221,13 @@ def relatorio_lista_visitantes(request, pregao_id):
     data = {'participantes': participantes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
     template = get_template('relatorio_lista_visitantes.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
-
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 def relatorio_classificacao_por_item(request, pregao_id):
     pregao = get_object_or_404(Pregao, pk=pregao_id)
@@ -3307,17 +3277,13 @@ def relatorio_classificacao_por_item(request, pregao_id):
     data = {'itens':itens, 'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_classificacao_por_item.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -3341,17 +3307,13 @@ def relatorio_ocorrencias(request, pregao_id):
     data = {'registros': registros, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'pregao':pregao}
 
     template = get_template('relatorio_ocorrencias.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -3403,17 +3365,13 @@ def relatorio_propostas_pregao(request, pregao_id):
     data = {'itens':itens,  'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
 
     template = get_template('relatorio_propostas_pregao.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def relatorio_lances_item(request, pregao_id):
@@ -3477,19 +3435,14 @@ def relatorio_lances_item(request, pregao_id):
 
     data = {'eh_lote':eh_lote, 'itens':itens, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado, 'configuracao': configuracao, 'logo': logo, 'eh_maior_desconto': eh_maior_desconto}
 
-
     template = get_template('relatorio_lances_item.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def relatorio_ata_registro_preco(request, pregao_id):
@@ -4604,20 +4557,13 @@ def termo_adjudicacao(request, pregao_id):
     data = {'pregao': pregao, 'eh_lote': eh_lote, 'configuracao': configuracao, 'eh_global': eh_global, 'logo': logo,  'resultado': resultado, 'total_geral': total_geral, 'fracassados': fracassados, 'config_geral': config_geral}
 
     template = get_template('termo_adjudicacao.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-
-
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
-
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -5559,17 +5505,13 @@ def gerar_pedido_fornecedores(request, solicitacao_id):
     data = {'configuracao': configuracao, 'logo': logo, 'resultado': resultado, 'solicitacao': solicitacao, 'eh_global': eh_global, 'data_emissao': data_emissao, 'eh_lote': eh_lote}
 
     template = get_template('gerar_pedido_fornecedores.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def apagar_lote(request, item_id, pregao_id):
@@ -5798,9 +5740,9 @@ def ver_ordem_compra(request, solicitacao_id):
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
     data = {'config_geral': config_geral, 'eh_global': eh_global, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'ata':ata, 'contrato':contrato, 'credenciamento': credenciamento, 'configuracao': configuracao, 'logo': logo, 'fornecedor': fornecedor, 'resultado': resultado, 'data_emissao': data_emissao, 'eh_lote': eh_lote, 'ordem': ordem}
 
-    template = get_template('ver_ordem_compra.html')
 
-    html  = template.render(Context(data))
+
+
     if 'xls' in request.GET:
         nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra')
         file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra.xls')
@@ -5879,14 +5821,14 @@ def ver_ordem_compra(request, solicitacao_id):
         os.unlink(salvou)
         return response
     else:
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        template = get_template('ver_ordem_compra.html')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -5946,9 +5888,7 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
     cpf_ordenador_formatado = "%s.%s.%s-%s" % ( cpf_ordenador[0:3], cpf_ordenador[3:6], cpf_ordenador[6:9], cpf_ordenador[9:11] )
     data = {'config_geral': config_geral, 'eh_global': eh_global, 'total_global': total_global, 'cpf_ordenador_formatado': cpf_ordenador_formatado, 'cpf_secretario_formatado': cpf_secretario_formatado, 'solicitacao': solicitacao, 'pregao': pregao, 'total':total, 'itens': itens, 'fornecedor': fornecedor, 'configuracao': configuracao, 'logo': logo,  'data_emissao': data_emissao, 'ordem': ordem}
 
-    template = get_template('ver_ordem_compra_dispensa.html')
 
-    html  = template.render(Context(data))
     if 'xls' in request.GET:
         nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra')
         file_path = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/ordem_compra.xls')
@@ -6025,6 +5965,15 @@ def ver_ordem_compra_dispensa(request, solicitacao_id):
         pdf = file.read()
         file.close()
         return HttpResponse(pdf, 'application/pdf')
+
+        template = get_template('ver_ordem_compra_dispensa.html')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def registrar_adjudicacao(request, pregao_id):
@@ -6160,19 +6109,13 @@ def termo_homologacao(request, pregao_id):
     else:
         template = get_template('termo_homologacao_e_adjudicacao.html')
 
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-
-
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def visualizar_contrato(request, solicitacao_id):
@@ -6227,22 +6170,21 @@ def visualizar_ata_registro_preco(request, ata_id):
         if configuracao.logo:
             logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
 
-        template = get_template('pedidos_arp.html')
+
         destino_arquivo = u'upload/resultados/solicitacoes.pdf'
         if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
             os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
         caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
         data_emissao = datetime.date.today()
-        html  = template.render(Context(data))
 
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        template = get_template('pedidos_arp.html')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
     return render(request, 'visualizar_ata_registro_preco.html', locals(), RequestContext(request))
 
@@ -6748,16 +6690,13 @@ def lista_materiais(request, solicitacao_id):
 
     template = get_template('lista_materiais.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
@@ -6791,16 +6730,13 @@ def lista_materiais_por_secretaria(request, solicitacao_id, secretaria_id):
 
     template = get_template('lista_materiais_por_secretaria.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -6950,16 +6886,13 @@ def relatorio_lista_download_licitacao(request, pregao_id):
 
     template = get_template('relatorio_lista_download_licitacao.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def apagar_item(request, item_id):
@@ -8298,16 +8231,13 @@ def imprimir_fornecedor(request, fornecedor_id):
 
     template = get_template('imprimir_fornecedor.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def excluir_solicitacao_pedido(request, solicitacao_id):
@@ -8537,17 +8467,13 @@ def ver_relatorios_gerenciais_licitacao(request):
                 data = {'pregoes': pregoes, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
                 template = get_template('relatorio_gerencial_situacao.html')
 
-
-            html  = template.render(Context(data))
-
-            pdf_file = open(caminho_arquivo, "w+b")
-            pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                    encoding='utf-8')
-            pdf_file.close()
-            file = open(caminho_arquivo, "r")
-            pdf = file.read()
-            file.close()
-            return HttpResponse(pdf, 'application/pdf')
+            html = template.render(data)
+            response = BytesIO()
+            pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+            if not pdf.err:
+                return HttpResponse(response.getvalue(), content_type='application/pdf')
+            else:
+                return HttpResponse("Error Rendering PDF", status=400)
 
 
     return render(request, 'ver_relatorios_gerenciais_licitacao.html', locals(), RequestContext(request))
@@ -8608,18 +8534,13 @@ def ver_relatorios_gerenciais_contratos(request):
 
                 data = {'contratos': contratos, 'titulo': 'Contratos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
                 template = get_template('relatorio_gerencial_situacao_contratos.html')
-
-
-                html  = template.render(Context(data))
-
-                pdf_file = open(caminho_arquivo, "w+b")
-                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                        encoding='utf-8')
-                pdf_file.close()
-                file = open(caminho_arquivo, "r")
-                pdf = file.read()
-                file.close()
-                return HttpResponse(pdf, 'application/pdf')
+                html = template.render(data)
+                response = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+                if not pdf.err:
+                    return HttpResponse(response.getvalue(), content_type='application/pdf')
+                else:
+                    return HttpResponse("Error Rendering PDF", status=400)
     else:
         raise PermissionDenied
 
@@ -8677,17 +8598,13 @@ def ver_relatorios_gerenciais_atas(request):
                 data = {'contratos': contratos, 'titulo': 'Atas', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'total': total }
                 template = get_template('relatorio_gerencial_situacao_contratos.html')
 
-
-                html  = template.render(Context(data))
-
-                pdf_file = open(caminho_arquivo, "w+b")
-                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                        encoding='utf-8')
-                pdf_file.close()
-                file = open(caminho_arquivo, "r")
-                pdf = file.read()
-                file.close()
-                return HttpResponse(pdf, 'application/pdf')
+                html = template.render(data)
+                response = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+                if not pdf.err:
+                    return HttpResponse(response.getvalue(), content_type='application/pdf')
+                else:
+                    return HttpResponse("Error Rendering PDF", status=400)
     else:
         raise PermissionDenied
 
@@ -8745,17 +8662,13 @@ def ver_relatorios_gerenciais_credenciamentos(request):
                 data = {'contratos': contratos, 'titulo': 'Credenciamentos', 'situacao': descricao_situacao, 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao }
                 template = get_template('relatorio_gerencial_situacao_contratos.html')
 
-
-                html  = template.render(Context(data))
-
-                pdf_file = open(caminho_arquivo, "w+b")
-                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                        encoding='utf-8')
-                pdf_file.close()
-                file = open(caminho_arquivo, "r")
-                pdf = file.read()
-                file.close()
-                return HttpResponse(pdf, 'application/pdf')
+                html = template.render(data)
+                response = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+                if not pdf.err:
+                    return HttpResponse(response.getvalue(), content_type='application/pdf')
+                else:
+                    return HttpResponse("Error Rendering PDF", status=400)
     else:
         raise PermissionDenied
 
@@ -8800,16 +8713,13 @@ def relatorio_dados_licitacao(request, pregao_id):
 
     template = get_template('relatorio_dados_licitacao.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -8958,16 +8868,13 @@ def relatorio_propostas(request, solicitacao_id):
 
     template = get_template('relatorio_propostas.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -9133,19 +9040,13 @@ def imprimir_crc(request, fornecedor_id):
 
     template = get_template('imprimir_crc.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-
-
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
-
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -9482,16 +9383,13 @@ def relatorio_info_contrato(request, contrato_id):
 
     template = get_template('relatorio_info_contrato.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9520,16 +9418,13 @@ def relatorio_qtd_disponivel_contrato(request, contrato_id):
 
     template = get_template('relatorio_qtd_disponivel_contrato.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9559,16 +9454,13 @@ def relatorio_qtd_consumida_contrato(request, contrato_id):
 
     template = get_template('relatorio_qtd_consumida_contrato.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9640,16 +9532,13 @@ def relatorio_qtd_disponivel_ata(request, ata_id, fornecedor_id):
 
     template = get_template('relatorio_qtd_disponivel_ata.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9693,16 +9582,13 @@ def relatorio_qtd_consumida_ata(request, ata_id, fornecedor_id):
 
     template = get_template('relatorio_qtd_consumida_ata.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9756,16 +9642,13 @@ def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
 
     template = get_template('relatorio_saldo_ata_secretaria.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9795,16 +9678,13 @@ def relatorio_info_credenciamento(request, credenciamento_id):
 
     template = get_template('relatorio_info_credenciamento.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9834,16 +9714,13 @@ def relatorio_qtd_disponivel_credenciamento(request, credenciamento_id):
 
     template = get_template('relatorio_qtd_disponivel_credenciamento.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 
@@ -9872,16 +9749,13 @@ def relatorio_qtd_consumida_credenciamento(request, credenciamento_id):
 
     template = get_template('relatorio_qtd_consumida_credenciamento.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -10239,16 +10113,13 @@ def relatorio_itens_desertos(request, pregao_id):
 
     template = get_template('relatorio_itens_desertos.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -10369,16 +10240,13 @@ def ver_relatorios_gerenciais_compras(request):
                 template = get_template('relatorio_gerencial_compras.html')
 
 
-                html  = template.render(Context(data))
-
-                pdf_file = open(caminho_arquivo, "w+b")
-                pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                        encoding='utf-8')
-                pdf_file.close()
-                file = open(caminho_arquivo, "r")
-                pdf = file.read()
-                file.close()
-                return HttpResponse(pdf, 'application/pdf')
+                html = template.render(data)
+                response = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+                if not pdf.err:
+                    return HttpResponse(response.getvalue(), content_type='application/pdf')
+                else:
+                    return HttpResponse("Error Rendering PDF", status=400)
     else:
         raise PermissionDenied
 
@@ -11057,16 +10925,13 @@ def lista_fornecedores(request):
 
     template = get_template('lista_fornecedores.html')
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def sortear_inicio_lances(request, item_id):
@@ -11682,16 +11547,13 @@ def baixar_licitacoes_portal(request):
         template = get_template('relatorio_gerencial_situacao.html')
 
 
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
     if 'xls' in request.GET:
         nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_licitacoes')
@@ -11787,16 +11649,13 @@ def baixar_atas_portal(request):
         template = get_template('relatorio_gerencial_situacao_atas.html')
 
 
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
     if 'xls' in request.GET:
         nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
@@ -11890,16 +11749,13 @@ def baixar_adesao_atas_portal(request):
         template = get_template('relatorio_gerencial_situacao_atas.html')
 
 
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
     if 'xls' in request.GET:
         nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
@@ -11995,16 +11851,13 @@ def baixar_contratos_portal(request):
         template = get_template('relatorio_gerencial_situacao_contratos.html')
 
 
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
     if 'xls' in request.GET:
         nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_contratos')
@@ -12096,16 +11949,13 @@ def baixar_dispensas_portal(request):
         template = get_template('relatorio_gerencial_situacao_dispensas.html')
 
 
-        html  = template.render(Context(data))
-
-        pdf_file = open(caminho_arquivo, "w+b")
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-                encoding='utf-8')
-        pdf_file.close()
-        file = open(caminho_arquivo, "r")
-        pdf = file.read()
-        file.close()
-        return HttpResponse(pdf, 'application/pdf')
+        html = template.render(data)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
 
     if 'xls' in request.GET:
         nome = os.path.join(settings.MEDIA_ROOT, 'upload/modelos/relatorio_gerencial_situacao_dispensas')
@@ -12173,16 +12023,13 @@ def imprime_convites_enviados(request, solicitacao_id):
     template = get_template('imprime_convites_enviados.html')
 
 
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -12209,17 +12056,13 @@ def pedidos_arp_secretarias(request, ata_id):
     data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
 
     template = get_template('pedidos_arp_secretarias.html')
-
-    html  = template.render(Context(data))
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 @login_required()
 def inativar_item_arp(request, item_id):

@@ -1,4 +1,3 @@
-{% load bootstrap %}
 {% load app_filters %}
 
 {% block content_title %}
@@ -51,32 +50,25 @@
    </table>
    <br>
 
-
-
    <table border="1" width="100%" cellpadding="5" cellspacing="5">
        <tr>
            <td width="15%"><b>Objeto:</b></td><td align="left">{{ ata.solicitacao.objeto }}</td>
        </tr>
    </table>
-
         {% if ata.solicitacao.eh_lote %}
             <h3>Lotes da Ata</h3>
-
-
             {% for lote in ata.solicitacao.get_lotes %}
-
                 <table border="1" width="100%" cellpadding="5" cellspacing="5">
                     <thead>
                         <tr><th colspan="7">{{ lote }}</th></tr>
                         <tr>
-                            <th width="13%">Item/Lote</th>
-                            <th width="50%">Material/Serviço</th>
-                            <th width="20%">Unidade</th>
-                            <th width="35%">Empresa</th>
-                            <th width="13%">Valor</th>
-                            <th width="20%">Quantidade Inicial</th>
-                            <th width="13%">Esgotado em</th>
-
+                            <th width="5%">Item/Lote</th>
+                            <th width="15%">Material/Serviço</th>
+                            <th width="9%">Unidade</th>
+                            <th width="15%">Empresa</th>
+                            <th width="7%">Valor</th>
+                            <th width="8%">Quantidade Inicial</th>
+                            <th width="8%">Esgotado em</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -84,10 +76,10 @@
                             <tr>
                                 {% if ata.adesao %}
                                     <td>{{ forloop.counter }}</td>
-                                    <td width="50%">{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.get_item_arp.marca|default_if_none:"-" }}{% endif %}</td>
+                                    <td>{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.get_item_arp.marca|default_if_none:"-" }}{% endif %}</td>
                                 {% else %}
                                     <td>{{ opcao }}</td>
-                                    <td width="50%">{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.get_item_arp.marca|default_if_none:"-" }}{% endif %}</td>
+                                    <td>{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.get_item_arp.marca|default_if_none:"-" }}{% endif %}</td>
                                 {% endif %}
                                 <td>{{ opcao.get_item_arp.unidade|default_if_none:"-" }}</td>
                                 {% if ata.adesao %}
@@ -103,23 +95,19 @@
                     </tbody>
                 </table>
             {% endfor %}
-
-
         {% else %}
             <h3>Itens da Ata</h3>
             <table border="1" width="100%" cellpadding="5" cellspacing="5">
                 <thead>
-
                     <tr>
-                        <th width="7%">Item</th>
+                        <th width="5%">Item</th>
                         <th>Material/Serviço</th>
-                        <th width="7%">Unidade</th>
+                        <th width="9%">Unidade</th>
                         <th width="15%">Empresa</th>
                         <th width="7%">Valor</th>
-                        <th width="7%">Quantidade Inicial</th>
+                        <th width="8%">Quantidade Inicial</th>
                         <th width="7%">Total</th>
                         <th width="7%">Esgotado em</th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -145,19 +133,15 @@
 
                         </tr>
                     {% endfor %}
-
                     <tr>
                          <td colspan="7">Total</td>
                          <td>{{ total|format_money }}</td>
                      </tr>
                 </tbody>
             </table>
-
         {% endif %}
-
     <br>
    {% if pedidos.exists %}
-
         <h3>Pedidos da Ata</h3>
         <table border="1" width="100%" cellpadding="5" cellspacing="5">
             <thead>
@@ -192,22 +176,11 @@
                 {% endfor %}
              </tbody>
         </table>
-
-
     {% endif %}
-
-
 </center>
 
-
-
-
-
 <div id="footerblock" align="right">
-   Página <pdf:pagenumber> de <pdf:pagecount>
+    Página <pdf:pagenumber></pdf:pagenumber> de <pdf:pagecount></pdf:pagecount>
 </div>
 
 {% endblock %}
-
-
-

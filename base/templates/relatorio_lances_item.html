@@ -1,60 +1,4 @@
-{% load bootstrap %}
 {% load app_filters %}
-{% block extrastyle %}
- <style>
-     #rectangle{
-        border:5px solid black;
-    }
-body {
-    font-size: 14px;
-}
-   table.dados_paciente td
-{
-
-    border: 0;
-}
-    table.dados_paciente tr
-{
-
-    border: 0;
-}
-ul{
-     list-style:none;
-}
-
-     .page-header {
-        font-size: 14px;
-
-     }
-
-     @page {
-            size: a4;
-            margin: 1.5cm;
-            @frame header {
-                -pdf-frame-content: headerblock;
-                top: 0cm;
-                margin-left: 9cm;
-                margin-right: 1cm;
-                height: 1.3cm;
-            }
-            @frame footer {
-                -pdf-frame-content: footerblock;
-                bottom: 0cm;
-                margin-left: 9cm;
-                margin-right: 1cm;
-                height: 1.3cm;
-            }
-
-
-
-
-
-
-     }
-
- </style>
-{% endblock %}
-
 
 
 {% block content %}
@@ -117,7 +61,7 @@ ul{
 
 
     <div id="footerblock" align="right">
-       Página <pdf:pagenumber> de <pdf:pagecount>
+        Página <pdf:pagenumber></pdf:pagenumber> de <pdf:pagecount></pdf:pagecount>
     </div>
 
 
