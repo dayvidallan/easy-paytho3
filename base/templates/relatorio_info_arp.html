@@ -1,59 +1,12 @@
 {% load bootstrap %}
 {% load app_filters %}
-{% block extrastyle %}
- <style>
-     #rectangle{
-        border:5px solid black;
-    }
-body {
-    font-size: 14px;
-}
-   table.dados_paciente td
-{
-
-    border: 0;
-}
-    table.dados_paciente tr
-{
-
-    border: 0;
-}
-ul{
-     list-style:none;
-}
-
-     .page-header {
-        font-size: 14px;
-
-     }
-
-     @page {
-            size: a4 landscape;
-            margin: 0.3cm;
-            margin-bottom: 0.7cm;
-            margin-top: 0.3cm;
-            @frame footer {
-    		    -pdf-frame-content: footerblock;
-    		    bottom: 1cm;
-    		    margin-left: 1cm;
-    		    margin-right: 1cm;
-                margin-top: 1cm;
-    		    height: 1cm;
-		    }
-
-     }
-
- </style>
-{% endblock %}
 
 {% block content_title %}
-    <br>
+  <br>
   <h1 class="page-header">
     {% include "cabecalho.html" %}
     <center><font size="4">Dados da {{ ata }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
   </h1>
-
-
 
 {% endblock %}
 
@@ -158,14 +111,14 @@ ul{
                 <thead>
 
                     <tr>
-                        <th>Item</th>
+                        <th width="7%">Item</th>
                         <th>Material/Serviço</th>
-                        <th>Unidade</th>
-                        <th>Empresa</th>
-                        <th>Valor</th>
-                        <th>Quantidade Inicial</th>
-                        <th>Total</th>
-                        <th width="13%">Esgotado em</th>
+                        <th width="7%">Unidade</th>
+                        <th width="15%">Empresa</th>
+                        <th width="7%">Valor</th>
+                        <th width="7%">Quantidade Inicial</th>
+                        <th width="7%">Total</th>
+                        <th width="7%">Esgotado em</th>
 
                     </tr>
                 </thead>
@@ -174,10 +127,10 @@ ul{
                         <tr>
                             {% if ata.adesao %}
                                 <td>{{ forloop.counter }}</td>
-                            <td  width="50%">{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA:{{ opcao.marca|default_if_none:"-" }}{% endif %}</td>
+                            <td>{{ opcao.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA:{{ opcao.marca|default_if_none:"-" }}{% endif %}</td>
                             {% else %}
                                 <td>{{ opcao.item }}</td>
-                                <td  width="50%">{{ opcao.item.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.marca|default_if_none:"-" }}{% endif %}</td>
+                                <td>{{ opcao.item.material|truncatechars:500 }} {% if opcao.get_item_arp.marca %}- MARCA: {{ opcao.marca|default_if_none:"-" }}{% endif %}</td>
                             {% endif %}
                             <td>{{ opcao.unidade|default_if_none:"-" }}</td>
                             {% if ata.adesao %}

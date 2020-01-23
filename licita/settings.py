@@ -85,7 +85,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Django settings changed
 
 INTERNAL_IPS = ('127.0.0.1',)
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #TEMPLATE_DIRS = (BASE_DIR,)
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'

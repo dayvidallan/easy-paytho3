@@ -41,6 +41,11 @@ from docx import Document
 from docx.shared import Inches, Pt
 from base.formwidgets import CalendarioPlus
 
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+import xhtml2pdf.pisa as pisa
+
 def get_config(secretaria=None):
     if secretaria and secretaria.logo:
         return secretaria
@@ -4258,8 +4263,10 @@ def imprimir_capa_processo(request, processo_id):
     c.rect(LARGURA - 100*mm, ALTURA - 78*mm, 80*mm, 22*mm)
     c.setFont('Helvetica-Bold', 12)
     c.drawString(LARGURA - 96*mm, ALTURA - 62*mm, u'Protocolo nº %s' % processo.numero)
-    codbarra = I2of5(processo.numero, width=100*mm,
-                     barHeight=10*mm, barWidth=0.5*mm, bearers = 0, checksum = 0)
+    #codbarra = I2of5(processo.numero, width=100 * mm, barHeight=10 * mm, barWidth=0.5 * mm, bearers=0, checksum=0)
+
+    codbarra = I2of5(processo.numero, barHeight=10 * mm, barWidth=0.5 * mm, bearers=0, checksum=0)
+
     codbarra.drawOn(c, LARGURA - 101*mm, ALTURA - 75*mm)
 
     from django.template.defaultfilters import truncatechars
@@ -9587,35 +9594,16 @@ def relatorio_info_arp(request, ata_id):
     data_emissao = datetime.date.today()
 
 
+    data = {'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+
     template = get_template('relatorio_info_arp.html')
-
-    html  = template.render({'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao})
-
-    pdf_file = open(caminho_arquivo, "w+b")
-    pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=pdf_file,
-            encoding='utf-8')
-    pdf_file.close()
-    file = open(caminho_arquivo, "r")
-    pdf = file.read()
-    file.close()
-    return HttpResponse(pdf, 'application/pdf')
-    # from weasyprint import HTML
-    # from weasyprint.fonts import FontConfiguration
-    # from django.utils.text import slugify
-    # from django.template.loader import render_to_string
-    # response = HttpResponse(content_type="application/pdf")
-    # response['Content-Disposition'] = "inline; filename={date}-{name}-donation-receipt.pdf".format(
-    #     date=ata.data_inicio.strftime('%Y-%m-%d'),
-    #     name=slugify(ata.id),
-    # )
-    # html = render_to_string("relatorio_info_arp.html", {
-    #     'ata':ata, 'pedidos': pedidos, 'itens':itens, 'total': total, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao
-    # })
-    #
-    # font_config = FontConfiguration()
-    # HTML(string=html).write_pdf(response, font_config=font_config)
-    # return response
-
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
 
 
 @login_required()
@@ -9988,7 +9976,7 @@ def anexo_38(request, pregao_id):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=anexo_38_tce_licitacao_%s.xlsx' % pregao.id
     wb = openpyxl.Workbook()
-    ws = wb.get_active_sheet()
+    ws = wb.active
     ws.title = "MyModel"
 
     row_num = 0
@@ -10008,7 +9996,7 @@ def anexo_38(request, pregao_id):
         (u"MPE - Aplicação da LCN 123/06 ", 30),
     ]
 
-    for col_num in xrange(len(columns)):
+    for col_num in range(len(columns)):
         c = ws.cell(row=row_num + 1, column=col_num + 1)
         c.value = columns[col_num][0]
         #c.style.font.bold = True
@@ -10058,7 +10046,7 @@ def anexo_38(request, pregao_id):
                         resultado.count(),
 
                     ]
-                    for col_num in xrange(len(row)):
+                    for col_num in range(len(row)):
                         c = ws.cell(row=row_index + 1, column=col_num + 1)
                         c.value = row[col_num]
                         #c.style.alignment.wrap_text = True
@@ -10132,7 +10120,7 @@ def anexo_38(request, pregao_id):
                         len(resultado.items()),
 
                     ]
-                    for col_num in xrange(len(row)):
+                    for col_num in range(len(row)):
                         c = ws.cell(row=row_index + 1, column=col_num + 1)
                         c.value = row[col_num]
                         #c.style.alignment.wrap_text = True
@@ -11356,7 +11344,7 @@ def anexo_10(request):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=anexo_10_tce_licitacao_%s.xlsx' % form.cleaned_data.get('ano')
         wb = openpyxl.Workbook()
-        ws = wb.get_active_sheet()
+        ws = wb.active
         ws.title = "Anexo 10 - TCE-RN"
         comissoes = ComissaoLicitacao.objects.filter(data_designacao__year=form.cleaned_data.get('ano'))
 
@@ -11365,7 +11353,7 @@ def anexo_10(request):
         columns = [
             (u"MODELO 10 - RELAÇÃO DAS COMISSÕES DE LICITAÇÕES, PREGOEIRO E EQUIPE DE APOIO %s" % form.cleaned_data.get('ano'), 20),
         ]
-        for col_num in xrange(len(columns)):
+        for col_num in range(len(columns)):
             c = ws.cell(row=row_num + 1, column=col_num + 1)
             c.value = columns[col_num][0]
             #c.style.font.bold = True
@@ -11387,7 +11375,7 @@ def anexo_10(request):
             (u"Endereço residencial", 50),
         ]
 
-        for col_num in xrange(len(columns)):
+        for col_num in range(len(columns)):
             c = ws.cell(row=row_num + 1, column=col_num + 1)
             c.value = columns[col_num][0]
             #c.style.font.bold = True
@@ -11417,7 +11405,7 @@ def anexo_10(request):
                 membro.membro.setor.secretaria.endereco,
                 membro.membro.get_endereco(),
             ]
-            for col_num in xrange(len(row)):
+            for col_num in range(len(row)):
                 c = ws.cell(row=row_index + 1, column=col_num + 1)
                 c.value = row[col_num]
                 #c.style.alignment.wrap_text = True
@@ -11438,7 +11426,7 @@ def anexo_11(request):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=anexo_11_tce_licitacao_%s.xlsx' % form.cleaned_data.get('ano')
         wb = openpyxl.Workbook()
-        ws = wb.get_active_sheet()
+        ws = wb.active
         ws.title = "Anexo 11 - TCE-RN"
         pregoes = Pregao.objects.filter(data_abertura__year=form.cleaned_data.get('ano'))
 
@@ -11447,7 +11435,7 @@ def anexo_11(request):
         columns = [
             (u"MODELO 11 - MAPA DEMONSTRATIVO CONSOLIDADO DOS PROCESSOS LICITATÓRIOS %s" % form.cleaned_data.get('ano'), 20),
         ]
-        for col_num in xrange(len(columns)):
+        for col_num in range(len(columns)):
             c = ws.cell(row=row_num + 1, column=col_num + 1)
             c.value = columns[col_num][0]
             #c.style.font.bold = True
@@ -11475,7 +11463,7 @@ def anexo_11(request):
 
         ]
 
-        for col_num in xrange(len(columns)):
+        for col_num in range(len(columns)):
             c = ws.cell(row=row_num + 1, column=col_num + 1)
             c.value = columns[col_num][0]
             #c.style.font.bold = True
@@ -11536,7 +11524,7 @@ def anexo_11(request):
 
 
             ]
-            for col_num in xrange(len(row)):
+            for col_num in range(len(row)):
                 c = ws.cell(row=row_index + 1, column=col_num + 1)
                 c.value = row[col_num]
 
@@ -11590,7 +11578,7 @@ def anexo_11(request):
 
 
             ]
-            for col_num in xrange(len(row)):
+            for col_num in range(len(row)):
                 c = ws.cell(row=row_index + 1, column=col_num + 1)
                 c.value = row[col_num]
 
