@@ -22,6 +22,6 @@ class Command(BaseCommand):
             data[obj.object.__class__.__name__].append(obj.object)
 
         for key in data:
-            print key, len(data[key])
+            print(key, len(data[key]))
             for obj in data[key]:
                 obj.save()
