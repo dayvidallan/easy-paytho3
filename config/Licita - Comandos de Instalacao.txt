@@ -1,3 +1,77 @@
+# Ubuntu 19.04
+
+
+sudo apt-get install postgresql postgresql-contrib nginx python3-pip libpq-dev
+sudo su - postgres
+psql
+CREATE DATABASE licita;
+GRANT ALL PRIVILEGES ON DATABASE licita TO postgres;
+ALTER USER postgres WITH PASSWORD 'licitaeasy';
+\q
+exit
+
+no diretorio home, digitar:
+sudo mkdir workspace
+cd workspace
+sudo apt-get install git
+git clone https://walkyso@bitbucket.org/walkyso/licita.git
+chown www-data:www-data -R licita
+cd licita
+pip install gunicorn psycopg2
+
+pip install -U -r deploy/requirements.txt
+
+./manage.py sync
+
+./manage.py criar_base_teste
+
+./manage.py collectstatic --noinput --clear
+
+cd sql
+
+psql -Upostgres -hlocalhost -d licita < dump_material.sql
+
+cd ..
+
+
+cd licita/config
+
+sudo cp licita /etc/nginx/sites-available/
+
+sudo ln -s /etc/nginx/sites-available/licita /etc/nginx/sites-enabled
+
+cd /etc/nginx/sites-enabled
+
+sudo rm default
+
+sudo nginx -t
+
+sudo service nginx restart
+
+sudo apt-get install supervisor
+
+sudo rm /etc/supervisor/supervisord.conf
+
+sudo cp /home/workspace/licita/sql/supervisord.conf /etc/supervisor/
+
+sudo cp /home/workspace/licita/sql/gunicorn.service /etc/systemd/system/
+
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+
+sudo service supervisor start
+
+sudo supervisorctl start all
+
+sudo supervisorctl restart all
+
+sudo systemctl enable supervisor
+
+sudo systemctl start supervisor
+
+####################################################################################
+
+
 sudo apt-get update
 
 sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib nginx

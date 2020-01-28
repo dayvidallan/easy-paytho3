@@ -21,7 +21,6 @@ INSTALLED_APPS = (
     'compressor',
     'dal',
     'dal_select2',
-    'ckeditor',
     # Django apps
     'django.contrib.auth',
     'django.contrib.admin',

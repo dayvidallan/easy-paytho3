@@ -5,8 +5,8 @@ After=network.target
 [Service]
 User=root
 Group=www-data
-WorkingDirectory=/home/workspace/licita
-ExecStart=/home/workspace/licita/licita/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 licita.wsgi:application
+WorkingDirectory=/home/easy/workspace/licita
+ExecStart=/home/easy/workspace/licita/licita/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 licita.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

@@ -38,4 +38,4 @@ qrcode
 djangorestframework
 pytz
 xhtml2pdf
-WeasyPrint
+#WeasyPrint
