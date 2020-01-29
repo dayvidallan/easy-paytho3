@@ -172,7 +172,7 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'licita_dev',
+        'NAME': 'licita',
         'USER': 'postgres',
         'PASSWORD': '123',
         'HOST': '127.0.0.1',

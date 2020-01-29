@@ -222,7 +222,7 @@ class SecretariaAdmin(NewModelAdmin):
     list_display = ('nome', 'sigla', 'responsavel')
     ordering = ('nome',)
     list_filter = ('nome',)
-
+    search_fields = ('nome', )
 
 admin.site.register(Secretaria, SecretariaAdmin)
 
