@@ -36,6 +36,10 @@ pip3 install -U -r deploy/requirements.txt
 
 cd licita
 
+cp settings_base_example.py settings_base.py
+
+cd ..
+
 python3 manage.py sync
 
 ## python3 manage.py criar_base_teste

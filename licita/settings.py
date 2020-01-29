@@ -168,11 +168,6 @@ REST_FRAMEWORK = {
     )
 }
 
-try:
-    from settings_base import *
-except ImportError as e:
-    pass
-
 SITE_URL = DEBUG and 'http://localhost:8000' or 'http://guamareserver.easygestaopublica.com.br'
 DATABASES = {
     'default': {
@@ -184,3 +179,10 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+try:
+    from settings_base import *
+except ImportError as e:
+    pass
+
+
