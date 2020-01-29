@@ -2693,7 +2693,7 @@ def avalia_minuta(request, solicitacao_id, tipo):
                 os.unlink(tmp_xml_file.name)
 
                 for key in dicionario.keys():
-                    value = str(dicionario.get(key)).encode("utf8")
+                    value = str(dicionario.get(key))
                     tempXmlStr = tempXmlStr.replace(key, value)
 
                 tmp_xml_file =  open(tempfile.mktemp(), "w+")
@@ -6351,7 +6351,7 @@ def memorando(request, solicitacao_id):
     os.unlink(tmp_xml_file.name)
 
     for key in dicionario.keys():
-        value = str(dicionario.get(key)).encode("utf8")
+        value = str(dicionario.get(key))
         tempXmlStr = tempXmlStr.replace(key, value)
 
     tmp_xml_file =  open(tempfile.mktemp(), "w+")
@@ -6429,7 +6429,7 @@ def termo_referencia(request, solicitacao_id):
     os.unlink(tmp_xml_file.name)
     from django.utils.html import strip_tags
     for key in dicionario.keys():
-        value = str(strip_tags(dicionario.get(key))).encode("utf-8", "replace")
+        value = str(strip_tags(dicionario.get(key)))
         tempXmlStr = tempXmlStr.replace(key, value)
 
     tmp_xml_file =  open(tempfile.mktemp(), "w+")
