@@ -36,7 +36,7 @@ pip3 install -U -r deploy/requirements.txt
 
 cd licita
 
-cp settings_base_example.py settings_base.py
+## EDITAR O SETTINGS
 
 cd ..
 
