@@ -34,15 +34,17 @@ pip3 install gunicorn psycopg2
 
 pip3 install -U -r deploy/requirements.txt
 
-./manage.py sync
+cd licita
 
-./manage.py criar_base_teste
+python3 manage.py sync
 
-./manage.py collectstatic --noinput --clear
+## python3 manage.py criar_base_teste
 
-cd sql
+## python3 manage.py collectstatic --noinput --clear
 
-psql -Upostgres -hlocalhost -d licita < dump_material.sql
+## cd sql
+
+## psql -Upostgres -hlocalhost -d licita < dump_material.sql
 
 cd ..
 
