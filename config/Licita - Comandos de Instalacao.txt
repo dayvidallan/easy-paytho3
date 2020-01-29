@@ -25,7 +25,7 @@ sudo pip3 install virtualenvwrapper
 
 echo 'export WORKON_HOME=~/Envs' >> ~/.bashrc
 
-echo ‘export VIRTUALENVWRAPPER_PYTHON=`which python3`’ >> ~/.bashrc
+echo 'export VIRTUALENVWRAPPER_PYTHON=`which python3`' >> ~/.bashrc
 
 echo 'source /usr/local/bin/virtualenvwrapper.sh' >> ~/.bashrc
 
@@ -58,7 +58,7 @@ cd licita
 
 cd ..
 
-python manage.py sync
+./manage.py sync
 
 -- psql -Upostgres -hlocalhost -d licita < dump_material.sql
 
