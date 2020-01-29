@@ -30,9 +30,9 @@ chown www-data:www-data -R licita
 
 cd licita
 
-pip install gunicorn psycopg2
+pip3 install gunicorn psycopg2
 
-pip install -U -r deploy/requirements.txt
+pip3 install -U -r deploy/requirements.txt
 
 ./manage.py sync
 
