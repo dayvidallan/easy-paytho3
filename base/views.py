@@ -3248,7 +3248,8 @@ def relatorio_classificacao_por_item(request, pregao_id):
     itens = {}
     resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item__item')
     chaves =  resultado.values('item__item').order_by('item__item')
-    for num in sorted(chaves):
+
+    for num in chaves:
         chave = '%s' % num['item__item']
         tabela[chave] = []
         itens[chave] =  []
@@ -3258,20 +3259,8 @@ def relatorio_classificacao_por_item(request, pregao_id):
         tabela[chave].append(item)
         itens[chave] = item.item.get_itens_do_lote()
 
-    from blist import sorteddict
 
-    def my_key(dict_key):
-           try:
-               with transaction.atomic():
-                  return int(dict_key)
-           except ValueError:
-                  return dict_key
-
-
-    resultado =  sorteddict(my_key, **tabela)
-
-
-    data = {'itens':itens, 'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'itens':itens, 'eh_maior_desconto': eh_maior_desconto, 'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':tabela.items()}
 
     template = get_template('relatorio_classificacao_por_item.html')
     html = template.render(data)
@@ -3346,20 +3335,10 @@ def relatorio_propostas_pregao(request, pregao_id):
             tabela[chave].append(proposta)
 
 
-    from blist import sorteddict
-
-    def my_key(dict_key):
-           try:
-               with transaction.atomic():
-                  return int(dict_key)
-           except ValueError:
-                  return dict_key
 
 
-    resultado =  sorteddict(my_key, **tabela)
 
-
-    data = {'itens':itens,  'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':resultado}
+    data = {'itens':itens,  'configuracao':configuracao, 'logo':logo, 'eh_lote':eh_lote, 'data_emissao':data_emissao, 'pregao':pregao, 'resultado':tabela.items()}
 
     template = get_template('relatorio_propostas_pregao.html')
     html = template.render(data)
@@ -3393,7 +3372,7 @@ def relatorio_lances_item(request, pregao_id):
 
     for item in ItemSolicitacaoLicitacao.objects.filter(solicitacao = pregao.solicitacao, lanceitemrodadapregao__isnull=False).order_by('item'):
         lista_rodadas = dict()
-        rodadas = RodadaPregao.objects.filter(item=item)
+        rodadas = RodadaPregao.objects.filter(item=item).order_by('rodada')
         for rodada in rodadas:
             lista_rodadas[rodada.rodada] = dict(lances=list())
         chave = u'%s' % (item.item)
@@ -3422,7 +3401,7 @@ def relatorio_lances_item(request, pregao_id):
                   return dict_key
 
 
-    resultado =  sorteddict(my_key, **tabela)
+    resultado =  sorted(tabela.items())
 
     #resultado = collections.OrderedDict(sorted(tabela.items()))
 

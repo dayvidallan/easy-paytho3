@@ -10,9 +10,8 @@
             <center><font size="4">Classificação Final - {{ pregao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
         </h1>
     {% endblock %}
-    {% for key, lances in resultado.items %}
+    {% for key, lances in resultado %}
             {% if lances %}
-
                 {% if eh_lote %}
                     <h2>Lote: {{ key }}</h2>
                 {% else %}
