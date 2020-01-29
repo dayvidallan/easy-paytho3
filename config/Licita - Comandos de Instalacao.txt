@@ -1,17 +1,11 @@
 # Ubuntu 19.10
 
-no diretorio home, digitar:
+#### programas uteis  ###################
+sudo apt-get install python3-pip nginx supervisor git git-core libpq-dev python-dev python-virtualenv
 
-mkdir workspace
+sudo apt-get install postgresql postgresql-contrib
 
-cd workspace
-
-sudo apt-get install git
-
-git clone https://walkyso@bitbucket.org/walkyso/licita.git
-
-sudo apt-get install postgresql postgresql-contrib nginx python3-pip libpq-dev
-
+####  configurando o banco ####
 sudo su - postgres
 
 psql
@@ -26,34 +20,53 @@ ALTER USER postgres WITH PASSWORD 'licitaeasy';
 
 exit
 
-chown www-data:www-data -R licita
+#### ambiente virtual ####
+sudo pip3 install virtualenvwrapper
+
+echo 'export WORKON_HOME=~/Envs' >> ~/.bashrc
+
+echo ‘export VIRTUALENVWRAPPER_PYTHON=`which python3`’ >> ~/.bashrc
+
+echo 'source /usr/local/bin/virtualenvwrapper.sh' >> ~/.bashrc
+
+source ~/.bashrc
+
+mkvirtualenv easy --python=python3
+
+workon easy
+
+#### clonando projeto ####
+no diretorio home, digitar:
+
+mkdir workspace
+
+cd workspace
+
+git clone https://walkyso@bitbucket.org/walkyso/licita.git
+
+-- sudo chown www-data:www-data -R licita
 
 cd licita
 
-pip3 install gunicorn psycopg2
+pip install gunicorn
 
-pip3 install -U -r deploy/requirements.txt
+pip install -U -r deploy/requirements.txt
 
 cd licita
 
-## EDITAR O SETTINGS
+####  EDITAR O SETTINGS
 
 cd ..
 
-python3 manage.py sync
+python manage.py sync
 
-## python3 manage.py criar_base_teste
-
-## python3 manage.py collectstatic --noinput --clear
-
-## cd sql
-
-## psql -Upostgres -hlocalhost -d licita < dump_material.sql
+-- psql -Upostgres -hlocalhost -d licita < dump_material.sql
 
 cd ..
 
 cd licita/config
 
+#### nginx ####
 sudo cp licita /etc/nginx/sites-available/
 
 sudo ln -s /etc/nginx/sites-available/licita /etc/nginx/sites-enabled
@@ -66,29 +79,22 @@ sudo nginx -t
 
 sudo service nginx restart
 
-sudo apt-get install supervisor
-
+#### supervisor ####
 sudo rm /etc/supervisor/supervisord.conf
 
 sudo cp /home/easy/workspace/licita/config/supervisord.conf /etc/supervisor/
 
-sudo cp /home/easy/workspace/licita/config/gunicorn.service /etc/systemd/system/
+---- sudo cp /home/easy/workspace/licita/config/gunicorn.service /etc/systemd/system/
 
-sudo systemctl start gunicorn
+sudo supervisorctl reread
 
-sudo systemctl enable gunicorn
+sudo supervisorctl update
 
-sudo service supervisor start
-
-sudo supervisorctl start all
-
-sudo supervisorctl restart all
-
-sudo systemctl enable supervisor
-
-sudo systemctl start supervisor
+sudo supervisorctl restart gunicorn
 
 ####################################################################################
+
+
 
 
 sudo apt-get update
