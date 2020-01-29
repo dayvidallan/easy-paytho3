@@ -1,7 +1,7 @@
 # Ubuntu 19.10
 
 #### programas uteis  ###################
-sudo apt-get install python3-pip nginx supervisor git git-core libpq-dev python-dev python-virtualenv
+sudo apt-get install python3-pip nginx supervisor git libpq-dev python-dev python-virtualenv
 
 sudo apt-get install postgresql postgresql-contrib
 
