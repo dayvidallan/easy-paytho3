@@ -40,6 +40,8 @@ no diretorio home, digitar:
 
 mkdir workspace
 
+mkdir logs
+
 cd workspace
 
 git clone https://walkyso@bitbucket.org/walkyso/licita.git
@@ -84,13 +86,11 @@ sudo rm /etc/supervisor/supervisord.conf
 
 sudo cp /home/easy/workspace/licita/config/supervisord.conf /etc/supervisor/
 
----- sudo cp /home/easy/workspace/licita/config/gunicorn.service /etc/systemd/system/
-
 sudo supervisorctl reread
 
 sudo supervisorctl update
 
-sudo supervisorctl restart gunicorn
+sudo supervisorctl restart licita
 
 ####################################################################################
 
