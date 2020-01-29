@@ -1,4 +1,4 @@
-# Ubuntu 19.10
+# Ubuntu 19.10    https://fernandofreitasalves.com/guia-para-deploy-django-python/
 
 #### programas uteis  ###################
 sudo apt-get install python3-pip nginx supervisor git libpq-dev python-dev python-virtualenv
