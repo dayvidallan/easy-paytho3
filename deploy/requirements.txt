@@ -29,7 +29,6 @@ html5lib
 -e git+git://github.com/hugotacito/django-pagination.git#egg=django-pagination
 xlutils
 dj-static
-blist
 python-docx
 django-easy-audit
 django-form-utils
@@ -38,4 +37,4 @@ qrcode
 djangorestframework
 pytz
 xhtml2pdf
-#WeasyPrint
+

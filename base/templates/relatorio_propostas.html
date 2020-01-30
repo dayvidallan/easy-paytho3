@@ -7,7 +7,6 @@
 
             <h1 class="page-header">
                 {% include "cabecalho.html" %}
-                <br><br><br>
                 <center><font size="4">Relatório de Propostas - {{ solicitacao }}</font><br><font size="2">Gerado em {{ data_emissao }}</font></center>
             </h1>
 
@@ -42,14 +41,14 @@
                 </table>
                 <h3>Empresa ganhadora: {{ solicitacao.get_fornecedor_dispensa.razao_social }} ({{ solicitacao.get_fornecedor_dispensa.cnpj }}) - Valor Total: R$ {{ solicitacao.get_fornecedor_dispensa.get_total|format_money }} ({{ solicitacao.get_fornecedor_dispensa.get_total|format_numero_extenso }})</h3>
         {% else %}
-            {% for key, lances in resultado.items %}
+            {% for key, lances in resultado %}
 
                     <h2>Item {{ key }}</h2>
                         <table border="1" width="95%" cellpadding="5" cellspacing="5">
                             <thead>
                                 <th>Origem</th>
                                 <th>Marca</th>
-                                <th>Valor Máximo</th>
+                                <th>Valor Máximo (R$)</th>
                             </thead>
                             <tbody>
                                 {% for item in lances.lance %}
@@ -70,7 +69,7 @@
                                     </tr>
                                 {% endfor %}
                                 <tr>
-                                    <td colspan="2">Valor Médio</td>
+                                    <td colspan="2"><b>Valor Médio (R$)</b></td>
                                     <td>{{ lances.total|format_money }} ({{ lances.total|format_numero_extenso }})</td>
                                 </tr>
 

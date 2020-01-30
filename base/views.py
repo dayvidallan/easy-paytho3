@@ -3391,16 +3391,6 @@ def relatorio_lances_item(request, pregao_id):
         #     tabela[chave].append(lance)
 
 
-    from blist import sorteddict
-
-    def my_key(dict_key):
-           try:
-               with transaction.atomic():
-                  return int(dict_key)
-           except ValueError:
-                  return dict_key
-
-
     resultado =  sorted(tabela.items())
 
     #resultado = collections.OrderedDict(sorted(tabela.items()))
@@ -8827,17 +8817,7 @@ def relatorio_propostas(request, solicitacao_id):
 
         tabela[chave]['total'] = valor / total
 
-    from blist import sorteddict
-
-    def my_key(dict_key):
-           try:
-               with transaction.atomic():
-                  return int(dict_key)
-           except ValueError:
-                  return dict_key
-
-
-    resultado =  sorteddict(my_key, **tabela)
+    resultado =  sorted(tabela.items())
 
 
     data = { 'configuracao':configuracao, 'logo':logo, 'data_emissao':data_emissao, 'solicitacao':solicitacao, 'resultado':resultado}
@@ -9591,16 +9571,7 @@ def relatorio_saldo_ata_secretaria(request, ata_id, secretaria_id):
         tabela[chave]['qtd_consumido'] = PedidoAtaRegistroPreco.objects.filter(setor__secretaria=secretaria, item=item).aggregate(soma=Sum('quantidade'))['soma']
         tabela[chave]['saldo'] = item.get_saldo_atual_secretaria(secretaria)
 
-    from blist import sorteddict
-
-    def my_key(dict_key):
-        try:
-            with transaction.atomic():
-                return int(dict_key)
-        except ValueError:
-            return dict_key
-
-    resultado = sorteddict(my_key, **tabela)
+    resultado = sorted(tabela.items())
 
     configuracao = get_config(ata.solicitacao.setor_origem.secretaria)
     logo = None
@@ -9910,7 +9881,7 @@ def anexo_38(request, pregao_id):
         itens = {}
         resultado = ResultadoItemPregao.objects.filter(item__solicitacao=pregao.solicitacao, situacao=ResultadoItemPregao.CLASSIFICADO, participante__excluido_dos_itens=False, participante__desclassificado=False, item__situacao__in=[ItemSolicitacaoLicitacao.CADASTRADO, ItemSolicitacaoLicitacao.CONCLUIDO]).order_by('item__item')
         chaves =  resultado.values('item__item').order_by('item__item')
-        for num in sorted(chaves):
+        for num in chaves:
             chave = '%s' % num['item__item']
             tabela[chave] = []
             itens[chave] =  []
@@ -9920,21 +9891,9 @@ def anexo_38(request, pregao_id):
             tabela[chave].append(item)
             itens[chave] = item.item.get_itens_do_lote()
 
-        from blist import sorteddict
+        resultado =  sorted(tabela.items())
 
-        def my_key(dict_key):
-               try:
-                   with transaction.atomic():
-                      return int(dict_key)
-               except ValueError:
-                      return dict_key
-
-
-        resultado =  sorteddict(my_key, **tabela)
-
-
-
-        for result in resultado.items():
+        for result in resultado:
 
             if result[1]:
                 for registro in result[1]:
@@ -9967,7 +9926,7 @@ def anexo_38(request, pregao_id):
                         u'Unidade',
                         u'1',
                         format_money(valor_do_item),
-                        len(resultado.items()),
+                        len(resultado),
 
                     ]
                     for col_num in range(len(row)):
