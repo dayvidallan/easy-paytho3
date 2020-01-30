@@ -63,6 +63,8 @@ cd ..
 ./manage.py sync
 
 -- psql -Upostgres -hlocalhost -d licita < dump_material.sql
+-- psql -Upostgres -hlocalhost -d licita < dump_estados_municipios.sql
+-- ./manage.py preenche_base_apenas_admin
 
 cd ..
 

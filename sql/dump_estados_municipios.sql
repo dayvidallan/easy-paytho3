@@ -1,47 +1,32 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+INSERT INTO base_estado (id, nome, sigla) VALUES (5, 'ACRE', 'AC');
+INSERT INTO base_estado (id, nome, sigla) VALUES (6, 'ALAGOAS', 'AL');
+INSERT INTO base_estado (id, nome, sigla) VALUES (8, 'AMAPA', 'AP');
+INSERT INTO base_estado (id, nome, sigla) VALUES (7, 'AMAZONAS', 'AM');
+INSERT INTO base_estado (id, nome, sigla) VALUES (9, 'BAHIA', 'BA');
+INSERT INTO base_estado (id, nome, sigla) VALUES (10, 'CEARA', 'CE');
+INSERT INTO base_estado (id, nome, sigla) VALUES (12, 'ESPIRITO SANTO', 'ES');
+INSERT INTO base_estado (id, nome, sigla) VALUES (13, 'GOIAS', 'GO');
+INSERT INTO base_estado (id, nome, sigla) VALUES (14, 'MARANHAO', 'MA');
+INSERT INTO base_estado (id, nome, sigla) VALUES (17, 'MATO GROSSO', 'MT');
+INSERT INTO base_estado (id, nome, sigla) VALUES (16, 'MATO GROSSO DO SUL', 'MS');
+INSERT INTO base_estado (id, nome, sigla) VALUES (15, 'MINAS GERAIS', 'MG');
+INSERT INTO base_estado (id, nome, sigla) VALUES (18, 'PARA', 'PA');
+INSERT INTO base_estado (id, nome, sigla) VALUES (19, 'PARAIBA', 'PB');
+INSERT INTO base_estado (id, nome, sigla) VALUES (22, 'PARANA', 'PR');
+INSERT INTO base_estado (id, nome, sigla) VALUES (3, 'Pernambuco', 'PE');
+INSERT INTO base_estado (id, nome, sigla) VALUES (21, 'PIAUI', 'PI');
+INSERT INTO base_estado (id, nome, sigla) VALUES (4, 'Rio de Janeiro', 'RJ');
+INSERT INTO base_estado (id, nome, sigla) VALUES (1, 'Rio Grande do Norte', 'RN');
+INSERT INTO base_estado (id, nome, sigla) VALUES (2, 'Rio Grande do Sul', 'RS');
+INSERT INTO base_estado (id, nome, sigla) VALUES (25, 'RONDONIA', 'RO');
+INSERT INTO base_estado (id, nome, sigla) VALUES (26, 'RORAIMA', 'RR');
+INSERT INTO base_estado (id, nome, sigla) VALUES (28, 'SANTA CATARINA', 'SC');
+INSERT INTO base_estado (id, nome, sigla) VALUES (30, 'SAO PAULO', 'SP');
+INSERT INTO base_estado (id, nome, sigla) VALUES (29, 'SERGIPE', 'SE');
+INSERT INTO base_estado (id, nome, sigla) VALUES (31, 'TOCANTINS', 'TO');
+INSERT INTO base_estado (id, nome, sigla) VALUES (11, 'DISTRITO FEDERAL', 'DF');
 
-from django.db import models, migrations
-
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ('base', '0001_initial'),
-        ('easyaudit', '0013_auto_20190723_0126'),
-    ]
-
-    operations = [
-        migrations.RunSQL('''
-           INSERT INTO base_estado (id, nome, sigla) VALUES (5, 'ACRE', 'AC');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (6, 'ALAGOAS', 'AL');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (8, 'AMAPA', 'AP');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (7, 'AMAZONAS', 'AM');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (9, 'BAHIA', 'BA');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (10, 'CEARA', 'CE');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (12, 'ESPIRITO SANTO', 'ES');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (13, 'GOIAS', 'GO');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (14, 'MARANHAO', 'MA');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (17, 'MATO GROSSO', 'MT');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (16, 'MATO GROSSO DO SUL', 'MS');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (15, 'MINAS GERAIS', 'MG');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (18, 'PARA', 'PA');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (19, 'PARAIBA', 'PB');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (22, 'PARANA', 'PR');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (3, 'Pernambuco', 'PE');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (21, 'PIAUI', 'PI');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (4, 'Rio de Janeiro', 'RJ');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (1, 'Rio Grande do Norte', 'RN');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (2, 'Rio Grande do Sul', 'RS');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (25, 'RONDONIA', 'RO');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (26, 'RORAIMA', 'RR');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (28, 'SANTA CATARINA', 'SC');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (30, 'SAO PAULO', 'SP');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (29, 'SERGIPE', 'SE');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (31, 'TOCANTINS', 'TO');
-			INSERT INTO base_estado (id, nome, sigla) VALUES (11, 'DISTRITO FEDERAL', 'DF');
-
-            INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (3349, '530010', 'BRASILIA', 11);
+INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (3349, '530010', 'BRASILIA', 11);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (3350, '530020', 'BRAZLANDIA', 11);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (5216, '530030', 'CANDANGOLANDIA', 11);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (5217, '530040', 'CEILANDIA', 11);
@@ -5645,6 +5630,3 @@ INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (4695, '240820',
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (2928, '291330', 'ICHU', 9);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (5486, '521710', 'PIRACANJUBA', 13);
 INSERT INTO base_municipio (id, codigo, nome, estado_id) VALUES (3143, '431820', 'SAO FRANCISCO DE PAULA', 2);
-        ''')
-    ]
-
