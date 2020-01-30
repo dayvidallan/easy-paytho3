@@ -22,4 +22,5 @@ class Command(BaseCommand):
         os.system('python manage.py migrate easyaudit 0003_auto_20170228_1505 --fake')
         os.system('python manage.py migrate admin --fake')
         os.system('python manage.py migrate sessions --fake')
+        os.system('python manage.py migrate easyaudit')
 
