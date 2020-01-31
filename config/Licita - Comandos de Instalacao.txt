@@ -40,9 +40,10 @@ no diretorio home, digitar:
 
 mkdir workspace
 
+cd workspace
+
 mkdir logs
 
-cd workspace
 
 git clone https://walkyso@bitbucket.org/walkyso/licita.git
 
