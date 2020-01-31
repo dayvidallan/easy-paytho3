@@ -52,6 +52,8 @@ cd licita
 
 pip install gunicorn
 
+git checkout python3
+
 pip install -U -r deploy/requirements.txt
 
 cd licita
