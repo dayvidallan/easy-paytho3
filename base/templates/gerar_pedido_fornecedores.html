@@ -10,7 +10,24 @@
                   </h1>
 
                 {% endblock %}
-
+                {% block extrahead %}
+                    <style>
+                       @page {
+                            size: a4 landscape;
+                            margin: 0.6cm;
+                            margin-bottom: 0.7cm;
+                            margin-top: 0.3cm;
+                            @frame footer {
+                                -pdf-frame-content: footerblock;
+                                bottom: 1cm;
+                                margin-left: 1cm;
+                                margin-right: 1cm;
+                                margin-top: 1cm;
+                                height: 1cm;
+                            }
+                       }
+                     </style>
+                {% endblock %}
                 <h2>Fornecedor: {{ key }}</h2>
 
                     <table border="1" width="100%" cellpadding="5" cellspacing="5">

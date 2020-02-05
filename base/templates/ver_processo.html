@@ -47,7 +47,7 @@
         </tr>
         <tr>
             <th>Palavras-chave</th>
-            <td>{{ processo.palavras_chave }}</td>
+            <td>{{ processo.palavras_chave|default_if_none:"-" }}</td>
         </tr>
         <tr>
             <th>Cadastrado Em</th>

@@ -1346,7 +1346,7 @@ def preencher_pesquisa_mercadologica(request, solicitacao_id):
     if not solicitacao.pode_cadastrar_pesquisa():
         messages.error(request, u'Apenas uma proposta pode ser cadastrada.')
         return HttpResponseRedirect(u'/base/itens_solicitacao/%s' % solicitacao.id)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponseRedirect(u'/base/preencher_itens_pesquisa_mercadologica/%s/2/' % solicitacao.id)
 
 
@@ -1604,7 +1604,7 @@ def planilha_propostas(request, solicitacao_id):
         style.alignment.wrap = 1
 
         w_sheet.write(row_index, 0, u'%s' % contador)
-        w_sheet.write(row_index, 1, item.__unicode__()[6:])
+        w_sheet.write(row_index, 1, item.__str__()[6:])
         w_sheet.write(row_index, 2, item.material.nome, style)
         w_sheet.write(row_index, 3, item.unidade.nome)
         w_sheet.write(row_index, 4, item.quantidade)
@@ -6954,7 +6954,7 @@ def ata_sessao(request, pregao_id):
             membros.append(texto)
 
         portaria = pregao.comissao.nome
-        tipo = u'%s %s' % (pregao.tipo, pregao.criterio)
+    tipo = u'%s %s' % (pregao.tipo, pregao.criterio)
 
 
 

@@ -1124,7 +1124,7 @@ class AtaRegistroPrecoForm(forms.ModelForm):
     #fornecedor_adesao_arp = forms.ModelChoiceField(Fornecedor.objects, label=u'Fornecedor', required=True)
     class Meta:
         model = AtaRegistroPreco
-        exclude = ('dh_cancelamento', )
+        fields = ('numero', 'valor', 'data_inicio', 'data_fim', 'num_oficio', 'objeto')
 
     def __init__(self, *args, **kwargs):
         super(AtaRegistroPrecoForm, self).__init__(*args, **kwargs)
@@ -1407,7 +1407,7 @@ class FornecedorForm(forms.ModelForm):
                    return False
 
                # Pega apenas os 9 primeiros dígitos do CPF e gera os 2 dígitos que faltam
-               inteiros = map(int, cpf)
+               inteiros = list(map(int, cpf))
                novo = inteiros[:9]
 
                while len(novo) < 11:
@@ -1431,7 +1431,7 @@ class FornecedorForm(forms.ModelForm):
                    self.add_error('cnpj', u'CPF/CNPJ Valor Inválido.')
 
               # Pega apenas os 12 primeiros dígitos do CNPJ e gera os 2 dígitos que faltam
-                inteiros = map(int, cnpj)
+                inteiros = list(map(int, cnpj))
                 novo = inteiros[:12]
 
                 prod = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
