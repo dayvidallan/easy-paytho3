@@ -12040,3 +12040,27 @@ def liga_users(request):
     messages.success(request, u'Welcome.')
     return HttpResponseRedirect(u'/')
 
+def contratos_atas_fornecedor(request, fornecedor_id):
+    fornecedor = get_object_or_404(Fornecedor, pk=fornecedor_id)
+    title = u'Contratos e Atas - {}'.format(fornecedor)
+    contratos = Contrato.objects.filter(id__in=ItemContrato.objects.filter(Q(fornecedor=fornecedor) | Q(participante__fornecedor=fornecedor)).values_list('contrato_id', flat=True))
+    atas = AtaRegistroPreco.objects.filter(fornecedor_adesao_arp=fornecedor) | AtaRegistroPreco.objects.filter(id__in=ItemAtaRegistroPreco.objects.filter(Q(fornecedor=fornecedor) | Q(participante__fornecedor=fornecedor)).values_list('ata_id', flat=True))
+    configuracao = get_config()
+    logo = None
+    if configuracao.logo:
+        logo = os.path.join(settings.MEDIA_ROOT,configuracao.logo.name)
+
+    destino_arquivo = u'upload/resultados/%s.pdf' % fornecedor_id
+    if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'upload/resultados'))
+    caminho_arquivo = os.path.join(settings.MEDIA_ROOT,destino_arquivo)
+    data_emissao = datetime.date.today()
+    data = {'atas':atas, 'contratos': contratos, 'fornecedor':fornecedor, 'configuracao':configuracao, 'logo':logo,  'data_emissao':data_emissao}
+    template = get_template('contratos_atas_fornecedor.html')
+    html = template.render(data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error Rendering PDF", status=400)
