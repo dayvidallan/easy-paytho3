@@ -1725,7 +1725,7 @@ class Pregao(models.Model):
             chave= '%s' %  proposta.participante.id
 
             tabela[chave]['total'] += proposta.valor
-        resultado = sorted(tabela.items(), key=lambda x: x[1])
+        resultado = sorted(tabela.items(), key=lambda x: x[1]['total'])
         total = len(resultado)
         indice = 0
 

@@ -549,7 +549,6 @@
                                             </tr>
                                         {% endfor %}
                                     </tbody>
-                                    </tbody>
                                 </table>
                             </div>
                         </td>
@@ -561,6 +560,9 @@
     {% endif %}
     {% if sem_registro %}
         <p class="alert alert-info">{{ sem_registro }}</p>
+    {% endif %}
+    {% if not form.is_bound %}
+        <p class="alert alert-info">Utilize o formulário acima para realizar a busca.</p>
     {% endif %}
 
 
