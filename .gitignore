@@ -18,3 +18,5 @@ media/upload/resultados/*
 media/upload/dados_licitacao_procedimento/*
 media/upload/modelos_documentos/*
 .idea/*
+local_settings.py
+static/CACHE/*
