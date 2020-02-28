@@ -3710,15 +3710,17 @@ class FornecedorCRC(models.Model):
 
     @property
     def qrcode(self):
+        import io
         img = qrcode.make(self.get_absolute_url())
-        buffer_img = StringIO.StringIO()
+        buffer_img = io.BytesIO()
         img.save(buffer_img, 'png')
         return buffer_img
 
     @property
     def qrcode_base64image(self):
         qrcode_data = base64.b64encode(self.qrcode.getvalue())
-        return "data:image/png;base64," + qrcode_data
+        return "data:image/png;base64," + qrcode_data.decode('utf-8')
+
 
 class CnaeSecundario(models.Model):
     crc = models.ForeignKey(FornecedorCRC, verbose_name=u'CRC', on_delete=models.CASCADE)
