@@ -70,3 +70,6 @@ https://www.digitalocean.com/community/tutorials/how-to-install-dropbox-client-a
 https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-ubuntu-14-04
 
 
+pip install rcssmin --install-option="--without-c-extensions"
+pip install rjsmin --install-option="--without-c-extensions"
+pip install django-compressor --upgrade

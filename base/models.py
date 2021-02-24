@@ -508,7 +508,7 @@ class SolicitacaoLicitacao(models.Model):
         return self.tipo_aquisicao == self.TIPO_AQUISICAO_INEXIGIBILIDADE
 
     def pode_gerar_ordem(self):
-        return  self.eh_inexigibilidade() or self.eh_dispensa()
+        return self.eh_inexigibilidade() or self.eh_dispensa()
 
     def pode_abrir_para_compra(self):
         nao_tem_ordem =  not self.tem_ordem_compra()

@@ -27,17 +27,20 @@ def dump(qs):
                     if obj not in l:
                         dump_related_objects(obj)
     for instance in qs:
-        print 'carregando', instance.pk, instance
+        print('carregando', instance.pk, instance)
         dump_related_objects(instance)
     return c, l
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         queryset = None
-        print u'\nPor favor, instancie o queryset que você deseja salvar e em seguida digite a tecla "c".\nÉ necessário importar os modelos necessários.\n\tEx: from edu.models import Aluno\n\tqueryset = Aluno.objects.filter(ano_letivo__ano=2015)\n\n'
+        print(
+            u'\nPor favor, instancie o queryset que você deseja salvar e em seguida digite a tecla "c".\nÉ necessário importar os modelos necessários.\n\tEx: from edu.models import Aluno\n\tqueryset = Aluno.objects.filter(ano_letivo__ano=2015)\n\n')
         pdb.set_trace()
         c, l = dump(queryset)
-        print u'Um arquivo "backup.json" foi salvo no diretório corrente contendo %s objetos. Para restaurá-los, digite o seguinte comando:\n\n\tpython manage.py restore %s < backup.json\n\nÉ necessário ordenar as classes corretamente de acordo com as dependências entre elas.\n\n' % (len(l) , ' '.join(c))
+        print(
+            u'Um arquivo "backup.json" foi salvo no diretório corrente contendo %s objetos. Para restaurá-los, digite o seguinte comando:\n\n\tpython manage.py restore %s < backup.json\n\nÉ necessário ordenar as classes corretamente de acordo com as dependências entre elas.\n\n' % (
+            len(l), ' '.join(c)))
         f = open('backup.json', 'w')
         f.write(serializers.serialize("json", l))
         f.close()

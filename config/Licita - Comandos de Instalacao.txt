@@ -154,7 +154,7 @@ pip install -U -r deploy/requirements.txt
 
 ./manage.py sync
 
-./manage.py criar_base_teste
+./meu Deus
 
 ./manage.py collectstatic --noinput --clear
 

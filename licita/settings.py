@@ -9,6 +9,17 @@ SECRET_KEY = '0$p#v)*(zb22za#6c=7yg$=$v-7xh8w12f2gbd9*mezlsr*3*o'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'licitaeasy',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
+
 INSTALLED_APPS = (
 
 
@@ -160,7 +171,7 @@ REST_FRAMEWORK = {
 }
 
 
-from .local_settings import *
+#from .local_settings import *
 
 # if DEBUG:
 #    INTERNAL_IPS = ('127.0.0.1', 'localhost',)
