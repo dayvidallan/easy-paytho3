@@ -198,7 +198,7 @@ def index(request):
 
     from django.contrib.auth.hashers import get_hasher, make_password
     hasher=get_hasher('unsalted_md5')
-    password =  make_password('123', '', hasher)
+    password = make_password('123', '', hasher)
     if request.user.password == password:
         messages.success(request, u'Você precisa atualizar a sua senha de acesso.')
         return HttpResponseRedirect(u'/admin/password_change/')
@@ -11435,13 +11435,13 @@ def enviar_convites(request, solicitacao_id):
 
 def portal_transparencia(request):
     config = get_config_geral()
-    title = u'Portal da Transparência - %s' % config.nome
+    title = u'Portal da Transparência - %s' % config#.nome
     return render(request, 'portal_transparencia.html', locals(), RequestContext(request))
 
 
 def baixar_licitacoes_portal(request):
     config = get_config_geral()
-    title = u'Portal da Transparência - %s' % config.nome
+    title = u'Portal da Transparência - %s' % config#.nome
     hoje = datetime.date.today()
     pregoes = Pregao.objects.all().order_by('-id')
     form = BaixarEditaisForm(request.GET or None)
@@ -11463,7 +11463,7 @@ def baixar_licitacoes_portal(request):
                 pregoes = pregoes.filter(situacao=form.cleaned_data.get('situacao'))
         if form.cleaned_data.get('secretaria'):
             pregoes = pregoes.filter(solicitacao__setor_origem__secretaria=form.cleaned_data.get('secretaria'))
-    email = get_config_geral().email
+#    email = get_config_geral().email
     if 'pdf' in request.GET:
         destino_arquivo = u'upload/resultados/relatorio_gerencial_%s.pdf' %  datetime.datetime.now()
         if not os.path.exists(os.path.join(settings.MEDIA_ROOT, 'upload/resultados')):
